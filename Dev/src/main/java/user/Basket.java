@@ -1,6 +1,6 @@
-package Domain;
+package user;
 
-import User.User;
+import user.User;
 
 import java.util.Collection;
 

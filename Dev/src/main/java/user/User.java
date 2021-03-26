@@ -1,6 +1,4 @@
-package User;
-
-import Domain.Basket;
+package user;
 
 import java.util.Collection;
 
@@ -15,7 +13,7 @@ public class User {
     {
         this.userNames = userNames;
         this.state = new Guest();
-        //this.baskets = new Collection<Basket>();
+        //this.baskets = new Collection<user.Basket>();
     }
 
     public void login(String userName, String password) throws LoginException

@@ -1,6 +1,5 @@
-package Tests;
+package user;
 
-import User.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,13 +8,16 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class UserTest {
 
     @Nested
     @DisplayName("userNames list is empty")
     static class afterRegister{
+
+        // TODO: nested class should be non-static but @BeforeAll is static
+        //  (need to check how to do this properly in junit)
 
         private static Collection<String> userNames = new HashSet<>();
         private static String userName = "Barak";
@@ -30,7 +32,7 @@ class UserTest {
         @Test
         void registerExistingSubscriber() {
             User user = new User(userNames);
-            assertThrows(SubscriberAlreadyExistsException.class, () -> {user.register(userName,password);});
+            assertThrows(SubscriberAlreadyExistsException.class, () -> user.register(userName,password));
         }
 
         @Test
@@ -43,7 +45,7 @@ class UserTest {
         void loginSubscriberAlreadyLoggedIn() throws LoginException {
             User user = new User(userNames);
             user.login(userName,password);
-            assertThrows(LoginSubscriberAlreadyLoggedInException.class, () -> { user.login(userName,password);});
+            assertThrows(LoginSubscriberAlreadyLoggedInException.class, () -> user.login(userName,password));
         }
 
         @Test
@@ -76,13 +78,13 @@ class UserTest {
         String userName = "Barak";
         String password = "gth10";
         User user = new User(new HashSet<>());
-        assertThrows(LoginNonExistingSubscriberException.class, () -> { user.login(userName,password);});
+        assertThrows(LoginNonExistingSubscriberException.class, () -> user.login(userName,password));
     }
 
     @Test
     void logoutGuest() {
         User user = new User(new HashSet<>());
-        assertThrows(LogoutGuestException.class, () -> { user.logout();});
+        assertThrows(LogoutGuestException.class, () -> user.logout());
     }
 
     @org.junit.jupiter.api.Test
