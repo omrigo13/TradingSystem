@@ -4,6 +4,7 @@ import user.User;
 
 import java.util.Collection;
 
+//represents a User's basket, which is connected to maximum 1 store
 public class Basket {
 
     private String store;
