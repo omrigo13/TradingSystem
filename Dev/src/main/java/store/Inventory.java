@@ -1,4 +1,4 @@
-package main.java.store;
+package store;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;

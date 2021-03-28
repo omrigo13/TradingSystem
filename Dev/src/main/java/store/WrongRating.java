@@ -1,4 +1,4 @@
-package main.java.store;
+package store;
 
 public class WrongRating extends Exception {
 

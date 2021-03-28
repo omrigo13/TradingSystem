@@ -1,6 +1,5 @@
-package test.java.store;
+package store;
 
-import main.java.store.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
