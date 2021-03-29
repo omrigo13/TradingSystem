@@ -1,9 +1,3 @@
 package user;
 
-public class SubscriberAlreadyExistsException extends RegistrationException {
-
-    public SubscriberAlreadyExistsException()
-    {
-
-    }
-}
+public class SubscriberAlreadyExistsException extends RegistrationException {}

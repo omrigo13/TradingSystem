@@ -8,72 +8,64 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static user.Basket.*;
 
 class UserTest {
 
-    @Nested
-    @DisplayName("userNames list is empty")
-    static class afterRegister{
+    private static Collection<String> userNames = new HashSet<>();
+    private static String userName = "Barak";
+    private static String password = "1456";
 
-        // TODO: nested class should be non-static but @BeforeAll is static
-        //  (need to check how to do this properly in junit)
-
-        private static Collection<String> userNames = new HashSet<>();
-        private static String userName = "Barak";
-        private static String password = "1456";
-
-        @BeforeAll
-        static void init() throws RegistrationException {
-            User user = new User(userNames);
-            user.register(userName,password);
-        }
-
-        @Test
-        void registerExistingSubscriber() {
-            User user = new User(userNames);
-            assertThrows(SubscriberAlreadyExistsException.class, () -> user.register(userName,password));
-        }
-
-        @Test
-        void loginSubscriber() throws LoginException {
-            User user = new User(userNames);
-            user.login(userName,password);
-        }
-
-        @Test
-        void loginSubscriberAlreadyLoggedIn() throws LoginException {
-            User user = new User(userNames);
-            user.login(userName,password);
-            assertThrows(LoginSubscriberAlreadyLoggedInException.class, () -> user.login(userName,password));
-        }
-
-        @Test
-        void logout() throws LoginException, LogoutGuestException {
-            User user = new User(userNames);
-            user.login(userName,password);
-            user.logout();
-        }
-
+    User createAndRegister(String userName, String password) throws RegistrationException {
+        User user = new User(new HashSet<>());
+        user.register(userName,password);
+        return user;
     }
 
-    @org.junit.jupiter.api.BeforeEach
-    void setUp() {
+    @Test
+    void registerExistingSubscriber() throws RegistrationException {
+        User user = createAndRegister(userName, password);
+        assertThrows(SubscriberAlreadyExistsException.class, () -> user.register(userName,password));
     }
 
-    @org.junit.jupiter.api.AfterEach
-    void tearDown() {
+    @Test
+    void loginSubscriber() throws LoginException, RegistrationException {
+        User user = createAndRegister(userName, password);
+        user.login(userName,password);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
+    void loginSubscriberAlreadyLoggedIn() throws LoginException, RegistrationException {
+        User user = createAndRegister(userName, password);
+        user.login(userName,password);
+        assertThrows(SubscriberAlreadyLoggedInException.class, () -> user.login(userName,password));
+    }
+
+    @Test
+    void logout() throws LoginException, LogoutGuestException, RegistrationException {
+        User user = createAndRegister(userName, password);
+        user.login(userName,password);
+        user.logout();
+    }
+
+    @Test
+    void logoutAndLoginAgain() throws LoginException, LogoutGuestException, RegistrationException {
+        User user = createAndRegister(userName, password);
+        user.login(userName,password);
+        user.logout();
+        user.login(userName,password);
+    }
+
+    @Test
     void registerNewSubscriber() throws RegistrationException {
         String userName = "Tal";
         String password = "tal123";
-        User user = new User(new HashSet());
+        User user = new User(new HashSet<>());
         user.register(userName,password);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void loginNonExistingSubscriber() {
         String userName = "Barak";
         String password = "gth10";
@@ -84,14 +76,21 @@ class UserTest {
     @Test
     void logoutGuest() {
         User user = new User(new HashSet<>());
-        assertThrows(LogoutGuestException.class, () -> user.logout());
+        assertThrows(LogoutGuestException.class, user::logout);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getBasket() {
+        User user = new User(new HashSet<>());
+        String store = "eBay";
+        Basket basket = user.getBasket(store);
+        assertEquals(user, basket.getUser());
+        assertEquals(store, basket.getStore());
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void getCart() {
+        User user = new User(new HashSet<>());
+        Collection<Basket> baskets = user.getCart(); // only tests that no exception is thrown
     }
 }

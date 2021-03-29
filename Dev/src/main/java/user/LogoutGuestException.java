@@ -1,4 +1,3 @@
 package user;
 
-public class LogoutGuestException extends Exception {
-}
+public class LogoutGuestException extends Exception {}
