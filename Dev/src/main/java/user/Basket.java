@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+//represents a User's basket, which is connected to maximum 1 store
 public class Basket {
 
     final private String store;
