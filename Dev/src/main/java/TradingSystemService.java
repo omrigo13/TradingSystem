@@ -28,7 +28,7 @@ public interface TradingSystemService {
     /* Get all products of the store, with store id. */
     boolean getProductsByStore(String storeId);
 
-
+    // ASDKASDKASDK
 
 
     // Topics: service level, external systems
