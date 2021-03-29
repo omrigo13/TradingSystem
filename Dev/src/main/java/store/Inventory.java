@@ -89,4 +89,8 @@ public class Inventory {
     public ConcurrentHashMap<Item, Integer> getItems() {
         return items;
     }
+
+    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
+        searchItem(name, category, subCategory).setPrice(price);
+    }
 }
