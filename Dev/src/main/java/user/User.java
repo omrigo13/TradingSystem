@@ -1,5 +1,7 @@
 package user;
 
+import tradingSystem.RegistrationException;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

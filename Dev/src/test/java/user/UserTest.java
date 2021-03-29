@@ -1,15 +1,12 @@
 package user;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import tradingSystem.RegistrationException;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static user.Basket.*;
 
 class UserTest {
 
@@ -21,12 +18,6 @@ class UserTest {
         User user = new User(new HashSet<>());
         user.register(userName,password);
         return user;
-    }
-
-    @Test
-    void registerExistingSubscriber() throws RegistrationException {
-        User user = createAndRegister(userName, password);
-        assertThrows(SubscriberAlreadyExistsException.class, () -> user.register(userName,password));
     }
 
     @Test
@@ -55,14 +46,6 @@ class UserTest {
         user.login(userName,password);
         user.logout();
         user.login(userName,password);
-    }
-
-    @Test
-    void registerNewSubscriber() throws RegistrationException {
-        String userName = "Tal";
-        String password = "tal123";
-        User user = new User(new HashSet<>());
-        user.register(userName,password);
     }
 
     @Test

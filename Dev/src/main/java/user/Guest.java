@@ -1,5 +1,7 @@
 package user;
 
+import tradingSystem.SubscriberAlreadyExistsException;
+
 public class Guest implements State {
 
     @Override

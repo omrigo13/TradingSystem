@@ -1,5 +1,7 @@
 package user;
 
+import tradingSystem.RegistrationException;
+
 public interface State {
 
     void login(User user, String userName, String password) throws LoginException;

@@ -7,9 +7,9 @@ import java.util.Map;
 //represents a User's basket, which is connected to maximum 1 store
 public class Basket {
 
-    final private String store;
-    final private User user;
-    final private Map<String, ItemRecord> items = new HashMap<>();
+    private final String store;
+    private final User user;
+    private final Map<String, ItemRecord> items = new HashMap<>();
 
     public static class ItemRecord {
         final String item;
@@ -17,6 +17,19 @@ public class Basket {
         public ItemRecord(String item, int amount) {
             this.item = item;
             this.amount = amount;
+        }
+
+        public String getItem() {
+            return item;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        @Override
+        public String toString() {
+            return "" + amount + ", " + item;
         }
     }
 
