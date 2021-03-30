@@ -113,4 +113,18 @@ public class InventoryTest {
         assertThrows(ItemNotFound.class, () -> inventory.removeItem("carrot", "vegetables","orange"));
 
     }
+
+    @Test
+    void updateItemPrice() throws Exception{
+        inventory.addItem("cucumber", 15, "vegetables", "green", 2, 10);
+        inventory.addItem("carrot", 20, "vegetables", "orange", 2, 0);
+
+        //set a negative price for an item
+        assertThrows(WrongPrice.class, () -> inventory.setItemPrice("carrot", "vegetables","orange", -20));
+
+        inventory.setItemPrice("carrot", "vegetables","orange", 50);
+        assertEquals(inventory.searchItem("carrot", "vegetables","orange").getPrice(), 50);
+        inventory.setItemPrice("carrot", "vegetables","orange", 34);
+        assertEquals(inventory.searchItem("carrot", "vegetables","orange").getPrice(), 34);
+    }
 }
