@@ -10,10 +10,10 @@ public class Store {
     private String name;
     private String description;
     private double rating;
-    private String purchaseType; //should check how to implement
-    private String discountType; //should check how to implement
-    private String purchasePolicy; //should check how to implement
-    private String discountPolicy; //should check how to implement
+    private String purchaseType;     // TODO: should check how to implement
+    private String discountType;     // TODO: should check how to implement
+    private String purchasePolicy;     // TODO: should check how to implement
+    private String discountPolicy;     // TODO: should check how to implement
     private String founder;
     private Inventory inventory;
 
@@ -30,7 +30,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        this.founder = founder; //should check how to implement
+        this.founder = founder; // TODO: should check how to implement
         this.inventory = new Inventory();
     }
 
@@ -107,4 +107,27 @@ public class Store {
     }
 
     public String displayItems() {return inventory.toString();}
+
+    // TODO: should check how to implement
+    public String getPurchaseType() {
+        return purchaseType;
+    }
+
+    public String getDiscountType() {
+        return discountType;
+    }
+
+    public String getPurchasePolicy() {
+        return purchasePolicy;
+    }
+
+    public String getDiscountPolicy() {
+        return discountPolicy;
+    }
+
+    // TODO: should check how to implement
+    public void setDiscountType() {}
+    public void setPurchaseType() {}
+    public void setDiscountPolicy() {}
+    public void setPurchasePolicy() {}
 }
