@@ -48,6 +48,12 @@ public class Item {
         return rating;
     }
 
+    public void setRating(double rating) throws Exception {
+        if(rating < 0)
+            throw new WrongRating("rating must be positive");
+        this.rating = rating;
+    }
+
     public String toString() { return "id:" + id +
             "\nname:" + name +
             "\nprice:" + price +

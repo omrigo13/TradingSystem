@@ -9,9 +9,15 @@ public class Store {
     private int id;
     private String name;
     private String description;
+    private double rating;
+    private String purchaseType; //should check how to implement
+    private String discountType; //should check how to implement
+    private String purchasePolicy; //should check how to implement
+    private String discountPolicy; //should check how to implement
+    private String founder;
     private Inventory inventory;
 
-    public Store(int id, String name, String description) throws Exception{
+    public Store(int id, String name, String description, String founder) throws Exception{
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongName("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -23,6 +29,8 @@ public class Store {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.rating = 0;
+        this.founder = founder; //should check how to implement
         this.inventory = new Inventory();
     }
 
@@ -37,6 +45,8 @@ public class Store {
     public String getDescription() {
         return description;
     }
+
+    public double getRating() { return rating; }
 
     public Inventory getInventory() {
         return inventory;
@@ -54,9 +64,9 @@ public class Store {
         this.inventory.setItemPrice(name, category, subCategory, price);
     }
 
-    public void addItem(String name, double price, String category, String subCategory, double rating, int amount) throws Exception {
-        this.inventory.addItem(name, price, category, subCategory, rating, amount);
-    }
+//    public void addItem(String name, double price, String category, String subCategory, double rating, int amount) throws Exception {
+//        this.inventory.addItem(name, price, category, subCategory, rating, amount);
+//    }
 
     public void addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
         this.inventory.addItem(name, price, category, subCategory, amount);
@@ -66,8 +76,22 @@ public class Store {
         return this.inventory.searchItemByName(name);
     }
 
+    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category) throws Exception {
+        return this.inventory.searchItemByCategory(category);
+    }
+    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword) throws Exception {
+        return this.inventory.searchItemByKeyWord(keyword);
+    }
+
     public Item searchItem(String name, String category, String subCategory) throws Exception {
         return this.inventory.searchItem(name, category, subCategory);
+    }
+
+    public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice) throws Exception {
+        return this.inventory.filterByPrice(startPrice, endPrice);
+    }
+    public ConcurrentLinkedQueue<Item> filterByRating(double rating) throws Exception {
+        return this.inventory.filterByRating(rating);
     }
 
     public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
