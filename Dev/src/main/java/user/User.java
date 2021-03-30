@@ -1,19 +1,25 @@
 package user;
 
+import tradingSystem.RegistrationException;
+
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
 
     private State state;
-    private Collection<Basket> baskets;
-
-    Collection<String> userNames;
+    private Map<String, Basket> baskets = new HashMap<>();
+    private Collection<String> userNames;
 
     public User(Collection<String> userNames)
     {
         this.userNames = userNames;
         this.state = new Guest();
-        //this.baskets = new Collection<user.Basket>();
+    }
+
+    public Collection<String> getUserNames() {
+        return userNames;
     }
 
     public void login(String userName, String password) throws LoginException
@@ -22,31 +28,31 @@ public class User {
     }
 
     public void logout() throws LogoutGuestException {
-        state.logout();
+        state.logout(this);
     }
 
-    public void register (String userName, String password) throws RegistrationException
+    public void register(String userName, String password) throws RegistrationException
     {
         state.register(this, userName, password);
-        changeState();
     }
 
-    public void changeState()
+    public void changeState(State state)
     {
-        this.state = new Subscriber();
+        this.state = state;
     }
 
     public Basket getBasket(String storeID)
     {
-        // find basket for storeID and return the basket
-        return null;
+        Basket basket = baskets.get(storeID);
+        if (basket == null) {
+            basket = new Basket(storeID, this);
+            baskets.put(storeID, basket);
+        }
+        return basket;
     }
 
     public Collection<Basket> getCart()
     {
-        return this.baskets;
+        return baskets.values();
     }
-
-
-
 }

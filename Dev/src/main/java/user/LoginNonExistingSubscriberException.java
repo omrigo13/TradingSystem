@@ -1,9 +1,3 @@
 package user;
 
-public class LoginNonExistingSubscriberException extends LoginException {
-
-    public LoginNonExistingSubscriberException()
-    {
-
-    }
-}
+public class LoginNonExistingSubscriberException extends LoginException {}
