@@ -131,9 +131,10 @@ public class Inventory {
     }
 
     /**
-     * This method is used to search the inventory for items that matches the param keyword.
-     * @param keyword - the keyword of the wanted item
-     * @exception  ItemNotFound- On non existing item with param keyword*/
+     * This method is used to filter the inventory for items that matches the params startPrice and endPrice.
+     * @param startPrice - the startPrice of the items price
+     * @param endPrice - the endPrice of the items price
+     * @exception  ItemNotFound- On non existing item with params startPrice and endPrice*/
     public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice) throws Exception
     {
         ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
@@ -146,9 +147,9 @@ public class Inventory {
     }
 
     /**
-     * This method is used to search the inventory for items that matches the param keyword.
-     * @param keyword - the keyword of the wanted item
-     * @exception  ItemNotFound- On non existing item with param keyword*/
+     * This method is used to filter the inventory for items that matches the param rating.
+     * @param rating - the keyword of the wanted item
+     * @exception  ItemNotFound- On non existing item with param rating or greater*/
     public ConcurrentLinkedQueue<Item> filterByRating(double rating) throws Exception
     {
         ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
@@ -175,16 +176,28 @@ public class Inventory {
     }
 
     /**
-     * This method decreases the amount of the item by one
+     * This method checks if there is enough amount of an item in the inventory
+     * @param item - a specific item in the inventory
+     * @param amount - the amount of the item to check
+     * @exception WrongAmount when the amount is illegal*/
+    public boolean checkAmount(Item item, int amount) throws Exception {
+        if(amount > items.get(item))
+            throw new WrongAmount("there is not enough from the item");
+        return true;
+    }
+
+    /**
+     * This method decreases the amount of the item by param quantity.
      * @param name - name of the wanted item
      * @param category - category of the wanted item
      * @param subCategory - the sub category of the wanted item
+     * @param quantity - the quantity of the wanted item
      * @exception WrongAmount- when the amount is illegal */
-    public void decreaseByOne(String name, String category, String subCategory) throws Exception {
+    public void decreaseByQuantity(String name, String category, String subCategory, int quantity) throws Exception {
         Item item = searchItem(name, category, subCategory);
         if(items.get(item) == 0)
-            throw new WrongAmount("cannot decrease by one an item with amount of 0");
-        items.replace(item, items.get(item) - 1);
+            throw new WrongAmount("cannot decrease the quantity of an item with amount of 0");
+        items.replace(item, items.get(item) - quantity);
     }
 
     /**
