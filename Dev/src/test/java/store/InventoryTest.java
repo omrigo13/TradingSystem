@@ -124,18 +124,17 @@ public class InventoryTest {
     }
 
     @Test
-    void decreaseByOne() throws Exception{
+    void decreaseByQuantity() throws Exception{
         inventory.addItem("cucumber", 15, "vegetables", "green", 10);
         inventory.addItem("carrot", 20, "vegetables", "orange", 0);
         Item cucumber = inventory.searchItem("cucumber", "vegetables","green");
 
         //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmount.class, () -> inventory.decreaseByOne("carrot", "vegetables","orange"));
+        assertThrows(WrongAmount.class, () -> inventory.decreaseByQuantity("carrot", "vegetables","orange",4));
 
-        inventory.decreaseByOne("cucumber",  "vegetables", "green");
+        inventory.decreaseByQuantity("cucumber",  "vegetables", "green",1);
         assertEquals(inventory.getItems().get(cucumber), 9);
-        inventory.decreaseByOne("cucumber",  "vegetables", "green");
-        inventory.decreaseByOne("cucumber",  "vegetables", "green");
+        inventory.decreaseByQuantity("cucumber",  "vegetables", "green",2);
         assertEquals(inventory.getItems().get(cucumber), 7);
     }
 

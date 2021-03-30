@@ -195,7 +195,7 @@ public class Inventory {
      * @exception WrongAmount- when the amount is illegal */
     public void decreaseByQuantity(String name, String category, String subCategory, int quantity) throws Exception {
         Item item = searchItem(name, category, subCategory);
-        if(items.get(item) == 0)
+        if(items.get(item) -quantity< 0)
             throw new WrongAmount("cannot decrease the quantity of an item with amount of 0");
         items.replace(item, items.get(item) - quantity);
     }
@@ -214,6 +214,14 @@ public class Inventory {
         return items;
     }
 
+    /**
+     * This method changes an item's price in the inventory
+     * @param name - the name of the item
+     * @param price - the price of the item
+     * @param category - the category of the item
+     * @param subCategory - the sub category of the item
+     * @param price- the new price of the item
+     * @exception  ItemNotFound,WrongPrice  */
     public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
         searchItem(name, category, subCategory).setPrice(price);
     }

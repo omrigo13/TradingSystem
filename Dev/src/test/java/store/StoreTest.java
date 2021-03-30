@@ -145,18 +145,18 @@ public class StoreTest {
     }
 
     @Test
-    void decreaseByOne() throws Exception{
+    void decreaseByQuantity() throws Exception{
         store.addItem("cucumber", 15, "vegetables", "green", 10);
         store.addItem("carrot", 20, "vegetables", "orange", 0);
         Item cucumber = store.searchItem("cucumber", "vegetables","green");
 
         //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmount.class, () -> store.decreaseByOne("carrot", "vegetables","orange"));
+        assertThrows(WrongAmount.class, () -> store.decreaseByQuantity("carrot", "vegetables","orange",5));
 
-        store.decreaseByOne("cucumber",  "vegetables", "green");
+        store.decreaseByQuantity("cucumber",  "vegetables", "green",1);
         assertEquals(store.getItems().get(cucumber), 9);
-        store.decreaseByOne("cucumber",  "vegetables", "green");
-        store.decreaseByOne("cucumber",  "vegetables", "green");
+        store.decreaseByQuantity("cucumber",  "vegetables", "green",2);
+
         assertEquals(store.getItems().get(cucumber), 7);
     }
 
