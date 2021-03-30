@@ -13,10 +13,10 @@ public interface TradingSystemService {
     void register(String userName, String password);
 
     /* Login to system */
-    boolean login(String userName, String pass);
+    void login(String userName, String pass);
 
     /* Logout from system */
-    boolean logout(String userName, String pass);
+    void logout(String userName, String pass);
 
     /* Get product by filter. */
     boolean getProduct(String productId, String productName, double maxPrice, double minPrice);
