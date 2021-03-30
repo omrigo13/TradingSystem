@@ -47,4 +47,11 @@ public class Item {
     public double getRating() {
         return rating;
     }
+
+    public String toString() { return "id:" + id +
+            "\nname:" + name +
+            "\nprice:" + price +
+            "\ncategory:" + category +
+            "\nsub category:" + subCategory +
+            "\nrating:" + rating + '\n';}
 }

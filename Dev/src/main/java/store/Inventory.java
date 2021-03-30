@@ -93,4 +93,11 @@ public class Inventory {
     public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
         searchItem(name, category, subCategory).setPrice(price);
     }
+
+    public String toString() {
+        String itemsDisplay = "";
+        for (Item item: items.keySet())
+            itemsDisplay += item.toString();
+        return itemsDisplay;
+    }
 }

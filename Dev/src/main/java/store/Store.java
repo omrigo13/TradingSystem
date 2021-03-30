@@ -81,4 +81,6 @@ public class Store {
     public void removeItem(String name, String category, String subCategory) throws Exception {
         this.inventory.removeItem(name, category, subCategory);
     }
+
+    public String displayItems() {return inventory.toString();}
 }
