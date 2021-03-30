@@ -98,6 +98,8 @@ public class Store {
         this.inventory.changeQuantity(name, category, subCategory, amount);
     }
 
+    public boolean checkAmount(Item item, int amount) throws Exception {return this.inventory.checkAmount(item, amount);}
+
     public void decreaseByOne(String name, String category, String subCategory) throws Exception {
         this.inventory.decreaseByOne(name, category, subCategory);
     }
