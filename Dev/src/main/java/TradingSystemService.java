@@ -148,4 +148,12 @@ public interface TradingSystemService {
 
     /* correcting customer spell errors while making search*/
     boolean spellChecking(String searchValue);
+    
+    /* shows the event log.
+    precondition: invoker has the permissions to get the info. */
+    boolean getEventLog(String invokerUserName);
+    
+    /* shows the error log.
+    precondition: invoker has the permissions to get the info. */
+    boolean getErrorLog(String invokerUserName);
 }
