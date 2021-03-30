@@ -1,58 +1,29 @@
 package user;
 
-import tradingSystem.RegistrationException;
+import authentication.LoginException;
+import authentication.UserAuthentication;
+import persistence.Carts;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
-public class User {
+public interface User {
+    Carts getPersistence();
 
-    private State state;
-    private Map<String, Basket> baskets = new HashMap<>();
-    private Collection<String> userNames;
+    String getUserName();
 
-    public User(Collection<String> userNames)
-    {
-        this.userNames = userNames;
-        this.state = new Guest();
-    }
+    void setUserName(String userName);
 
-    public Collection<String> getUserNames() {
-        return userNames;
-    }
+    void setBaskets(Collection<Basket> baskets);
 
-    public void login(String userName, String password) throws LoginException
-    {
-        state.login(this, userName, password);
-    }
+    UserAuthentication getUserAuthentication();
 
-    public void logout() throws LogoutGuestException {
-        state.logout(this);
-    }
+    void login(String userName, String password) throws LoginException;
 
-    public void register(String userName, String password) throws RegistrationException
-    {
-        state.register(this, userName, password);
-    }
+    void logout() throws LogoutGuestException;
 
-    public void changeState(State state)
-    {
-        this.state = state;
-    }
+    void changeState(State state);
 
-    public Basket getBasket(String storeID)
-    {
-        Basket basket = baskets.get(storeID);
-        if (basket == null) {
-            basket = new Basket(storeID, this);
-            baskets.put(storeID, basket);
-        }
-        return basket;
-    }
+    Basket getBasket(String storeID);
 
-    public Collection<Basket> getCart()
-    {
-        return baskets.values();
-    }
+    Collection<Basket> getCart();
 }

@@ -5,10 +5,12 @@ public interface TradingSystemService {
     // Topics: system, guest, subscriber
     // ***********************************************************************
 
-
     /* Initialize system and define a system manager.
     params: manager details */
     boolean initializeSystem(String userName, String pass);
+
+    /* Register to system */
+    void register(String userName, String password);
 
     /* Login to system */
     boolean login(String userName, String pass);

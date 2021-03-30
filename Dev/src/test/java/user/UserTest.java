@@ -1,22 +1,27 @@
 package user;
 
+import authentication.LoginException;
+import authentication.UserAuthentication;
+import authentication.UserDoesNotExistException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import tradingSystem.RegistrationException;
+import authentication.RegistrationException;
+import persistence.Carts;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
-    private static Collection<String> userNames = new HashSet<>();
+    private final Carts persistence = new Carts();
+    private UserAuthentication auth;
     private static String userName = "Barak";
     private static String password = "1456";
 
     User createAndRegister(String userName, String password) throws RegistrationException {
-        User user = new User(new HashSet<>());
-        user.register(userName,password);
+        User user = new UserImpl(auth, persistence);
+        auth.register(userName,password);
         return user;
     }
 
@@ -52,19 +57,19 @@ class UserTest {
     void loginNonExistingSubscriber() {
         String userName = "Barak";
         String password = "gth10";
-        User user = new User(new HashSet<>());
-        assertThrows(LoginNonExistingSubscriberException.class, () -> user.login(userName,password));
+        User user = new UserImpl(auth, persistence);
+        assertThrows(UserDoesNotExistException.class, () -> user.login(userName,password));
     }
 
     @Test
     void logoutGuest() {
-        User user = new User(new HashSet<>());
+        User user = new UserImpl(auth, persistence);
         assertThrows(LogoutGuestException.class, user::logout);
     }
 
     @Test
     void getBasket() {
-        User user = new User(new HashSet<>());
+        User user = new UserImpl(auth, persistence);
         String store = "eBay";
         Basket basket = user.getBasket(store);
         assertEquals(user, basket.getUser());
@@ -73,7 +78,12 @@ class UserTest {
 
     @Test
     void getCart() {
-        User user = new User(new HashSet<>());
+        User user = new UserImpl(auth, persistence);
         Collection<Basket> baskets = user.getCart(); // only tests that no exception is thrown
+    }
+
+    @BeforeEach
+    void setUp() {
+        auth = new UserAuthentication();
     }
 }

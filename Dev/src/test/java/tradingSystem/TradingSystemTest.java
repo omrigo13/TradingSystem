@@ -1,9 +1,11 @@
 package tradingSystem;
 
+import authentication.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import user.Basket;
+import user.LogoutGuestException;
 
 import java.util.Collection;
 
@@ -11,10 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static user.Basket.*;
 
 class TradingSystemTest {
-
+    private TradingSystem trade;
+    private final String userName = "Tal";
+    private final String password = "tal123";
+    private final String wrongPassword = "76523";
+    private final String storeID = "eBay";
+    private final String item1 = "X-Box";
+    private final int amount1 = 1;
+    private final int amount2 = 2;
+    private final String item2 = "Play-Station";
 
     @BeforeEach
     void setUp() {
+        trade = new TradingSystem();
     }
 
     @AfterEach
@@ -23,34 +34,21 @@ class TradingSystemTest {
 
     @Test
     void registerExistingSubscriber() throws RegistrationException {
-        String userName = "Tal";
-        String password = "tal123";
-        String secondPassword = "76523";
-        TradingSystem tradingSystem = new TradingSystem();
-        tradingSystem.register(userName, password);
-        assertThrows(SubscriberAlreadyExistsException.class, () -> tradingSystem.register(userName,secondPassword));
+        trade.register(userName, password);
+        assertThrows(UserAlreadyExistsException.class, () -> trade.register(userName, wrongPassword));
     }
 
     @Test
     void registerNewSubscriber() throws RegistrationException {
-        String userName = "Tal";
-        String password = "tal123";
-        TradingSystem tradingSystem = new TradingSystem();
-        tradingSystem.register(userName, password);
+        trade.register(userName, password);
     }
 
     @Test
     void addAndGetItems() throws UserDoesNotExistException {
-        TradingSystem tradingSystem = new TradingSystem();
-        String guestID = tradingSystem.connectGuest();
-        String storeID = "eBay";
-        String item1 = "X-Box";
-        int amount1 = 1;
-        int amount2 = 2;
-        tradingSystem.addItemToBasket(guestID, storeID, item1,amount1);
-        String item2 = "Play-Station";
-        tradingSystem.addItemToBasket(guestID, storeID, item2,amount2);
-        Basket basket = tradingSystem.getUserBasket(guestID, storeID);
+        String guestID = trade.connectGuest();
+        trade.addItemToBasket(guestID, storeID, item1,amount1);
+        trade.addItemToBasket(guestID, storeID, item2,amount2);
+        Basket basket = trade.getUserBasket(guestID, storeID);
         ItemRecord itemRecord1 = basket.getItem(item1);
         ItemRecord itemRecord2 = basket.getItem(item2);
         assertEquals(amount1, itemRecord1.getAmount());
@@ -59,53 +57,65 @@ class TradingSystemTest {
 
     @Test
     void getItemsNonExistingUser() {
-        TradingSystem tradingSystem = new TradingSystem();
-        // adding item to an nonExisting user
         String userID = "4hfbhdf583f";
-        String storeID = "eBay";
-        assertThrows(UserDoesNotExistException.class, () ->tradingSystem.getUserBasket(userID,storeID));
+        assertThrows(UserDoesNotExistException.class, () ->trade.getUserBasket(userID,storeID));
     }
 
     @Test
     void addItemToNonExistingUser() {
-        TradingSystem tradingSystem = new TradingSystem();
         // adding item to an NonExistingUser user
         String userID = "2avb65gt";
-        String storeID = "eBay";
-        String item1 = "X-Box";
-        int amount1 = 1;
-        assertThrows(UserDoesNotExistException.class, () ->tradingSystem.addItemToBasket(userID, storeID, item1,amount1));
+        assertThrows(UserDoesNotExistException.class, () ->trade.addItemToBasket(userID, storeID, item1,amount1));
     }
 
     @Test
     void getBasket() throws UserDoesNotExistException {
-        TradingSystem tradingSystem = new TradingSystem();
-        String userID = tradingSystem.connectGuest();
-        String storeID = "eBay";
-        String item1 = "X-Box";
-        int amount = 1;
-        tradingSystem.addItemToBasket(userID, storeID, item1,amount);
-        Collection<String> items = tradingSystem.getBasket(userID, storeID);
-        assertEquals(1, items.size());
+        String userID = trade.connectGuest();
+        trade.addItemToBasket(userID, storeID, item1,amount1);
+        Collection<String> items = trade.getBasket(userID, storeID);
+        assertEquals(amount1, items.size());
         assertTrue(items.contains("1, X-Box"));
     }
 
     @Test
     void getStores() throws UserDoesNotExistException {
-        TradingSystem tradingSystem = new TradingSystem();
-        String userID = tradingSystem.connectGuest();
-        String storeID = "eBay";
-        String item = "X-Box";
-        int amount = 1;
-        tradingSystem.addItemToBasket(userID, storeID, item,amount);
+        String userID = trade.connectGuest();
+        trade.addItemToBasket(userID, storeID, item1,amount1);
         String storeID1 = "Amazon";
-        String item1 = "book";
-        int amount1 = 2;
-        tradingSystem.addItemToBasket(userID, storeID1, item1,amount1);
-        Collection<String> stores = tradingSystem.getStores(userID);
+        trade.addItemToBasket(userID, storeID1, item2,amount2);
+        Collection<String> stores = trade.getStores(userID);
         assertEquals(2, stores.size());
         assertTrue(stores.contains(storeID));
         assertTrue(stores.contains(storeID1));
+    }
+
+    @Test
+    void login() throws LoginException, UserAlreadyExistsException {
+        String userID = trade.connectGuest();
+        trade.register(userName, password);
+        trade.login(userID, userName, password);
+    }
+
+    @Test
+    void loginNonExistingUser() {
+        String userID = trade.connectGuest();
+        assertThrows(UserDoesNotExistException.class, () ->trade.login(userID, userName, password));
+    }
+
+    @Test
+    void loginWrongPassword() throws UserAlreadyExistsException {
+        String userID = trade.connectGuest();
+        trade.register(userName, password);
+        assertThrows(WrongPasswordException.class, () ->trade.login(userID, userName, wrongPassword));
+    }
+
+    @Test
+    void logout() throws UserAlreadyExistsException, LoginException, LogoutGuestException {
+        String userID = trade.connectGuest();
+        assertThrows(LogoutGuestException.class, () -> trade.logout(userID));
+        trade.register(userName, password);
+        trade.login(userID, userName, password);
+        trade.logout(userID);
     }
 
 //    @Test
