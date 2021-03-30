@@ -30,6 +30,12 @@ public class Item {
         return price;
     }
 
+    public void setPrice(double price) throws Exception {
+        if(price < 0)
+            throw new WrongPrice("item price must be positive");
+        this.price = price;
+    }
+
     public String getCategory() {
         return category;
     }
