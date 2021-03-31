@@ -64,27 +64,18 @@ public class Store {
         return this.inventory.getItems();
     }
 
-    /**
-     * This method searches the store's inventory for an item
-     * @param name - the name of the item
-     * @param category - the category of the item
-     * @param subCategory - the sub category of the item
-     * @exception  ItemNotFound  */
-    public Item getItem(String name, String category, String subCategory) throws Exception {
-        return this.inventory.searchItem(name, category, subCategory);
-    }
 
-    /**
-     * This method changes an item's price in the store
-     * @param name - the name of the item
-     * @param price - the price of the item
-     * @param category - the category of the item
-     * @param subCategory - the sub category of the item
-     * @param price- the new price of the item
-     * @exception  ItemNotFound,WrongPrice  */
-    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
-        this.inventory.setItemPrice(name, category, subCategory, price);
-    }
+//    /**
+//     * This method changes an item's price in the store
+//     * @param name - the name of the item
+//     * @param price - the price of the item
+//     * @param category - the category of the item
+//     * @param subCategory - the sub category of the item
+//     * @param price- the new price of the item
+//     * @exception  ItemNotFound,WrongPrice  */
+//    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
+//        this.inventory.setItemPrice(name, category, subCategory, price);
+//    }
 
 //    public void addItem(String name, double price, String category, String subCategory, double rating, int amount) throws Exception {
 //        this.inventory.addItem(name, price, category, subCategory, rating, amount);
@@ -98,8 +89,8 @@ public class Store {
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
      * @exception  WrongName,WrongPrice,WrongAmount,WrongCategory,ItemAlreadyExists  */
-    public void addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
-        this.inventory.addItem(name, price, category, subCategory, amount);
+    public int addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
+        return this.inventory.addItem(name, price, category, subCategory, amount);
     }
 
     /**
@@ -124,6 +115,23 @@ public class Store {
      * @exception  ItemNotFound- On non existing item with param keyword*/
     public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword) throws Exception {
         return this.inventory.searchItemByKeyWord(keyword);
+    }
+
+
+    //    /**
+//     * This method searches the store's inventory for an item
+//     * @param name - the name of the item
+//     * @param category - the category of the item
+//     * @param subCategory - the sub category of the item
+//     * @exception  ItemNotFound  */
+    public ConcurrentLinkedQueue<Item> getItem(String keyWord, String itemName, String category, String subCategory) throws Exception {
+        ConcurrentLinkedQueue list1=inventory.searchItemByName(itemName);
+        ConcurrentLinkedQueue list2=inventory.searchItemByCategory(category);
+        ConcurrentLinkedQueue list3=inventory.searchItemByKeyWord(keyWord);
+        list1.retainAll(list2);
+        list1.retainAll(list3);
+
+        return list1;
     }
 
     /**
@@ -153,16 +161,16 @@ public class Store {
         return this.inventory.filterByRating(rating);
     }
 
-    /**
-     * This method changes the amount of an item in the store's inventory
-     * @param name - name of the wanted item
-     * @param category - category of the wanted item
-     * @param subCategory - the sub category of the wanted item
-     * @param amount - the new amount fo the item
-     * @exception WrongAmount when the amount is illegal*/
-    public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
-        this.inventory.changeQuantity(name, category, subCategory, amount);
-    }
+//    /**
+//     * This method changes the amount of an item in the store's inventory
+//     * @param name - name of the wanted item
+//     * @param category - category of the wanted item
+//     * @param subCategory - the sub category of the wanted item
+//     * @param amount - the new amount fo the item
+//     * @exception WrongAmount when the amount is illegal*/
+//    public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
+//        this.inventory.changeQuantity(name, category, subCategory, amount);
+//    }
 
     /**
      * This method checks if there is enough amount of an item in the inventory
@@ -186,12 +194,10 @@ public class Store {
 
     /**
      *  This method removes an item from the store's inventory
-     * @param name - name of the wanted item
-     * @param category - category of the wanted item
-     * @param subCategory - the sub category of the wanted item
+     * @param itemID- id of the item
      * @exception ItemNotFound - when the wanted item does not exist in the inventory */
-    public void removeItem(String name, String category, String subCategory) throws Exception {
-        this.inventory.removeItem(name, category, subCategory);
+    public void removeItem(int itemID) throws Exception {
+        this.inventory.removeItem(itemID);
     }
 
     /**
@@ -221,4 +227,9 @@ public class Store {
     public void setPurchaseType() {}
     public void setDiscountPolicy() {}
     public void setPurchasePolicy() {}
+
+
+    public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception {
+        inventory.changeItemDetails(itemID, newSubCategory, newQuantity, newPrice);
+    }
 }
