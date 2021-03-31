@@ -2,9 +2,9 @@ package permissions;
 
 import store.Store;
 
-public class AddItemToStoreCommand extends Command {
+public class AddItemCommand extends Command {
 
-    public AddItemToStoreCommand(Store store, String productName, String category, String subCategory, int quantity, double price) {
+    public AddItemCommand(Store store, String productName, String category, String subCategory, int quantity, double price) {
         super(store);
         this.productName = productName;
         this.category = category;

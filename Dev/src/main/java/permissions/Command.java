@@ -3,7 +3,7 @@ package permissions;
 import store.Store;
 
 public abstract class Command {
-    private final Store store;
+    protected final Store store;
 
 
     public Command(Store store) {

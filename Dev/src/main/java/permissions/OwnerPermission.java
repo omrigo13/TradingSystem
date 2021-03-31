@@ -11,7 +11,7 @@ public class OwnerPermission extends Permission {
 
     @Override
     public boolean doCommand(Command command) throws Exception {
-        if(command.getStore() == store && !(command instanceof AddItemToStoreCommand))
+        if(command.getStore() == store && !(command instanceof DeletePermissionCommand))
             command.doCommand();
         return true;
     }

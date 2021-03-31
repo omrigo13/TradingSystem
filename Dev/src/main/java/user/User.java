@@ -34,4 +34,6 @@ public interface User {
     void addPermission(Permission permission);
 
     void deletePermission(Permission permission);
+
+    boolean havePermission(Permission permission);
 }

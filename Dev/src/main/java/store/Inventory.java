@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inventory {
 
-    private ConcurrentHashMap<Item, Integer> items;
+    private ConcurrentHashMap<Item, Integer> items; // <Item, amount>
     private AtomicInteger id = new AtomicInteger(1);
 
     public Inventory() {
@@ -128,6 +128,15 @@ public class Inventory {
                     && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
                 return item;
         throw new ItemNotFound("item not found");
+    }
+
+    public Item searchItemByID(int id)
+    {
+        for (Item item: items.keySet()) {
+            if(item.getId() == id)
+                return item;
+        }
+        return null;
     }
 
     /**

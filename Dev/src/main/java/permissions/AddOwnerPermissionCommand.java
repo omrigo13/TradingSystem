@@ -15,7 +15,10 @@ public class AddOwnerPermissionCommand extends Command {
 
     @Override
     public void doCommand() throws Exception {
-        target.addPermission(new OwnerPermission(target, getStore()));
-        source.addPermission(new DeletePermissionPermission(source, target, getStore()));
+        Permission permission = new OwnerPermission(target, store);
+        if(!target.havePermission(permission) && !target.havePermission(new ManagerPermission(target, store))){
+            target.addPermission(new OwnerPermission(target, store));
+            source.addPermission(new DeletePermissionPermission(source, target, store));
+        }
     }
 }

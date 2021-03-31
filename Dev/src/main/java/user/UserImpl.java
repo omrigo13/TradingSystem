@@ -114,4 +114,9 @@ public class UserImpl implements User {
             }
         }
     }
+
+    @Override
+    public boolean havePermission(Permission permission) {
+        return permissions.contains(permission);
+    }
 }

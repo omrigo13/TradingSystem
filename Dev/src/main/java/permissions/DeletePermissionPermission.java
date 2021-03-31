@@ -3,6 +3,8 @@ package permissions;
 import store.Store;
 import user.User;
 
+import java.util.Objects;
+
 public class DeletePermissionPermission extends Permission {
     final User target;
 
@@ -19,5 +21,19 @@ public class DeletePermissionPermission extends Permission {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DeletePermissionPermission that = (DeletePermissionPermission) o;
+        return target.equals(that.target);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), target);
     }
 }
