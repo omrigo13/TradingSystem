@@ -2,7 +2,7 @@ package store;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sun.awt.OSInfo;
+
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -200,7 +200,7 @@ public class StoreTest {
     void searchItems() throws ItemException {
         store.addItem("carrot", 20, "vegetables", "orange", 8);
         store.addItem("cucumber", 15, "vegetables", "green", 10);
-        store.addItem("onion",8.9,"vegetables","white",70);
+        store.addItem("onion",8.9,"vegetable","white",70);
 
         assertEquals(store.searchItems(null,null,"vegetables").size(),3);
         assertEquals(store.searchItems("r",null,null).size(),2);
