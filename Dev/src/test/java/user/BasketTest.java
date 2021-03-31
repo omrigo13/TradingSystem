@@ -1,27 +1,27 @@
 package user;
 
-import org.junit.jupiter.api.AfterEach;
+import authentication.UserAuthentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import persistence.Carts;
+import persistence.UserMock;
 import user.Basket.ItemRecord;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BasketTest {
 
-    final Collection<String> userNames = new HashSet<>();
-    final User user = new User(userNames);
-    final String store = "Store";
-    final String item = "Item";
-    final int amount = 2;
-    final ItemRecord itemRecord = new ItemRecord(item, amount);
+    private Basket basket;
+    private final User user = new UserMock("Oz");
+    private final String store = "Store";
+    private final String item = "Item";
+    private final int amount = 2;
+    private final ItemRecord itemRecord = new ItemRecord(item, amount);
 
     @Test
     void addAndGetItem() {
-        Basket basket = new Basket(store, user);
         basket.addItem(itemRecord);
         Collection<ItemRecord> items = basket.getItems();
         assertTrue(items.contains(itemRecord));
@@ -29,7 +29,6 @@ class BasketTest {
 
     @Test
     void addExistingItem() {
-        Basket basket = new Basket(store, user);
         basket.addItem(itemRecord);
         basket.addItem(itemRecord);
         ItemRecord newItemRecord = basket.getItem(item);
@@ -38,7 +37,6 @@ class BasketTest {
 
     @Test
     void deleteItem() {
-        Basket basket = new Basket(store, user);
         basket.addItem(itemRecord);
         basket.deleteItem(itemRecord.item);
         ItemRecord newItemRecord = basket.getItem(item);
@@ -47,7 +45,6 @@ class BasketTest {
 
     @Test
     void deleteItemNotInEmptyBasket() {
-        Basket basket = new Basket(store, user);
         basket.deleteItem(itemRecord.item);
         ItemRecord newItemRecord = basket.getItem(item);
         assertNull(newItemRecord);
@@ -55,10 +52,14 @@ class BasketTest {
 
     @Test
     void deleteItemNotInBasket() {
-        Basket basket = new Basket(store, user);
         basket.addItem(new ItemRecord("Another item", 1));
         basket.deleteItem(itemRecord.item);
         ItemRecord newItemRecord = basket.getItem(item);
         assertNull(newItemRecord);
+    }
+
+    @BeforeEach
+    void setUp() {
+        basket = new Basket(store, user);
     }
 }
