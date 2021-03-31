@@ -50,7 +50,7 @@ public class Inventory {
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
      * @exception  WrongName,WrongPrice,WrongAmount,WrongCategory,ItemAlreadyExists  */
-    public void addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
+    public int addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
         if(name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongName("item name is null or contains only white spaces");
         if(name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -64,23 +64,22 @@ public class Inventory {
                 throw new ItemAlreadyExists("item already exists");
         if(category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
             throw new WrongCategory("item category cannot start with a number");
-
-        items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
+        int newItemId=id.get();
+        items.putIfAbsent(new Item(newItemId, name, price, category, subCategory, 0), amount);
         id.getAndIncrement();
+        return newItemId;
     }
 
     /**
      * This method is used to search the inventory for items that matches the param name.
      * @param name - the name of the wanted item
      * @exception  ItemNotFound- On non existing item with param name*/
-    public ConcurrentLinkedQueue<Item> searchItemByName(String name) throws Exception
+    public ConcurrentLinkedQueue<Item> searchItemByName(String name)
     {
         ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
         for (Item item: items.keySet())
             if(item.getName().toLowerCase().equals(name.toLowerCase()))
                 foundItems.add(item);
-        if(foundItems.isEmpty())
-            throw new ItemNotFound("items not found");
         return foundItems;
     }
 
@@ -88,14 +87,13 @@ public class Inventory {
      * This method is used to search the inventory for items that matches the param category.
      * @param category - the category of the wanted item
      * @exception  ItemNotFound- On non existing item with param category*/
-    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category) throws Exception
+    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category)
     {
         ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
         for (Item item: items.keySet())
             if(item.getCategory().toLowerCase().equals(category.toLowerCase()))
                 foundItems.add(item);
-        if(foundItems.isEmpty())
-            throw new ItemNotFound("items not found");
+
         return foundItems;
     }
 
@@ -103,15 +101,13 @@ public class Inventory {
      * This method is used to search the inventory for items that matches the param keyword.
      * @param keyword - the keyword of the wanted item
      * @exception  ItemNotFound- On non existing item with param keyword*/
-    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword) throws Exception
+    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword)
     {
         ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
         for (Item item: items.keySet())
             if(item.getName().toLowerCase().contains(keyword.toLowerCase()) || item.getCategory().toLowerCase().contains(keyword.toLowerCase()) ||
                     item.getSubCategory().toLowerCase().contains(keyword.toLowerCase()))
                 foundItems.add(item);
-        if(foundItems.isEmpty())
-            throw new ItemNotFound("items not found");
         return foundItems;
     }
 
@@ -128,6 +124,14 @@ public class Inventory {
                     && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
                 return item;
         throw new ItemNotFound("item not found");
+    }
+
+    public Item searchItem(int itemId) throws Exception{
+        for (Item item: items.keySet())
+            if(item.getId()==itemId)
+                return item;
+       throw new ItemNotFound("item not found");
+
     }
 
     /**
@@ -161,19 +165,19 @@ public class Inventory {
         return foundItems;
     }
 
-    /**
-     * This method changes the amount of an item in the inventory
-     * @param name - name of the wanted item
-     * @param category - category of the wanted item
-     * @param subCategory - the sub category of the wanted item
-     * @param amount - the new amount fo the item
-     * @exception WrongAmount when the amount is illegal*/
-    public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
-        if(amount < 0)
-            throw new WrongAmount("item amount should be 0 or more than that");
-
-        items.replace(searchItem(name, category, subCategory), amount);
-    }
+//    /**
+//     * This method changes the amount of an item in the inventory
+//     * @param name - name of the wanted item
+//     * @param category - category of the wanted item
+//     * @param subCategory - the sub category of the wanted item
+//     * @param amount - the new amount fo the item
+//     * @exception WrongAmount when the amount is illegal*/
+//    public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
+//        if(amount < 0)
+//            throw new WrongAmount("item amount should be 0 or more than that");
+//
+//        items.replace(searchItem(name, category, subCategory), amount);
+//    }
 
     /**
      * This method checks if there is enough amount of an item in the inventory
@@ -202,34 +206,52 @@ public class Inventory {
 
     /**
      *  This method removes an item
-     * @param name - name of the wanted item
-     * @param category - category of the wanted item
-     * @param subCategory - the sub category of the wanted item
+     * @param itemID - the id of the item
      * @exception ItemNotFound - when the wanted item does not exist in the inventory */
-    public void removeItem(String name, String category, String subCategory) throws Exception {
-        items.remove(searchItem(name, category, subCategory));
+    public void removeItem(int itemID) throws Exception {
+        items.remove(searchItem(itemID));
     }
 
     public ConcurrentHashMap<Item, Integer> getItems() {
         return items;
     }
 
-    /**
-     * This method changes an item's price in the inventory
-     * @param name - the name of the item
-     * @param price - the price of the item
-     * @param category - the category of the item
-     * @param subCategory - the sub category of the item
-     * @param price- the new price of the item
-     * @exception  ItemNotFound,WrongPrice  */
-    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
-        searchItem(name, category, subCategory).setPrice(price);
-    }
+//    /**
+//     * This method changes an item's price in the inventory
+//     * @param name - the name of the item
+//     * @param price - the price of the item
+//     * @param category - the category of the item
+//     * @param subCategory - the sub category of the item
+//     * @param price- the new price of the item
+//     * @exception  ItemNotFound,WrongPrice  */
+//    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
+//        searchItem(name, category, subCategory).setPrice(price);
+//    }
 
     public String toString() {
         String itemsDisplay = "";
         for (Item item: items.keySet())
             itemsDisplay += item.toString();
         return itemsDisplay;
+    }
+
+    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception {
+        for ( Item item: items.keySet()) {
+            if(item.getId()==itemID)
+            {
+                if(newSubCategory != null && !newSubCategory.isEmpty() && !newSubCategory.trim().isEmpty())
+                    item.setSubCategory(newSubCategory);
+
+                if(newQuantity !=null)
+                    items.replace(item,newQuantity);
+
+                if(newPrice != null)
+                    item.setPrice(newPrice);
+
+                return;
+            }
+        }
+        throw new ItemNotFound("no item in inventory matching item id");
+
     }
 }
