@@ -44,6 +44,8 @@ public class Item {
         return subCategory;
     }
 
+    public void setSubCategory(String newSubCategory){ this.subCategory=newSubCategory;}
+
     public double getRating() {
         return rating;
     }

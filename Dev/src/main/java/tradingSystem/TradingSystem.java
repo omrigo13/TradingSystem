@@ -21,7 +21,7 @@ public class TradingSystem {
     private final PaymentSystem paymentSystem;
     private final Carts persistence = new Carts();
     private final UserAuthentication auth;
-    private final Map<String, User> activeUsers = new HashMap<>(); // key: userID
+    private final Map<String, User> activeUsers = new HashMap<>();
     private final Collection<String> stores = new HashSet<>();
     private static int guestID = 0;
 
