@@ -20,7 +20,7 @@ public class Store {
     /**
      * This method opens a new store and create its inventory
      * @param name - the name of the new store
-     * @param description - the price of the new store
+     * @param description - the description of the new store
      * @param founder - the fonder of the new store
      * @exception  WrongName  */
     public Store(int id, String name, String description, String founder) throws Exception{
