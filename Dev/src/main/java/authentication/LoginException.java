@@ -1,3 +1,3 @@
-package user;
+package authentication;
 
 public class LoginException extends Exception {}

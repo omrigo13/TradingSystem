@@ -1,6 +1,6 @@
 package user;
 
-import tradingSystem.SubscriberAlreadyExistsException;
+import authentication.UserAlreadyExistsException;
 
 public class Subscriber implements State {
 
@@ -11,11 +11,8 @@ public class Subscriber implements State {
 
     @Override
     public void logout(User user) {
+        user.getPersistence().persist(user);
         user.changeState(new Guest());
     }
 
-    @Override
-    public void register(User user, String userName, String password) throws SubscriberAlreadyExistsException {
-        throw new SubscriberAlreadyExistsException();
-    }
 }
