@@ -2,6 +2,8 @@ package persistence;
 
 import authentication.LoginException;
 import authentication.UserAuthentication;
+import permissions.Command;
+import permissions.Permission;
 import user.Basket;
 import user.LogoutGuestException;
 import user.State;
@@ -65,5 +67,25 @@ public class UserMock implements User {
     @Override
     public Collection<Basket> getCart() {
         return this.baskets;
+    }
+
+    @Override
+    public void doCommand(Command command) throws Exception {
+
+    }
+
+    @Override
+    public void addPermission(Permission permission) {
+
+    }
+
+    @Override
+    public void deletePermission(Permission permission) {
+
+    }
+
+    @Override
+    public boolean havePermission(Permission permission) {
+        return false;
     }
 }
