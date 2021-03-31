@@ -129,20 +129,20 @@ public class StoreTest {
         assertEquals(store.filterByRating(3).size(), 1);
     }
 
-//    @Test
-//    void changeQuantity() throws Exception{
-//        store.addItem("tomato", 20, "vegetables", "red", 5);
-//        store.addItem("cucumber", 15, "vegetables", "green", 10);
-//        Item tomato = store.searchItem("tomato", "vegetables","red");
-//
-//        //checks that the quantity must be 0 or greater
-//        assertThrows(WrongAmount.class, () -> store.changeQuantity("tomato", "vegetables","red", -1));
-//
-//        store.changeQuantity("tomato", "vegetables","red", 8);
-//        assertEquals(store.getItems().get(tomato), 8);
-//        store.changeQuantity("tomato", "vegetables","red", 2);
-//        assertEquals(store.getItems().get(tomato), 2);
-//    }
+    @Test
+    void changeQuantity() throws Exception{
+        store.addItem("tomato", 20, "vegetables", "red", 5);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        Item tomato = store.searchItem("tomato", "vegetables","red");
+
+        //checks that the quantity must be 0 or greater
+        assertThrows(WrongAmount.class, () -> store.changeQuantity("tomato", "vegetables","red", -1));
+
+        store.changeQuantity("tomato", "vegetables","red", 8);
+        assertEquals(store.getItems().get(tomato), 8);
+        store.changeQuantity("tomato", "vegetables","red", 2);
+        assertEquals(store.getItems().get(tomato), 2);
+    }
 
     @Test
     void decreaseByQuantity() throws Exception{
@@ -162,30 +162,30 @@ public class StoreTest {
 
     @Test
     void removeItem() throws Exception{
-        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId=store.addItem("carrot", 20, "vegetables", "orange", 0);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        store.addItem("carrot", 20, "vegetables", "orange", 0);
         assertEquals(store.getItems().size(), 2);
 
         //checks that only an existing item can be removed
-        assertThrows(ItemNotFound.class, () -> store.removeItem(5));
+        assertThrows(ItemNotFound.class, () -> store.removeItem("tomato", "vegetables","orange"));
 
-        store.removeItem(carrotId);
+        store.removeItem("carrot", "vegetables","orange");
         assertEquals(store.getItems().size(), 1);
-        assertThrows(ItemNotFound.class, () -> store.removeItem(carrotId));
+        assertThrows(ItemNotFound.class, () -> store.removeItem("carrot", "vegetables","orange"));
 
     }
 
-//    @Test
-//    void updateItemPrice() throws Exception{
-//        store.addItem("cucumber", 15, "vegetables", "green", 10);
-//        store.addItem("carrot", 20, "vegetables", "orange", 0);
-//
-//        //set a negative price for an item
-//        assertThrows(WrongPrice.class, () -> store.setItemPrice("carrot", "vegetables","orange", -20));
-//
-//        store.setItemPrice("carrot", "vegetables","orange", 50);
-//        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 50);
-//        store.setItemPrice("carrot", "vegetables","orange", 34);
-//        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 34);
-//    }
+    @Test
+    void updateItemPrice() throws Exception{
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        store.addItem("carrot", 20, "vegetables", "orange", 0);
+
+        //set a negative price for an item
+        assertThrows(WrongPrice.class, () -> store.setItemPrice("carrot", "vegetables","orange", -20));
+
+        store.setItemPrice("carrot", "vegetables","orange", 50);
+        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 50);
+        store.setItemPrice("carrot", "vegetables","orange", 34);
+        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 34);
+    }
 }

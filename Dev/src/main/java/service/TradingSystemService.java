@@ -1,3 +1,10 @@
+package service;
+
+import authentication.LoginException;
+import tradingSystem.UserIdDoesNotExistException;
+
+import java.util.Collection;
+
 public interface TradingSystemService {
     
     
@@ -7,44 +14,47 @@ public interface TradingSystemService {
 
     /* Initialize system and define a system manager.
     params: manager details */
-    boolean initializeSystem(String userName, String pass);
+    void initializeSystem(String userName, String pass) throws Exception;
+
+    String connectGuest() throws Exception;
 
     /* Register to system */
-    void register(String userName, String password);
+    void register(String userName, String password) throws Exception;
 
     /* Login to system */
-    void login(String userName, String pass);
+    void login(String userID, String userName, String pass) throws Exception;
 
     /* Logout from system */
-    void logout(String userName, String pass);
+    void logout(String userID) throws Exception;
 
     /* Get product by filter. */
-    boolean getProduct(String productId, String productName, double maxPrice, double minPrice);
+    Collection<String> getItems(String keyWord, String productName, String category, String subCategory, double ratingItem, double ratingStore, double maxPrice, double minPrice) throws Exception;
+    // TODO to check empty string or null
+    // the String in the collection represent item.toString()
+    // use spellChecking
 
     /* Save product in basket of a store. */
-    boolean addProductToBasket(String storeId, String userName, String productId, int amount);
+    void addItemToBasket(String userID, String storeId, String productId, int amount) throws Exception;
 
     /* get cart's products. */
-    boolean showCart(String userName);
+    Collection<String> showCart(String userID) throws Exception;
 
     /* get basket's products. */
-    boolean showBasket(String userName, String storeId);
+    String showBasket(String userID, String storeId) throws Exception;
 
     /* updates the amount of a product for user from a specific store. if new amount = 0 then the product will be deleted from the basket */
-    boolean updateProductAmountInBasket(String userName, String storeId, String productId, int newAmount);
+    void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
 
     /* make purchase for every product in all of the user's baskets */
-    boolean purchaseCart(String userName);
-
-    /* make purchase for single basket from a store */
-    boolean purchaseBasket(String userName, String storeId);
+    void purchaseCart(String userID) throws Exception;
 
     /* get purchase history of a user by permissions: user himself / system manager */
-    boolean getPurchaseHistory(String userName);
+    Collection<String> getPurchaseHistory(String userID) throws Exception;
+    // TODO each String is purchase.toString()
     
     /* enables user to write an opinion on a product he has purchased.
     precondition: the user has purchased the product*/
-    boolean writeOpinionOnProduct(String userName, String productId, String desc);
+    void writeOpinionOnProduct(String userID, String storeID, String productId, String desc) throws Exception;
 
 
     // ***********************************************************************
@@ -54,37 +64,40 @@ public interface TradingSystemService {
 
     /* Get info of all stores owners and managers, and the products in every store
     preconditions: invoker is a system manager. */
-    boolean getStoresInfo(String invokerUserName);
+    Collection<String> getStoresInfo(String userID) throws Exception;
 
     /* Get all products of the store, with store id.
     preconditions: invoker is the owner/manager of the store or is a system manager.*/
-    boolean getProductsByStore(String invokerUserName, String storeId);
+    Collection<String> getItemsByStore(String userID, String storeId) throws Exception;
 
     /* creates a new store. username is the founder and owner. */
-    boolean openNewStore(String userName, String newStoreName);
+    // pre-condition: storeName is not null or empty
+    String openNewStore(String userID, String newStoreName) throws Exception;
 
     /* appoints a new store manager. assignor is an owner of the store, assignee is the username of the new store manager
      precondition: assignee is not a manager in this store.
      poscondition: assignee have the permissions of a new store manager, i.e the basic permissions for a manager, which are:
                    get info about roles in the store and their permissions, get info about products in the store,
                    get requests from users and answer them.*/
-    boolean appointStoreManager(String assignor, String assignee, String storeId);
+    void appointStoreManager(String userID, String assigneeUserName, String storeId) throws Exception;
 
     /* adds a product to a store.
+    // returns the product ID
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
-    boolean addProductToStore(String invokerUserName, String storeId, String productName, int quantity, double price);
+    String addProductToStore(String userID, String storeId, String productName, String category, String subCategory, int quantity, double price) throws Exception;
 
     /* deletes a product from a store 
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
-    boolean deleteProductFromStore(String invokerUserName, String storeId, String productName);
+    void deleteProductFromStore(String userID, String storeId, String productID) throws Exception;
 
     /* updates a product details of a store.
+    // if there is null, no need to update the field.
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products.*/
-    boolean updateProductDetails(String invokerUserName, String storeId, String productName, int quantity, double price);
+    void updateProductDetails(String userID, String storeId, String productID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception;
 
     /* appoints a new store owner. assignor is an owner of the store, assignee is the username of a new store owner
      * pre-condition: assignee is not an owner in this store */
-    boolean appointStoreOwner(String assignor, String assignee, String storeId);
+    void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws Exception;
 
     /*The next block of functions deals with store manager permissions. A new store manager has only the
         basic permissions in the store. */
@@ -93,69 +106,59 @@ public interface TradingSystemService {
     /* allows manager to add, delete amd update product in a specific store.
      precondition: assignor is the assignor of the manager.
      postcondition: the manager has permissions to add, delete amd update product in the store. */
-    boolean allowManagerToUpdateProducts(String assignor, String storeId, String managerUserName);
+    void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws Exception;
     
     /* disables a manager from adding, deleting amd updating product in a specific store.
      pre-condition: assignor is the assignor of the manager
      postcondition: the manager DOESN'T have permissions to add, delete amd update product in the store. */
-    boolean disableManagerFromUpdateProducts(String assignor, String storeId, String managerUserName);
+    void disableManagerFromUpdateProducts(String userID, String storeId, String managerUserName) throws Exception ;
     
     /* allows manager to get info and edit purchase and discount policies in a specific store.
      precondition: assignor is the assignor of the manager.
      postcondition: the manager has permissions to get info and edit purchase and discount policies in the store. */
-    boolean allowManagerToEditPolicies(String assignor, String storeId, String managerUserName);
+    void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws Exception;
     
     /* disables a manager from getting info and editing purchase and discount policies in a specific store.
      pre-condition: assignor is the assignor of the manager
      postcondition: the manager DOESN'T have permissions to get info and edit purchase and discount policies in the store. */
-    boolean disableManagerFromEditPolicies(String assignor, String storeId, String managerUserName);
+    void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws Exception;
     
     /* allows manager to get purchases history of the store.
      precondition: assignor is the assignor of the manager.
      postcondition: the manager has permissions to get purchases history in the store. */
-    boolean allowManagerToGetHistory(String assignor, String storeId, String managerUserName);
+    void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws Exception;
     
     /* disables a manager from getting purchases history of the store.
      pre-condition: assignor is the assignor of the manager
      postcondition: the manager DOESN'T have permissions to get purchases history of the store. */
-    boolean disableManagerFromGetHistory(String assignor, String storeId, String managerUserName);
+    void disableManagerFromGetHistory(String userID, String storeId, String managerUserName) throws Exception;
     
-    //end of block dealing with store manager permitions
+    //end of block dealing with store manager permissions
     //******************************************************************************
 
         
     /* removes a user from the store manager role.
      * pre-condition: the incoker is an owner of the store and is the assignor of the manager*/
-    boolean removeManager(String invokerUserName, String storeId, String managerUserName);
+    void removeManager(String userID, String storeId, String managerUserName) throws Exception;
 
     /* shows store staff information and their permissions in the store
     precondition: invoker has the permissions to get the info. */
-    boolean showStaffInfo(String invokerUserName, String storeId);
+    Collection<String> showStaffInfo(String userID, String storeId) throws Exception;
 
     /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
     precondition: invoker has the permissions to get the info. */
-    boolean getSalesHistory(String invokerUserName, String storeId);
+    Collection<String> getSalesHistoryByStore(String userID, String storeId) throws Exception;
 
     
     // ***********************************************************************
     // Topics: service level, external systems
     // ***********************************************************************
-
-
-    /* makes a payment corresponding to params, via a external payment system */
-    boolean makePayment(String payerDetails, String receiverDetails, double price);
-
-    /* requests a supply via external supplying system */
-    boolean requestSupply(String addresseeDetails, String productDetails, int amount);
-
-    /* correcting customer spell errors while making search*/
-    boolean spellChecking(String searchValue);
     
     /* shows the event log.
     precondition: invoker has the permissions to get the info. */
-    boolean getEventLog(String invokerUserName);
+    Collection<String> getEventLog(String userID) throws Exception;
     
     /* shows the error log.
     precondition: invoker has the permissions to get the info. */
-    boolean getErrorLog(String invokerUserName);
+    Collection<String> getErrorLog(String userID) throws Exception;
 }

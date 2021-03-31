@@ -6,14 +6,12 @@ import externalServices.DeliverySystemMock;
 import externalServices.PaymentSystem;
 import externalServices.PaymentSystemMock;
 import persistence.Carts;
-import store.Store;
 import user.Basket;
 import user.LogoutGuestException;
 import user.User;
 import user.UserImpl;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static user.Basket.*;
 
@@ -24,9 +22,8 @@ public class TradingSystem {
     private final Carts persistence = new Carts();
     private final UserAuthentication auth;
     private final Map<String, User> activeUsers = new HashMap<>();
-    private final ConcurrentHashMap<Integer, Store> stores = new ConcurrentHashMap<>();
+    private final Collection<String> stores = new HashSet<>();
     private static int guestID = 0;
-    private static int storeId=1;
 
     public TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem, UserAuthentication auth) throws LoginException {
         this.paymentSystem = paymentSystem;
