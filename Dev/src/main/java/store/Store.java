@@ -136,6 +136,10 @@ public class Store {
         return this.inventory.searchItem(name, category, subCategory);
     }
 
+    public Item searchItemByID(int id) {
+        return this.inventory.searchItemByID(id);
+    }
+
     /**
      * This method is used to filter the store's inventory for items that their price is between start price and end price.
      * @param startPrice - the startPrice of the items price

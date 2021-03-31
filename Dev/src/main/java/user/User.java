@@ -2,6 +2,8 @@ package user;
 
 import authentication.LoginException;
 import authentication.UserAuthentication;
+import permissions.Command;
+import permissions.Permission;
 import persistence.Carts;
 
 import java.util.Collection;
@@ -26,4 +28,12 @@ public interface User {
     Basket getBasket(String storeID);
 
     Collection<Basket> getCart();
+
+    void doCommand(Command command) throws Exception;
+
+    void addPermission(Permission permission);
+
+    void deletePermission(Permission permission);
+
+    boolean havePermission(Permission permission);
 }

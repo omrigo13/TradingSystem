@@ -2,10 +2,13 @@ package user;
 
 import authentication.LoginException;
 import authentication.UserAuthentication;
+import permissions.Command;
+import permissions.Permission;
 import persistence.Carts;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class UserImpl implements User {
@@ -15,6 +18,7 @@ public class UserImpl implements User {
     private State state;
     private Map<String, Basket> baskets = new HashMap<>();
     private final UserAuthentication userAuthentication;
+    private final Collection<Permission> permissions = new LinkedList<>();
 
     public UserImpl(UserAuthentication userAuthentication, Carts persistence)
     {
@@ -85,5 +89,34 @@ public class UserImpl implements User {
     public Collection<Basket> getCart()
     {
         return baskets.values();
+    }
+
+    @Override
+    public void doCommand(Command command) throws Exception {
+        for (Permission permission : permissions) {
+            if(permission.doCommand(command))
+                break;
+        }
+    }
+
+    @Override
+    public void addPermission(Permission permission) {
+        this.permissions.add(permission);
+    }
+
+    @Override
+    public void deletePermission(Permission permission) {
+        for (Permission per : permissions) {
+            // TODO implement equals
+            if(permission.equals(per)) {
+                permissions.remove(per);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public boolean havePermission(Permission permission) {
+        return permissions.contains(permission);
     }
 }
