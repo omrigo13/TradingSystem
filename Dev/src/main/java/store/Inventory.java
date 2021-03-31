@@ -50,7 +50,7 @@ public class Inventory {
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
      * @exception  WrongName,WrongPrice,WrongAmount,WrongCategory,ItemAlreadyExists  */
-    public void addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
+    public void addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         if(name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongName("item name is null or contains only white spaces");
         if(name.charAt(0) >= '0' && name.charAt(0) <= '9')
