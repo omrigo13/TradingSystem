@@ -1,6 +1,5 @@
 package store;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -22,16 +21,16 @@ public class Store {
      * @param name - the name of the new store
      * @param description - the price of the new store
      * @param founder - the fonder of the new store
-     * @exception  WrongName  */
-    public Store(int id, String name, String description, String founder) throws Exception{
+     * @exception WrongNameException  */
+    public Store(int id, String name, String description, String founder) throws ItemException{
         if (name == null || name.isEmpty() || name.trim().isEmpty())
-            throw new WrongName("store name is null or contains only white spaces");
+            throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
-            throw new WrongName("store name cannot start with a number");
+            throw new WrongNameException("store name cannot start with a number");
         if (description == null || description.isEmpty() || description.trim().isEmpty())
-            throw new WrongName("store description is null or contains only white spaces");
+            throw new WrongNameException("store description is null or contains only white spaces");
         if (description.charAt(0) >= '0' && description.charAt(0) <= '9')
-            throw new WrongName("store description cannot start with a number");
+            throw new WrongNameException("store description cannot start with a number");
         this.id = id;
         this.name = name;
         this.description = description;
@@ -88,32 +87,29 @@ public class Store {
      * @param category - the category of the new item
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
-     * @exception  WrongName,WrongPrice,WrongAmount,WrongCategory,ItemAlreadyExists  */
-    public int addItem(String name, double price, String category, String subCategory, int amount) throws Exception {
+     * @exception WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException  */
+    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         return this.inventory.addItem(name, price, category, subCategory, amount);
     }
 
     /**
      * This method is used to search the store's inventory for items that matches the param name.
-     * @param name - the name of the wanted item
-     * @exception  ItemNotFound- On non existing item with param name*/
-    public ConcurrentLinkedQueue<Item> searchItemByName(String name) throws Exception {
+     * @param name - the name of the wanted item*/
+    public ConcurrentLinkedQueue<Item> searchItemByName(String name) {
         return this.inventory.searchItemByName(name);
     }
 
     /**
      * This method is used to search the store's inventory for items that matches the param category.
-     * @param category - the category of the wanted item
-     * @exception  ItemNotFound- On non existing item with param category*/
-    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category) throws Exception {
+     * @param category - the category of the wanted item */
+    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category) {
         return this.inventory.searchItemByCategory(category);
     }
 
     /**
      * This method is used to search the store's inventory for items that matches the param keyword.
-     * @param keyword - the keyword of the wanted item
-     * @exception  ItemNotFound- On non existing item with param keyword*/
-    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword) throws Exception {
+     * @param keyword - the keyword of the wanted item */
+    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword)  {
         return this.inventory.searchItemByKeyWord(keyword);
     }
 
@@ -124,7 +120,7 @@ public class Store {
 //     * @param category - the category of the item
 //     * @param subCategory - the sub category of the item
 //     * @exception  ItemNotFound  */
-    public ConcurrentLinkedQueue<Item> getItem(String keyWord, String itemName, String category, String subCategory) throws Exception {
+    public ConcurrentLinkedQueue<Item> getItem(String keyWord, String itemName, String category) {
         ConcurrentLinkedQueue list1=inventory.searchItemByName(itemName);
         ConcurrentLinkedQueue list2=inventory.searchItemByCategory(category);
         ConcurrentLinkedQueue list3=inventory.searchItemByKeyWord(keyWord);
@@ -139,8 +135,8 @@ public class Store {
      * @param name - name of the wanted item
      * @param category - the category of the wanted item
      * @param subCategory - the sub category of the wanted item
-     * @exception ItemNotFound- when there are no item that matches the giving parameters.*/
-    public Item searchItem(String name, String category, String subCategory) throws Exception {
+     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
+    public Item searchItem(String name, String category, String subCategory) throws ItemException {
         return this.inventory.searchItem(name, category, subCategory);
     }
 
@@ -148,16 +144,16 @@ public class Store {
      * This method is used to filter the store's inventory for items that their price is between start price and end price.
      * @param startPrice - the startPrice of the items price
      * @param endPrice - the endPrice of the items price
-     * @exception  ItemNotFound- On non existing item with params startPrice and endPrice*/
-    public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice) throws Exception {
+     * @exception ItemNotFoundException - On non existing item with params startPrice and endPrice*/
+    public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice) throws ItemException {
         return this.inventory.filterByPrice(startPrice, endPrice);
     }
 
     /**
      * This method is used to filter the store's inventory for items that their ratings are equal or above the giving rating.
      * @param rating - the keyword of the wanted item
-     * @exception  ItemNotFound- On non existing item with param rating or greater*/
-    public ConcurrentLinkedQueue<Item> filterByRating(double rating) throws Exception {
+     * @exception ItemNotFoundException - On non existing item with param rating or greater*/
+    public ConcurrentLinkedQueue<Item> filterByRating(double rating) throws ItemException {
         return this.inventory.filterByRating(rating);
     }
 
@@ -168,7 +164,7 @@ public class Store {
 //     * @param subCategory - the sub category of the wanted item
 //     * @param amount - the new amount fo the item
 //     * @exception WrongAmount when the amount is illegal*/
-//    public void changeQuantity(String name, String category, String subCategory, int amount) throws Exception {
+//    public void changeQuantity(String name, String category, String subCategory, int amount) throws ItemException {
 //        this.inventory.changeQuantity(name, category, subCategory, amount);
 //    }
 
@@ -176,8 +172,8 @@ public class Store {
      * This method checks if there is enough amount of an item in the inventory
      * @param item - a specific item in the inventory
      * @param amount - the amount of the item to check
-     * @exception WrongAmount when the amount is illegal*/
-    public boolean checkAmount(Item item, int amount) throws Exception {
+     * @exception WrongAmountException when the amount is illegal*/
+    public boolean checkAmount(Item item, int amount) throws ItemException {
         return inventory.checkAmount(item,amount);
     }
 
@@ -187,16 +183,16 @@ public class Store {
      * @param category - category of the wanted item
      * @param subCategory - the sub category of the wanted item
      * @param quantity - the quantity of the wanted item
-     * @exception WrongAmount- when the amount is illegal */
-    public void decreaseByQuantity(String name, String category, String subCategory,int quantity ) throws Exception {
+     * @exception WrongAmountException - when the amount is illegal */
+    public void decreaseByQuantity(String name, String category, String subCategory,int quantity ) throws ItemException {
         this.inventory.decreaseByQuantity(name, category, subCategory,quantity);
     }
 
     /**
      *  This method removes an item from the store's inventory
      * @param itemID- id of the item
-     * @exception ItemNotFound - when the wanted item does not exist in the inventory */
-    public void removeItem(int itemID) throws Exception {
+     * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
+    public void removeItem(int itemID) throws ItemException {
         this.inventory.removeItem(itemID);
     }
 
@@ -229,7 +225,7 @@ public class Store {
     public void setPurchasePolicy() {}
 
 
-    public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception {
+    public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
         inventory.changeItemDetails(itemID, newSubCategory, newQuantity, newPrice);
     }
 }
