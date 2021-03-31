@@ -1,52 +1,29 @@
 package user;
 
+import authentication.LoginException;
+import authentication.UserAuthentication;
+import persistence.Carts;
+
 import java.util.Collection;
 
-public class User {
+public interface User {
+    Carts getPersistence();
 
-    private State state;
-    private Collection<Basket> baskets;
+    String getUserName();
 
-    Collection<String> userNames;
+    void setUserName(String userName);
 
-    public User(Collection<String> userNames)
-    {
-        this.userNames = userNames;
-        this.state = new Guest();
-        //this.baskets = new Collection<user.Basket>();
-    }
+    void setBaskets(Collection<Basket> baskets);
 
-    public void login(String userName, String password) throws LoginException
-    {
-        state.login(this, userName, password);
-    }
+    UserAuthentication getUserAuthentication();
 
-    public void logout() throws LogoutGuestException {
-        state.logout();
-    }
+    void login(String userName, String password) throws LoginException;
 
-    public void register (String userName, String password) throws RegistrationException
-    {
-        state.register(this, userName, password);
-        changeState();
-    }
+    void logout() throws LogoutGuestException;
 
-    public void changeState()
-    {
-        this.state = new Subscriber();
-    }
+    void changeState(State state);
 
-    public Basket getBasket(String storeID)
-    {
-        // find basket for storeID and return the basket
-        return null;
-    }
+    Basket getBasket(String storeID);
 
-    public Collection<Basket> getCart()
-    {
-        return this.baskets;
-    }
-
-
-
+    Collection<Basket> getCart();
 }

@@ -1,23 +1,20 @@
 package user;
 
+import authentication.LoginException;
+import authentication.UserAlreadyExistsException;
+
 public class Guest implements State {
 
     @Override
-    public void login(User user, String userName, String password) throws LoginNonExistingSubscriberException {
-        if (!user.userNames.contains(userName))
-            throw new LoginNonExistingSubscriberException();
-        user.changeState();
+    public void login(User user, String userName, String password) throws LoginException {
+        user.getUserAuthentication().login(userName, password);
+        user.setUserName(userName);
+        user.changeState(new Subscriber());
+        user.getPersistence().retrieve(user);
     }
 
     @Override
-    public void logout() throws LogoutGuestException {
-        throw  new LogoutGuestException();
-    }
-
-    @Override
-    public void register(User user, String userName, String password) throws RegistrationException {
-        if (user.userNames.contains(userName))
-            throw new SubscriberAlreadyExistsException();
-        user.userNames.add(userName);
+    public void logout(User user) throws LogoutGuestException {
+        throw new LogoutGuestException();
     }
 }
