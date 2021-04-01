@@ -1,5 +1,7 @@
 package user;
 
+import store.Store;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +9,7 @@ import java.util.Map;
 //represents a User's basket, which is connected to maximum 1 store
 public class Basket {
 
-    private final String store;
+    private final Store store;
     private final User user;
     private final Map<String, ItemRecord> items = new HashMap<>();
 
@@ -33,12 +35,12 @@ public class Basket {
         }
     }
 
-    public Basket(String store, User user) {
+    public Basket(Store store, User user) {
         this.store = store;
         this.user = user;
     }
 
-    public String getStore() {
+    public Store getStore() {
         return store;
     }
 

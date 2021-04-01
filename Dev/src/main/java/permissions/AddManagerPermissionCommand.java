@@ -1,25 +1,36 @@
 package permissions;
 
+import exceptions.ConnectionIdDoesNotExistException;
+import exceptions.SubscriberDoesNotExistException;
 import store.Store;
-import user.User;
+import tradingSystem.TradingSystem;
+import user.Subscriber;
 
-public class AddManagerPermissionCommand extends Command {
+public final class AddManagerPermissionCommand extends Command {
 
-    private final User target;
-    private final User source;
+    private final Subscriber target;
+    private final Store store;
 
-    public AddManagerPermissionCommand(Store store, User target, User source) {
-        super(store);
+    private AddManagerPermissionCommand(Subscriber user, Subscriber target, Store store) {
+        super(new DeletePermissionPermission(target, store), user);
+        this.store = store;
         this.target = target;
-        this.source = source;
+    }
+
+    public static Command newAddManagerPermissionCommand(TradingSystem tradingSystem, String connectionId,
+                                                         String targetUserName, Store store)
+            throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
+
+        return new AddManagerPermissionCommand(tradingSystem.getSubscriberByConnectionId(connectionId),
+                tradingSystem.getSubscriberByUserName(targetUserName), store);
     }
 
     @Override
-    public void doCommand() throws Exception {
-        Permission permission = new ManagerPermission(target, store);
-        if(!target.havePermission(permission) && !target.havePermission(new OwnerPermission(target, store))){
-            target.addPermission(new ManagerPermission(target, store));
-            source.addPermission(new DeletePermissionPermission(source, target, store));
+    public void execute() throws Exception {
+        Permission managerPermission = new ManagerPermission(store);
+        if (target.havePermission(managerPermission)) {
+            target.addPermission(managerPermission);
+            user.addPermission(new DeletePermissionPermission(target, store)); // permission to delete the target's permission
         }
     }
 }

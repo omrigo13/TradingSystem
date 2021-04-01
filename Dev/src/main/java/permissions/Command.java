@@ -1,18 +1,19 @@
 package permissions;
 
-import store.Store;
+import user.Subscriber;
 
 public abstract class Command {
-    protected final Store store;
+    protected final Subscriber user;
+    protected final Permission requiredPermission;
 
-
-    public Command(Store store) {
-        this.store = store;
+    public Command(Permission requiredPermission, Subscriber user) {
+        this.requiredPermission = requiredPermission;
+        this.user = user;
     }
 
-    public Store getStore(){
-        return this.store;
+    public Permission getRequiredPermission() {
+        return requiredPermission;
     }
 
-    public abstract void doCommand() throws Exception;
+    abstract void execute() throws Exception;
 }

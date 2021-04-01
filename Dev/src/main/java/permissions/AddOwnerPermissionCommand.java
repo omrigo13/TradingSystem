@@ -1,24 +1,27 @@
 package permissions;
 
 import store.Store;
+import user.Subscriber;
 import user.User;
 
 public class AddOwnerPermissionCommand extends Command {
-    private final User target;
-    private final User source;
+    private final Subscriber target;
+    private final Store store;
 
-    public AddOwnerPermissionCommand(Store store, User target, User source) {
-        super(store);
+    public AddOwnerPermissionCommand(Subscriber user, Subscriber target, Store store) {
+        super(new DeletePermissionPermission(target, store), user);
         this.target = target;
-        this.source = source;
+        this.store = store;
     }
 
     @Override
-    public void doCommand() throws Exception {
-        Permission permission = new OwnerPermission(target, store);
-        if(!target.havePermission(permission) && !target.havePermission(new ManagerPermission(target, store))){
-            target.addPermission(new OwnerPermission(target, store));
-            source.addPermission(new DeletePermissionPermission(source, target, store));
+    public void execute() throws Exception {
+        Permission managerPermission = new ManagerPermission(store);
+        Permission ownerPermission = new OwnerPermission(store);
+        if (target.havePermission(managerPermission)) {
+            target.addPermission(ownerPermission);
+            target.addPermission(managerPermission);
+            user.addPermission(new DeletePermissionPermission(target, store)); // permission to delete the target's permission
         }
     }
 }
