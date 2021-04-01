@@ -36,7 +36,7 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getItems(String keyWord, String productName, String category, String subCategory, double ratingItem, double ratingStore, double maxPrice, double minPrice) throws Exception {
+    public Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws Exception {
         return null;
     }
 

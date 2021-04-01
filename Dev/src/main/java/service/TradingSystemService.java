@@ -1,8 +1,5 @@
 package service;
 
-import authentication.LoginException;
-import tradingSystem.UserIdDoesNotExistException;
-
 import java.util.Collection;
 
 public interface TradingSystemService {
@@ -28,7 +25,7 @@ public interface TradingSystemService {
     void logout(String userID) throws Exception;
 
     /* Get product by filter. */
-    Collection<String> getItems(String keyWord, String productName, String category, String subCategory, double ratingItem, double ratingStore, double maxPrice, double minPrice) throws Exception;
+    Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws Exception;
     // TODO to check empty string or null
     // the String in the collection represent item.toString()
     // use spellChecking
