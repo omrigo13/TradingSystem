@@ -1,136 +1,156 @@
 package acceptanceTests;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.TradingSystemService;
+
+import java.security.cert.CollectionCertStoreParameters;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TradingSystemServiceTest {
+    private static TradingSystemService service;
 
-    @Test
-    void initializeSystem() {
+    @BeforeEach
+    public void setUp(){
+        service = Driver.getService();
     }
 
     @Test
-    void connectGuest() {
+    void initializeSystemWithGoodUserDetails() throws Exception {
+        assertDoesNotThrow(() -> service.initializeSystem("OzMadmoni", "abc12345"));
     }
 
     @Test
-    void register() {
+    void initializeSystemWithWrongUserDetails() throws Exception {
+        assertThrows(Exception.class, () ->service.initializeSystem("OzMadmoni", ""));
+        assertThrows(Exception.class, () ->service.initializeSystem("", "abc12345"));
+
     }
 
     @Test
-    void login() {
+    String connectGuest() throws Exception{
     }
 
     @Test
-    void logout() {
+    void register() throws Exception{
     }
 
     @Test
-    void getItems() {
+    void login() throws Exception{
     }
 
     @Test
-    void addItemToBasket() {
+    void logout() throws Exception{
     }
 
     @Test
-    void showCart() {
+    Collection<String> getItems() throws Exception{
     }
 
     @Test
-    void showBasket() {
+    void addItemToBasket() throws Exception{
     }
 
     @Test
-    void updateProductAmountInBasket() {
+    Collection<String> showCart() throws Exception{
     }
 
     @Test
-    void purchaseCart() {
+    String showBasket() throws Exception{
     }
 
     @Test
-    void getPurchaseHistory() {
+    void updateProductAmountInBasket() throws Exception{
     }
 
     @Test
-    void writeOpinionOnProduct() {
+    void purchaseCart() throws Exception{
     }
 
     @Test
-    void getStoresInfo() {
+    Collection<String> getPurchaseHistory() throws Exception{
     }
 
     @Test
-    void getItemsByStore() {
+    void writeOpinionOnProduct() throws Exception{
     }
 
     @Test
-    void openNewStore() {
+    Collection<String> getStoresInfo() throws Exception{
     }
 
     @Test
-    void appointStoreManager() {
+    Collection<String> getItemsByStore() throws Exception{
     }
 
     @Test
-    void addProductToStore() {
+    String openNewStore() throws Exception{
     }
 
     @Test
-    void deleteProductFromStore() {
+    void appointStoreManager() throws Exception{
     }
 
     @Test
-    void updateProductDetails() {
+    String addProductToStore() throws Exception{
     }
 
     @Test
-    void appointStoreOwner() {
+    void deleteProductFromStore() throws Exception{
     }
 
     @Test
-    void allowManagerToUpdateProducts() {
+    void updateProductDetails() throws Exception{
     }
 
     @Test
-    void disableManagerFromUpdateProducts() {
+    void appointStoreOwner() throws Exception{
     }
 
     @Test
-    void allowManagerToEditPolicies() {
+    void allowManagerToUpdateProducts() throws Exception{
     }
 
     @Test
-    void disableManagerFromEditPolicies() {
+    void disableManagerFromUpdateProducts() throws Exception{
     }
 
     @Test
-    void allowManagerToGetHistory() {
+    void allowManagerToEditPolicies() throws Exception{
     }
 
     @Test
-    void disableManagerFromGetHistory() {
+    void disableManagerFromEditPolicies() throws Exception{
     }
 
     @Test
-    void removeManager() {
+    void allowManagerToGetHistory() throws Exception{
     }
 
     @Test
-    void showStaffInfo() {
+    void disableManagerFromGetHistory() throws Exception{
     }
 
     @Test
-    void getSalesHistoryByStore() {
+    void removeManager() throws Exception{
     }
 
     @Test
-    void getEventLog() {
+    Collection<String> showStaffInfo() throws Exception{
     }
 
     @Test
-    void getErrorLog() {
+    Collection<String> getSalesHistoryByStore() throws Exception{
+    }
+
+    @Test
+    Collection<String> getEventLog() throws Exception{
+    }
+
+    @Test
+    Collection<String> getErrorLog() throws Exception{
     }
 }
