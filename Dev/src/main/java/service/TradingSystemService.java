@@ -1,173 +1,175 @@
 package service;
 
-import exceptions.*;
-import authentication.UserAuthentication;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
-import tradingSystem.TradingSystem;
-import user.Basket;
-
 import java.util.Collection;
-import java.util.HashMap;
 
-public class TradingSystemService {
+public interface TradingSystemService {
+    
+    
+    // ***********************************************************************
+    // Topics: system, guest, subscriber
+    // ***********************************************************************
 
-    private final PaymentSystem paymentSystem = new PaymentSystem();
-    private final DeliverySystem deliverySystem = new DeliverySystem();
-    private final UserAuthentication auth = new UserAuthentication(new HashMap<>());
-    private TradingSystem tradingSystem;
+    /* Initialize system and define a system manager.
+    params: manager details */
+    void initializeSystem(String userName, String pass) throws Exception;
 
-    public void initializeSystem(String userName, String password) throws Exception {
-        tradingSystem = new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>());
-    }
+    String connectGuest() throws Exception;
 
-    /**
-     * Creates a new connection
-     *
-     * @return the connection
-     */
-    public String connect() {
-        return tradingSystem.connect();
-    }
+    /* Register to system */
+    void register(String userName, String password) throws Exception;
 
-    /**
-     * Registers a new subscriber
-     *
-     * @param userName a unique user name
-     * @param password password
-     * @throws SubscriberAlreadyExistsException if the user name already exists
-     */
-    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
-        auth.register(userName, password);
-    }
+    /* Login to system */
+    void login(String userID, String userName, String pass) throws Exception;
 
-    /**
-     * Connects the user's saved data with the connection
-     *
-     * @param connectionId the connection identifier
-     * @param userName user name credential
-     * @param password password credential
-     * @throws LoginException if the login failed (the cause field holds the specific cause of failure)
-     */
-    public void login(String connectionId, String userName, String password) throws LoginException {
-        tradingSystem.login(connectionId, userName, password);
-    }
+    /* Logout from system */
+    void logout(String userID) throws Exception;
 
-    public void logout(String connectionId) throws ConnectionIdDoesNotExistException {
-        tradingSystem.logout(connectionId);
-    }
+    /* Get product by filter. */
+    Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws Exception;
+    // TODO to check empty string or null
+    // the String in the collection represent item.toString()
+    // use spellChecking
 
-    public Collection<String> getItems(String keyword, String productName, String category, String subCategory,
-                                       double minItemRating, double minStoreRating, double minPrice, double maxPrice) {
-        return null; // TODO
-    }
+    /* Save product in basket of a store. */
+    void addItemToBasket(String userID, String storeId, String productId, int amount) throws Exception;
 
-    public void addItemToBasket(String connectionId, String storeId, String productId, int amount) throws ConnectionIdDoesNotExistException {
-        Basket.ItemRecord itemRecord = new Basket.ItemRecord(productId, amount); // TODO
-        tradingSystem.getUserByConnectionId(connectionId).getBasket(tradingSystem.getStore(storeId)).addItem(itemRecord);
-    }
+    /* get cart's products. */
+    Collection<String> showCart(String userID) throws Exception;
 
-    public Collection<String> showCart(String userID) throws Exception {
-        return null;
-    }
+    /* get basket's products. */
+    String showBasket(String userID, String storeId) throws Exception;
 
-    public String showBasket(String userID, String storeId) throws Exception {
-        return null;
-    }
+    /* updates the amount of a product for user from a specific store. if new amount = 0 then the product will be deleted from the basket */
+    void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
 
-    public void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception {
+    /* make purchase for every product in all of the user's baskets */
+    //TODO: each purchase matches to an item from a store with the appropriate quantity.
+    // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
+    void purchaseCart(String userID) throws Exception;
 
-    }
+    /* get purchase history of a user by permissions: user himself / system manager */
+    Collection<String> getPurchaseHistory(String userID) throws Exception;
+    // TODO: each String is purchase.toString(). each purchase matches to an item from a store with the appropriate quantity.
+    //  for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
+    
+    /* enables user to write an opinion on a product he has purchased.
+    preconditions: 1. the user has purchased the product
+                   2. productId belongs to storeId (even if quantity in inventory is 0)
+                   3. desc is neither null, nor empty. */
+    void writeOpinionOnProduct(String userID, String storeID, String productId, String desc) throws Exception;
 
-    public void purchaseCart(String userID) throws Exception {
 
-    }
+    // ***********************************************************************
+    // Topics: store owner, store manager, system manager
+    // ***********************************************************************
 
-    public Collection<String> getPurchaseHistory(String userID) throws Exception {
-        return null;
-    }
 
-    public void writeOpinionOnProduct(String userID, String storeID, String productId, String desc) throws Exception {
+    /* Get info of all stores owners and managers, and the products in every store
+    preconditions: invoker is a system manager. */
+    Collection<String> getStoresInfo(String userID) throws Exception;
 
-    }
+    /* Get all products of the store, with store id.
+    preconditions: invoker is the owner/manager of the store or is a system manager.*/
+    //TODO: each String element in the collection represents an item in the store.
+    //for example, if storeId1 has 2 "milk" products and 3 "eggs" products, the collection returned will have 2 String elements.
+    Collection<String> getItemsByStore(String userID, String storeId) throws Exception;
 
-    public Collection<String> getStoresInfo(String userID) throws Exception {
-        return null;
-    }
+    /* creates a new store. username is the founder and owner.
+       pre-condition: 1. storeName is not null or empty
+                      2.userId is a subscriber and not a guest */
+    String openNewStore(String userID, String newStoreName) throws Exception;
 
-    public Collection<String> getItemsByStore(String userID, String storeId) throws Exception {
-        return null;
-    }
+    /* appoints a new store manager. assignor is an owner of the store, assignee is the username of the new store manager
+     precondition: assignee is not a manager in this store and is a subscriber (not guest)
+     poscondition: assignee have the permissions of a new store manager, i.e the basic permissions for a manager, which are:
+                   get info about roles in the store and their permissions, get info about products in the store,
+                   get requests from users and answer them.*/
+    void appointStoreManager(String userID, String assigneeUserName, String storeId) throws Exception;
 
-    public String openNewStore(String userID, String newStoreName) throws Exception {
-        return null;
-    }
+    /* adds a product to a store.
+    // returns the product ID
+    preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
+    //TODO: category and subCategory can be null or empty string. productName cannot be null or empty string. quantity and price cannot be < 0.
+    String addProductToStore(String userID, String storeId, String productName, String category, String subCategory, int quantity, double price) throws Exception;
 
-    public void appointStoreManager(String userID, String assigneeUserName, String storeId) throws Exception {
+    /* deletes a product from a store 
+    preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
+    void deleteProductFromStore(String userID, String storeId, String productID) throws Exception;
 
-    }
+    /* updates a product details of a store.
+    // if there is null, no need to update the field. productId cannot be changed.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products.*/
+    void updateProductDetails(String userID, String storeId, String productID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception;
 
-    public String addProductToStore(String userID, String storeId, String productName, String category,
-                                    String subCategory, int quantity, double price) throws Exception {
+    /* appoints a new store owner. assignor is an owner of the store, assignee is the username of a new store owner
+     * pre-condition: assignee is not an owner in this store and is a subscriber (not guest) */
+    void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws Exception;
 
-        //AddStoreItemCommand command = new AddStoreItemCommand(); // TODO
-        //command.execute();
-        return null; // TODO
-    }
+    /*The next block of functions deals with store manager permissions. A new store manager has only the
+        basic permissions in the store. */
+    //******************************************************************************
+    
+    /* allows manager to add, delete amd update product in a specific store.
+     precondition: assignor is the assignor of the manager.
+     postcondition: the manager has permissions to add, delete amd update product in the store. */
+    void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws Exception;
+    
+    /* disables a manager from adding, deleting amd updating product in a specific store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to add, delete amd update product in the store. */
+    void disableManagerFromUpdateProducts(String userID, String storeId, String managerUserName) throws Exception ;
+    
+    /* allows manager to get info and edit purchase and discount policies in a specific store.
+     precondition: assignor is the assignor of the manager.
+     postcondition: the manager has permissions to get info and edit purchase and discount policies in the store. */
+    void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws Exception;
+    
+    /* disables a manager from getting info and editing purchase and discount policies in a specific store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to get info and edit purchase and discount policies in the store. */
+    void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws Exception;
+    
+    /* allows manager to get purchases history of the store.
+     precondition: assignor is the assignor of the manager. managerUserName is a subscriber and a manager of the store.
+     postcondition: the manager has permissions to get purchases history of the store. */
+    void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws Exception;
+    
+    /* disables a manager from getting purchases history of the store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to get purchases history of the store. */
+    void disableManagerFromGetHistory(String userID, String storeId, String managerUserName) throws Exception;
+    
+    //end of block dealing with store manager permissions
+    //******************************************************************************
 
-    public void deleteProductFromStore(String userID, String storeId, String productID) throws Exception {
+        
+    /* removes a user from a store manager role.
+     * pre-condition: the invoker is an owner of the store and is the assignor of the manager*/
+    //TODO: returns true if manager removed, else returns false.
+    boolean removeManager(String userID, String storeId, String managerUserName) throws Exception;
 
-    }
+    /* shows store staff information and their permissions in the store
+    precondition: invoker has the permissions to get the info. */
+    //TODO: every string element in the collection represents one staff member and his permissions.
+    Collection<String> showStaffInfo(String userID, String storeId) throws Exception;
 
-    public void updateProductDetails(String userID, String storeId, String productID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception {
+    /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
+    precondition: invoker has the permissions to get the info. */
+    //TODO: every string element in the collection represents a purchase of an item from the store, with the quantity that was sale to a specific user.
+    Collection<String> getSalesHistoryByStore(String userID, String storeId) throws Exception;
 
-    }
-
-    public void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws Exception {
-
-    }
-
-    public void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void disableManagerFromUpdateProducts(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void disableManagerFromGetHistory(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public void removeManager(String userID, String storeId, String managerUserName) throws Exception {
-
-    }
-
-    public Collection<String> showStaffInfo(String userID, String storeId) throws Exception {
-        return null;
-    }
-
-    public Collection<String> getSalesHistoryByStore(String userID, String storeId) throws Exception {
-        return null;
-    }
-
-    public Collection<String> getEventLog(String userID) throws Exception {
-        return null;
-    }
-
-    public Collection<String> getErrorLog(String userID) throws Exception {
-        return null;
-    }
+    
+    // ***********************************************************************
+    // Topics: service level, external systems
+    // ***********************************************************************
+    
+    /* shows the event log.
+       every string element represents an event, which is an application to the system and its parameters.
+       precondition: invoker has the permissions to get the info - only system manager. */
+    Collection<String> getEventLog(String userID) throws Exception;
+    
+    /* shows the error log.
+       every string element represents an error.
+       precondition: invoker has the permissions to get the info - only system manager. */
+    Collection<String> getErrorLog(String userID) throws Exception;
 }
