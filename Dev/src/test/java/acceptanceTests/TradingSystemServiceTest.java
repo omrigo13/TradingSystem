@@ -154,7 +154,7 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void getItems() throws Exception{
+    void getItemsByKeyWord() throws Exception{
 //list of logged in users to use:
 //        service.login(id2, "user3", "1234");
 //        service.login(id3, "user4", "1234");
@@ -163,7 +163,23 @@ class TradingSystemServiceTest {
 //        service.login(id6, "user7", "1234");
 //        service.login(id7, "user8", "1234");
 
-        assertTrue(service.getItems("milk", null, null, null, null, null, 0, 0));
+        assertTrue(!service.getItems("milk", null, null, null, null, null, null, null).isEmpty());
+    }
+
+    @Test
+    void getItemsByProductName() throws Exception {
+        assertTrue(!service.getItems("", "milk", null, null, null, null, null, null).isEmpty());
+        assertTrue(!service.getItems("", "baguette", null, null, null, null, null, null).isEmpty());
+    }
+
+    @Test
+    void getItemsByCategory() throws Exception {
+        assertTrue(!service.getItems("", "", "bread", null, null, null, null, null).isEmpty());
+    }
+
+    @Test
+    void getItemsByPrice() throws Exception {
+        assertTrue(!service.getItems("", "", "", null, null, null, 1000.0, 0.5).isEmpty());
     }
 
     @Test
