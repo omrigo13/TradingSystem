@@ -7,6 +7,7 @@ import authentication.WrongPasswordException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import service.TradingSystemService;
 
 import java.security.cert.CollectionCertStoreParameters;
@@ -16,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TradingSystemServiceTest {
     private static TradingSystemService service;
+    private String storeId1, storeId2;
+    private String productId1, productId2, productId3, productId4;
     private String id1, id2, id3, id4, id5, id6, id7, id8;
 
     @BeforeEach
@@ -54,13 +57,13 @@ class TradingSystemServiceTest {
         service.login(id7, "user8", "1234");
 
 
-        String storeId1 = service.openNewStore(id2, "store of user3");
-        service.addProductToStore(id2, storeId1, "milk", "DairyProducts", "sub1", 10, 6.5);
-        service.addProductToStore(id2, storeId1, "cheese", "DairyProducts", "sub1", 20, 3);
+        storeId1 = service.openNewStore(id2, "store of user3");
+        productId1 = service.addProductToStore(id2, storeId1, "milk", "DairyProducts", "sub1", 10, 6.5);
+        productId2 = service.addProductToStore(id2, storeId1, "cheese", "DairyProducts", "sub1", 20, 3);
 
-        String storeId2 = service.openNewStore(id3, "store of user4");
-        service.addProductToStore(id3, storeId1, "milk", "DairyProducts", "sub1", 30, 6.5);
-        service.addProductToStore(id3, storeId1, "baguette", "bread", "", 20, 9);
+        storeId2 = service.openNewStore(id3, "store of user4");
+        productId3 = service.addProductToStore(id3, storeId1, "milk", "DairyProducts", "sub1", 30, 6.5);
+        productId4 = service.addProductToStore(id3, storeId1, "baguette", "bread", "", 20, 9);
 
 
     }
@@ -183,27 +186,66 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void addItemToBasket() throws Exception{
+    void validAddItemToBasket() throws Exception{
+        assertDoesNotThrow(() -> service.addItemToBasket(id4, storeId1, productId1, 2));
+    }
+
+    void notValidAddItemToBasket() throws Exception{
+        assertThrows(Exception.class, () -> service.addItemToBasket(id4, storeId1, productId1, 200));
+        assertThrows(Exception.class, () -> service.addItemToBasket(id4, storeId2, productId1, 2));
+        assertThrows(Exception.class, () -> service.addItemToBasket(id4, "asd", productId1, 2));
+        assertThrows(Exception.class, () -> service.addItemToBasket(id4, storeId1, "asd", 2));
     }
 
     @Test
     void showCart() throws Exception{
+        service.addItemToBasket(id4, storeId1, productId1, 1);
+        service.addItemToBasket(id4, storeId1, productId2, 1);
+        service.addItemToBasket(id4, storeId2, productId3, 1);
+        assertTrue(service.showCart(id4).size() == 3);
+        assertFalse(service.showCart(id5).isEmpty());
     }
 
     @Test
     void showBasket() throws Exception{
+        service.addItemToBasket(id4, storeId1, productId1, 1);
+        service.addItemToBasket(id4, storeId1, productId2, 1);
+        service.addItemToBasket(id4, storeId2, productId3, 1);
+        String s1 = service.showBasket(id4,storeId1);
+        assertTrue(s1 != null && !s1.isEmpty());
+        String s2 = service.showBasket(id4,storeId2);
+        assertTrue(s2 != null && !s2.isEmpty());
+        assertThrows(Exception.class, () -> service.showBasket(id4,storeId2));
     }
 
     @Test
     void updateProductAmountInBasket() throws Exception{
+        service.addItemToBasket(id4, storeId1, productId1, 1);
+        service.addItemToBasket(id4, storeId1, productId2, 1);
+        service.addItemToBasket(id4, storeId2, productId3, 1);
+        String s1 = service.showBasket(id4,storeId1);
+        assertTrue(s1 != null && !s1.isEmpty() && s1.contains("milk"));
+        service.updateProductAmountInBasket(id4, storeId1, productId1, 0);
+        s1 = service.showBasket(id4,storeId1);
+        assertTrue(s1 != null && !s1.isEmpty() && !s1.contains("milk"));
+        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(id4, storeId2, productId3, 1000 ));  // bad amount
+        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(id4, storeId2, productId4, 1 ));    // productId4 not added by id4 to his basket
+        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(id5, storeId2, productId4, 1 ));    // id5 didnt add nothing to his basket
+        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(id4, "abc", productId4, 1 ));  // abc store doesnt exist
     }
 
     @Test
     void purchaseCart() throws Exception{
+        // TODO
     }
 
     @Test
     void getPurchaseHistory() throws Exception{
+        service.addItemToBasket(id4, storeId1, productId1, 1);
+        service.addItemToBasket(id4, storeId1, productId2, 1);
+        service.addItemToBasket(id4, storeId2, productId3, 1);
+        service.purchaseCart(id4);
+        assertTrue(service.getPurchaseHistory(id4) != null && service.getPurchaseHistory(id4).size() == 3);
     }
 
     @Test
