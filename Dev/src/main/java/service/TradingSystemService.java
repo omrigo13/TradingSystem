@@ -47,10 +47,13 @@ public interface TradingSystemService {
 
     /* get purchase history of a user by permissions: user himself / system manager */
     Collection<String> getPurchaseHistory(String userID) throws Exception;
-    // TODO each String is purchase.toString()
+    // TODO each String is purchase.toString(). each purchase matches to an item from a store with the appropriate quantity.
+    // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
     
     /* enables user to write an opinion on a product he has purchased.
-    precondition: the user has purchased the product*/
+    preconditions: 1. the user has purchased the product
+                   2. productId belongs to storeId (even if quantity in inventory is 0)
+                   3. desc is neither null, nor empty. */
     void writeOpinionOnProduct(String userID, String storeID, String productId, String desc) throws Exception;
 
 
@@ -65,14 +68,17 @@ public interface TradingSystemService {
 
     /* Get all products of the store, with store id.
     preconditions: invoker is the owner/manager of the store or is a system manager.*/
+    //TODO: each String element in the collection represents an item in the store.
+    //for example, if storeId1 has 2 "milk" products and 3 "eggs" products, the collection returned will have 2 String elements.
     Collection<String> getItemsByStore(String userID, String storeId) throws Exception;
 
-    /* creates a new store. username is the founder and owner. */
-    // pre-condition: storeName is not null or empty
+    /* creates a new store. username is the founder and owner.
+       pre-condition: 1. storeName is not null or empty
+                      2.userId is a subscriber and not a guest */
     String openNewStore(String userID, String newStoreName) throws Exception;
 
     /* appoints a new store manager. assignor is an owner of the store, assignee is the username of the new store manager
-     precondition: assignee is not a manager in this store.
+     precondition: assignee is not a manager in this store and is a subscriber (not guest)
      poscondition: assignee have the permissions of a new store manager, i.e the basic permissions for a manager, which are:
                    get info about roles in the store and their permissions, get info about products in the store,
                    get requests from users and answer them.*/
@@ -81,6 +87,7 @@ public interface TradingSystemService {
     /* adds a product to a store.
     // returns the product ID
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
+    //TODO: category and subCategory can be null or empty string. productName cannot be null or empty string. quantity and price cannot be < 0.
     String addProductToStore(String userID, String storeId, String productName, String category, String subCategory, int quantity, double price) throws Exception;
 
     /* deletes a product from a store 
@@ -88,12 +95,12 @@ public interface TradingSystemService {
     void deleteProductFromStore(String userID, String storeId, String productID) throws Exception;
 
     /* updates a product details of a store.
-    // if there is null, no need to update the field.
+    // if there is null, no need to update the field. productId cannot be changed.
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products.*/
     void updateProductDetails(String userID, String storeId, String productID, String newSubCategory, Integer newQuantity, Double newPrice) throws Exception;
 
     /* appoints a new store owner. assignor is an owner of the store, assignee is the username of a new store owner
-     * pre-condition: assignee is not an owner in this store */
+     * pre-condition: assignee is not an owner in this store and is a subscriber (not guest) */
     void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws Exception;
 
     /*The next block of functions deals with store manager permissions. A new store manager has only the
