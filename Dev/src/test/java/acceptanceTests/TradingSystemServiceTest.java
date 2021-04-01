@@ -1,9 +1,6 @@
 package acceptanceTests;
 
-import authentication.LoginException;
-import authentication.UserAlreadyExistsException;
-import authentication.UserDoesNotExistException;
-import authentication.WrongPasswordException;
+import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
@@ -25,14 +22,14 @@ class TradingSystemServiceTest {
     public void setUp() throws Exception {
         service = Driver.getService();
         service.initializeSystem("Admin1", "ad123");
-        admin1Id = service.connectGuest();
-        founderStore1Id = service.connectGuest();
-        founderStore2Id = service.connectGuest();
-        store1Manager1Id = service.connectGuest();
-        subs1Id = service.connectGuest();
-        subs2Id = service.connectGuest();
-        subs3Id = service.connectGuest();
-        guest1Id = service.connectGuest();
+        admin1Id = service.connect();
+        founderStore1Id = service.connect();
+        founderStore2Id = service.connect();
+        store1Manager1Id = service.connect();
+        subs1Id = service.connect();
+        subs2Id = service.connect();
+        subs3Id = service.connect();
+        guest1Id = service.connect();
 
 
         service.register("store1FounderUserName", "1234");
@@ -82,10 +79,10 @@ class TradingSystemServiceTest {
     @Test
     void connectGuest() throws Exception{
         String s = "";
-        s = service.connectGuest();
+        s = service.connect();
         assertTrue(s!=null && s.length() > 0);
         String s2 = "";
-        s2 = service.connectGuest();
+        s2 = service.connect();
         assertTrue(s2!= null && s2.length() > 0);
         assertTrue(!(s.equals(s2)));
     }
@@ -103,15 +100,15 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void registerUserAlreadyExist() throws Exception{
+    void registerSubscriberAlreadyExist() throws Exception{
         service.register("AAA",  "123");
-        assertThrows(UserAlreadyExistsException.class, () -> service.register("AAA",  "123"));
+        assertThrows(SubscriberAlreadyExistsException.class, () -> service.register("AAA",  "123"));
     }
 
     @Test
     void validlogin() throws Exception{
-        String id1 = service.connectGuest();
-        String id2 = service.connectGuest();
+        String id1 = service.connect();
+        String id2 = service.connect();
         service.register("tempUser1", "1234");
         service.register("tempUser2", "1234");
 
@@ -121,8 +118,8 @@ class TradingSystemServiceTest {
 
     @Test
     void alreadyLoggedIn() throws Exception{
-        String id1 = service.connectGuest();
-        String id2 = service.connectGuest();
+        String id1 = service.connect();
+        String id2 = service.connect();
         service.register("tempUser1", "1234");
 
         assertDoesNotThrow(() -> service.login(id1, "tempUser1", "1234"));
@@ -130,16 +127,16 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void userNotExistLogin() throws Exception{
-        String id1 = service.connectGuest();
-        String id2 = service.connectGuest();
-        assertThrows(UserDoesNotExistException.class, () -> service.login(id2, "user999", "1234"));
+    void subscriberNotExistLogin() throws Exception{
+        String id1 = service.connect();
+        String id2 = service.connect();
+        assertThrows(SubscriberDoesNotExistException.class, () -> service.login(id2, "user999", "1234"));
     }
 
     @Test
     void wrongPasswordLogin() throws Exception{
-        String id1 = service.connectGuest();
-        String id2 = service.connectGuest();
+        String id1 = service.connect();
+        String id2 = service.connect();
         service.register("tempUser1", "1234");
 
         assertThrows(WrongPasswordException.class, () -> service.login(id2, "tempUser1", "1"));
@@ -153,7 +150,7 @@ class TradingSystemServiceTest {
 
     @Test
     void userNotExistLogout() throws Exception{
-        assertThrows(UserDoesNotExistException.class, () -> service.logout("user999"));
+        assertThrows(ConnectionIdDoesNotExistException.class, () -> service.logout("user999"));
     }
 
     @Test
