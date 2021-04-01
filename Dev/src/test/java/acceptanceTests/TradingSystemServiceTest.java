@@ -492,31 +492,149 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void allowManagerToEditPolicies() throws Exception{
+    void validAllowManagerToEditPolicies() throws Exception{
+        assertDoesNotThrow(() -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName));
+        //TODO: when requirements of policies will be ready, expand this test.
+    }
+
+    @Test
+    void wrongAllowManagerToEditPolicies() throws Exception{
+        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
+        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
+        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
+        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore2Id, storeId1, store1Manager1UserName)); //founderStore2Id is not a an owner of store1
+        //TODO: when requirements of policies will be ready, expand this test.
+
     }
 
     @Test
     void disableManagerFromEditPolicies() throws Exception{
+        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
+        //TODO: when requirements of policies will be ready, expand this test.
+
     }
 
     @Test
-    void allowManagerToGetHistory() throws Exception{
+    void validAllowManagerToGetHistory() throws Exception{
+        //2 purchases from store1:
+        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
+        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
+        //1 purchase from store2:
+        service.addItemToBasket(subs1Id, storeId2, productId3, 1);
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
+        assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
+        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 2);
     }
+
+
+    @Test
+    void wrongAllowManagerToGetHistory() throws Exception{
+        //2 items from store1:
+        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
+        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
+        //1 items from store2:
+        service.addItemToBasket(subs1Id, storeId2, productId3, 1);
+        //make the purchases: 2 from store1 and 1 from store2.
+        service.purchaseCart(subs1Id);
+
+        //tests for assigning (allowing) managers without permissions:
+        assertThrows(Exception.class, () -> service.allowManagerToGetHistory(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
+        assertThrows(Exception.class, () -> service.allowManagerToGetHistory(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
+        assertThrows(Exception.class, () -> service.allowManagerToGetHistory(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
+        assertThrows(Exception.class, () -> service.allowManagerToGetHistory(founderStore2Id, storeId1, store1Manager1UserName)); //founderStore2Id is not an owner of store1
+
+        //tests for checking that users didn't get permissions to get history by the previous wrong assigning:
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId2));
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(subs2Id, storeId1));
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(guest1Id, storeId1));
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+
+    }
+
 
     @Test
     void disableManagerFromGetHistory() throws Exception{
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+        service.disableManagerFromGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+
     }
 
     @Test
-    void removeManager() throws Exception{
+    void disableManagerFromGetHistoryWithoutPermissionsInStore() throws Exception{
+        assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
+        assertThrows(Exception.class, () ->service.disableManagerFromGetHistory(founderStore2Id, storeId1, store1Manager1UserName));
+        assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+
+        //try to disable user that is not a manager in the store:
+        assertThrows(Exception.class, () -> service.disableManagerFromGetHistory(founderStore1Id, storeId1, guest1UserName)); //guest1UserName in not a manager
+        assertThrows(Exception.class, () -> service.disableManagerFromGetHistory(founderStore1Id, storeId1, subs1Id)); //subs1Id in not a manager
+
+    }
+
+    @Test
+    void validRemoveManager() throws Exception{
+        assertTrue(service.showStaffInfo(admin1Id, storeId1).size() == 2); //currently only 1 owner and 1 manager
+        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        assertTrue(service.showStaffInfo(admin1Id, storeId1).size() == 1);
+    }
+
+    @Test
+    void wrongRemoveManager() throws Exception{
+        assertThrows(Exception.class, () -> service.removeManager(founderStore2Id, storeId1, store1Manager1UserName)); //founderStore2Id is not an owner of store1
+        assertThrows(Exception.class, () -> service.removeManager(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
+        assertThrows(Exception.class, () -> service.removeManager(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
+
+        //test for double removing:
+        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        assertThrows(Exception.class, () -> service.removeManager(founderStore1Id, storeId1, store1Manager1UserName));
+
     }
 
     @Test
     void showStaffInfo() throws Exception{
+        assertTrue(service.showStaffInfo(admin1Id, storeId1).size() == 2); //currently only 1 owner and 1 manager
+        assertTrue(service.showStaffInfo(admin1Id, storeId2).size() == 1); //currently only 1 owner
+
+    }
+
+    @Test
+    void showStaffInfoStoreNotExist() throws Exception{
+        assertThrows(Exception.class, () -> service.showStaffInfo(admin1Id, "storeIdNotExist"));
+     }
+
+    @Test
+    void showStaffInfoNoPermissions() throws Exception{
+        assertThrows(Exception.class, () -> service.showStaffInfo(founderStore1Id, storeId2));
+        assertThrows(Exception.class, () -> service.showStaffInfo(store1Manager1Id, storeId2));
+        assertThrows(Exception.class, () -> service.showStaffInfo(subs1Id, storeId1));
+        assertThrows(Exception.class, () -> service.showStaffInfo(guest1Id, storeId1));
+
     }
 
     @Test
     void getSalesHistoryByStore() throws Exception{
+        /**user subs1Id purchases:*/
+        //2 items from store1:
+        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
+        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
+        //1 item from store2:
+        service.addItemToBasket(subs1Id, storeId2, productId3, 1);
+        //make the purchases: 2 from store1 and 1 from store2.
+        service.purchaseCart(subs1Id);
+
+        /**user subs2Id purchases:*/
+        //1 item from store1:
+        service.addItemToBasket(subs2Id, storeId1, productId2, 2);
+        //1 item from store2:
+        service.addItemToBasket(subs2Id, storeId2, productId4, 3);
+        //make the purchases: 1 from store1 and 1 from store2.
+        service.purchaseCart(subs2Id);
+
+        //TODO: continue from here******************************
+
+
     }
 
     @Test

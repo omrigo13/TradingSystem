@@ -43,12 +43,14 @@ public interface TradingSystemService {
     void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
 
     /* make purchase for every product in all of the user's baskets */
+    //TODO: each purchase matches to an item from a store with the appropriate quantity.
+    // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
     void purchaseCart(String userID) throws Exception;
 
     /* get purchase history of a user by permissions: user himself / system manager */
     Collection<String> getPurchaseHistory(String userID) throws Exception;
-    // TODO each String is purchase.toString(). each purchase matches to an item from a store with the appropriate quantity.
-    // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
+    // TODO: each String is purchase.toString(). each purchase matches to an item from a store with the appropriate quantity.
+    //  for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
     
     /* enables user to write an opinion on a product he has purchased.
     preconditions: 1. the user has purchased the product
@@ -128,8 +130,8 @@ public interface TradingSystemService {
     void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws Exception;
     
     /* allows manager to get purchases history of the store.
-     precondition: assignor is the assignor of the manager.
-     postcondition: the manager has permissions to get purchases history in the store. */
+     precondition: assignor is the assignor of the manager. managerUserName is a subscriber and a manager of the store.
+     postcondition: the manager has permissions to get purchases history of the store. */
     void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws Exception;
     
     /* disables a manager from getting purchases history of the store.
@@ -141,16 +143,19 @@ public interface TradingSystemService {
     //******************************************************************************
 
         
-    /* removes a user from the store manager role.
-     * pre-condition: the incoker is an owner of the store and is the assignor of the manager*/
-    void removeManager(String userID, String storeId, String managerUserName) throws Exception;
+    /* removes a user from a store manager role.
+     * pre-condition: the invoker is an owner of the store and is the assignor of the manager*/
+    //TODO: returns true if manager removed, else returns false.
+    boolean removeManager(String userID, String storeId, String managerUserName) throws Exception;
 
     /* shows store staff information and their permissions in the store
     precondition: invoker has the permissions to get the info. */
+    //TODO: every string element in the collection represents one staff member and his permissions.
     Collection<String> showStaffInfo(String userID, String storeId) throws Exception;
 
     /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
     precondition: invoker has the permissions to get the info. */
+    //TODO: every string element in the collection represents a purchase of an item from the store, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws Exception;
 
     
