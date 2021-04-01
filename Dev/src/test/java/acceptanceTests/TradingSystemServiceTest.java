@@ -576,7 +576,7 @@ class TradingSystemServiceTest {
     @Test
     void validRemoveManager() throws Exception{
         assertTrue(service.showStaffInfo(admin1Id, storeId1).size() == 2); //currently only 1 owner and 1 manager
-        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        assertTrue(service.removeManager(founderStore1Id, storeId1, store1Manager1UserName) == true);
         assertTrue(service.showStaffInfo(admin1Id, storeId1).size() == 1);
     }
 
@@ -587,7 +587,7 @@ class TradingSystemServiceTest {
         assertThrows(Exception.class, () -> service.removeManager(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
 
         //test for double removing:
-        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        assertTrue(service.removeManager(founderStore1Id, storeId1, store1Manager1UserName) == true);
         assertThrows(Exception.class, () -> service.removeManager(founderStore1Id, storeId1, store1Manager1UserName));
 
     }
@@ -632,16 +632,61 @@ class TradingSystemServiceTest {
         //make the purchases: 1 from store1 and 1 from store2.
         service.purchaseCart(subs2Id);
 
-        //TODO: continue from here******************************
+        /**test get sales history: */
+        assertTrue(service.getSalesHistoryByStore(admin1Id, storeId1).size() == 3);
+        assertTrue(service.getSalesHistoryByStore(founderStore1Id, storeId1).size() == 3);
 
+        assertTrue(service.getSalesHistoryByStore(admin1Id, storeId2).size() == 2);
+    }
 
+    @Test
+    void wrongGetSalesHistoryByStore() throws Exception {
+        /**user subs1Id purchases:*/
+        //2 items from store1:
+        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
+        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
+        //1 item from store2:
+        service.addItemToBasket(subs1Id, storeId2, productId3, 1);
+        //make the purchases: 2 from store1 and 1 from store2.
+        service.purchaseCart(subs1Id);
+
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(founderStore1Id, storeId2)); //founderStore1Id is not an owner of store2
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(subs2UserName, storeId1)); //subs2UserName doesn't have permissions
+        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(guest1UserName, storeId1)); //guest1UserName doesn't have permissions
     }
 
     @Test
     void getEventLog() throws Exception{
+        //events of adding items to basket
+        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
+        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
+        //events of opening a store
+        service.openNewStore(subs1Id, "store3");
+
+        assertTrue(service.getEventLog(admin1Id).size() > 0);
+        //TODO: expand test after further implementation
     }
 
     @Test
-    void getErrorLog() throws Exception{
+    void wrongGetEventLog() throws Exception{
+        assertThrows(Exception.class, () -> service.getEventLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
+    }
+
+    @Test
+    void getErrorLog() throws Exception {
+        try {
+            service.addItemToBasket(subs1Id, storeId1, productId1, 1000); //amount is more than actual amount in store
+        } catch (Exception e){}
+        try {
+            service.getStoresInfo(founderStore1Id); //founderStore1Id is only a store owner and not a system manager
+        } catch (Exception e){}
+
+        assertTrue(service.getErrorLog(admin1Id).size() > 0);
+        //TODO: expand test after further implementation
+    }
+
+    @Test
+    void wrongGetErrorLog() throws Exception{
+        assertThrows(Exception.class, () -> service.getErrorLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
     }
 }

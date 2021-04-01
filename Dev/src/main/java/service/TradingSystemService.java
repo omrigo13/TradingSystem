@@ -164,10 +164,12 @@ public interface TradingSystemService {
     // ***********************************************************************
     
     /* shows the event log.
-    precondition: invoker has the permissions to get the info. */
+       every string element represents an event, which is an application to the system and its parameters.
+       precondition: invoker has the permissions to get the info - only system manager. */
     Collection<String> getEventLog(String userID) throws Exception;
     
     /* shows the error log.
-    precondition: invoker has the permissions to get the info. */
+       every string element represents an error.
+       precondition: invoker has the permissions to get the info - only system manager. */
     Collection<String> getErrorLog(String userID) throws Exception;
 }
