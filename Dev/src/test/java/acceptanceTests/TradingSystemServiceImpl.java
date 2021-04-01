@@ -141,8 +141,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void removeManager(String userID, String storeId, String managerUserName) throws Exception {
-
+    public boolean removeManager(String userID, String storeId, String managerUserName) throws Exception {
+        return false;
     }
 
     @Override
