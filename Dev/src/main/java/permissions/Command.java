@@ -15,5 +15,5 @@ public abstract class Command {
         return requiredPermission;
     }
 
-    abstract void execute() throws Exception;
+    abstract void execute() throws Exception; // TODO remove exception
 }

@@ -17,11 +17,11 @@ public class TradingSystem {
     private final UserAuthentication auth;
     private final Map<String, Subscriber> subscribers; // key: user name
     private final Map<String, User> connections; // key: connection id
-    private final Map<String, Store> stores; // key: store id
+    private final Map<Integer, Store> stores; // key: store id
 
     public TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                          UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                         Map<String, Store> stores) throws LoginException {
+                         Map<Integer, Store> stores) throws LoginException {
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
@@ -56,7 +56,7 @@ public class TradingSystem {
         return subscriber;
     }
 
-    public Store getStore(String storeId) {
+    public Store getStore(int storeId) {
         return stores.get(storeId);
     }
 

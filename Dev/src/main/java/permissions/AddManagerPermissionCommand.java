@@ -1,6 +1,8 @@
 package permissions;
 
+import exceptions.AlreadyManagerException;
 import exceptions.ConnectionIdDoesNotExistException;
+import exceptions.NoPermissionException;
 import exceptions.SubscriberDoesNotExistException;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -18,19 +20,22 @@ public final class AddManagerPermissionCommand extends Command {
     }
 
     public static Command newAddManagerPermissionCommand(TradingSystem tradingSystem, String connectionId,
-                                                         String targetUserName, Store store)
+                                                         String targetUserName, int storeId)
             throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
 
         return new AddManagerPermissionCommand(tradingSystem.getSubscriberByConnectionId(connectionId),
-                tradingSystem.getSubscriberByUserName(targetUserName), store);
+                tradingSystem.getSubscriberByUserName(targetUserName), tradingSystem.getStore(storeId));
     }
 
     @Override
-    public void execute() throws Exception {
+    public void execute() throws NoPermissionException, AlreadyManagerException {
         Permission managerPermission = new ManagerPermission(store);
-        if (target.havePermission(managerPermission)) {
-            target.addPermission(managerPermission);
-            user.addPermission(new DeletePermissionPermission(target, store)); // permission to delete the target's permission
-        }
+        if (!user.havePermission(requiredPermission))
+            throw new NoPermissionException();
+        if (target.havePermission(managerPermission))
+            throw new AlreadyManagerException();
+
+        target.addPermission(managerPermission);
+        user.addPermission(new DeletePermissionPermission(target, store)); // permission to delete the target's permission
     }
 }

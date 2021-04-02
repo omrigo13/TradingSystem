@@ -18,7 +18,7 @@ public class DeleteStoreItemCommand extends Command {
         this.productID = productID;
     }
 
-    public static Command newDeleteStoreItemCommand(TradingSystem tradingSystem, String connectionId, String storeId, int productId)
+    public static Command newDeleteStoreItemCommand(TradingSystem tradingSystem, String connectionId, int storeId, int productId)
             throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
 
         return new DeleteStoreItemCommand(tradingSystem.getSubscriberByConnectionId(connectionId), tradingSystem.getStore(storeId), productId);

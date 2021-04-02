@@ -26,7 +26,7 @@ public final class UpdateStoreItemCommand extends Command {
         this.newPrice = newPrice;
     }
 
-    public static Command newUpdateStoreItemCommand(TradingSystem tradingSystem, String connectionId, String storeId,
+    public static Command newUpdateStoreItemCommand(TradingSystem tradingSystem, String connectionId, int storeId,
                                                     int productId, String newSubCategory, Integer newQuantity,
                                                     Double newPrice) throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
         return new UpdateStoreItemCommand(tradingSystem.getSubscriberByConnectionId(connectionId), tradingSystem.getStore(storeId), productId,

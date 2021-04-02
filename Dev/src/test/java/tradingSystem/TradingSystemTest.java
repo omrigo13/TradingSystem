@@ -26,20 +26,12 @@ class TradingSystemTest {
     @Mock private DeliverySystem deliverySystem;
     @Mock private Map<String, Subscriber> subscribers;
     @Mock private Map<String, User> connections;
-    @Mock private Map<String, Store> stores;
+    @Mock private Map<Integer, Store> stores;
     @Mock private User user;
 
     private final String adminName = "Roni";
     private final String adminPassword = "jsbs03";
     private final String connectionId = "9034580392580932458093248590324850932485";
-    private final String userName = "Tal";
-    private final String password = "tal123";
-    private final String wrongPassword = "76523";
-    private final String storeID = "eBay";
-    private final String item1 = "X-Box";
-    private final int amount1 = 1;
-    private final int amount2 = 2;
-    private final String item2 = "Play-Station";
 
     @Test
     void testConstructorException() throws WrongPasswordException, SubscriberDoesNotExistException {

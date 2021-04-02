@@ -28,7 +28,7 @@ public final class AddStoreItemCommand extends Command {
         this.price = price;
     }
 
-    public static Command newAddStoreItemCommand(TradingSystem tradingSystem, String connectionId, String storeId,
+    public static Command newAddStoreItemCommand(TradingSystem tradingSystem, String connectionId, int storeId,
                                                  String productName, String category, String subCategory, int quantity,
                                                  double price) throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
 
