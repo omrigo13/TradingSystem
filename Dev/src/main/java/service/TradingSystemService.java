@@ -13,7 +13,7 @@ public interface TradingSystemService {
     params: manager details */
     void initializeSystem(String userName, String pass) throws Exception;
 
-    String connectGuest() throws Exception;
+    String connect() throws Exception;
 
     /* Register to system */
     void register(String userName, String password) throws Exception;

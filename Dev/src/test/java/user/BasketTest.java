@@ -1,10 +1,8 @@
 package user;
 
-import authentication.UserAuthentication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import persistence.Carts;
-import persistence.UserMock;
+import store.Store;
 import user.Basket.ItemRecord;
 
 import java.util.Collection;
@@ -14,11 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class BasketTest {
 
     private Basket basket;
-    private final User user = new UserMock("Oz");
-    private final String store = "Store";
+    private final User user = null;
+    private final Store store = new Store(0, "Store", "Desc", "");
     private final String item = "Item";
     private final int amount = 2;
     private final ItemRecord itemRecord = new ItemRecord(item, amount);
+
+    BasketTest() throws Exception { // TODO
+    }
 
     @Test
     void addAndGetItem() {

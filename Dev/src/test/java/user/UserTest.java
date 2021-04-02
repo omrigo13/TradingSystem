@@ -1,89 +1,65 @@
 package user;
 
-import authentication.LoginException;
-import authentication.UserAuthentication;
-import authentication.UserDoesNotExistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import authentication.RegistrationException;
-import persistence.Carts;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import store.Store;
 
-import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserTest {
 
-    private final Carts persistence = new Carts();
-    private UserAuthentication auth;
-    private static String userName = "Barak";
-    private static String password = "1456";
+    @Mock Map<Store, Basket> baskets;
+    private User user;
 
-    User createAndRegister(String userName, String password) throws RegistrationException {
-        User user = new UserImpl(auth, persistence);
-        auth.register(userName,password);
-        return user;
-    }
-
-    @Test
-    void loginSubscriber() throws LoginException, RegistrationException {
-        User user = createAndRegister(userName, password);
-        user.login(userName,password);
-    }
-
-    @Test
-    void loginSubscriberAlreadyLoggedIn() throws LoginException, RegistrationException {
-        User user = createAndRegister(userName, password);
-        user.login(userName,password);
-        assertThrows(SubscriberAlreadyLoggedInException.class, () -> user.login(userName,password));
-    }
-
-    @Test
-    void logout() throws LoginException, LogoutGuestException, RegistrationException {
-        User user = createAndRegister(userName, password);
-        user.login(userName,password);
-        user.logout();
-    }
-
-    @Test
-    void logoutAndLoginAgain() throws LoginException, LogoutGuestException, RegistrationException {
-        User user = createAndRegister(userName, password);
-        user.login(userName,password);
-        user.logout();
-        user.login(userName,password);
-    }
-
-    @Test
-    void loginNonExistingSubscriber() {
-        String userName = "Barak";
-        String password = "gth10";
-        User user = new UserImpl(auth, persistence);
-        assertThrows(UserDoesNotExistException.class, () -> user.login(userName,password));
-    }
-
-    @Test
-    void logoutGuest() {
-        User user = new UserImpl(auth, persistence);
-        assertThrows(LogoutGuestException.class, user::logout);
-    }
-
-    @Test
-    void getBasket() {
-        User user = new UserImpl(auth, persistence);
-        String store = "eBay";
-        Basket basket = user.getBasket(store);
-        assertEquals(user, basket.getUser());
-        assertEquals(store, basket.getStore());
+    @BeforeEach
+    void setUp() {
+        user = new User(baskets);
     }
 
     @Test
     void getCart() {
-        User user = new UserImpl(auth, persistence);
-        Collection<Basket> baskets = user.getCart(); // only tests that no exception is thrown
+        assertEquals(baskets, user.getCart());
     }
 
-    @BeforeEach
-    void setUp() {
-        auth = new UserAuthentication();
+    @Test
+    void makeCartWhenEmpty() {
+        when(baskets.isEmpty()).thenReturn(true);
+        User from = mock(User.class);
+        user.makeCart(from);
+        verify(baskets).putAll(from.getCart());
+    }
+
+    @Test
+    void makeCartWhenNotEmpty() {
+        when(baskets.isEmpty()).thenReturn(false);
+        User from = mock(User.class);
+        user.makeCart(from);
+        verify(baskets, never()).putAll(from.getCart());
+    }
+
+    @Test
+    void getSubscriber() {
+        assertNull(user.getSubscriber());
+    }
+
+    @Test
+    void getNewBasket() {
+        Store store = mock(Store.class);
+        assertNotNull(user.getBasket(store));
+    }
+
+    @Test
+    void getExistingBasket() {
+        Store store = mock(Store.class);
+        Basket basket = mock(Basket.class);
+        when(baskets.get(store)).thenReturn(basket);
+        assertEquals(basket, user.getBasket(store));
     }
 }

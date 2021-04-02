@@ -11,7 +11,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public String connectGuest() throws Exception {
+    public String connect() throws Exception {
         return null;
     }
 

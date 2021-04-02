@@ -1,6 +1,5 @@
 package store;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -134,6 +133,10 @@ public class Store {
      * @exception ItemNotFound- when there are no item that matches the giving parameters.*/
     public Item searchItem(String name, String category, String subCategory) throws Exception {
         return this.inventory.searchItem(name, category, subCategory);
+    }
+
+    public Item searchItemByID(int id) {
+        return this.inventory.searchItemByID(id);
     }
 
     /**

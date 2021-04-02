@@ -1,25 +1,37 @@
 package tradingSystem;
 
 import authentication.*;
-import externalServices.DeliverySystemMock;
-import externalServices.PaymentSystemMock;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import exceptions.*;
+import externalServices.DeliverySystem;
+import externalServices.PaymentSystem;
 import org.junit.jupiter.api.Test;
-import user.Basket;
-import user.LogoutGuestException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import store.Store;
+import user.Subscriber;
 import user.User;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static user.Basket.*;
 
+@ExtendWith(MockitoExtension.class)
 class TradingSystemTest {
-    private TradingSystem trade;
+
+    @Mock private UserAuthentication auth;
+    @Mock private PaymentSystem paymentSystem;
+    @Mock private DeliverySystem deliverySystem;
+    @Mock private Map<String, Subscriber> subscribers;
+    @Mock private Map<String, User> connections;
+    @Mock private Map<String, Store> stores;
+    @Mock private User user;
+
     private final String adminName = "Roni";
     private final String adminPassword = "jsbs03";
+    private final String connectionId = "9034580392580932458093248590324850932485";
     private final String userName = "Tal";
     private final String password = "tal123";
     private final String wrongPassword = "76523";
@@ -29,33 +41,54 @@ class TradingSystemTest {
     private final int amount2 = 2;
     private final String item2 = "Play-Station";
 
-    @BeforeEach
-    void setUp() throws LoginException, UserAlreadyExistsException {
-        UserAuthentication auth = new UserAuthentication();
-        auth.register(adminName, adminPassword);
-        trade = new TradingSystem(adminName, adminPassword, new PaymentSystemMock(), new DeliverySystemMock(), auth);
+    @Test
+    void testConstructorException() throws WrongPasswordException, SubscriberDoesNotExistException {
+        UserAuthentication auth = mock(UserAuthentication.class);
+        PaymentSystem paymentSystem = mock(PaymentSystem.class);
+        DeliverySystem deliverySystem = mock(DeliverySystem.class);
+        Exception exception;
+
+        doThrow(SubscriberDoesNotExistException.class).when(auth).authenticate(adminName, adminPassword);
+        exception = assertThrows(LoginException.class, () -> new TradingSystem(adminName, adminPassword,
+                paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
+        assertEquals(SubscriberDoesNotExistException.class, exception.getCause().getClass());
+
+        doThrow(WrongPasswordException.class).when(auth).authenticate(adminName, adminPassword);
+        exception = assertThrows(LoginException.class, () -> new TradingSystem(adminName, adminPassword,
+                paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
+        assertEquals(WrongPasswordException.class, exception.getCause().getClass());
     }
 
-    @AfterEach
-    void tearDown() {
+    TradingSystem setupTradingSystem() throws LoginException {
+        return new TradingSystem(adminName, adminPassword, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
     @Test
-    void registerExistingSubscriber() throws RegistrationException {
-        trade.register(userName, password);
-        assertThrows(UserAlreadyExistsException.class, () -> trade.register(userName, wrongPassword));
+    void getUserByConnectionId() throws LoginException, ConnectionIdDoesNotExistException {
+        TradingSystem ts = setupTradingSystem();
+        assertThrows(ConnectionIdDoesNotExistException.class, () -> ts.getUserByConnectionId(connectionId));
+        when(connections.get(connectionId)).thenReturn(user);
+        assertEquals(user, ts.getUserByConnectionId(connectionId));
     }
 
     @Test
-    void registerNewSubscriber() throws RegistrationException {
-        trade.register(userName, password);
+    void getUserByName() {
     }
 
     @Test
-    void getUser() throws UserIdDoesNotExistException {
-        assertThrows(UserIdDoesNotExistException.class, () ->trade.getUser("832475892347589324759823759832"));
-        String userID = trade.connectGuest();
-        trade.getUser(userID);
+    void getStore() {
+    }
+
+    @Test
+    void connect() {
+    }
+
+    @Test
+    void login() {
+    }
+
+    @Test
+    void logout() {
     }
 
 //    @Test

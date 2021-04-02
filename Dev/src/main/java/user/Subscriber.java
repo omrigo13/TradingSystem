@@ -1,18 +1,40 @@
 package user;
 
-import authentication.UserAlreadyExistsException;
+import permissions.Permission;
+import store.Store;
 
-public class Subscriber implements State {
+import java.util.Collection;
+import java.util.Map;
 
-    @Override
-    public void login(User user, String userName, String password) throws SubscriberAlreadyLoggedInException {
-        throw new SubscriberAlreadyLoggedInException();
+public class Subscriber extends User {
+
+    private final String userName;
+    private final Collection<Permission> permissions;
+
+    public Subscriber(String userName, Map<Store, Basket> baskets, Collection<Permission> permissions) {
+        super(baskets);
+        this.userName = userName;
+        this.permissions = permissions;
+    }
+
+    public void addPermission(Permission permission) {
+        permissions.add(permission);
+    }
+
+    public void deletePermission(Permission permission) {
+        permissions.remove(permission);
+    }
+
+    public boolean havePermission(Permission permission) {
+        return permissions.contains(permission);
+    }
+
+    public void clearPermissions() {
+        permissions.clear();
     }
 
     @Override
-    public void logout(User user) {
-        user.getPersistence().persist(user);
-        user.changeState(new Guest());
+    public Subscriber getSubscriber() {
+        return this;
     }
-
 }
