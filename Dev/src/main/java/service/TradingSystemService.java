@@ -10,12 +10,15 @@ public interface TradingSystemService {
     // ***********************************************************************
 
     /* Initialize system and define a system manager.
-    params: manager details */
+    params: manager details
+    preconditions: userName, pass not null and not empty. */
     void initializeSystem(String userName, String pass) throws Exception;
 
+    //returns a connectId.
     String connect() throws Exception;
 
-    /* Register to system */
+    /* Register to system
+       preconditions: userName, pass not null and not empty; userName not already exist. */
     void register(String userName, String password) throws Exception;
 
     /* Login to system */
