@@ -15,10 +15,10 @@ import user.Subscriber;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static permissions.AddManagerPermissionCommand.newAddManagerPermissionCommand;
+import static permissions.AddOwnerPermissionCommand.newAddOwnerPermissionCommand;
 
 @ExtendWith(MockitoExtension.class)
-class AddManagerPermissionCommandTest {
+class AddOwnerPermissionCommandTest {
 
     @Mock TradingSystem tradingSystem;
     @Mock Subscriber user;
@@ -26,7 +26,7 @@ class AddManagerPermissionCommandTest {
     @Mock Store store;
 
     private final String connectionId = "CONNECTION_ID_STRING";
-    private final String targetUserName = "NEW MANAGER";
+    private final String targetUserName = "NEW OWNER";
     private final int storeId = 2353151;
 
     @BeforeEach
@@ -39,10 +39,11 @@ class AddManagerPermissionCommandTest {
     @Test
     void execute() throws Exception { // TODO remove exception
 
-        Command cmd = newAddManagerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
+        Command cmd = newAddOwnerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
         when(user.havePermission(cmd.getRequiredPermission())).thenReturn(true);
         when(target.havePermission(eq(new ManagerPermission(store)))).thenReturn(false);
         cmd.execute();
+        verify(target).addPermission(eq(new OwnerPermission(store)));
         verify(target).addPermission(eq(new ManagerPermission(store)));
         verify(user).addPermission(eq(new DeletePermissionPermission(target, store)));
     }
@@ -50,7 +51,7 @@ class AddManagerPermissionCommandTest {
     @Test
     void executeAlreadyManager() throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
 
-        Command cmd = newAddManagerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
+        Command cmd = newAddOwnerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
         when(user.havePermission(cmd.getRequiredPermission())).thenReturn(true);
         when(target.havePermission(eq(new ManagerPermission(store)))).thenReturn(true);
         assertThrows(AlreadyManagerException.class, cmd::execute);
@@ -59,7 +60,7 @@ class AddManagerPermissionCommandTest {
     @Test
     void executeNoPermission() throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
 
-        Command cmd = newAddManagerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
+        Command cmd = newAddOwnerPermissionCommand(tradingSystem, connectionId, targetUserName, storeId);
         when(user.havePermission(cmd.getRequiredPermission())).thenReturn(false);
         assertThrows(NoPermissionException.class, cmd::execute);
     }

@@ -14,7 +14,7 @@ public final class AddManagerPermissionCommand extends Command {
     private final Store store;
 
     private AddManagerPermissionCommand(Subscriber user, Subscriber target, Store store) {
-        super(new DeletePermissionPermission(target, store), user);
+        super(new OwnerPermission(store), user);
         this.store = store;
         this.target = target;
     }
@@ -29,13 +29,17 @@ public final class AddManagerPermissionCommand extends Command {
 
     @Override
     public void execute() throws NoPermissionException, AlreadyManagerException {
-        Permission managerPermission = new ManagerPermission(store);
+
         if (!user.havePermission(requiredPermission))
             throw new NoPermissionException();
+
+        Permission managerPermission = new ManagerPermission(store);
         if (target.havePermission(managerPermission))
             throw new AlreadyManagerException();
 
         target.addPermission(managerPermission);
-        user.addPermission(new DeletePermissionPermission(target, store)); // permission to delete the target's permission
+
+        // give the user permission to delete the new permission that was added to the target
+        user.addPermission(new DeletePermissionPermission(target, store));
     }
 }
