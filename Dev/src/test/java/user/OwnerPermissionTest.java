@@ -11,9 +11,9 @@ class OwnerPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final Permission permission = OwnerPermission.getInstance(store);
-    private final Permission samePermission = OwnerPermission.getInstance(store);
-    private final Permission differentPermission = OwnerPermission.getInstance(differentStore);
+    private final StorePermission permission = OwnerPermission.getInstance(store);
+    private final StorePermission samePermission = OwnerPermission.getInstance(store);
+    private final StorePermission differentPermission = OwnerPermission.getInstance(differentStore);
 
     @Test
     void testPermissionSame() {

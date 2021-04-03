@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.NotLoggedInException;
 import store.Store;
 
 import java.util.HashMap;
@@ -23,8 +24,8 @@ public class User {
             baskets.putAll(from.getCart());
     }
 
-    public Subscriber getSubscriber() {
-        return null;
+    public Subscriber getSubscriber() throws NotLoggedInException {
+        throw new NotLoggedInException();
     }
 
     public Basket getBasket(Store store) {

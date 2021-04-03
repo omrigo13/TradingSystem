@@ -14,11 +14,11 @@ class RemovePermissionPermissionTest {
     private final Subscriber target = mock(Subscriber.class);
     private final Subscriber differentTarget = mock(Subscriber.class);
 
-    private final Permission permission = RemovePermissionPermission.getInstance(target, store);
-    private final Permission samePermission = RemovePermissionPermission.getInstance(target, store);
-    private final Permission differentTargetPermission = RemovePermissionPermission.getInstance(differentTarget, store);
-    private final Permission differentStorePermission = RemovePermissionPermission.getInstance(target, differentStore);
-    private final Permission differentAllPermission = RemovePermissionPermission.getInstance(differentTarget, differentStore);
+    private final StorePermission permission = RemovePermissionPermission.getInstance(target, store);
+    private final StorePermission samePermission = RemovePermissionPermission.getInstance(target, store);
+    private final StorePermission differentTargetPermission = RemovePermissionPermission.getInstance(differentTarget, store);
+    private final StorePermission differentStorePermission = RemovePermissionPermission.getInstance(target, differentStore);
+    private final StorePermission differentAllPermission = RemovePermissionPermission.getInstance(differentTarget, differentStore);
 
     @Test
     void testPermissionSame() {

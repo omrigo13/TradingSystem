@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Store;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,10 +22,12 @@ class SubscriberTest {
     @Mock Permission permission;
     @Mock Map<Store, Basket> baskets;
     @Mock Set<Permission> permissions;
+    @Mock Collection<Store> stores;
 
     private final Exception exception = mock(Exception.class);
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
+    private final Permission adminPermission = AdminPermission.getInstance();
     private final Permission managerPermission = ManagerPermission.getInstance(store);
     private final Permission ownerPermission = OwnerPermission.getInstance(store);
     private final Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
@@ -43,7 +46,7 @@ class SubscriberTest {
     void setUp() {
         reset(store);
         reset(target);
-        subscriber = new Subscriber("Noa", baskets, permissions);
+        subscriber = new Subscriber("Shimshon", baskets, permissions);
     }
 
     @Test
@@ -59,8 +62,34 @@ class SubscriberTest {
     }
 
     @Test
+    void validateAtLeastOnePermissionHavePermission() throws NoPermissionException {
+        when(permissions.contains(adminPermission)).thenReturn(false);
+        when(permissions.contains(permission)).thenReturn(true);
+        subscriber.validateAtLeastOnePermission(adminPermission, permission);
+    }
+
+    @Test
+    void validateAtLeastOnePermissionNoPermission() {
+        when(permissions.contains(adminPermission)).thenReturn(false);
+        when(permissions.contains(permission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, () -> subscriber.validateAtLeastOnePermission(adminPermission, permission));
+    }
+
+    @Test
+    void getAllStores() throws NoPermissionException {
+        when(permissions.contains(adminPermission)).thenReturn(true);
+        assertEquals(stores, subscriber.getAllStores(stores));
+    }
+
+    @Test
+    void getAllStoresNoPermission() {
+        when(permissions.contains(adminPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, () -> subscriber.getAllStores(stores));
+    }
+
+    @Test
     void addManagerPermission() throws NoPermissionException, AlreadyManagerException {
-        
+
         when(permissions.contains(ownerPermission)).thenReturn(true);
         when(target.havePermission(managerPermission)).thenReturn(false);
         subscriber.addManagerPermission(target, store);
@@ -85,7 +114,7 @@ class SubscriberTest {
         verify(target, never()).addPermission(any());
         verify(permissions, never()).add(any());
     }
-    
+
     @Test
     void addOwnerPermission() throws NoPermissionException, AlreadyManagerException {
 
@@ -115,11 +144,22 @@ class SubscriberTest {
     }
 
     @Test
-    void removePermission() throws NoPermissionException {
+    void removeOwnerPermission() throws NoPermissionException {
 
         when(permissions.contains(removePermissionPermission)).thenReturn(true);
-        subscriber.removePermission(target, store, permission);
-        verify(target).deletePermission(permission);
+        subscriber.removeOwnerPermission(target, store);
+        verify(target).removePermission(ownerPermission);
+        verify(target).removePermission(manageInventoryPermission);
+        verify(target).removePermission(managerPermission);
+    }
+
+    @Test
+    void removeManagerPermission() throws NoPermissionException {
+
+        when(permissions.contains(removePermissionPermission)).thenReturn(true);
+        subscriber.removeManagerPermission(target, store);
+        verify(target).removePermission(manageInventoryPermission);
+        verify(target).removePermission(managerPermission);
     }
 
     @Test
@@ -127,7 +167,6 @@ class SubscriberTest {
 
         when(permissions.contains(removePermissionPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.removePermission(target, store, permission));
-        verifyNoInteractions(target);
     }
 
     @Test

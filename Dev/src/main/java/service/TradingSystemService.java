@@ -37,7 +37,7 @@ public interface TradingSystemService {
     Collection<String> showCart(String userID) throws Exception;
 
     /* get basket's products. */
-    String showBasket(String userID, String storeId) throws Exception;
+    Collection<String> showBasket(String userID, String storeId) throws Exception;
 
     /* updates the amount of a product for user from a specific store. if new amount = 0 then the product will be deleted from the basket */
     void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
@@ -110,7 +110,7 @@ public interface TradingSystemService {
     //******************************************************************************
     
     /* allows manager to add, delete amd update product in a specific store.
-     precondition: assignor is the assignor of the manager.
+     precondition: assignor is the assignor of the manager, assignee is a manager of the store
      postcondition: the manager has permissions to add, delete amd update product in the store. */
     void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws Exception;
     

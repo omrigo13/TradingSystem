@@ -11,9 +11,9 @@ class ManageInventoryPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final Permission permission = ManageInventoryPermission.getInstance(store);
-    private final Permission samePermission = ManageInventoryPermission.getInstance(store);
-    private final Permission differentPermission = ManageInventoryPermission.getInstance(differentStore);
+    private final StorePermission permission = ManageInventoryPermission.getInstance(store);
+    private final StorePermission samePermission = ManageInventoryPermission.getInstance(store);
+    private final StorePermission differentPermission = ManageInventoryPermission.getInstance(differentStore);
 
     @Test
     void testPermissionSame() {

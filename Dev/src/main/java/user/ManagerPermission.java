@@ -4,7 +4,7 @@ import store.Store;
 
 import java.util.Objects;
 
-public class ManagerPermission extends Permission
+public class ManagerPermission extends StorePermission
 {
     public ManagerPermission(Store store) {
         super(store);
@@ -18,5 +18,12 @@ public class ManagerPermission extends Permission
             permissions.put(hash, permission);
         }
         return permission;
+    }
+
+    @Override
+    public String toString() {
+        return "ManagerPermission{" +
+                "store=" + store.getName() +
+                '}';
     }
 }

@@ -4,16 +4,16 @@ import store.Store;
 
 import java.util.Objects;
 
-public class RemovePermissionPermission extends Permission
+public class RemovePermissionPermission extends StorePermission
 {
-    private final User target;
+    private final Subscriber target;
 
-    public RemovePermissionPermission(User target, Store store) {
+    public RemovePermissionPermission(Subscriber target, Store store) {
         super(store);
         this.target = target;
     }
 
-    public static RemovePermissionPermission getInstance(User target, Store store) {
+    public static RemovePermissionPermission getInstance(Subscriber target, Store store) {
         int hash = Objects.hash(RemovePermissionPermission.class, target, store);
         RemovePermissionPermission permission = (RemovePermissionPermission)permissions.get(hash);
         if (permission == null) {
@@ -25,11 +25,10 @@ public class RemovePermissionPermission extends Permission
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o || (o != null && getClass() == o.getClass())) return true;
         if (!super.equals(o)) return false;
         RemovePermissionPermission that = (RemovePermissionPermission) o;
-        return target.equals(that.target);
+        return Objects.equals(target, that.target);
     }
 
     @Override
@@ -40,8 +39,8 @@ public class RemovePermissionPermission extends Permission
     @Override
     public String toString() {
         return "RemovePermissionPermission{" +
-                "store=" + store +
-                "target=" + target +
+                "store=" + store.getName() +
+                "target=" + target.getUserName() +
                 '}';
     }
 }

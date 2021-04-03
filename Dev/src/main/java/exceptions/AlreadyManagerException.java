@@ -1,6 +1,7 @@
 package exceptions;
 
 public class AlreadyManagerException extends Exception {
+
     final String userName;
 
     public AlreadyManagerException(String userName) {

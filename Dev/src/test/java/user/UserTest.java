@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.NotLoggedInException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +47,7 @@ class UserTest {
 
     @Test
     void getSubscriber() {
-        assertNull(user.getSubscriber());
+        assertThrows(NotLoggedInException.class, () -> user.getSubscriber());
     }
 
     @Test

@@ -9,8 +9,8 @@ import static org.mockito.Mockito.mock;
 class PermissionTest {
 
     private final Store store = mock(Store.class);
-    private final Permission permission = ManagerPermission.getInstance(store);
-    private final Permission differentClassPermission = OwnerPermission.getInstance(store);
+    private final StorePermission permission = ManagerPermission.getInstance(store);
+    private final StorePermission differentClassPermission = OwnerPermission.getInstance(store);
 
     @Test
     void testPermissionNotSame() {

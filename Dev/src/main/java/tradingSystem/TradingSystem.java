@@ -1,16 +1,19 @@
 package tradingSystem;
 
-import authentication.*;
+import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import store.Store;
-import user.Subscriber;
-import user.User;
+import user.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TradingSystem {
+
+    private int storeIdCounter = 0;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -44,11 +47,19 @@ public class TradingSystem {
         return user;
     }
 
+    public Subscriber getSubscriberByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException, NotLoggedInException {
+        return getUserByConnectionId(connectionId).getSubscriber();
+    }
+
     public Subscriber getSubscriberByUserName(String userName) throws SubscriberDoesNotExistException {
         Subscriber subscriber = subscribers.get(userName);
         if (subscriber == null)
             throw new SubscriberDoesNotExistException(userName);
         return subscriber;
+    }
+
+    public Collection<Store> getStores() {
+        return stores.values();
     }
 
     public Store getStore(int storeId) {
@@ -87,5 +98,34 @@ public class TradingSystem {
         User guest = new User(new HashMap<>());
         guest.makeCart(user);
         connections.put(connectionId, guest);
+    }
+
+    public int newStore(Subscriber subscriber, String storeName) throws NewStoreException {
+
+        // create the new store
+        Store store;
+        try {
+            store = new Store(storeIdCounter, storeName, "description", subscriber.getUserName());
+        } catch (Exception e) {
+            throw new NewStoreException(storeName, e);
+        }
+        stores.put(storeIdCounter, store);
+
+        // give the subscriber owner permission
+        subscriber.addPermission(OwnerPermission.getInstance(store));
+
+        return storeIdCounter++;
+    }
+
+    public Collection<Subscriber> getStoreStaff(Subscriber subscriber, Store store, Collection<Subscriber> staff) throws NoPermissionException {
+
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), ManagerPermission.getInstance(store));
+
+        Permission managerPermission = ManagerPermission.getInstance(store);
+        for (Subscriber potentialStaff : subscribers.values())
+            if (potentialStaff.havePermission(managerPermission))
+                staff.add(potentialStaff);
+
+        return staff;
     }
 }

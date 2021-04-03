@@ -4,7 +4,7 @@ import store.Store;
 
 import java.util.Objects;
 
-public class ManageInventoryPermission extends Permission
+public class ManageInventoryPermission extends StorePermission
 {
     public ManageInventoryPermission(Store store) {
         super(store);
@@ -18,5 +18,12 @@ public class ManageInventoryPermission extends Permission
             permissions.put(hash, permission);
         }
         return permission;
+    }
+
+    @Override
+    public String toString() {
+        return "ManageInventoryPermission{" +
+                "store=" + store.getName() +
+                '}';
     }
 }

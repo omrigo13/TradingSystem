@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
 
+import java.util.Collection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class TradingSystemServiceTest {
@@ -206,9 +208,9 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
-        String s1 = service.showBasket(store1Manager1Id,storeId1);
+        Collection<String> s1 = service.showBasket(store1Manager1Id,storeId1);
         assertTrue(s1 != null && !s1.isEmpty());
-        String s2 = service.showBasket(store1Manager1Id,storeId2);
+        Collection<String> s2 = service.showBasket(store1Manager1Id,storeId2);
         assertTrue(s2 != null && !s2.isEmpty());
         assertThrows(Exception.class, () -> service.showBasket(store1Manager1Id,storeId2));
     }
@@ -218,7 +220,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
-        String s1 = service.showBasket(store1Manager1Id,storeId1);
+        Collection<String> s1 = service.showBasket(store1Manager1Id,storeId1);
         assertTrue(s1 != null && !s1.isEmpty() && s1.contains("milk"));
         service.updateProductAmountInBasket(store1Manager1Id, storeId1, productId1, 0);
         s1 = service.showBasket(store1Manager1Id,storeId1);

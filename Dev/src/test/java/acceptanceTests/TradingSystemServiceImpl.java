@@ -46,7 +46,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public String showBasket(String userID, String storeId) throws Exception {
+    public Collection<String> showBasket(String userID, String storeId) throws Exception {
         return null;
     }
 
