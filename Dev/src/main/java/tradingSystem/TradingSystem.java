@@ -30,7 +30,9 @@ public class TradingSystem {
         this.stores = stores;
         try {
             auth.authenticate(userName, password); // TODO check if the userName is admin
-        } catch (SubscriberDoesNotExistException | WrongPasswordException e) {
+        } catch (SubscriberDoesNotExistException e) {
+            throw new LoginException(e);
+        } catch (WrongPasswordException e) {
             throw new LoginException(e);
         }
     }
@@ -38,21 +40,14 @@ public class TradingSystem {
     public User getUserByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException {
         User user = connections.get(connectionId);
         if (user == null)
-            throw new ConnectionIdDoesNotExistException();
+            throw new ConnectionIdDoesNotExistException(connectionId);
         return user;
     }
 
     public Subscriber getSubscriberByUserName(String userName) throws SubscriberDoesNotExistException {
         Subscriber subscriber = subscribers.get(userName);
         if (subscriber == null)
-            throw new SubscriberDoesNotExistException();
-        return subscriber;
-    }
-
-    public Subscriber getSubscriberByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException {
-        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
-        if (subscriber == null)
-            throw new SubscriberDoesNotExistException();
+            throw new SubscriberDoesNotExistException(userName);
         return subscriber;
     }
 
@@ -77,7 +72,12 @@ public class TradingSystem {
             User subscriber = getSubscriberByUserName(userName);
             subscriber.makeCart(user);
             connections.put(connectionId, subscriber);
-        } catch (ConnectionIdDoesNotExistException | SubscriberDoesNotExistException | WrongPasswordException e) {
+
+        } catch (ConnectionIdDoesNotExistException e) {
+            throw new LoginException(e);
+        } catch (SubscriberDoesNotExistException e) {
+            throw new LoginException(e);
+        } catch (WrongPasswordException e) {
             throw new LoginException(e);
         }
     }

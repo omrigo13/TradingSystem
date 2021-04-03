@@ -2,7 +2,7 @@ package user;
 
 import store.Store;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 public class User {
@@ -28,9 +28,10 @@ public class User {
     }
 
     public Basket getBasket(Store store) {
+
         Basket basket = baskets.get(store);
         if (basket == null) {
-            basket = new Basket(store, this);
+            basket = new Basket(store, this, new HashMap<>());
             baskets.put(store, basket);
         }
         return basket;

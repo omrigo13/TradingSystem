@@ -1,4 +1,9 @@
 package exceptions;
 
-public class ConnectionIdDoesNotExistException extends Exception { // TODO add connection ID
+public class ConnectionIdDoesNotExistException extends Exception {
+    final String connectionId;
+
+    public ConnectionIdDoesNotExistException(String connectionId) {
+        this.connectionId = connectionId;
+    }
 }

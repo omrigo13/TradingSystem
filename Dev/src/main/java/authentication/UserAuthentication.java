@@ -17,14 +17,14 @@ public class UserAuthentication {
 
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
         if (userNamesAndPasswords.putIfAbsent(userName, password) != null)
-            throw new SubscriberAlreadyExistsException();
+            throw new SubscriberAlreadyExistsException(userName);
     }
 
     public void authenticate(String userName, String password) throws SubscriberDoesNotExistException, WrongPasswordException {
         String currentPassword = userNamesAndPasswords.get(userName);
         if (currentPassword == null)
-            throw new SubscriberDoesNotExistException();
+            throw new SubscriberDoesNotExistException(userName);
         if (!currentPassword.equals(password))
-            throw new WrongPasswordException();
+            throw new WrongPasswordException(userName, password);
     }
 }
