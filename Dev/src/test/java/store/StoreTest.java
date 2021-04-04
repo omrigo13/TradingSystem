@@ -1,10 +1,13 @@
 package store;
 
+import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StoreTest {
 
@@ -25,13 +28,13 @@ public class StoreTest {
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongName.class, () -> store = new Store(1, null, "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, null, "www.ebay.com online shopping", null));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongName.class, () -> store = new Store(1, "   ", "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, "   ", "www.ebay.com online shopping", null));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongName.class, () -> store = new Store(1, "95ebay", "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, "95ebay", "www.ebay.com online shopping", null));
     }
 
 //    @Test
@@ -54,138 +57,248 @@ public class StoreTest {
 //    }
 
     @Test
-    void addItemWithoutRating() throws Exception{
+    void addItemWithoutRating() throws ItemException {
         //checks that item name cannot start with a number
-        assertThrows(WrongName.class, () -> store.addItem("12tomato", 20, "vegetables", "red", 5));
+        assertThrows(WrongNameException.class, () -> store.addItem("12tomato", 20, "vegetables", "red", 5));
 
         //checks that item has a positive price
-        assertThrows(WrongPrice.class, () -> store.addItem("tomato", -5, "vegetables", "red", 5));
+        assertThrows(WrongPriceException.class, () -> store.addItem("tomato", -5, "vegetables", "red", 5));
 
         //checks that item has a positive amount
-        assertThrows(WrongAmount.class, () -> store.addItem("tomato", 17, "vegetables", "red", -2));
+        assertThrows(WrongAmountException.class, () -> store.addItem("tomato", 17, "vegetables", "red", -2));
 
         //checks that we cannot add an item that already exists
         store.addItem("tomato", 20, "vegetables", "red", 5);
 
-        assertThrows(ItemAlreadyExists.class, () -> store.addItem("tomato", 20, "vegetables", "red", 5));
+        assertThrows(ItemAlreadyExistsException.class, () -> store.addItem("tomato", 20, "vegetables", "red", 5));
         assertEquals(store.getItems().size(), 1);
     }
 
+
+
     @Test
-    void searchItemByName() throws Exception{
+    void searchItemById() throws ItemException{
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5);
+        assertThrows(ItemNotFoundException.class, () -> store.searchItemById(6));
+        assertEquals(store.searchItemById(tomato2Id).getId(), 3);
+    }
+
+    @Test
+    void filterWithoutItemsByPrice() throws ItemException{
         store.addItem("tomato", 20, "vegetables", "red", 5);
         store.addItem("cucumber", 15, "vegetables", "green", 10);
-        assertThrows(ItemNotFound.class, () -> store.searchItemByName("carrot"));
+        assertTrue( store.filterByPrice(null,30, 100).isEmpty());
         store.addItem("tomato", 20, "vegetables", "blue", 5);
-        assertEquals(store.searchItemByName("tomato").size(), 2);
+        assertEquals(store.filterByPrice(null,15, 20).size(), 3);
     }
 
     @Test
-    void searchItemByCategory() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        assertThrows(ItemNotFound.class, () -> store.searchItemByCategory("camera"));
-        store.addItem("GoPro", 1200, "camera", "black", 5);
-        assertEquals(store.searchItemByCategory("vegetables").size(), 2);
+    void filterWithItemsByPrice() throws ItemException{
+        ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        list.add(store.searchItemById(tomatoId));
+        int cucmberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        list.add(store.searchItemById(cucmberId));
+        ConcurrentLinkedQueue<Item> filteredItems=store.filterByPrice(list,15,30);
+        assertFalse(filteredItems.isEmpty());
+        assertEquals(filteredItems.size(),2);
+        filteredItems=store.filterByPrice(list,30,100);
+        assertTrue(filteredItems.isEmpty());
     }
 
-    @Test
-    void searchItemByKeyWord() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        assertThrows(ItemNotFound.class, () -> store.searchItemByKeyWord("blue"));
-        store.addItem("RedGoPro", 1200, "camera", "black", 5);
-        assertEquals(store.searchItemByKeyWord("red").size(), 2);
-    }
 
     @Test
-    void searchItem() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        store.addItem("tomato", 20, "vegetables", "blue", 5);
-        assertThrows(ItemNotFound.class, () -> store.searchItem("tomato", "fruits","orange"));
-        assertEquals(store.searchItem("tomato", "vegetables","blue").getId(), 3);
-    }
-
-    @Test
-    void filterByPrice() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        assertThrows(ItemNotFound.class, () -> store.filterByPrice(30, 100));
-        store.addItem("tomato", 20, "vegetables", "blue", 5);
-        assertEquals(store.filterByPrice(15, 20).size(), 3);
-    }
-
-    @Test
-    void filterByRating() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        Item tomato = store.searchItem("tomato", "vegetables", "red");
+    void filterWithoutItemsByRating() throws ItemException{
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
+        Item tomato = store.searchItemById(tomatoId);
         tomato.setRating(2);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        Item cucumber = store.searchItem("cucumber", "vegetables", "green");
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        Item cucumber = store.searchItemById(cucumberid);
         cucumber.setRating(3);
-        assertThrows(ItemNotFound.class, () -> store.filterByRating(4));
-        assertEquals(store.filterByRating(2).size(), 2);
-        assertEquals(store.filterByRating(3).size(), 1);
+
+        assertEquals(store.filterByRating(null,2).size(), 2);
+        assertEquals(store.filterByRating(null,3).size(), 1);
+    }
+    @Test
+    void filterWithItemsByRating() throws ItemException{
+        ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
+        Item tomato = store.searchItemById(tomatoId);
+        tomato.setRating(2);
+        list.add(tomato);
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        Item cucumber = store.searchItemById(cucumberid);
+        cucumber.setRating(3);
+        list.add(cucumber);
+
+        assertEquals(store.filterByRating(list,2).size(), 2);
+        assertEquals(store.filterByRating(list,3).size(), 1);
+        assertTrue(store.filterByRating(list,5).isEmpty());
     }
 
+//    @Test
+//    void changeQuantity() throws ItemException{
+//        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
+//        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10);
+//        Item tomato = store.searchItem(tomatoId);
+//
+//        //checks that the quantity must be 0 or greater
+//        assertThrows(WrongAmountException.class, () -> store.changeQuantity(tomatoId, -1));
+//
+//        store.changeQuantity("tomato", "vegetables","red", 8);
+//        assertEquals(store.getItems().get(tomato), 8);
+//        store.changeQuantity("tomato", "vegetables","red", 2);
+//        assertEquals(store.getItems().get(tomato), 2);
+//    }
+
     @Test
-    void changeQuantity() throws Exception{
-        store.addItem("tomato", 20, "vegetables", "red", 5);
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        Item tomato = store.searchItem("tomato", "vegetables","red");
+    void decreaseByQuantity() throws ItemException{
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
+        Item cucumber = store.searchItemById(cucumberId);
 
         //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmount.class, () -> store.changeQuantity("tomato", "vegetables","red", -1));
+        assertThrows(WrongAmountException.class, () -> store.decreaseByQuantity(carrotId,5));
 
-        store.changeQuantity("tomato", "vegetables","red", 8);
-        assertEquals(store.getItems().get(tomato), 8);
-        store.changeQuantity("tomato", "vegetables","red", 2);
-        assertEquals(store.getItems().get(tomato), 2);
-    }
-
-    @Test
-    void decreaseByQuantity() throws Exception{
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        store.addItem("carrot", 20, "vegetables", "orange", 0);
-        Item cucumber = store.searchItem("cucumber", "vegetables","green");
-
-        //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmount.class, () -> store.decreaseByQuantity("carrot", "vegetables","orange",5));
-
-        store.decreaseByQuantity("cucumber",  "vegetables", "green",1);
+        store.decreaseByQuantity(cucumberId,1);
         assertEquals(store.getItems().get(cucumber), 9);
-        store.decreaseByQuantity("cucumber",  "vegetables", "green",2);
-
+        store.decreaseByQuantity(cucumberId,2);
         assertEquals(store.getItems().get(cucumber), 7);
     }
 
     @Test
-    void removeItem() throws Exception{
+    void removeItem() throws ItemException{
         store.addItem("cucumber", 15, "vegetables", "green", 10);
-        store.addItem("carrot", 20, "vegetables", "orange", 0);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
         assertEquals(store.getItems().size(), 2);
 
         //checks that only an existing item can be removed
-        assertThrows(ItemNotFound.class, () -> store.removeItem("tomato", "vegetables","orange"));
+        assertThrows(ItemNotFoundException.class, () -> store.removeItem(5));
 
-        store.removeItem("carrot", "vegetables","orange");
+        store.removeItem(carrotId);
         assertEquals(store.getItems().size(), 1);
-        assertThrows(ItemNotFound.class, () -> store.removeItem("carrot", "vegetables","orange"));
+        assertThrows(ItemNotFoundException.class, () -> store.removeItem(carrotId));
+
+    }
+
+//    @Test
+//    void updateItemPrice() throws ItemException{
+//        store.addItem("cucumber", 15, "vegetables", "green", 10);
+//        store.addItem("carrot", 20, "vegetables", "orange", 0);
+//
+//        //set a negative price for an item
+//        assertThrows(WrongPriceException.class, () -> store.setItemPrice("carrot", "vegetables","orange", -20));
+//
+//        store.setItemPrice("carrot", "vegetables","orange", 50);
+//        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 50);
+//        store.setItemPrice("carrot", "vegetables","orange", 34);
+//        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 34);
+//    }
+
+    @Test
+    void searchItems() throws ItemException {
+        store.addItem("carrot", 20, "vegetables", "orange", 8);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        store.addItem("onion",8.9,"vegetables","white",70);
+
+        assertEquals(store.searchItems(null,null,"vegetables").size(),3);
+        assertEquals(store.searchItems("r",null,null).size(),2);
+        assertEquals(store.searchItems(null,"onion",null).size(),1);
+        assertEquals(store.searchItems("rot",null,"vegetables").size(),1);
+        assertTrue(store.searchItems("cucumber","onion",null).isEmpty());
 
     }
 
     @Test
-    void updateItemPrice() throws Exception{
-        store.addItem("cucumber", 15, "vegetables", "green", 10);
-        store.addItem("carrot", 20, "vegetables", "orange", 0);
+    void filterItems() throws ItemException {
+        ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
 
-        //set a negative price for an item
-        assertThrows(WrongPrice.class, () -> store.setItemPrice("carrot", "vegetables","orange", -20));
-
-        store.setItemPrice("carrot", "vegetables","orange", 50);
-        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 50);
-        store.setItemPrice("carrot", "vegetables","orange", 34);
-        assertEquals(store.searchItem("carrot", "vegetables","orange").getPrice(), 34);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
+        Item carrot=store.searchItemById(carrotId);
+        carrot.setRating(3);
+        list.add(carrot);
+        Item cucumber=store.searchItemById(cucumberId);
+        cucumber.setRating(2);
+        list.add(cucumber);
+        Item onion=store.searchItemById(onionId);
+        onion.setRating(3.5);
+        list.add(onion);
+        store.setRating(3);
+        assertEquals(store.filterItems(list,2.0,null,null,null).size(),3);
+        assertEquals(store.filterItems(list,null,3.0,null,null).size(),3);
+        assertEquals(store.filterItems(list,null,null,100.0,10.0).size(),2);
+        assertEquals(store.filterItems(list,3.0,null,15.0,5.0).size(),1);
+        assertTrue(store.filterItems(list,null,4.0,17.0,8.0).isEmpty());
     }
+
+
+    @Test
+    void searchAndFilter() throws ItemException {
+        ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
+
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetables","white",70);
+        Item carrot=store.searchItemById(carrotId);
+        carrot.setRating(3);
+        list.add(carrot);
+        Item cucumber=store.searchItemById(cucumberId);
+        cucumber.setRating(2);
+        list.add(cucumber);
+        Item onion=store.searchItemById(onionId);
+        onion.setRating(3.5);
+        list.add(onion);
+        store.setRating(3);
+        assertEquals(store.searchAndFilter("c"," ","vegetables",2.5,null,null,null).size(),1);
+        assertEquals(store.searchAndFilter(null,null,"vegetables",2.5,2.0,null,null).size(),2);
+        assertEquals(store.searchAndFilter(""," ","games",2.5,null,12.0,4.0).size(),0);
+
+    }
+
+    @Test
+    void checkAmount() throws ItemException {
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
+
+        assertThrows(WrongAmountException.class, ()->store.checkAmount(carrotId,10));
+        assertThrows(WrongAmountException.class,()-> store.checkAmount(cucumberId,-3));
+        assertTrue(store.checkAmount(onionId,27));
+    }
+
+    @Test
+    void changeItem() throws ItemException {
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomato2Id=store.addItem("tomato", 20, "vegetables", "blue", 5);
+
+        assertThrows(ItemNotFoundException.class, () -> store.changeItem(5,"hello",null,30.0));
+        assertNotEquals(store.searchItemById(tomatoId).getSubCategory(),"hello");
+        assertNotEquals(store.searchItemById(tomatoId).getPrice(),30);
+        store.changeItem(tomatoId,"hamama",null,null);
+        assertEquals(store.searchItemById(tomatoId).getSubCategory(),"hamama");
+
+        assertThrows(WrongAmountException.class,() -> store.changeItem(cucumberId,null,-5,10.0));
+        store.changeItem(cucumberId," ",30,null);
+        assertEquals(store.getItems().get(store.searchItemById(cucumberId)),30);
+
+        assertThrows(WrongPriceException.class,()-> store.changeItem(tomato2Id,"hi",null,-4.0));
+        assertNotEquals(store.searchItemById(tomatoId).getSubCategory(),"hi");
+        store.changeItem(tomato2Id,null,null,25.8);
+        assertEquals(store.searchItemById(tomato2Id).getPrice(),25.8);
+
+        store.changeItem(tomatoId," ",10,13.0);
+        assertEquals(store.searchItemById(tomatoId).getPrice(),13.0);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)),10);
+
+        store.changeItem(cucumberId,"oldItem",null,8.9);
+        assertEquals(store.searchItemById(cucumberId).getPrice(),8.9);
+        assertEquals(store.searchItemById(cucumberId).getSubCategory(),"oldItem");
+    }
+
+
 }

@@ -69,16 +69,20 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                                        Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
 
         Collection<String> items = new LinkedList<>();
+        Collection<Item> itemsToAdd;
         for (Store store : tradingSystem.getStores()) {
             // TODO: Noa/Omri: get the items from the stores and add to the list.
+            itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
+            for (Item item : itemsToAdd)
+                items.add(item.toString());
         }
         return items;
     }
 
     @Override
-    public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException {
+    public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = null; // TODO: Noa/Omri: fetch the item
+        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: Noa/Omri: fetch the item
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
@@ -115,9 +119,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException {
+    public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = null; // TODO: Noa/Omri: fetch the item
+        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: Noa/Omri: fetch the item
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
     @Override
@@ -175,6 +179,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
         Item item;
         try {
+            //TODO why do we need to do get item here?
             item = store.getItem(itemName, category, subCategory);
         } catch (Exception e) {
             throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);

@@ -168,7 +168,7 @@ public class Subscriber extends User {
 
         // remove the item from the store
         try {
-            store.removeItem("" + itemId, null, null);
+            store.removeItem(itemId);
         } catch (Exception e) {
             throw new RemoveStoreItemException(e);
         }
@@ -182,7 +182,7 @@ public class Subscriber extends User {
 
         // update the item in the store
         try {
-            store.changeQuantity("" + itemId, null, newSubCategory, newQuantity);
+            store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
             // TODO implement other types of updates
         } catch (Exception e) {
             throw new UpdateStoreItemException(e);

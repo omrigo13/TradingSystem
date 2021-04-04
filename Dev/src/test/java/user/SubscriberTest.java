@@ -192,21 +192,21 @@ class SubscriberTest {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
         subscriber.removeStoreItem(store, itemId);
-        verify(store).removeItem("" + itemId, null, null);
+        verify(store).removeItem(itemId);
     }
 
     @Test
     void removeStoreItemNoPermission() throws Exception {
 
         assertThrows(NoPermissionException.class, () -> subscriber.removeStoreItem(store, itemId));
-        verify(store, never()).removeItem(any(), any(), any());
+        verify(store, never()).removeItem(any());
     }
 
     @Test
     void removeStoreItemRemoveItemException() throws Exception {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).removeItem("" + itemId, null, null);
+        doThrow(exception).when(store).removeItem(itemId);
         Exception wrapper = assertThrows(RemoveStoreItemException.class, () -> subscriber.removeStoreItem(store, itemId));
         assertEquals(exception, wrapper.getCause());
     }
@@ -216,7 +216,7 @@ class SubscriberTest {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
         subscriber.updateStoreItem(store, itemId, subCategory, quantity, price);
-        verify(store).changeQuantity("" + itemId, null, subCategory, quantity);
+        verify(store).changeItem(itemId, subCategory, quantity, price);
     }
 
     @Test
@@ -224,14 +224,14 @@ class SubscriberTest {
 
         assertThrows(NoPermissionException.class,
                 () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
-        verify(store, never()).changeQuantity(any(), any(), any(), anyInt());
+        verify(store, never()).changeItem(any(), any(), anyInt(), any());
     }
 
     @Test
     void updateStoreItemChangeQuantityException() throws Exception {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).changeQuantity("" + itemId, null, subCategory, quantity);
+        doThrow(exception).when(store).changeItem(itemId, subCategory, quantity, price);
         Exception wrapper = assertThrows(UpdateStoreItemException.class,
                 () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
         assertEquals(exception, wrapper.getCause());
