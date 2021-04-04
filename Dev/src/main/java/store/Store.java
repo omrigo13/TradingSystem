@@ -338,7 +338,7 @@ public class Store {
     /**
      *  This method displays the items in the store's inventory
      *  * @param name - name of the wanted item */
-    public String displayItems() {return inventory.toString();}
+    public String toString() {return inventory.toString();}
 
     // TODO: should check how to implement
     public String getPurchaseType() {

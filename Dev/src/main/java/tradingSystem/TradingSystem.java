@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class TradingSystem {
 
-    private int storeIdCounter = 0;
+    private int storeIdCounter = 1;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -106,6 +106,7 @@ public class TradingSystem {
         Store store;
         try {
             store = new Store(storeIdCounter, storeName, "description", subscriber.getUserName());
+            // TODO should change it and get a subscriber when create a new store?
         } catch (Exception e) {
             throw new NewStoreException(storeName, e);
         }
