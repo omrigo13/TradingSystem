@@ -2,65 +2,55 @@ package user;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import store.Item;
 import store.Store;
-import user.Basket.ItemRecord;
 
-import java.util.Collection;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class BasketTest {
 
     private Basket basket;
-    private final User user = null;
-    private final Store store = new Store(0, "Store", "Desc", "");
-    private final String item = "Item";
-    private final int amount = 2;
-    private final ItemRecord itemRecord = new ItemRecord(item, amount);
-
-    BasketTest() throws Exception { // TODO
-    }
-
-    @Test
-    void addAndGetItem() {
-        basket.addItem(itemRecord);
-        Collection<ItemRecord> items = basket.getItems();
-        assertTrue(items.contains(itemRecord));
-    }
-
-    @Test
-    void addExistingItem() {
-        basket.addItem(itemRecord);
-        basket.addItem(itemRecord);
-        ItemRecord newItemRecord = basket.getItem(item);
-        assertEquals(newItemRecord.amount, itemRecord.amount * 2);
-    }
-
-    @Test
-    void deleteItem() {
-        basket.addItem(itemRecord);
-        basket.deleteItem(itemRecord.item);
-        ItemRecord newItemRecord = basket.getItem(item);
-        assertNull(newItemRecord);
-    }
-
-    @Test
-    void deleteItemNotInEmptyBasket() {
-        basket.deleteItem(itemRecord.item);
-        ItemRecord newItemRecord = basket.getItem(item);
-        assertNull(newItemRecord);
-    }
-
-    @Test
-    void deleteItemNotInBasket() {
-        basket.addItem(new ItemRecord("Another item", 1));
-        basket.deleteItem(itemRecord.item);
-        ItemRecord newItemRecord = basket.getItem(item);
-        assertNull(newItemRecord);
-    }
+    @Mock User user;
+    @Mock Store store;
+    @Mock Map<Item, Integer> items;
+    @Mock Item item;
+    private final int quantity = 3;
 
     @BeforeEach
     void setUp() {
-        basket = new Basket(store, user);
+        basket = new Basket(store, user, items);
+    }
+
+    @Test
+    void addItem() {
+        when(items.getOrDefault(item, 0)).thenReturn(quantity);
+        basket.addItem(item, quantity);
+        verify(items).put(item, 2 * quantity);
+    }
+
+    @Test
+    void getQuantity() {
+        when(items.getOrDefault(item, 0)).thenReturn(quantity);
+        assertEquals(quantity, basket.getQuantity(item));
+    }
+
+    @Test
+    void setQuantity() {
+        basket.setQuantity(item, quantity);
+        verify(items).put(item, quantity);
+    }
+
+    @Test
+    void removeItem() {
+        basket.removeItem(item);
+        verify(items).remove(item);
     }
 }

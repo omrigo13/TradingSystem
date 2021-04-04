@@ -1,43 +1,22 @@
 package user;
 
+import store.Item;
 import store.Store;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-//represents a User's basket, which is connected to maximum 1 store
 public class Basket {
 
     private final Store store;
     private final User user;
-    private final Map<String, ItemRecord> items = new HashMap<>();
+    private final Map<Item, Integer> items; // item : quantity
 
-    public static class ItemRecord {
-        final String item;
-        final int amount;
-        public ItemRecord(String item, int amount) {
-            this.item = item;
-            this.amount = amount;
-        }
-
-        public String getItem() {
-            return item;
-        }
-
-        public int getAmount() {
-            return amount;
-        }
-
-        @Override
-        public String toString() {
-            return "" + amount + ", " + item;
-        }
-    }
-
-    public Basket(Store store, User user) {
+    public Basket(Store store, User user, Map<Item, Integer> items) {
         this.store = store;
         this.user = user;
+        this.items = items;
     }
 
     public Store getStore() {
@@ -48,27 +27,24 @@ public class Basket {
         return user;
     }
 
-    public void addItem(ItemRecord itemRecord)
-    {
-        // if the item already exists, add up the amounts
-        ItemRecord oldItemRecord = items.get(itemRecord.item);
-        if (oldItemRecord != null)
-            itemRecord = new ItemRecord(itemRecord.item, itemRecord.amount + oldItemRecord.amount);
-
-        items.put(itemRecord.item, itemRecord);
+    public void addItem(Item item, int quantity) {
+        items.put(item, items.getOrDefault(item, 0) + quantity); // add to existing quantity
     }
 
-    public ItemRecord getItem(String item) {
-        return items.get(item);
+    public int getQuantity(Item item) {
+        return items.getOrDefault(item, 0);
     }
 
-    public Collection<ItemRecord> getItems()
-    {
-        return items.values();
+    public void setQuantity(Item item, int quantity) {
+        items.put(item, quantity);
     }
 
-    public void deleteItem(String item)
+    public Map<Item, Integer> getItems()
     {
+        return items;
+    }
+
+    public void removeItem(Item item) {
         items.remove(item);
     }
 }
