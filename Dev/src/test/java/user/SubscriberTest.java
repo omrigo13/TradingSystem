@@ -24,7 +24,7 @@ class SubscriberTest {
     @Mock Set<Permission> permissions;
     @Mock Collection<Store> stores;
 
-    private final Exception exception = mock(Exception.class);
+    private final Exception exception = mock(ItemException.class);
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
     private final Permission adminPermission = AdminPermission.getInstance();
@@ -199,7 +199,7 @@ class SubscriberTest {
     void removeStoreItemNoPermission() throws Exception {
 
         assertThrows(NoPermissionException.class, () -> subscriber.removeStoreItem(store, itemId));
-        verify(store, never()).removeItem(any());
+        verify(store, never()).removeItem(anyInt());
     }
 
     @Test
@@ -224,7 +224,7 @@ class SubscriberTest {
 
         assertThrows(NoPermissionException.class,
                 () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
-        verify(store, never()).changeItem(any(), any(), anyInt(), any());
+        verify(store, never()).changeItem(anyInt(), any(), anyInt(), any());
     }
 
     @Test
