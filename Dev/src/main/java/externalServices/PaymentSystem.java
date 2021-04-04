@@ -1,7 +1,6 @@
 package externalServices;
 
-public interface PaymentSystem {
-
-    void pay(PaymentData data);
-
+public class PaymentSystem {
+    public void pay(PaymentData data) {
+    }
 }

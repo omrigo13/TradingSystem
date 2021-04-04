@@ -1,6 +1,6 @@
 package externalServices;
 
-public interface DeliverySystem {
-
-    void deliver(DeliveryData data);
+public class DeliverySystem {
+    public void deliver(DeliveryData data) {
+    }
 }

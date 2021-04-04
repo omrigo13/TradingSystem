@@ -1,39 +1,40 @@
 package user;
 
-import authentication.LoginException;
-import authentication.UserAuthentication;
-import permissions.Command;
-import permissions.Permission;
-import persistence.Carts;
+import exceptions.NotLoggedInException;
+import store.Store;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface User {
-    Carts getPersistence();
+public class User {
+    private final Map<Store, Basket> baskets;
 
-    String getUserName();
+    public User(Map<Store, Basket> baskets) {
+        this.baskets = baskets;
+    }
 
-    void setUserName(String userName);
+    public Map<Store, Basket>  getCart()
+    {
+        return baskets;
+    }
 
-    void setBaskets(Collection<Basket> baskets);
+    public void makeCart(User from)
+    {
+        if (baskets.isEmpty())
+            baskets.putAll(from.getCart());
+    }
 
-    UserAuthentication getUserAuthentication();
+    public Subscriber getSubscriber() throws NotLoggedInException {
+        throw new NotLoggedInException();
+    }
 
-    void login(String userName, String password) throws LoginException;
+    public Basket getBasket(Store store) {
 
-    void logout() throws LogoutGuestException;
-
-    void changeState(State state);
-
-    Basket getBasket(String storeID);
-
-    Collection<Basket> getCart();
-
-    void doCommand(Command command) throws Exception;
-
-    void addPermission(Permission permission);
-
-    void deletePermission(Permission permission);
-
-    boolean havePermission(Permission permission);
+        Basket basket = baskets.get(store);
+        if (basket == null) {
+            basket = new Basket(store, this, new HashMap<>());
+            baskets.put(store, basket);
+        }
+        return basket;
+    }
 }
