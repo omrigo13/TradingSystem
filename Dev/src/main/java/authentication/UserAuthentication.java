@@ -1,24 +1,30 @@
 package authentication;
 
-import java.util.HashMap;
+import exceptions.SubscriberAlreadyExistsException;
+import exceptions.SubscriberDoesNotExistException;
+import exceptions.WrongPasswordException;
+
 import java.util.Map;
 
 // TODO need to be mock when we have real authentication system
 public class UserAuthentication {
 
-    private final Map<String, String> userNamesAndPasswords = new HashMap<>(); // TODO need to consider concurrency
+    private final Map<String, String> userNamesAndPasswords; // TODO need to consider concurrency
 
-    public void register(String userName, String password) throws UserAlreadyExistsException {
-        String exist = userNamesAndPasswords.putIfAbsent(userName, password);
-        if(exist != null)
-            throw new UserAlreadyExistsException();
+    public UserAuthentication(Map<String, String> userNamesAndPasswords) {
+        this.userNamesAndPasswords = userNamesAndPasswords;
     }
 
-    public void login(String userName, String password) throws LoginException
-    {
-        if(!userNamesAndPasswords.containsKey(userName))
-            throw new UserDoesNotExistException();
-        if(!userNamesAndPasswords.get(userName).equals(password))
-            throw new WrongPasswordException();
+    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
+        if (userNamesAndPasswords.putIfAbsent(userName, password) != null)
+            throw new SubscriberAlreadyExistsException(userName);
+    }
+
+    public void authenticate(String userName, String password) throws SubscriberDoesNotExistException, WrongPasswordException {
+        String currentPassword = userNamesAndPasswords.get(userName);
+        if (currentPassword == null)
+            throw new SubscriberDoesNotExistException(userName);
+        if (!currentPassword.equals(password))
+            throw new WrongPasswordException(userName, password);
     }
 }
