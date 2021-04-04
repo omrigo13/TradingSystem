@@ -117,20 +117,20 @@ public class Inventory {
         return foundItems;
     }
 
-//    /**
-//     * This method searches the inventory by name, category and sub-Category
-//     * @param name - name of the wanted item
-//     * @param category - the category of the wanted item
-//     * @param subCategory - the sub category of the wanted item
-//     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
-//    public Item searchItem(String name, String category, String subCategory) throws ItemException
-//    {
-//        for (Item item: items.keySet())
-//            if(item.getName().toLowerCase().equals(name.toLowerCase()) && item.getCategory().toLowerCase().equals(category.toLowerCase())
-//                    && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
-//                return item;
-//        throw new ItemNotFoundException("item not found");
-//    }
+    /**
+     * This method searches the inventory by name, category and sub-Category
+     * @param name - name of the wanted item
+     * @param category - the category of the wanted item
+     * @param subCategory - the sub category of the wanted item
+     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
+    public Item getItem(String name, String category, String subCategory) throws ItemException
+    {
+        for (Item item: items.keySet())
+            if(item.getName().toLowerCase().equals(name.toLowerCase()) && item.getCategory().toLowerCase().equals(category.toLowerCase())
+                    && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
+                return item;
+        throw new ItemNotFoundException("item not found");
+    }
 
     public Item searchItem(int itemId) throws ItemException{
         for (Item item: items.keySet())

@@ -259,6 +259,16 @@ public class Store {
     }
 
     /**
+     * This method searches the inventory by name, category and sub-Category
+     * @param name - name of the wanted item
+     * @param category - the category of the wanted item
+     * @param subCategory - the sub category of the wanted item
+     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
+    public Item getItem(String name, String category, String subCategory) throws ItemException {
+        return inventory.getItem(name, category, subCategory);
+    }
+
+    /**
      * This method searches the store's inventory by name, category and sub-Category
      * @param itemId- id of the wanted item
      * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
