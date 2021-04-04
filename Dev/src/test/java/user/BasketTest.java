@@ -31,9 +31,10 @@ class BasketTest {
 
     @Test
     void addItem() {
+        int addedQuantity = 5;
         when(items.getOrDefault(item, 0)).thenReturn(quantity);
-        basket.addItem(item, quantity);
-        verify(items).put(item, 2 * quantity);
+        basket.addItem(item, addedQuantity);
+        verify(items).put(item, quantity + addedQuantity);
     }
 
     @Test

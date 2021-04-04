@@ -41,18 +41,18 @@ class TradingSystemTest {
         Exception exception;
 
         doThrow(SubscriberDoesNotExistException.class).when(auth).authenticate(adminName, adminPassword);
-        exception = assertThrows(LoginException.class, () -> new TradingSystem(adminName, adminPassword,
+        exception = assertThrows(LoginException.class, () -> TradingSystem.createTradingSystem(adminName, adminPassword,
                 paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
         assertEquals(SubscriberDoesNotExistException.class, exception.getCause().getClass());
 
         doThrow(WrongPasswordException.class).when(auth).authenticate(adminName, adminPassword);
-        exception = assertThrows(LoginException.class, () -> new TradingSystem(adminName, adminPassword,
+        exception = assertThrows(LoginException.class, () -> TradingSystem.createTradingSystem(adminName, adminPassword,
                 paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
         assertEquals(WrongPasswordException.class, exception.getCause().getClass());
     }
 
     TradingSystem setupTradingSystem() throws LoginException {
-        return new TradingSystem(adminName, adminPassword, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        return TradingSystem.createTradingSystem(adminName, adminPassword, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
     @Test

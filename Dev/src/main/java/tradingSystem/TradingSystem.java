@@ -22,9 +22,9 @@ public class TradingSystem {
     private final Map<String, User> connections; // key: connection id
     private final Map<Integer, Store> stores; // key: store id
 
-    public TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                         UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                         Map<Integer, Store> stores) throws LoginException {
+    private TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                          UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
+                          Map<Integer, Store> stores) throws LoginException {
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
@@ -38,6 +38,12 @@ public class TradingSystem {
         } catch (WrongPasswordException e) {
             throw new LoginException(e);
         }
+    }
+
+    public static TradingSystem createTradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                                                    UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
+                                                    Map<Integer, Store> stores) throws LoginException {
+        return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
     public User getUserByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException {

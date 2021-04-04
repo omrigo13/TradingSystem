@@ -57,21 +57,18 @@ class SubscriberTest {
 
     @Test
     void validatePermissionNoPermission() {
-        when(permissions.contains(permission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.validatePermission(permission));
     }
 
     @Test
     void validateAtLeastOnePermissionHavePermission() throws NoPermissionException {
-        when(permissions.contains(adminPermission)).thenReturn(false);
-        when(permissions.contains(permission)).thenReturn(true);
-        subscriber.validateAtLeastOnePermission(adminPermission, permission);
+        when(permissions.contains(permission)).thenReturn(false);
+        when(permissions.contains(adminPermission)).thenReturn(true);
+        subscriber.validateAtLeastOnePermission(permission, adminPermission);
     }
 
     @Test
     void validateAtLeastOnePermissionNoPermission() {
-        when(permissions.contains(adminPermission)).thenReturn(false);
-        when(permissions.contains(permission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.validateAtLeastOnePermission(adminPermission, permission));
     }
 
@@ -83,15 +80,13 @@ class SubscriberTest {
 
     @Test
     void getAllStoresNoPermission() {
-        when(permissions.contains(adminPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.getAllStores(stores));
     }
 
     @Test
-    void addManagerPermission() throws NoPermissionException, AlreadyManagerException {
+    void addManagerPermission() throws NoPermissionException, AlreadyOwnerException {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
-        when(target.havePermission(managerPermission)).thenReturn(false);
         subscriber.addManagerPermission(target, store);
         verify(target).addPermission(managerPermission);
         verify(permissions).add(removePermissionPermission);
@@ -100,7 +95,6 @@ class SubscriberTest {
     @Test
     void addManagerPermissionNoPermission() {
 
-        when(permissions.contains(ownerPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.addManagerPermission(target, store));
         verifyNoInteractions(target);
     }
@@ -110,25 +104,25 @@ class SubscriberTest {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
         when(target.havePermission(managerPermission)).thenReturn(true);
-        assertThrows(AlreadyManagerException.class, () -> subscriber.addManagerPermission(target, store));
+        assertThrows(AlreadyOwnerException.class, () -> subscriber.addManagerPermission(target, store));
         verify(target, never()).addPermission(any());
         verify(permissions, never()).add(any());
     }
 
     @Test
-    void addOwnerPermission() throws NoPermissionException, AlreadyManagerException {
+    void addOwnerPermission() throws NoPermissionException, AlreadyOwnerException {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
-        when(target.havePermission(managerPermission)).thenReturn(false);
         subscriber.addOwnerPermission(target, store);
         verify(target).addPermission(ownerPermission);
+        verify(target).addPermission(managerPermission);
+        verify(target).addPermission(manageInventoryPermission);
         verify(permissions).add(removePermissionPermission);
     }
 
     @Test
     void addOwnerPermissionNoPermission() {
 
-        when(permissions.contains(ownerPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.addOwnerPermission(target, store));
         verifyNoInteractions(target);
     }
@@ -137,8 +131,8 @@ class SubscriberTest {
     void addOwnerPermissionAlreadyManager() {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
-        when(target.havePermission(managerPermission)).thenReturn(true);
-        assertThrows(AlreadyManagerException.class, () -> subscriber.addOwnerPermission(target, store));
+        when(target.havePermission(ownerPermission)).thenReturn(true);
+        assertThrows(AlreadyOwnerException.class, () -> subscriber.addOwnerPermission(target, store));
         verify(target, never()).addPermission(any());
         verify(permissions, never()).add(any());
     }
@@ -165,7 +159,6 @@ class SubscriberTest {
     @Test
     void removePermissionNoPermission() {
 
-        when(permissions.contains(removePermissionPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.removePermission(target, store, permission));
     }
 
@@ -180,7 +173,6 @@ class SubscriberTest {
     @Test
     void addStoreItemNoPermission() throws Exception {
 
-        when(permissions.contains(manageInventoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.addStoreItem(store, item, category, subCategory, quantity, price));
         verify(store, never()).addItem(any(), anyDouble(), any(), any(), anyInt());
     }
@@ -206,7 +198,6 @@ class SubscriberTest {
     @Test
     void removeStoreItemNoPermission() throws Exception {
 
-        when(permissions.contains(manageInventoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.removeStoreItem(store, itemId));
         verify(store, never()).removeItem(any(), any(), any());
     }
@@ -231,7 +222,6 @@ class SubscriberTest {
     @Test
     void updateStoreItemNoPermission() throws Exception {
 
-        when(permissions.contains(manageInventoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class,
                 () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
         verify(store, never()).changeQuantity(any(), any(), any(), anyInt());

@@ -24,13 +24,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     final UserAuthentication auth;
     final PaymentSystem paymentSystem;
     final DeliverySystem deliverySystem;
-    final HashMap<String, Subscriber> subscribers;
-    final HashMap<String, User> connections;
-    final HashMap<Integer, Store> stores;
+    final Map<String, Subscriber> subscribers;
+    final Map<String, User> connections;
+    final Map<Integer, Store> stores;
 
-    public TradingSystemServiceImpl(UserAuthentication auth, PaymentSystem paymentSystem,
-                                    DeliverySystem deliverySystem, HashMap<String, Subscriber> subscribers,
-                                    HashMap<String, User> connections, HashMap<Integer, Store> stores) {
+    public TradingSystemServiceImpl(UserAuthentication auth, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                                    Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores) {
         this.auth = auth;
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
@@ -41,7 +40,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void initializeSystem(String userName, String pass) throws LoginException {
-        tradingSystem = new TradingSystem(userName, pass, paymentSystem, deliverySystem, auth,
+        tradingSystem = TradingSystem.createTradingSystem(userName, pass, paymentSystem, deliverySystem, auth,
                 subscribers, connections, stores);
     }
 
@@ -161,7 +160,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreManager(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -201,7 +200,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreOwner(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -210,7 +209,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void allowManagerToUpdateProducts(String connectionId, String storeId, String targetUserName)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException {
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
