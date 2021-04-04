@@ -1,5 +1,9 @@
 package store;
 
+import exceptions.ItemException;
+import exceptions.WrongPriceException;
+import exceptions.WrongRatingException;
+
 public class Item {
 
     private int id;

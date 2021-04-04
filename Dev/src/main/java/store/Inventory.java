@@ -4,6 +4,8 @@
 
 package store;
 
+import exceptions.*;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;

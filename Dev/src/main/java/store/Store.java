@@ -1,5 +1,7 @@
 package store;
 
+import exceptions.*;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -22,7 +24,7 @@ public class Store {
      * @param description - the price of the new store
      * @param founder - the fonder of the new store
      * @exception WrongNameException  */
-    public Store(int id, String name, String description, String founder) throws ItemException{
+    public Store(int id, String name, String description, String founder) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')

@@ -1,6 +1,6 @@
-package store;
+package exceptions;
 
-public class ItemAlreadyExistsException extends ItemException{
+public class ItemAlreadyExistsException extends ItemException {
 
     private String msg;
 

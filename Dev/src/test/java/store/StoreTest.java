@@ -1,5 +1,6 @@
 package store;
 
+import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +57,7 @@ public class StoreTest {
 //    }
 
     @Test
-    void addItemWithoutRating() throws ItemException{
+    void addItemWithoutRating() throws ItemException {
         //checks that item name cannot start with a number
         assertThrows(WrongNameException.class, () -> store.addItem("12tomato", 20, "vegetables", "red", 5));
 

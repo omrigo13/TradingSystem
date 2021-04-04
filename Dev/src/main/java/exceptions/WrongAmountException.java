@@ -1,4 +1,6 @@
-package store;
+package exceptions;
+
+import exceptions.ItemException;
 
 public class WrongAmountException extends ItemException {
 
