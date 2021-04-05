@@ -67,21 +67,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
                                        Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
 
-        Collection<String> items = new LinkedList<>();
-        Collection<Item> itemsToAdd;
-        for (Store store : tradingSystem.getStores()) {
-            // TODO: Noa/Omri: get the items from the stores and add to the list.
-            itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
-            for (Item item : itemsToAdd)
-                items.add(item.toString());
-        }
-        return items;
+        return tradingSystem.getItems(keyWord,productName,category,subCategory,ratingItem,ratingStore,maxPrice,minPrice);
     }
 
     @Override
     public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: Noa/Omri: fetch the item
+        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
@@ -93,6 +85,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             Store store = storeBasketEntry.getKey();
             String storeName = store.getName();
             Map<Item, Integer> items = storeBasketEntry.getValue().getItems();
+
+            //Todo: use show cart
             for (Map.Entry<Item, Integer> itemQuantityEntry : items.entrySet()) {
                 Item item = itemQuantityEntry.getKey();
                 Integer quantity = itemQuantityEntry.getValue();
@@ -100,6 +94,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                 itemList.add(itemString);
             }
         }
+
+
         return itemList;
     }
 
@@ -120,7 +116,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: Noa/Omri: fetch the item
+        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
     @Override
@@ -141,7 +137,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         Collection<String> infoList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         for (Store store : subscriber.getAllStores(tradingSystem.getStores()))
-            infoList.add(store.toString()); // TODO: Noa/Omri: provide the store info
+            infoList.add(store.toString());
         return infoList;
     }
 
@@ -175,15 +171,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
         Item item;
-        try {
-            //TODO why do we need to do get item here?
-            item = store.getItem(itemName, category, subCategory);
+        try { //todo : why do we need tryExecept
+
+            item = store.searchItemById(itemId);
         } catch (Exception e) {
             throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
         }
-        return "" + item.getId();
+        return "" + itemId;
     }
 
     @Override

@@ -148,17 +148,18 @@ public class Subscriber extends User {
         // what happens when you give yourself permissions (is that relevant?)
     }
 
-    public void addStoreItem(Store store, String item, String category, String subCategory, int quantity, double price)
+    public int addStoreItem(Store store, String item, String category, String subCategory, int quantity, double price)
             throws NoPermissionException, AddStoreItemException {
-
+        int itemId;
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
         try {
             // add the item to the store
-            store.addItem(item, price, category, subCategory, quantity);
+            itemId=store.addItem(item, price, category, subCategory, quantity);
         } catch (Exception e) {
             throw new AddStoreItemException(store.getName(), item, price, category, subCategory, quantity, e);
         }
+        return itemId;
     }
 
     public void removeStoreItem(Store store, int itemId) throws NoPermissionException, RemoveStoreItemException {
@@ -183,7 +184,6 @@ public class Subscriber extends User {
         // update the item in the store
         try {
             store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
-            // TODO implement other types of updates
         } catch (Exception e) {
             throw new UpdateStoreItemException(e);
         }

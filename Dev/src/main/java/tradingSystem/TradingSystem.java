@@ -4,11 +4,13 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import store.Item;
 import store.Store;
 import user.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class TradingSystem {
@@ -111,8 +113,8 @@ public class TradingSystem {
         // create the new store
         Store store;
         try {
-            store = new Store(storeIdCounter, storeName, "description", subscriber.getUserName());
-            // TODO should change it and get a subscriber when create a new store?
+            store = new Store(storeIdCounter, storeName, "description");
+
         } catch (Exception e) {
             throw new NewStoreException(storeName, e);
         }
@@ -134,5 +136,18 @@ public class TradingSystem {
                 staff.add(potentialStaff);
 
         return staff;
+    }
+
+    public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
+                                       Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
+
+        Collection<String> items = new LinkedList<>();
+        Collection<Item> itemsToAdd;
+        for (Store store : stores.values()) {
+            itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
+            for (Item item : itemsToAdd)
+                items.add(item.toString());
+        }
+        return items;
     }
 }

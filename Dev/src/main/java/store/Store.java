@@ -15,16 +15,17 @@ public class Store {
     private String discountType;     // TODO: should check how to implement
     private String purchasePolicy;     // TODO: should check how to implement
     private String discountPolicy;     // TODO: should check how to implement
-    private String founder;
+    //private String founder;
+    private boolean isActive;
     private Inventory inventory;
 
     /**
      * This method opens a new store and create its inventory
      * @param name - the name of the new store
      * @param description - the price of the new store
-     * @param founder - the fonder of the new store
+   //  * @param founder - the fonder of the new store
      * @exception WrongNameException  */
-    public Store(int id, String name, String description, String founder) throws ItemException {
+    public Store(int id, String name, String description) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -37,8 +38,9 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        this.founder = founder; // TODO: should check how to implement
+       // this.founder = founder; // TODO: should check how to implement
         this.inventory = new Inventory();
+        this.isActive=true;
     }
 
     public int getId() {
@@ -377,4 +379,6 @@ public class Store {
     public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
         inventory.changeItemDetails(itemID, newSubCategory, newQuantity, newPrice);
     }
+
+    public boolean ifActive(){ return isActive;}
 }
