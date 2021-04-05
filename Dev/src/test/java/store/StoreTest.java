@@ -15,7 +15,7 @@ public class StoreTest {
 
     static {
         try {
-            store = new Store(1,"ebay","www.ebay.com online shopping", null);
+            store = new Store(1,"ebay","www.ebay.com online shopping");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -23,18 +23,18 @@ public class StoreTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new Store(1,"ebay","www.ebay.com online shopping",null);
+        store = new Store(1,"ebay","www.ebay.com online shopping");
     }
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store(1, null, "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, null, "www.ebay.com online shopping"));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store(1, "   ", "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, "   ", "www.ebay.com online shopping"));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store(1, "95ebay", "www.ebay.com online shopping", null));
+        assertThrows(WrongNameException.class, () -> store = new Store(1, "95ebay", "www.ebay.com online shopping"));
     }
 
 //    @Test
