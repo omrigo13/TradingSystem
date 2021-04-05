@@ -1,5 +1,9 @@
 package store;
 
+import exceptions.ItemException;
+import exceptions.WrongPriceException;
+import exceptions.WrongRatingException;
+
 public class Item {
 
     private int id;
@@ -30,9 +34,9 @@ public class Item {
         return price;
     }
 
-    public void setPrice(double price) throws Exception {
+    public void setPrice(double price) throws ItemException {
         if(price < 0)
-            throw new WrongPrice("item price must be positive");
+            throw new WrongPriceException("item price must be positive");
         this.price = price;
     }
 
@@ -44,13 +48,15 @@ public class Item {
         return subCategory;
     }
 
+    public void setSubCategory(String newSubCategory){ this.subCategory=newSubCategory;}
+
     public double getRating() {
         return rating;
     }
 
-    public void setRating(double rating) throws Exception {
+    public void setRating(double rating) throws ItemException {
         if(rating < 0)
-            throw new WrongRating("rating must be positive");
+            throw new WrongRatingException("rating must be positive");
         this.rating = rating;
     }
 

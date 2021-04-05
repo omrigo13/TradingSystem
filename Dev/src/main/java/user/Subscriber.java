@@ -54,7 +54,7 @@ public class Subscriber extends User {
         throw new NoPermissionException(Arrays.toString(permissions));
     }
 
-    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
+    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
 
         // check this user has the permission to perform this action
         validatePermission(OwnerPermission.getInstance(store));
@@ -62,7 +62,7 @@ public class Subscriber extends User {
         // check if the target is already a manager at this store
         Permission managerPermission = ManagerPermission.getInstance(store);
         if (target.havePermission(managerPermission))
-            throw new AlreadyManagerException(userName);
+            throw new AlreadyOwnerException(userName);
 
         // add manager permission to the target
         target.addPermission(managerPermission);
@@ -72,24 +72,29 @@ public class Subscriber extends User {
     }
 
     public void removeManagerPermission(Subscriber target, Store store) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(RemovePermissionPermission.getInstance(target, store));
+
+        // TODO: what should be the behavior when the target is also an owner of the store
+
         removePermission(target, store, ManageInventoryPermission.getInstance(store));
         removePermission(target, store, ManagerPermission.getInstance(store));
     }
 
-    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
+    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
 
         // check this user has the permission to perform this action
         Permission ownerPermission = OwnerPermission.getInstance(store);
         validatePermission(ownerPermission);
 
-        // check if the target is already a manager at this store (an owner is always also a manager)
-        Permission managerPermission = ManagerPermission.getInstance(store);
-        if (target.havePermission(managerPermission))
-            throw new AlreadyManagerException(userName);
+        // check if the target is already an owner at this store
+        if (target.havePermission(ownerPermission))
+            throw new AlreadyOwnerException(userName);
 
         // add owner, manager and inventory management permissions to the target
         target.addPermission(ownerPermission);
-        target.addPermission(managerPermission);
+        target.addPermission(ManagerPermission.getInstance(store));
         target.addPermission(ManageInventoryPermission.getInstance(store));
 
         // give the user permission to delete the new permission that was added to the target
@@ -97,15 +102,22 @@ public class Subscriber extends User {
     }
 
     public void removeOwnerPermission(Subscriber target, Store store) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(RemovePermissionPermission.getInstance(target, store));
+
         removePermission(target, store, OwnerPermission.getInstance(store));
         removePermission(target, store, ManageInventoryPermission.getInstance(store));
         removePermission(target, store, ManagerPermission.getInstance(store));
     }
 
-    public void addInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException {
+    public void addInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotStoreManagerException {
 
         // check this user has the permission to perform this action
-        validatePermission(RemovePermissionPermission.getInstance(target, store));
+        validatePermission(OwnerPermission.getInstance(store));
+
+        if (!target.havePermission(ManagerPermission.getInstance(store)))
+            throw new TargetIsNotStoreManagerException(target.getUserName(), store.getName()); // TODO test
 
         // add the permission to the target (if he doesn't already have it)
         target.addPermission(ManageInventoryPermission.getInstance(store));
@@ -122,6 +134,8 @@ public class Subscriber extends User {
 
     void removePermission(Subscriber target, Store store, Permission permission) throws NoPermissionException {
 
+        // TODO think if we need this method
+
         // check this user has the permission to perform this action
         validatePermission(RemovePermissionPermission.getInstance(target, store));
 
@@ -134,17 +148,18 @@ public class Subscriber extends User {
         // what happens when you give yourself permissions (is that relevant?)
     }
 
-    public void addStoreItem(Store store, String item, String category, String subCategory, int quantity, double price)
+    public int addStoreItem(Store store, String item, String category, String subCategory, int quantity, double price)
             throws NoPermissionException, AddStoreItemException {
-
+        int itemId;
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
         try {
             // add the item to the store
-            store.addItem(item, price, category, subCategory, quantity);
+            itemId=store.addItem(item, price, category, subCategory, quantity);
         } catch (Exception e) {
             throw new AddStoreItemException(store.getName(), item, price, category, subCategory, quantity, e);
         }
+        return itemId;
     }
 
     public void removeStoreItem(Store store, int itemId) throws NoPermissionException, RemoveStoreItemException {
@@ -154,7 +169,7 @@ public class Subscriber extends User {
 
         // remove the item from the store
         try {
-            store.removeItem("" + itemId, null, null);
+            store.removeItem(itemId);
         } catch (Exception e) {
             throw new RemoveStoreItemException(e);
         }
@@ -168,8 +183,7 @@ public class Subscriber extends User {
 
         // update the item in the store
         try {
-            store.changeQuantity("" + itemId, null, newSubCategory, newQuantity);
-            // TODO implement other types of updates
+            store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
         } catch (Exception e) {
             throw new UpdateStoreItemException(e);
         }

@@ -1,10 +1,10 @@
 package exceptions;
 
-public class AlreadyManagerException extends Exception {
+public class AlreadyOwnerException extends Exception {
 
     final String userName;
 
-    public AlreadyManagerException(String userName) {
+    public AlreadyOwnerException(String userName) {
         this.userName = userName;
     }
 

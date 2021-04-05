@@ -6,4 +6,11 @@ public class NoPermissionException extends Exception {
     public NoPermissionException(String permission) {
         this.permission = permission;
     }
+
+    @Override
+    public String toString() {
+        return "NoPermissionException{" +
+                "permission='" + permission + '\'' +
+                '}';
+    }
 }

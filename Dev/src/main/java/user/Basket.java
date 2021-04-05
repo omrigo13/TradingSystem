@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.ItemException;
 import store.Item;
 import store.Store;
 
@@ -27,7 +28,7 @@ public class Basket {
         return user;
     }
 
-    public void addItem(Item item, int quantity) {
+    public void addItem(Item item, int quantity)  {
         items.put(item, items.getOrDefault(item, 0) + quantity); // add to existing quantity
     }
 

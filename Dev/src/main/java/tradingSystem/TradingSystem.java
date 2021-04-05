@@ -4,16 +4,18 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import store.Item;
 import store.Store;
 import user.*;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class TradingSystem {
 
-    private int storeIdCounter = 0;
+    private int storeIdCounter = 1;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -22,9 +24,9 @@ public class TradingSystem {
     private final Map<String, User> connections; // key: connection id
     private final Map<Integer, Store> stores; // key: store id
 
-    public TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                         UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                         Map<Integer, Store> stores) throws LoginException {
+    private TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                          UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
+                          Map<Integer, Store> stores) throws LoginException {
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
@@ -38,6 +40,12 @@ public class TradingSystem {
         } catch (WrongPasswordException e) {
             throw new LoginException(e);
         }
+    }
+
+    public static TradingSystem createTradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                                                    UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
+                                                    Map<Integer, Store> stores) throws LoginException {
+        return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
     public User getUserByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException {
@@ -105,7 +113,8 @@ public class TradingSystem {
         // create the new store
         Store store;
         try {
-            store = new Store(storeIdCounter, storeName, "description", subscriber.getUserName());
+            store = new Store(storeIdCounter, storeName, "description");
+
         } catch (Exception e) {
             throw new NewStoreException(storeName, e);
         }
@@ -127,5 +136,18 @@ public class TradingSystem {
                 staff.add(potentialStaff);
 
         return staff;
+    }
+
+    public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
+                                       Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
+
+        Collection<String> items = new LinkedList<>();
+        Collection<Item> itemsToAdd;
+        for (Store store : stores.values()) {
+            itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
+            for (Item item : itemsToAdd)
+                items.add(item.toString());
+        }
+        return items;
     }
 }
