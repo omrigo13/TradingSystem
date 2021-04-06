@@ -166,24 +166,24 @@ class SubscriberTest {
     void addStoreItem() throws Exception {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        subscriber.addStoreItem(store, item, category, subCategory, quantity, price);
-        verify(store).addItem(item, price, category, subCategory, quantity);
+        subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price);
+        verify(store).addItem(itemId,item, price, category, subCategory, quantity);
     }
 
     @Test
     void addStoreItemNoPermission() throws Exception {
 
-        assertThrows(NoPermissionException.class, () -> subscriber.addStoreItem(store, item, category, subCategory, quantity, price));
-        verify(store, never()).addItem(any(), anyDouble(), any(), any(), anyInt());
+        assertThrows(NoPermissionException.class, () -> subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price));
+        verify(store, never()).addItem(any(),any(), anyDouble(), any(), any(), anyInt());
     }
 
     @Test
     void addStoreItemAddItemException() throws Exception {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).addItem(item, price, category, subCategory, quantity);
+        doThrow(exception).when(store).addItem(itemId,item, price, category, subCategory, quantity);
         Exception wrapper = assertThrows(AddStoreItemException.class,
-                () -> subscriber.addStoreItem(store, item, category, subCategory, quantity, price));
+                () -> subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price));
         assertEquals(exception, wrapper.getCause());
     }
 

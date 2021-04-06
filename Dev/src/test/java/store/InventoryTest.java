@@ -39,73 +39,73 @@ public class InventoryTest {
     @Test
     void addItemWithoutRating() throws ItemException {
         //checks that item name cannot start with a number
-        assertThrows(WrongNameException.class, () -> inventory.addItem("12tomato", 20, "vegetables", "red", 5));
+        assertThrows(WrongNameException.class, () -> inventory.addItem(1,"12tomato", 20, "vegetables", "red", 5));
 
         //checks that item has a positive price
-        assertThrows(WrongPriceException.class, () -> inventory.addItem("tomato", -5, "vegetables", "red", 5));
+        assertThrows(WrongPriceException.class, () -> inventory.addItem(2,"tomato", -5, "vegetables", "red", 5));
 
         //checks that item has a positive amount
-        assertThrows(WrongAmountException.class, () -> inventory.addItem("tomato", 17, "vegetables", "red", -2));
+        assertThrows(WrongAmountException.class, () -> inventory.addItem(3,"tomato", 17, "vegetables", "red", -2));
 
         //checks that we cannot add an item that already exists
-        int tomatoID=inventory.addItem("tomato", 20, "vegetables", "red", 5);
+        int tomatoID=inventory.addItem(4,"tomato", 20, "vegetables", "red", 5);
 
-        assertThrows(ItemAlreadyExistsException.class, () -> inventory.addItem("tomato", 20, "vegetables", "red", 5));
+        assertThrows(ItemAlreadyExistsException.class, () -> inventory.addItem(4,"tomato", 20, "vegetables", "red", 5));
         assertEquals(inventory.getItems().size(), 1);
         assertEquals(inventory.getItems().keys().nextElement().getId(),tomatoID);
     }
 
     @Test
     void searchItemByName() throws ItemException{
-        inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertTrue(inventory.searchItemByName("carrot").isEmpty());
-        inventory.addItem("tomato", 20, "vegetables", "blue", 5);
+        inventory.addItem(3,"tomato", 20, "vegetables", "blue", 5);
         assertEquals(inventory.searchItemByName("tomato").size(), 2);
     }
 
     @Test
     void searchItemByCategory() throws ItemException{
-        inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertTrue(inventory.searchItemByCategory("camera").isEmpty());
-        inventory.addItem("GoPro", 1200, "camera", "black", 5);
+        inventory.addItem(3,"GoPro", 1200, "camera", "black", 5);
         assertEquals(inventory.searchItemByCategory("vegetables").size(), 2);
     }
 
     @Test
     void searchItemByKeyWord() throws ItemException{
-        inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertTrue(inventory.searchItemByKeyWord("blue").isEmpty());
-        inventory.addItem("RedGoPro", 1200, "camera", "black", 5);
+        inventory.addItem(3,"RedGoPro", 1200, "camera", "black", 5);
         assertEquals(inventory.searchItemByKeyWord("red").size(), 2);
     }
 
     @Test
     void searchItem() throws ItemException{
-        int tomatoID= inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
-        int tomato2ID= inventory.addItem("tomato", 20, "vegetables", "blue", 5);
+        int tomatoID= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int cucumberId= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        int tomato2ID= inventory.addItem(3,"tomato", 20, "vegetables", "blue", 5);
         assertThrows(ItemNotFoundException.class, () -> inventory.searchItem(6));
         assertEquals(inventory.searchItem(tomato2ID).getId(), 3);
     }
 
     @Test
     void filterByPrice() throws ItemException{
-        inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertTrue(inventory.filterByPrice(30, 100).isEmpty());
-        inventory.addItem("tomato", 20, "vegetables", "blue", 5);
+        inventory.addItem(3,"tomato", 20, "vegetables", "blue", 5);
         assertEquals(inventory.filterByPrice(15, 20).size(), 3);
     }
 
     @Test
     void filterByRating() throws ItemException{
-        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
+        int tomatoId= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
         Item tomato = inventory.searchItem(tomatoId);
         tomato.setRating(2);
-        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        int cucumberId= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         Item cucumber = inventory.searchItem(cucumberId);
         cucumber.setRating(3);
         assertTrue(inventory.filterByRating(4).isEmpty());
@@ -115,8 +115,8 @@ public class InventoryTest {
 
     @Test
     void changeQuantity() throws ItemException{
-        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomatoId= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int cucumberID= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
       //  Item tomato = inventory.searchItem("tomato", "vegetables","red");
 
         //checks that the quantity must be 0 or greater
@@ -130,8 +130,8 @@ public class InventoryTest {
 
     @Test
     void decreaseByQuantity() throws ItemException{
-        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 0);
+        int cucumberId= inventory.addItem(1,"cucumber", 15, "vegetables", "green", 10);
+        int carrotId= inventory.addItem(2,"carrot", 20, "vegetables", "orange", 0);
         Item cucumber = inventory.searchItem(cucumberId);
 
         //checks that the quantity must be 0 or greater
@@ -145,8 +145,8 @@ public class InventoryTest {
 
     @Test
     void removeItem() throws ItemException{
-        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 0);
+        int cucumberId= inventory.addItem(1,"cucumber", 15, "vegetables", "green", 10);
+        int carrotId= inventory.addItem(2,"carrot", 20, "vegetables", "orange", 0);
         assertEquals(inventory.getItems().size(), 2);
 
         //checks that only an existing item can be removed
@@ -161,8 +161,8 @@ public class InventoryTest {
 
     @Test
     void checkAmount() throws ItemException {
-        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomatoId= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int cucumberID= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertThrows(WrongAmountException.class,()->inventory.checkAmount(tomatoId,8));
         assertTrue(inventory.checkAmount(cucumberID,4));
         assertThrows(WrongAmountException.class,() -> inventory.checkAmount(tomatoId,-1));
@@ -171,8 +171,8 @@ public class InventoryTest {
 
     @Test
     void changeItemDetails() throws ItemException {
-        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomatoId= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int cucumberID= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
         assertThrows(WrongAmountException.class,()->inventory.changeItemDetails(tomatoId,null,-9,null));
         assertNotEquals(inventory.searchItem(tomatoId).getSubCategory(),null);
         assertThrows(WrongAmountException.class,()->inventory.changeItemDetails(tomatoId,"",-9,null));
@@ -199,9 +199,9 @@ public class InventoryTest {
 
     @Test
     void calculate() throws ItemException, Exception{
-        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= inventory.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int cucumberID= inventory.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        int carrotId= inventory.addItem(3,"carrot", 20, "vegetables", "orange", 8);
         inventory.searchItem(carrotId).lock();
         Map<Item, Integer> items = new HashMap<>();
         items.put(inventory.searchItem(tomatoId), 2);

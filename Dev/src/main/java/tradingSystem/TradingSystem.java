@@ -18,6 +18,7 @@ public class TradingSystem {
 
     private int storeIdCounter = 1;
     private int purchaseIdCounter = 1;
+    private int itemIdCounter=1;
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
@@ -226,5 +227,21 @@ public class TradingSystem {
                 }
         }
         throw new ItemNotPurchased("can't write a review for an item that have not purchased by the user");
+    }
+
+    public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
+        Subscriber subscriber =getSubscriberByConnectionId(connectionId);
+        Store store = getStore(Integer.parseInt(storeId));
+        int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
+        Item item;
+        try {
+
+            item = store.searchItemById(itemId);
+        } catch (Exception e) {
+            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
+        }
+        itemIdCounter++;
+        return "" + itemId;
     }
 }

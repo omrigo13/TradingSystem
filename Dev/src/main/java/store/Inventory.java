@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Inventory {
 
     private ConcurrentHashMap<Item, Integer> items;
-    private AtomicInteger id = new AtomicInteger(1);
 
     public Inventory() {
         this.items = new ConcurrentHashMap<>();
@@ -57,7 +56,7 @@ public class Inventory {
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
      * @exception WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException  */
-    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
+    public int addItem(int itemId,String name, double price, String category, String subCategory, int amount) throws ItemException {
         if(name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("item name is null or contains only white spaces");
         if(name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -71,10 +70,8 @@ public class Inventory {
                 throw new ItemAlreadyExistsException("item already exists");
         if(category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
             throw new WrongCategoryException("item category cannot start with a number");
-        int newItemId=id.get();
-        items.putIfAbsent(new Item(newItemId, name, price, category, subCategory, 0), amount);
-        id.getAndIncrement();
-        return newItemId;
+        items.putIfAbsent(new Item(itemId, name, price, category, subCategory, 0), amount);
+        return itemId;
     }
 
     /**

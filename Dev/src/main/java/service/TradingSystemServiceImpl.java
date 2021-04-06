@@ -186,17 +186,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
-        Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
-        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
-        Item item;
-        try {
-
-            item = store.searchItemById(itemId);
-        } catch (Exception e) {
-            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
-        }
-        return "" + itemId;
+        return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
     }
 
     @Override

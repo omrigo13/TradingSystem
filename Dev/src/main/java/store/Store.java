@@ -111,8 +111,8 @@ public class Store {
      * @param amount      the amount in the store for the new item
      * @throws WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException
      */
-    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
-        return this.inventory.addItem(name, price, category, subCategory, amount);
+    public int addItem(int itemId,String name, double price, String category, String subCategory, int amount) throws ItemException {
+        return this.inventory.addItem(itemId,name, price, category, subCategory, amount);
     }
 
 //    /**
