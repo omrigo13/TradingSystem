@@ -11,7 +11,7 @@ class PaymentSystemTest {
 
     @Test
     void pay() {
-        PaymentData paymentData = new PaymentData();
+        PaymentData paymentData = new PaymentData(0);
         PaymentSystem paymentSystem = new PaymentSystem();
         paymentSystem.pay(paymentData);
     }

@@ -4,6 +4,9 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InventoryTest {
@@ -192,6 +195,31 @@ public class InventoryTest {
         assertEquals(inventory.searchItem(cucumberID).getSubCategory(),"maxPrice");
 
 
+    }
+
+    @Test
+    void calculate() throws ItemException, Exception{
+        int tomatoId= inventory.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 8);
+        inventory.searchItem(carrotId).lock();
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(inventory.searchItem(tomatoId), 2);
+        items.put(inventory.searchItem(cucumberID), 2);
+        items.put(inventory.searchItem(carrotId), 2);
+        assertThrows(Exception.class, () -> inventory.calculate(items));
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 5);
+        inventory.searchItem(carrotId).unlock();
+        assertEquals(inventory.calculate(items), 110);
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 3);
+        inventory.searchItem(tomatoId).unlock();
+        inventory.searchItem(cucumberID).unlock();
+        inventory.searchItem(carrotId).unlock();
+        items.clear();
+        items.put(inventory.searchItem(tomatoId), 2);
+        items.put(inventory.searchItem(cucumberID), 2);
+        items.put(inventory.searchItem(carrotId), 8);
+        assertThrows(WrongAmountException.class, () -> inventory.calculate(items));
     }
 //
 //    @Test

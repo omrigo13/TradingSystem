@@ -83,6 +83,11 @@ class TradingSystemTest {
     void logout() {
     }
 
+    @Test
+    void purchaseCart() throws LoginException {
+        //TODO add a test here
+    }
+
 //    @Test
 //    void addAndGetItems() throws UserDoesNotExistException {
 //        String guestID = trade.connectGuest();

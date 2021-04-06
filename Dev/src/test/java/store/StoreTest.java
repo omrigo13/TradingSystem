@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -300,5 +301,64 @@ public class StoreTest {
         assertEquals(store.searchItemById(cucumberId).getSubCategory(),"oldItem");
     }
 
+    @Test
+    void calculate() throws ItemException, Exception {
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        store.searchItemById(carrotId).lock();
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(store.searchItemById(tomatoId), 2);
+        items.put(store.searchItemById(cucumberID), 2);
+        items.put(store.searchItemById(carrotId), 2);
+        assertThrows(Exception.class, () -> store.calculate(items));
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 5);
+        store.searchItemById(carrotId).unlock();
+        assertEquals(store.calculate(items), 110);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 3);
+        store.searchItemById(tomatoId).unlock();
+        store.searchItemById(cucumberID).unlock();
+        store.searchItemById(carrotId).unlock();
+        items.clear();
+        items.put(store.searchItemById(tomatoId), 2);
+        items.put(store.searchItemById(cucumberID), 2);
+        items.put(store.searchItemById(carrotId), 8);
+        assertThrows(WrongAmountException.class, () -> store.calculate(items));
+    }
 
+    @Test
+    void unlockItems() throws ItemException{
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        store.searchItemById(carrotId).lock();
+        store.searchItemById(tomatoId).lock();
+        store.searchItemById(cucumberID).lock();
+        Set<Item> items = new HashSet<>();
+        items.add(store.searchItemById(tomatoId));
+        items.add(store.searchItemById(carrotId));
+        items.add(store.searchItemById(cucumberID));
+        store.unlockItems(items);
+        assertFalse(store.searchItemById(carrotId).isLocked());
+        assertFalse(store.searchItemById(cucumberID).isLocked());
+    }
+
+    @Test
+    void rollBack() throws ItemException{
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        store.searchItemById(carrotId).lock();
+        store.searchItemById(tomatoId).lock();
+        store.searchItemById(cucumberID).lock();
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(store.searchItemById(tomatoId), 2);
+        items.put(store.searchItemById(cucumberID), 2);
+        items.put(store.searchItemById(carrotId), 8);
+        store.rollBack(items);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 7);
+        assertEquals(store.getItems().get(store.searchItemById(carrotId)), 16);
+        assertFalse(store.searchItemById(cucumberID).isLocked());
+        assertFalse(store.searchItemById(carrotId).isLocked());
+    }
 }

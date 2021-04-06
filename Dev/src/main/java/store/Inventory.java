@@ -290,10 +290,18 @@ public class Inventory {
     public double calculate(Map<Item, Integer> items) throws Exception {
         double paymentValue = 0;
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
-            if(!entry.getKey().isLocked())
+            if (!entry.getKey().isLocked())
                 entry.getKey().lock();
             else
+            {
+                for (Map.Entry<Item, Integer> newEntry: items.entrySet()) {
+                    if (newEntry.getKey().isLocked())
+                        newEntry.getKey().unlock();
+                }
                 throw new Exception("a kind of wait should be here"); //TODO we have to check what to do with locked items
+            }
+        }
+        for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if(checkAmount(entry.getKey().getId(), entry.getValue())) {
                 paymentValue += (entry.getKey().getPrice() * entry.getValue());
                 this.items.replace(entry.getKey(), this.items.get(entry.getKey()) - entry.getValue());
@@ -301,5 +309,4 @@ public class Inventory {
         }
         return paymentValue;
     }
-
 }
