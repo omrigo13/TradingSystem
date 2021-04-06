@@ -135,7 +135,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     } //TODO add a permission to subscriber user to see his history
 
     @Override
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException {
+        tradingSystem.writeOpinionOnProduct(connectionId, storeID, productId, desc);
     }
 
     @Override

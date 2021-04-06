@@ -7,6 +7,7 @@ import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import purchase.Purchase;
+import purchase.Review;
 import store.Item;
 import store.Store;
 import user.*;
@@ -77,8 +78,7 @@ public class TradingSystem {
         return stores.get(storeId);
     }
 
-    public String connect()
-    {
+    public String connect() {
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
@@ -154,7 +154,7 @@ public class TradingSystem {
         return items;
     }
 
-    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException , Exception{
+    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
         User user = getUserByConnectionId(connectionId);
         double paymentValue = 0, storePayment = 0;
         Collection<Integer> itemIDs = new LinkedList<>();
@@ -162,29 +162,29 @@ public class TradingSystem {
         String storeDetails = "";
         Map<Integer, Collection<Integer>> storeItems = new HashMap<>();
         Map<Store, Double> storePayments = new HashMap<>();
-        for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+        for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
             storePayment = entry.getKey().calculate(entry.getValue().getItems());
             storePayments.put(entry.getKey(), storePayment);
             paymentValue += storePayment;
         }
         PaymentData paymentData = new PaymentData(paymentValue);
-        if(paymentSystem.pay(paymentData)) {
-            if(deliverySystem.deliver(new DeliveryData())) {
-                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+        if (paymentSystem.pay(paymentData)) {
+            if (deliverySystem.deliver(new DeliveryData())) {
+                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
                     entry.getKey().unlockItems(entry.getValue().getItems().keySet());
                 }
-                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
                     storeDetails = "Store Name: " + entry.getKey().getName() + "\nItems:\n";
-                    for (Item item: entry.getValue().getItems().keySet()) {
+                    for (Item item : entry.getValue().getItems().keySet()) {
                         itemIDs.add(item.getId());
                         storeDetails += "\titem name: " + item.getName() + " price: " + item.getPrice() + " quantity: " + entry.getValue().getItems().get(item) + "\n";
                     }
-                    storeDetails += "Store Price: " + storePayments.get(entry.getKey()) +"\n";
+                    storeDetails += "Store Price: " + storePayments.get(entry.getKey()) + "\n";
                     details += storeDetails + "\n";
                     storeItems.put(entry.getKey().getId(), itemIDs);
                     Map<Integer, Collection<Integer>> itemsOfStore = new HashMap<>();
                     itemsOfStore.put(entry.getKey().getId(), itemIDs);
-                    entry.getKey().addPurchase(new Purchase(purchaseIdCounter, itemsOfStore , storeDetails));
+                    entry.getKey().addPurchase(new Purchase(purchaseIdCounter, itemsOfStore, storeDetails));
                     itemIDs = new LinkedList<>();
                 }
                 details += "Total Price: " + paymentValue;
@@ -192,20 +192,33 @@ public class TradingSystem {
                 user.addPurchase(purchase);
                 purchaseIdCounter++;
                 user.resetCart();
-            }
-            else {
+            } else {
                 paymentSystem.payBack(paymentData);
-                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
                     entry.getKey().rollBack(entry.getValue().getItems());
                 }
                 throw new DeliverySystemException();
             }
-        }
-        else {
-            for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+        } else {
+            for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
                 entry.getKey().rollBack(entry.getValue().getItems());
             }
             throw new PaymentSystemException();
         }
+    }
+
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException {
+        User user = getUserByConnectionId(connectionId); //TODO should be a subscriber
+        for (Purchase purchase : user.getPurchases()) {
+            if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
+                if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))
+                {
+                    Store store = stores.get(Integer.parseInt(storeID));
+                    Item item = store.searchItemById(Integer.parseInt(productId));
+                    item.addReview(new Review(user, store, item, desc));
+                    return;
+                }
+        }
+        throw new ItemNotPurchased("can't write a review for an item that have not purchased by the user");
     }
 }
