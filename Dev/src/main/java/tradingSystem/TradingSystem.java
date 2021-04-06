@@ -2,8 +2,12 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.*;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import purchaseAndReview.Purchase;
+import purchaseAndReview.Review;
 import store.Item;
 import store.Store;
 import user.*;
