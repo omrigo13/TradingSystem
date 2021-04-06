@@ -124,6 +124,8 @@ public class TradingSystem {
 
         // give the subscriber owner permission
         subscriber.addPermission(OwnerPermission.getInstance(store));
+        subscriber.addPermission(ManagerPermission.getInstance(store));
+        subscriber.addPermission(ManageInventoryPermission.getInstance(store));
 
         return storeIdCounter++;
     }
