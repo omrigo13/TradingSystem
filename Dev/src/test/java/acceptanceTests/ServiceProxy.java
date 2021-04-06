@@ -12,11 +12,14 @@ public class ServiceProxy implements TradingSystemService {
     }
     @Override
     public void initializeSystem(String userName, String pass) throws Exception {
-
+        if(real != null)
+            real.initializeSystem(userName, pass);
     }
 
     @Override
     public String connect() throws Exception {
+        if(real != null)
+            return real.connect();
         return null;
     }
 

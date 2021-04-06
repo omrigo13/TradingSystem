@@ -13,6 +13,7 @@ import user.Subscriber;
 import user.User;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -35,6 +36,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
+    }
+
+    public TradingSystemServiceImpl(UserAuthentication userAuthentication) {
+        this.auth = userAuthentication;
+        this.paymentSystem = new PaymentSystem();
+        this.deliverySystem = new DeliverySystem();
+        this.subscribers = new HashMap<>();
+        this.connections = new HashMap<>();
+        this.stores = new HashMap<>();
     }
 
     @Override
