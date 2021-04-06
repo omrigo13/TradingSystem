@@ -8,10 +8,7 @@ import store.Item;
 import store.Store;
 import user.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class TradingSystem {
 
@@ -72,6 +69,11 @@ public class TradingSystem {
 
     public Store getStore(int storeId) {
         return stores.get(storeId);
+    }
+
+    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
+        auth.register(userName, password);
+        subscribers.put(userName, new Subscriber(userName, new HashMap<>(), new HashSet<>()));
     }
 
     public String connect()

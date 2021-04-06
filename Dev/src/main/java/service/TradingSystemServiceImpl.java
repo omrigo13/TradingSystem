@@ -60,7 +60,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
-        auth.register(userName, password);
+        tradingSystem.register(userName, password);
     }
 
     @Override
