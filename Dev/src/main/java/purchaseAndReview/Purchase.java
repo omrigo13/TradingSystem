@@ -1,4 +1,4 @@
-package purchase;
+package purchaseAndReview;
 
 import java.util.Collection;
 import java.util.Map;

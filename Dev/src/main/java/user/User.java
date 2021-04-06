@@ -1,7 +1,7 @@
 package user;
 
 import exceptions.NotLoggedInException;
-import purchase.Purchase;
+import purchaseAndReview.Purchase;
 import store.Store;
 
 import java.util.Collection;

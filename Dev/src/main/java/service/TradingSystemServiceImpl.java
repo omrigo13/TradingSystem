@@ -4,7 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
-import purchase.Purchase;
+import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;

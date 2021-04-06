@@ -1,7 +1,7 @@
 package store;
 
 import exceptions.*;
-import purchase.Purchase;
+import purchaseAndReview.Purchase;
 
 import java.util.Collection;
 import java.util.LinkedList;
