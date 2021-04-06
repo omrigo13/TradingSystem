@@ -4,6 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import purchase.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -124,9 +125,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getPurchaseHistory(String connectionId) {
-        return null;
-    }
+    public Collection<String> getPurchaseHistory(String connectionId) throws ConnectionIdDoesNotExistException {
+        User user = tradingSystem.getUserByConnectionId(connectionId);
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: user.getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
+    } //TODO add a permission to subscriber user to see his history
 
     @Override
     public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) {
@@ -270,8 +276,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) {
-        return null;
+    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException {
+        //TODO admin permission to see all stores history new function to add use case 6.4
+        //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: tradingSystem.getStore(Integer.parseInt(storeId)).getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
     }
 
     @Override

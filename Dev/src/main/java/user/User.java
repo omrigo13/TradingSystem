@@ -45,4 +45,6 @@ public class User {
     public void addPurchase(Purchase purchase) {purchases.add(purchase); }
 
     public void resetCart() {baskets.clear(); }
+
+    public Collection<Purchase> getPurchases() {return purchases; }
 }

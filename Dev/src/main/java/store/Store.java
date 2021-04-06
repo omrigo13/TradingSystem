@@ -421,4 +421,6 @@ public class Store {
     }
 
     public void addPurchase(Purchase purchase) {purchases.add(purchase); }
+
+    public Collection<Purchase> getPurchases() { return purchases; }
 }
