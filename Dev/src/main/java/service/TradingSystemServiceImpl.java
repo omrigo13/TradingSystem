@@ -135,8 +135,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getPurchaseHistory(String connectionId) throws ConnectionIdDoesNotExistException {
-        User user = tradingSystem.getUserByConnectionId(connectionId);
+    public Collection<String> getPurchaseHistory(String connectionId) throws NotLoggedInException, ConnectionIdDoesNotExistException {
+        Subscriber user = tradingSystem.getSubscriberByConnectionId(connectionId);
         Collection<String> purchases = new LinkedList<>();
         for (Purchase purchase: user.getPurchases()) {
             purchases.add(purchase.getDetails());
