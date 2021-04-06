@@ -13,6 +13,9 @@ import user.ManagerPermission;
 import user.Subscriber;
 import user.User;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -85,15 +88,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
                                        Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
-        logger.info("Search for items with the attributes:\n" +
-                "key word- " + keyWord + "\n" +
-                "product name- " + productName + "\n" +
-                "category- " + category + "\n" +
-                "sub category- " + subCategory + "\n" +
-                "rating item- " + ratingItem + "\n" +
-                "rating store- " + ratingStore + "\n" +
-                "max price- " + maxPrice + "\n" +
-                "min price- " + minPrice);
+        logger.info("Search for items with the attributes: " +
+                "key word- " + keyWord +
+                ", product name- " + productName +
+                ", category- " + category +
+                ", sub category- " + subCategory +
+                ", rating item- " + ratingItem +
+                ", rating store- " + ratingStore +
+                ", max price- " + maxPrice +
+                ", min price- " + minPrice);
         return tradingSystem.getItems(keyWord,productName,category,subCategory,ratingItem,ratingStore,maxPrice,minPrice);
     }
 
@@ -164,8 +167,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) {
-        logger.info("User write opinion about an Item:\n" +
-                    "store: " + storeID + ", product: " + productId + "\ndescription: " + desc);
+        logger.info("User write opinion about an Item: " +
+                    "store- " + storeID + ", product- " + productId + ", description: " + desc);
     }
 
     @Override
@@ -209,12 +212,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
-        logger.info("Add product to store: " + storeId + "\n" +
-                "name- " + itemName + "\n" +
-                "category- " + category + "\n" +
-                "sub category- " + subCategory + "\n" +
-                "quantity- " + quantity + "\n" +
-                "price- " + price);
+        logger.info("Add product to store: " + storeId +
+                ", name- " + itemName +
+                ", category- " + category +
+                ", sub category- " + subCategory +
+                ", quantity- " + quantity +
+                ", price- " + price);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
@@ -231,8 +234,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void deleteProductFromStore(String connectionId, String storeId, String itemId)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException {
-        logger.info("Delete product from store: " + storeId + "\n" +
-                "item- " + itemId);
+        logger.info("Delete product from store: " + storeId +
+                ", item- " + itemId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.removeStoreItem(store, Integer.parseInt(itemId));
@@ -241,11 +244,11 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void updateProductDetails(String connectionId, String storeId, String itemId, String newSubCategory, Integer newQuantity, Double newPrice)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException {
-        logger.info("Update item details from store: " + storeId + "\n" +
-                "item- " + itemId + "\n" +
-                "sub category- " + newSubCategory + "\n" +
-                "quantity- " + newQuantity + "\n" +
-                "price- " + newPrice);
+        logger.info("Update item details from store: " + storeId +
+                ", item- " + itemId +
+                ", sub category- " + newSubCategory +
+                ", quantity- " + newQuantity +
+                ", price- " + newPrice);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.updateStoreItem(store, Integer.parseInt(itemId), newSubCategory, newQuantity, newPrice);
@@ -334,9 +337,24 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getEventLog(String connectionId) {
+    public Collection<String> getEventLog(String connectionId) throws IOException {
         logger.info("Get event log");
-        return null;
+        Collection<String> eventLog = new LinkedList<>();
+        BufferedReader reader = new BufferedReader(new FileReader("Dev/logging.log"));
+        //StringBuilder stringBuilder = new StringBuilder();
+        String line = null;
+        String ls = System.getProperty("line.separator");
+        while ((line = reader.readLine()) != null) {
+            eventLog.add(line);
+           // stringBuilder.append(line);
+           // stringBuilder.append(ls);
+        }
+// delete the last new line separator
+        //stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        reader.close();
+        //String content = stringBuilder.toString();
+        //System.out.println(content);
+        return eventLog;
     }
 
     @Override
