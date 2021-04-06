@@ -8,10 +8,7 @@ import store.Item;
 import store.Store;
 import user.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class TradingSystem {
 
@@ -74,6 +71,11 @@ public class TradingSystem {
         return stores.get(storeId);
     }
 
+    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
+        auth.register(userName, password);
+        subscribers.put(userName, new Subscriber(userName, new HashMap<>(), new HashSet<>()));
+    }
+
     public String connect()
     {
         String connectionId = java.util.UUID.randomUUID().toString();
@@ -122,6 +124,8 @@ public class TradingSystem {
 
         // give the subscriber owner permission
         subscriber.addPermission(OwnerPermission.getInstance(store));
+        subscriber.addPermission(ManagerPermission.getInstance(store));
+        subscriber.addPermission(ManageInventoryPermission.getInstance(store));
 
         return storeIdCounter++;
     }

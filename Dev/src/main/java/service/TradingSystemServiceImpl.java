@@ -13,6 +13,7 @@ import user.Subscriber;
 import user.User;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -37,6 +38,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         this.stores = stores;
     }
 
+    public TradingSystemServiceImpl(UserAuthentication userAuthentication) {
+        this.auth = userAuthentication;
+        this.paymentSystem = new PaymentSystem();
+        this.deliverySystem = new DeliverySystem();
+        this.subscribers = new HashMap<>();
+        this.connections = new HashMap<>();
+        this.stores = new HashMap<>();
+    }
+
     @Override
     public void initializeSystem(String userName, String pass) throws LoginException {
         tradingSystem = TradingSystem.createTradingSystem(userName, pass, paymentSystem, deliverySystem, auth,
@@ -50,7 +60,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
-        auth.register(userName, password);
+        tradingSystem.register(userName, password);
     }
 
     @Override
