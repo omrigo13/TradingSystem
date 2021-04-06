@@ -1,7 +1,12 @@
 package store;
 
 import exceptions.*;
+import purchase.Purchase;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,13 +23,16 @@ public class Store {
     //private String founder;
     private boolean isActive;
     private Inventory inventory;
+    private Collection<Purchase> purchases = new LinkedList<>();
 
     /**
      * This method opens a new store and create its inventory
-     * @param name - the name of the new store
+     *
+     * @param name        - the name of the new store
      * @param description - the price of the new store
-   //  * @param founder - the fonder of the new store
-     * @exception WrongNameException  */
+     *                    //  * @param founder - the fonder of the new store
+     * @throws WrongNameException
+     */
     public Store(int id, String name, String description) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
@@ -38,9 +46,9 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-       // this.founder = founder; // TODO: should check how to implement
+        // this.founder = founder; // TODO: should check how to implement
         this.inventory = new Inventory();
-        this.isActive=true;
+        this.isActive = true;
     }
 
     public int getId() {
@@ -55,12 +63,14 @@ public class Store {
         return description;
     }
 
-    public double getRating() { return rating; }
+    public double getRating() {
+        return rating;
+    }
 
     public void setRating(double rating) throws WrongRatingException {
-        if(rating<0)
+        if (rating < 0)
             throw new WrongRatingException("rating must be a positive number");
-        this.rating=rating;
+        this.rating = rating;
     }
 
     public Inventory getInventory() {
@@ -68,7 +78,8 @@ public class Store {
     }
 
     /**
-     * This method returns the items in the store's inventory*/
+     * This method returns the items in the store's inventory
+     */
     public ConcurrentHashMap<Item, Integer> getItems() {
         return this.inventory.getItems();
     }
@@ -92,12 +103,14 @@ public class Store {
 
     /**
      * this adds a new item and it's amount to the store's inventory
-     * @param name - the name of the new item
-     * @param price - the price of the new item
-     * @param category - the category of the new item
+     *
+     * @param name        - the name of the new item
+     * @param price       - the price of the new item
+     * @param category    - the category of the new item
      * @param subCategory - the sub category of the new item
-     * @param amount the amount in the store for the new item
-     * @exception WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException  */
+     * @param amount      the amount in the store for the new item
+     * @throws WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException
+     */
     public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         return this.inventory.addItem(name, price, category, subCategory, amount);
     }
@@ -124,12 +137,12 @@ public class Store {
 //    }
 
 
-    public ConcurrentLinkedQueue<Item> searchAndFilter(String keyWord, String itemName, String category,Double ratingItem,
-                                                       Double ratingStore, Double maxPrice, Double minPrice)
-    {
-        ConcurrentLinkedQueue<Item> search=searchItems(keyWord,itemName,category);
-        return filterItems(search,ratingItem,ratingStore,maxPrice,minPrice);
+    public ConcurrentLinkedQueue<Item> searchAndFilter(String keyWord, String itemName, String category, Double ratingItem,
+                                                       Double ratingStore, Double maxPrice, Double minPrice) {
+        ConcurrentLinkedQueue<Item> search = searchItems(keyWord, itemName, category);
+        return filterItems(search, ratingItem, ratingStore, maxPrice, minPrice);
     }
+
     //    /**
 //     * This method searches the store's inventory for an item
 //     * @param name - the name of the item
@@ -137,48 +150,41 @@ public class Store {
 //     * @param subCategory - the sub category of the item
 //     * @exception  ItemNotFound  */
     public ConcurrentLinkedQueue<Item> searchItems(String keyWord, String itemName, String category) {
-        ConcurrentLinkedQueue list1=null;
-        ConcurrentLinkedQueue list2=null;
-        ConcurrentLinkedQueue list3=null;
-        if(itemName != null && !itemName.isEmpty() && !itemName.trim().isEmpty() )
-            list1=inventory.searchItemByName(itemName);
-        if(category != null && !category.isEmpty() && !category.trim().isEmpty() )
-            list2=inventory.searchItemByCategory(category);
-        if(keyWord != null && !keyWord.isEmpty() && !keyWord.trim().isEmpty() )
-            list3=inventory.searchItemByKeyWord(keyWord);
+        ConcurrentLinkedQueue list1 = null;
+        ConcurrentLinkedQueue list2 = null;
+        ConcurrentLinkedQueue list3 = null;
+        if (itemName != null && !itemName.isEmpty() && !itemName.trim().isEmpty())
+            list1 = inventory.searchItemByName(itemName);
+        if (category != null && !category.isEmpty() && !category.trim().isEmpty())
+            list2 = inventory.searchItemByCategory(category);
+        if (keyWord != null && !keyWord.isEmpty() && !keyWord.trim().isEmpty())
+            list3 = inventory.searchItemByKeyWord(keyWord);
 
 
-        if(list1!=null && list2!=null && list3!=null)
-        {
+        if (list1 != null && list2 != null && list3 != null) {
             list1.retainAll(list2);
             list1.retainAll(list3);
             return list1;
         }
-        if(list1!=null && list2==null && list3!=null)
-        {
+        if (list1 != null && list2 == null && list3 != null) {
             list1.retainAll(list3);
             return list1;
         }
-        if(list1!=null && list2!=null && list3==null)
-        {
+        if (list1 != null && list2 != null && list3 == null) {
             list1.retainAll(list2);
             return list1;
         }
-        if(list1!=null && list2==null && list3==null)
-        {
+        if (list1 != null && list2 == null && list3 == null) {
             return list1;
         }
-        if(list1==null && list2!=null && list3!=null)
-        {
+        if (list1 == null && list2 != null && list3 != null) {
             list3.retainAll(list2);
             return list3;
         }
-        if(list1==null && list2!=null && list3==null)
-        {
+        if (list1 == null && list2 != null && list3 == null) {
             return list2;
         }
-        if(list1==null && list2==null && list3!=null)
-        {
+        if (list1 == null && list2 == null && list3 != null) {
             return list3;
         }
         return null;
@@ -186,73 +192,66 @@ public class Store {
     }
 
 
-    public ConcurrentLinkedQueue<Item> filterItems( ConcurrentLinkedQueue<Item> items,Double ratingItem, Double ratingStore,
-                                                    Double maxPrice, Double minPrice){
-        ConcurrentLinkedQueue<Item> itemsList1=null;
-        ConcurrentLinkedQueue<Item> itemsList2=null;
-        ConcurrentLinkedQueue<Item> itemsList3=null;
-        if(ratingItem!=null && ratingStore!=null && (maxPrice!=null && minPrice!=null))
-        {
-            itemsList1= filterByRating(items,ratingItem);
-            if(this.getRating()<ratingStore)
-                 itemsList2=new ConcurrentLinkedQueue<>();
+    public ConcurrentLinkedQueue<Item> filterItems(ConcurrentLinkedQueue<Item> items, Double ratingItem, Double ratingStore,
+                                                   Double maxPrice, Double minPrice) {
+        ConcurrentLinkedQueue<Item> itemsList1 = null;
+        ConcurrentLinkedQueue<Item> itemsList2 = null;
+        ConcurrentLinkedQueue<Item> itemsList3 = null;
+        if (ratingItem != null && ratingStore != null && (maxPrice != null && minPrice != null)) {
+            itemsList1 = filterByRating(items, ratingItem);
+            if (this.getRating() < ratingStore)
+                itemsList2 = new ConcurrentLinkedQueue<>();
             else
-                itemsList2=items;
-            itemsList3=filterByPrice(items,minPrice,maxPrice);
+                itemsList2 = items;
+            itemsList3 = filterByPrice(items, minPrice, maxPrice);
             itemsList1.retainAll(itemsList2);
             itemsList1.retainAll(itemsList3);
             return itemsList1;
         }
 
-        if(ratingItem!=null && ratingStore==null && (maxPrice!=null && minPrice!=null))
-        {
-            itemsList1= filterByRating(items,ratingItem);
-            itemsList3=filterByPrice(items,minPrice,maxPrice);
+        if (ratingItem != null && ratingStore == null && (maxPrice != null && minPrice != null)) {
+            itemsList1 = filterByRating(items, ratingItem);
+            itemsList3 = filterByPrice(items, minPrice, maxPrice);
             itemsList1.retainAll(itemsList3);
             return itemsList1;
         }
 
-        if(ratingItem!=null && ratingStore!=null && (maxPrice==null && minPrice==null))
-        {
-            itemsList1= filterByRating(items,ratingItem);
-            if(this.getRating()<ratingStore)
-                itemsList2=new ConcurrentLinkedQueue<>();
+        if (ratingItem != null && ratingStore != null && (maxPrice == null && minPrice == null)) {
+            itemsList1 = filterByRating(items, ratingItem);
+            if (this.getRating() < ratingStore)
+                itemsList2 = new ConcurrentLinkedQueue<>();
             else
-                itemsList2=items;
+                itemsList2 = items;
             itemsList1.retainAll(itemsList2);
             return itemsList1;
         }
 
-        if(ratingItem!=null && ratingStore==null && (maxPrice==null && minPrice==null))
-        {
-            return filterByRating(items,ratingItem);
+        if (ratingItem != null && ratingStore == null && (maxPrice == null && minPrice == null)) {
+            return filterByRating(items, ratingItem);
 
         }
 
-        if(ratingItem==null && ratingStore!=null && (maxPrice!=null && minPrice!=null))
-        {
-            if(this.getRating()<ratingStore)
-                itemsList2=new ConcurrentLinkedQueue<>();
+        if (ratingItem == null && ratingStore != null && (maxPrice != null && minPrice != null)) {
+            if (this.getRating() < ratingStore)
+                itemsList2 = new ConcurrentLinkedQueue<>();
             else
-                itemsList2=items;
-            itemsList3=filterByPrice(items,minPrice,maxPrice);
+                itemsList2 = items;
+            itemsList3 = filterByPrice(items, minPrice, maxPrice);
             itemsList2.retainAll(itemsList3);
             return itemsList2;
         }
 
-        if(ratingItem==null && ratingStore!=null && (maxPrice==null && minPrice==null))
-        {
+        if (ratingItem == null && ratingStore != null && (maxPrice == null && minPrice == null)) {
 
-            if(this.getRating()<ratingStore)
+            if (this.getRating() < ratingStore)
                 return new ConcurrentLinkedQueue<>();
             else
                 return items;
 
         }
-        if(ratingItem==null && ratingStore==null && (maxPrice!=null && minPrice!=null))
-        {
+        if (ratingItem == null && ratingStore == null && (maxPrice != null && minPrice != null)) {
 
-            return filterByPrice(items,minPrice,maxPrice);
+            return filterByPrice(items, minPrice, maxPrice);
 
         }
 
@@ -262,18 +261,22 @@ public class Store {
 
     /**
      * This method searches the inventory by name, category and sub-Category
-     * @param name - name of the wanted item
-     * @param category - the category of the wanted item
+     *
+     * @param name        - name of the wanted item
+     * @param category    - the category of the wanted item
      * @param subCategory - the sub category of the wanted item
-     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
+     * @throws ItemNotFoundException - when there are no item that matches the giving parameters.
+     */
     public Item getItem(String name, String category, String subCategory) throws ItemException {
         return inventory.getItem(name, category, subCategory);
     }
 
     /**
      * This method searches the store's inventory by name, category and sub-Category
+     *
      * @param itemId- id of the wanted item
-     * @exception ItemNotFoundException - when there are no item that matches the giving parameters.*/
+     * @throws ItemNotFoundException - when there are no item that matches the giving parameters.
+     */
     public Item searchItemById(int itemId) throws ItemException {
         return this.inventory.searchItem(itemId);
     }
@@ -287,24 +290,24 @@ public class Store {
 //        return this.inventory.filterByPrice(startPrice, endPrice);
 //    }
 
-//    /**
+    //    /**
 //     * This method is used to filter the store's inventory for items that their price is between start price and end price.
 //     *
 //     *  @param startPrice - the startPrice of the items price
 //     * @param endPrice - the endPrice of the items price */
-    public ConcurrentLinkedQueue<Item> filterByPrice(ConcurrentLinkedQueue<Item> items,double startPrice, double endPrice) {
-        if(items!=null)
-            return this.inventory.filterByPrice(items,startPrice, endPrice);
-        return inventory.filterByPrice(startPrice,endPrice);
+    public ConcurrentLinkedQueue<Item> filterByPrice(ConcurrentLinkedQueue<Item> items, double startPrice, double endPrice) {
+        if (items != null)
+            return this.inventory.filterByPrice(items, startPrice, endPrice);
+        return inventory.filterByPrice(startPrice, endPrice);
     }
 
-//    /**
+    //    /**
 //     * This method is used to filter the store's inventory for items that their ratings are equal or above the giving rating.
 //     * @param rating - the keyword of the wanted item
 //     * @exception ItemNotFoundException - On non existing item with param rating or greater*/
-    public ConcurrentLinkedQueue<Item> filterByRating(ConcurrentLinkedQueue<Item> items,double rating)  {
-        if(items!=null)
-            return inventory.filterByRating(items,rating);
+    public ConcurrentLinkedQueue<Item> filterByRating(ConcurrentLinkedQueue<Item> items, double rating) {
+        if (items != null)
+            return inventory.filterByRating(items, rating);
         return this.inventory.filterByRating(rating);
     }
 
@@ -321,36 +324,43 @@ public class Store {
 
     /**
      * This method checks if there is enough amount of an item in the inventory
+     *
      * @param itemId - id of the item in the inventory
      * @param amount - the amount of the item to check
-     * @exception WrongAmountException when the amount is illegal*/
+     * @throws WrongAmountException when the amount is illegal
+     */
     public boolean checkAmount(int itemId, int amount) throws ItemException {
-        return inventory.checkAmount(itemId,amount);
+        return inventory.checkAmount(itemId, amount);
     }
 
-//    /**
+    //    /**
 //     * This method decreases the amount of the item in the store's inventory by param quantity.
 //     * @param name - name of the wanted item
 //     * @param category - category of the wanted item
 //     * @param subCategory - the sub category of the wanted item
 //     * @param quantity - the quantity of the wanted item
 //     * @exception WrongAmountException - when the amount is illegal */
-    public void decreaseByQuantity(int itemId,int quantity ) throws ItemException {
-        this.inventory.decreaseByQuantity(itemId,quantity);
+    public void decreaseByQuantity(int itemId, int quantity) throws ItemException {
+        this.inventory.decreaseByQuantity(itemId, quantity);
     }
 
     /**
-     *  This method removes an item from the store's inventory
+     * This method removes an item from the store's inventory
+     *
      * @param itemID- id of the item
-     * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
+     * @throws ItemNotFoundException - when the wanted item does not exist in the inventory
+     */
     public Item removeItem(int itemID) throws ItemException {
         return this.inventory.removeItem(itemID);
     }
 
     /**
-     *  This method displays the items in the store's inventory
-     *  * @param name - name of the wanted item */
-    public String toString() {return inventory.toString();}
+     * This method displays the items in the store's inventory
+     * * @param name - name of the wanted item
+     */
+    public String toString() {
+        return inventory.toString();
+    }
 
     // TODO: should check how to implement
     public String getPurchaseType() {
@@ -370,15 +380,45 @@ public class Store {
     }
 
     // TODO: should check how to implement
-    public void setDiscountType() {}
-    public void setPurchaseType() {}
-    public void setDiscountPolicy() {}
-    public void setPurchasePolicy() {}
+    public void setDiscountType() {
+    }
+
+    public void setPurchaseType() {
+    }
+
+    public void setDiscountPolicy() {
+    }
+
+    public void setPurchasePolicy() {
+    }
 
 
     public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
         inventory.changeItemDetails(itemID, newSubCategory, newQuantity, newPrice);
     }
 
-    public boolean ifActive(){ return isActive;}
+    public boolean ifActive() {
+        return isActive;
+    }
+
+    //TODO remember to deal with policies and types in a furure version
+    public double calculate(Map<Item, Integer> items) throws Exception {
+        return inventory.calculate(items);
+    }
+
+    //TODO make an exception for this
+    public void rollBack(Map<Item, Integer> items) {
+        for (Map.Entry<Item, Integer> entry: items.entrySet()) {
+            inventory.getItems().replace(entry.getKey(), inventory.getItems().get(entry.getKey()) + entry.getValue());
+        }
+        unlockItems(items.keySet());
+    }
+
+    public void unlockItems(Set<Item> items) {
+        for (Item item: items) {
+            item.unlock();
+        }
+    }
+
+    public void addPurchase(Purchase purchase) {purchases.add(purchase); }
 }

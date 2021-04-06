@@ -73,7 +73,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
@@ -86,7 +86,6 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             String storeName = store.getName();
             Map<Item, Integer> items = storeBasketEntry.getValue().getItems();
 
-            //Todo: use show cart
             for (Map.Entry<Item, Integer> itemQuantityEntry : items.entrySet()) {
                 Item item = itemQuantityEntry.getKey();
                 Integer quantity = itemQuantityEntry.getValue();
@@ -116,11 +115,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
     @Override
-    public void purchaseCart(String connectionId) {
+    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
+        tradingSystem.purchaseCart(connectionId);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
         Item item;
-        try { //todo : why do we need tryExecept
+        try {
 
             item = store.searchItemById(itemId);
         } catch (Exception e) {

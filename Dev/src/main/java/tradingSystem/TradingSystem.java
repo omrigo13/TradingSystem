@@ -2,8 +2,11 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.*;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import purchase.Purchase;
 import store.Item;
 import store.Store;
 import user.*;
@@ -16,7 +19,7 @@ import java.util.Map;
 public class TradingSystem {
 
     private int storeIdCounter = 1;
-
+    private int purchaseIdCounter = 1;
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
@@ -149,5 +152,60 @@ public class TradingSystem {
                 items.add(item.toString());
         }
         return items;
+    }
+
+    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException , Exception{
+        User user = getUserByConnectionId(connectionId);
+        double paymentValue = 0, storePayment = 0;
+        Collection<Integer> itemIDs = new LinkedList<>();
+        String details = "";
+        String storeDetails = "";
+        Map<Integer, Collection<Integer>> storeItems = new HashMap<>();
+        Map<Store, Double> storePayments = new HashMap<>();
+        for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+            storePayment = entry.getKey().calculate(entry.getValue().getItems());
+            storePayments.put(entry.getKey(), storePayment);
+            paymentValue += storePayment;
+        }
+        PaymentData paymentData = new PaymentData(paymentValue);
+        if(paymentSystem.pay(paymentData)) {
+            if(deliverySystem.deliver(new DeliveryData())) {
+                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                    entry.getKey().unlockItems(entry.getValue().getItems().keySet());
+                }
+                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                    storeDetails = "Store Name: " + entry.getKey().getName() + "\nItems:\n";
+                    for (Item item: entry.getValue().getItems().keySet()) {
+                        itemIDs.add(item.getId());
+                        storeDetails += "\titem name: " + item.getName() + " price: " + item.getPrice() + " quantity: " + entry.getValue().getItems().get(item) + "\n";
+                    }
+                    storeDetails += "Store Price: " + storePayments.get(entry.getKey()) +"\n";
+                    details += storeDetails + "\n";
+                    storeItems.put(entry.getKey().getId(), itemIDs);
+                    Map<Integer, Collection<Integer>> itemsOfStore = new HashMap<>();
+                    itemsOfStore.put(entry.getKey().getId(), itemIDs);
+                    entry.getKey().addPurchase(new Purchase(purchaseIdCounter, itemsOfStore , storeDetails));
+                    itemIDs = new LinkedList<>();
+                }
+                details += "Total Price: " + paymentValue;
+                Purchase purchase = new Purchase(purchaseIdCounter, storeItems, details);
+                user.addPurchase(purchase);
+                purchaseIdCounter++;
+                user.resetCart();
+            }
+            else {
+                paymentSystem.payBack(paymentData);
+                for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                    entry.getKey().rollBack(entry.getValue().getItems());
+                }
+                throw new DeliverySystemException();
+            }
+        }
+        else {
+            for (Map.Entry<Store, Basket> entry: user.getCart().entrySet()) {
+                entry.getKey().rollBack(entry.getValue().getItems());
+            }
+            throw new PaymentSystemException();
+        }
     }
 }
