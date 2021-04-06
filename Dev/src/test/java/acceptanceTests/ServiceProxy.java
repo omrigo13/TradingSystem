@@ -25,6 +25,8 @@ public class ServiceProxy implements TradingSystemService {
 
     @Override
     public void register(String userName, String password) throws Exception {
+        if(real != null)
+            real.register(userName, password);
 
     }
 
