@@ -12,10 +12,7 @@ import store.Item;
 import store.Store;
 import user.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class TradingSystem {
 
@@ -78,7 +75,13 @@ public class TradingSystem {
         return stores.get(storeId);
     }
 
-    public String connect() {
+    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
+        auth.register(userName, password);
+        subscribers.put(userName, new Subscriber(userName, new HashMap<>(), new HashSet<>()));
+    }
+
+    public String connect()
+    {
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
@@ -125,6 +128,8 @@ public class TradingSystem {
 
         // give the subscriber owner permission
         subscriber.addPermission(OwnerPermission.getInstance(store));
+        subscriber.addPermission(ManagerPermission.getInstance(store));
+        subscriber.addPermission(ManageInventoryPermission.getInstance(store));
 
         return storeIdCounter++;
     }
@@ -207,15 +212,16 @@ public class TradingSystem {
         }
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException {
-        User user = getUserByConnectionId(connectionId); //TODO should be a subscriber
-        for (Purchase purchase : user.getPurchases()) {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException {
+        Subscriber subscriber = getSubscriberByConnectionId(connectionId);
+//        User user = getUserByConnectionId(connectionId);
+        for (Purchase purchase : subscriber.getPurchases()) {
             if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
                 if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))
                 {
                     Store store = stores.get(Integer.parseInt(storeID));
                     Item item = store.searchItemById(Integer.parseInt(productId));
-                    item.addReview(new Review(user, store, item, desc));
+                    item.addReview(new Review(subscriber, store, item, desc));
                     return;
                 }
         }
