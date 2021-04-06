@@ -207,15 +207,16 @@ public class TradingSystem {
         }
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException {
-        User user = getUserByConnectionId(connectionId); //TODO should be a subscriber
-        for (Purchase purchase : user.getPurchases()) {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException {
+        Subscriber subscriber = getSubscriberByConnectionId(connectionId);
+//        User user = getUserByConnectionId(connectionId);
+        for (Purchase purchase : subscriber.getPurchases()) {
             if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
                 if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))
                 {
                     Store store = stores.get(Integer.parseInt(storeID));
                     Item item = store.searchItemById(Integer.parseInt(productId));
-                    item.addReview(new Review(user, store, item, desc));
+                    item.addReview(new Review(subscriber, store, item, desc));
                     return;
                 }
         }
