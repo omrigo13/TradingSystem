@@ -255,7 +255,7 @@ public class Store {
 
         }
 
-        return new ConcurrentLinkedQueue<>();
+        return items;
 
     }
 
