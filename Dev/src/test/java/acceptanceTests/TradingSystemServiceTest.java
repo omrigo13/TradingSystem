@@ -193,6 +193,7 @@ class TradingSystemServiceTest {
 
     @Test
     void notValidAddItemToBasket() throws Exception{
+        //TODO we decided to check amount only at purchase and not at add to basket
         assertThrows(Exception.class, () -> service.addItemToBasket(store1Manager1Id, storeId1, productId1, 200));
         assertThrows(Exception.class, () -> service.addItemToBasket(store1Manager1Id, storeId2, productId1, 2));
         assertThrows(Exception.class, () -> service.addItemToBasket(store1Manager1Id, "asd", productId1, 2));
@@ -229,6 +230,7 @@ class TradingSystemServiceTest {
         s1 = service.showBasket(store1Manager1Id,storeId1);
         String ss1 = s1.toString();
         assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk"));
+        //TODO we decided to check amount only at purchase and not at add to basket
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId3, 1000 ));  // bad amount
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId4, 1 ));    // productId4 not added by id4 to his basket
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(subs1Id, storeId2, productId4, 1 ));    // id5 didnt add nothing to his basket
@@ -247,6 +249,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
 //        Collection<String> str = service.getPurchaseHistory(store1Manager1Id);
+        //TODO test error, you did only one purchase so the size should be 1 and not 3
         assertTrue(service.getPurchaseHistory(store1Manager1Id) != null && service.getPurchaseHistory(store1Manager1Id).size() == 3);
     }
 
@@ -287,6 +290,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
+        //TODO we didnt checked null or emtry opinion, can be added
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, null)); //null opinion
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "")); //empty opinion
     }
@@ -639,6 +643,7 @@ class TradingSystemServiceTest {
         service.purchaseCart(subs2Id);
 
         /**test get sales history: */
+        //TODO there are only 2 purchases and not 3 purchases
         assertTrue(service.getSalesHistoryByStore(admin1Id, storeId1).size() == 3);
         assertTrue(service.getSalesHistoryByStore(founderStore1Id, storeId1).size() == 3);
 

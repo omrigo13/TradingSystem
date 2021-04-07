@@ -4,6 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -83,7 +84,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
@@ -96,7 +97,6 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             String storeName = store.getName();
             Map<Item, Integer> items = storeBasketEntry.getValue().getItems();
 
-            //Todo: use show cart
             for (Map.Entry<Item, Integer> itemQuantityEntry : items.entrySet()) {
                 Item item = itemQuantityEntry.getKey();
                 Integer quantity = itemQuantityEntry.getValue();
@@ -126,20 +126,27 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
     @Override
-    public void purchaseCart(String connectionId) {
+    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
+        tradingSystem.purchaseCart(connectionId);
     }
 
     @Override
-    public Collection<String> getPurchaseHistory(String connectionId) {
-        return null;
-    }
+    public Collection<String> getPurchaseHistory(String connectionId) throws NotLoggedInException, ConnectionIdDoesNotExistException {
+        Subscriber user = tradingSystem.getSubscriberByConnectionId(connectionId);
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: user.getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
+    } //TODO add a permission to subscriber user to see his history
 
     @Override
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
+        tradingSystem.writeOpinionOnProduct(connectionId, storeID, productId, desc);
     }
 
     @Override
@@ -179,17 +186,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
-        Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
-        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
-        Item item;
-        try { //todo : why do we need tryExecept
-
-            item = store.searchItemById(itemId);
-        } catch (Exception e) {
-            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
-        }
-        return "" + itemId;
+        return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
     }
 
     @Override
@@ -280,8 +277,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) {
-        return null;
+    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException {
+        //TODO admin permission to see all stores history new function to add use case 6.4
+        //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: tradingSystem.getStore(Integer.parseInt(storeId)).getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
     }
 
     @Override
