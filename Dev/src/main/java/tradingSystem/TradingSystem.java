@@ -213,7 +213,7 @@ public class TradingSystem {
         }
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
         Subscriber subscriber = getSubscriberByConnectionId(connectionId);
 //        User user = getUserByConnectionId(connectionId);
         for (Purchase purchase : subscriber.getPurchases()) {
@@ -222,6 +222,8 @@ public class TradingSystem {
                 {
                     Store store = stores.get(Integer.parseInt(storeID));
                     Item item = store.searchItemById(Integer.parseInt(productId));
+                   if (desc == null || desc.isEmpty() || desc.trim().isEmpty())
+                       throw  new WrongReviewException("review can't be empty or null");
                     item.addReview(new Review(subscriber, store, item, desc));
                     return;
                 }
