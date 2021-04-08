@@ -1,13 +1,17 @@
 package user;
 
 import exceptions.NotLoggedInException;
+import purchaseAndReview.Purchase;
 import store.Store;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class User {
     private final Map<Store, Basket> baskets;
+    private final Collection<Purchase> purchases = new LinkedList<>();
 
     public User(Map<Store, Basket> baskets) {
         this.baskets = baskets;
@@ -37,4 +41,10 @@ public class User {
         }
         return basket;
     }
+
+    public void addPurchase(Purchase purchase) {purchases.add(purchase); }
+
+    public void resetCart() {baskets.clear(); }
+
+    public Collection<Purchase> getPurchases() {return purchases; }
 }

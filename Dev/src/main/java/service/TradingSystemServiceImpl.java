@@ -5,6 +5,7 @@ import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import org.apache.log4j.PropertyConfigurator;
+import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -68,7 +69,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
         logger.info("Register with userName: " + userName + ", password:*********");
-        auth.register(userName, password);
+
+        tradingSystem.register(userName, password);
     }
 
     @Override
@@ -103,7 +105,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         logger.info("Add item to basket: store-" + storeId + ", product-" + productId
                 + ", quantity- " + quantity);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
@@ -117,7 +119,6 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             String storeName = store.getName();
             Map<Item, Integer> items = storeBasketEntry.getValue().getItems();
 
-            //Todo: use show cart
             for (Map.Entry<Item, Integer> itemQuantityEntry : items.entrySet()) {
                 Item item = itemQuantityEntry.getKey();
                 Integer quantity = itemQuantityEntry.getValue();
@@ -149,24 +150,32 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         logger.info("User update the amount of product-" + productId + " of the store-" + storeId +
                     " with the new quantity-" + quantity);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        Item item = store.searchItemById(Integer.parseInt(productId)); // TODO: check if quantity is available
+        Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
     @Override
-    public void purchaseCart(String connectionId) {
-        logger.info("User purchase cart");
+
+    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
+         logger.info("User purchase cart");
+         tradingSystem.purchaseCart(connectionId);
     }
 
     @Override
-    public Collection<String> getPurchaseHistory(String connectionId) {
+    public Collection<String> getPurchaseHistory(String connectionId) throws NotLoggedInException, ConnectionIdDoesNotExistException {
         logger.info("User ask for his purchase history");
-        return null;
-    }
+        Subscriber user = tradingSystem.getSubscriberByConnectionId(connectionId);
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: user.getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
+    } //TODO add a permission to subscriber user to see his history
 
     @Override
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
         logger.info("User write opinion about an Item: " +
                     "store- " + storeID + ", product- " + productId + ", description: " + desc);
+        tradingSystem.writeOpinionOnProduct(connectionId, storeID, productId, desc);
     }
 
     @Override
@@ -227,6 +236,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
         }
         return "" + itemId;
+//         return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
     }
 
     @Override
@@ -329,9 +339,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) {
+    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException {
+        //TODO admin permission to see all stores history new function to add use case 6.4
+        //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
         logger.info("Get sales history by store");
-        return null;
+        Collection<String> purchases = new LinkedList<>();
+        for (Purchase purchase: tradingSystem.getStore(Integer.parseInt(storeId)).getPurchases()) {
+            purchases.add(purchase.getDetails());
+        }
+        return purchases;
     }
 
     @Override

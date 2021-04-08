@@ -3,6 +3,10 @@ package store;
 import exceptions.ItemException;
 import exceptions.WrongPriceException;
 import exceptions.WrongRatingException;
+import purchaseAndReview.Review;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class Item {
 
@@ -12,6 +16,8 @@ public class Item {
     private String category;
     private String subCategory;
     private double rating;
+    private boolean isLocked = false;
+    private Collection<Review> reviews = new LinkedList<>();
 
     public Item(int id, String name, double price, String category, String subCategory, double rating) {
         this.id = id;
@@ -66,4 +72,18 @@ public class Item {
             "\ncategory:" + category +
             "\nsub category:" + subCategory +
             "\nrating:" + rating + '\n';}
+
+    public void lock() { isLocked = true; }
+
+    public void unlock() {isLocked = false; }
+
+    public boolean isLocked() {return isLocked; }
+
+    public void addReview(Review review) {reviews.add(review); }
+
+    public Collection<Review> getReviews() {return reviews; }
 }
+
+
+
+
