@@ -19,14 +19,14 @@ public interface TradingSystemService {
     String connect() throws Exception;
 
     /* Register to system
-       preconditions: userName, pass not null and not empty; userName not already exist. */
+       preconditions: userName, pass not null; userName not already exist. */
     void register(String userName, String password) throws Exception;
 
     /* Login to system */
-    void login(String userID, String userName, String pass) throws Exception;
+    void login(String connectID, String userName, String pass) throws Exception;
 
     /* Logout from system */
-    void logout(String userID) throws Exception;
+    void logout(String connectID) throws Exception;
 
     /* Get product by filter. */
     Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws Exception;
@@ -43,7 +43,8 @@ public interface TradingSystemService {
     /* get basket's products. */
     Collection<String> showBasket(String userID, String storeId) throws Exception;
 
-    /* updates the amount of a product for user from a specific store. if new amount = 0 then the product will be deleted from the basket */
+    /* updates the amount of a product for user from a specific store. if new amount = 0 then the product will be deleted from the basket.
+    * If trying to update an item which not exist in the basket, the amount will be updated. */
     void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
 
     /* make purchase for every product in all of the user's baskets */
@@ -51,11 +52,11 @@ public interface TradingSystemService {
     // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
     void purchaseCart(String userID) throws Exception;
 
-    /* get purchase history of a user by permissions: user himself / system manager */
+    /* get purchase history of a user by permissions: user himself / system manager.
+    * every purchase represents buying of a cart.
+    * for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 1 purchases for the user. */
     Collection<String> getPurchaseHistory(String userID) throws Exception;
-    // TODO: each String is purchase.toString(). each purchase matches to an item from a store with the appropriate quantity.
-    //  for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
-    
+
     /* enables user to write an opinion on a product he has purchased.
     preconditions: 1. the user has purchased the product
                    2. productId belongs to storeId (even if quantity in inventory is 0)
@@ -80,7 +81,8 @@ public interface TradingSystemService {
 
     /* creates a new store. username is the founder and owner.
        pre-condition: 1. storeName is not null or empty
-                      2.userId is a subscriber and not a guest */
+                      2.userId is a subscriber and not a guest
+        returns storeId; */
     String openNewStore(String userID, String newStoreName) throws Exception;
 
     /* appoints a new store manager. assignor is an owner of the store, assignee is the username of the new store manager

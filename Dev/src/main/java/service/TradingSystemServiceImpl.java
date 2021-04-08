@@ -225,18 +225,19 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                 ", sub category- " + subCategory +
                 ", quantity- " + quantity +
                 ", price- " + price);
-        Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
-        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
-        Item item;
-        try { //todo : why do we need tryExecept
+//        Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
+//        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+//        int itemId=subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+//        Item item;
+//        try { //todo : why do we need tryExecept
+//
+//            item = store.searchItemById(itemId);
+//        } catch (Exception e) {
+//            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
+//        }
+//        return "" + itemId;
 
-            item = store.searchItemById(itemId);
-        } catch (Exception e) {
-            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
-        }
-        return "" + itemId;
-//         return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
+         return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
     }
 
     @Override
