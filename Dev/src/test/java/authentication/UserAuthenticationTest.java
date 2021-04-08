@@ -1,6 +1,5 @@
 package authentication;
 
-import exceptions.LoginException;
 import exceptions.SubscriberAlreadyExistsException;
 import exceptions.SubscriberDoesNotExistException;
 import exceptions.WrongPasswordException;
@@ -8,8 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.*;
-
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Map;
 

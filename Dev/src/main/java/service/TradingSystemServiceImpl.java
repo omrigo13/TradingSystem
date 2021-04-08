@@ -101,7 +101,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
+    public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException, InvalidStoreIdException {
         logger.info("Add item to basket: store-" + storeId + ", product-" + productId
                 + ", quantity- " + quantity);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -131,7 +131,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> showBasket(String connectionId, String storeId) throws ConnectionIdDoesNotExistException {
+    public Collection<String> showBasket(String connectionId, String storeId) throws ConnectionIdDoesNotExistException, InvalidStoreIdException {
         logger.info("Show user basket for store: " + storeId);
         Collection<String> itemList = new LinkedList<>();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -146,7 +146,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException {
+    public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws ConnectionIdDoesNotExistException, ItemException, InvalidStoreIdException {
         logger.info("User update the amount of product-" + productId + " of the store-" + storeId +
                     " with the new quantity-" + quantity);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -189,7 +189,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getItemsByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException, NotLoggedInException, NoPermissionException {
+    public Collection<String> getItemsByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException, NotLoggedInException, NoPermissionException, InvalidStoreIdException {
         logger.info("User ask for store: " + storeId + "info");
         Collection<String> itemList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
@@ -208,7 +208,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreManager(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException, InvalidStoreIdException {
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " manager");
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -218,7 +218,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException, InvalidStoreIdException {
         logger.info("Add product to store: " + storeId +
                 ", name- " + itemName +
                 ", category- " + category +
@@ -242,7 +242,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void deleteProductFromStore(String connectionId, String storeId, String itemId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException, InvalidStoreIdException {
         logger.info("Delete product from store: " + storeId +
                 ", item- " + itemId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
@@ -252,7 +252,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void updateProductDetails(String connectionId, String storeId, String itemId, String newSubCategory, Integer newQuantity, Double newPrice)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException, InvalidStoreIdException {
         logger.info("Update item details from store: " + storeId +
                 ", item- " + itemId +
                 ", sub category- " + newSubCategory +
@@ -265,7 +265,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreOwner(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException, InvalidStoreIdException {
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " owner");
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -275,7 +275,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void allowManagerToUpdateProducts(String connectionId, String storeId, String targetUserName)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException, InvalidStoreIdException {
         logger.info("User allow " + targetUserName + " to update products for store: " + storeId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -285,7 +285,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void disableManagerFromUpdateProducts(String connectionId, String storeId, String targetUserName)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
         logger.info("User disable " + targetUserName + " from update products for store: " + storeId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -315,7 +315,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public boolean removeManager(String connectionId, String storeId, String targetUserName)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
         logger.info("User remove " + targetUserName + " from manage store: " + storeId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -328,7 +328,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public Collection<String> showStaffInfo(String connectionId, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException {
         logger.info("Show staff info of store: " + storeId);
         Subscriber subscriber = tradingSystem.getSubscriberByConnectionId(connectionId);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -340,7 +340,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException {
+    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws ConnectionIdDoesNotExistException, InvalidStoreIdException {
         //TODO admin permission to see all stores history new function to add use case 6.4
         //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
         logger.info("Get sales history by store");

@@ -72,8 +72,11 @@ public class TradingSystem {
         return stores.values();
     }
 
-    public Store getStore(int storeId) {
-        return stores.get(storeId);
+    public Store getStore(int storeId) throws InvalidStoreIdException {
+        Store store = stores.get(storeId);
+        if (store == null)
+            throw new InvalidStoreIdException(storeId);
+        return store;
     }
 
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
@@ -232,7 +235,7 @@ public class TradingSystem {
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException, InvalidStoreIdException {
         Subscriber subscriber =getSubscriberByConnectionId(connectionId);
         Store store = getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
