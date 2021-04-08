@@ -12,6 +12,7 @@ import store.Store;
 import user.Subscriber;
 import user.User;
 
+import javax.security.auth.login.LoginException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,12 +52,12 @@ class TradingSystemTest {
         assertEquals(WrongPasswordException.class, exception.getCause().getClass());
     }
 
-    TradingSystem setupTradingSystem() throws LoginException {
+    TradingSystem setupTradingSystem() throws SubscriberDoesNotExistException, WrongPasswordException {
         return TradingSystem.createTradingSystem(adminName, adminPassword, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
     @Test
-    void getUserByConnectionId() throws LoginException, ConnectionIdDoesNotExistException {
+    void getUserByConnectionId() throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
         TradingSystem ts = setupTradingSystem();
         assertThrows(ConnectionIdDoesNotExistException.class, () -> ts.getUserByConnectionId(connectionId));
         when(connections.get(connectionId)).thenReturn(user);

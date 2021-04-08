@@ -28,25 +28,19 @@ public class TradingSystem {
 
     private TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                           UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                          Map<Integer, Store> stores) throws LoginException {
+                          Map<Integer, Store> stores) throws SubscriberDoesNotExistException, WrongPasswordException {
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
-        try {
-            auth.authenticate(userName, password); // TODO check if the userName is admin
-        } catch (SubscriberDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (WrongPasswordException e) {
-            throw new LoginException(e);
-        }
+        auth.authenticate(userName, password); // TODO check if the userName is admin
     }
 
     public static TradingSystem createTradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                                                     UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                                                    Map<Integer, Store> stores) throws LoginException {
+                                                    Map<Integer, Store> stores) throws SubscriberDoesNotExistException, WrongPasswordException {
         return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
@@ -93,22 +87,14 @@ public class TradingSystem {
         return connectionId;
     }
 
-    public void login(String connectionId, String userName, String password) throws LoginException {
+    public void login(String connectionId, String userName, String password)
+            throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
 
-        try {
-            User user = getUserByConnectionId(connectionId);
-            auth.authenticate(userName, password);
-            User subscriber = getSubscriberByUserName(userName);
-            subscriber.makeCart(user);
-            connections.put(connectionId, subscriber);
-
-        } catch (ConnectionIdDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (SubscriberDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (WrongPasswordException e) {
-            throw new LoginException(e);
-        }
+        User user = getUserByConnectionId(connectionId);
+        auth.authenticate(userName, password);
+        User subscriber = getSubscriberByUserName(userName);
+        subscriber.makeCart(user);
+        connections.put(connectionId, subscriber);
     }
 
     public void logout(String connectionId) throws ConnectionIdDoesNotExistException {

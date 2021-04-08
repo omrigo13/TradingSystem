@@ -74,7 +74,7 @@ class TradingSystemServiceImplTest {
     TradingSystemServiceImpl service;
 
     @BeforeEach
-    void setUp() throws LoginException {
+    void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
 
         service = new TradingSystemServiceImpl(auth, paymentSystem, deliverySystem, subscribers, connections, stores);
 
@@ -98,7 +98,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void login() throws LoginException {
+    void login() throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
         service.login(connectionId, userName, password);
         verify(tradingSystem).login(connectionId, userName, password);
     }

@@ -54,7 +54,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void initializeSystem(String userName, String pass) throws LoginException {
+    public void initializeSystem(String userName, String pass) throws SubscriberDoesNotExistException, WrongPasswordException {
         logger.info("Initialize system with userName: " + userName);
         tradingSystem = TradingSystem.createTradingSystem(userName, pass, paymentSystem, deliverySystem, auth,
                 subscribers, connections, stores);
@@ -74,7 +74,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void login(String connectionId, String userName, String pass) throws LoginException {
+    public void login(String connectionId, String userName, String pass)
+            throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
         logger.info("Login with userName: " + userName + ", password:*********");
         tradingSystem.login(connectionId, userName, pass);
     }
