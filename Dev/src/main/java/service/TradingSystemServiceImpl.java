@@ -13,10 +13,7 @@ import user.ManagerPermission;
 import user.Subscriber;
 import user.User;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -42,6 +39,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
+        PropertyConfigurator.configure("Dev/log4j.properties");
     }
 
     public TradingSystemServiceImpl(UserAuthentication userAuthentication) {
@@ -362,4 +360,5 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         logger.info("Get error log");
         return null;
     }
+
 }
