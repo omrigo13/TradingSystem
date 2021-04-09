@@ -68,7 +68,7 @@ public class Subscriber extends User {
         target.addPermission(managerPermission);
 
         // give the user permission to delete the new permission that was added to the target
-        addPermission(new RemovePermissionPermission(target, store));
+        addPermission(RemovePermissionPermission.getInstance(target, store));
     }
 
     public void removeManagerPermission(Subscriber target, Store store) throws NoPermissionException {
@@ -82,7 +82,7 @@ public class Subscriber extends User {
         removePermission(target, store, ManagerPermission.getInstance(store));
     }
 
-    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
+    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
 
         // check this user has the permission to perform this action
         Permission ownerPermission = OwnerPermission.getInstance(store);
@@ -90,15 +90,20 @@ public class Subscriber extends User {
 
         // check if the target is already an owner at this store
         if (target.havePermission(ownerPermission))
-            throw new AlreadyManagerException(userName);
+            throw new AlreadyOwnerException(userName);
+
+        // check if the target is a manager that was appointed by someone else
+        ManagerPermission managerPermission = ManagerPermission.getInstance(store);
+        if (target.havePermission(managerPermission))
+            validatePermission(RemovePermissionPermission.getInstance(target, store));
 
         // add owner, manager and inventory management permissions to the target
         target.addPermission(ownerPermission);
-        target.addPermission(ManagerPermission.getInstance(store));
+        target.addPermission(managerPermission);
         target.addPermission(ManageInventoryPermission.getInstance(store));
 
         // give the user permission to delete the new permission that was added to the target
-        addPermission(new RemovePermissionPermission(target, store));
+        addPermission(RemovePermissionPermission.getInstance(target, store));
     }
 
     public void removeOwnerPermission(Subscriber target, Store store) throws NoPermissionException {

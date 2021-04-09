@@ -256,7 +256,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreOwner(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException, AlreadyOwnerException {
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " owner");
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);

@@ -249,7 +249,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void appointStoreOwner() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
+    void appointStoreOwner() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException, AlreadyOwnerException {
         when(tradingSystem.getUserByConnectionId(connectionId).getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);

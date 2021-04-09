@@ -110,7 +110,7 @@ class SubscriberTest {
     }
 
     @Test
-    void addOwnerPermission() throws NoPermissionException, AlreadyManagerException {
+    void addOwnerPermission() throws NoPermissionException, AlreadyOwnerException {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
         subscriber.addOwnerPermission(target, store);
@@ -128,11 +128,34 @@ class SubscriberTest {
     }
 
     @Test
-    void addOwnerPermission_AlreadyManager() {
+    void addOwnerPermission_AlreadyOwner() {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
         when(target.havePermission(ownerPermission)).thenReturn(true);
-        assertThrows(AlreadyManagerException.class, () -> subscriber.addOwnerPermission(target, store));
+        assertThrows(AlreadyOwnerException.class, () -> subscriber.addOwnerPermission(target, store));
+        verify(target, never()).addPermission(any());
+        verify(permissions, never()).add(any());
+    }
+
+    @Test
+    void addOwnerPermission_ManagerAppointedByCaller() throws AlreadyOwnerException, NoPermissionException {
+
+        when(permissions.contains(ownerPermission)).thenReturn(true);
+        when(target.havePermission(managerPermission)).thenReturn(true);
+        when(permissions.contains(removePermissionPermission)).thenReturn(true);
+        subscriber.addOwnerPermission(target, store);
+        verify(target).addPermission(ownerPermission);
+        verify(target).addPermission(managerPermission);
+        verify(target).addPermission(manageInventoryPermission);
+        verify(permissions).add(removePermissionPermission);    }
+
+    @Test
+    void addOwnerPermission_ManagerAppointedByAnother() {
+
+        when(permissions.contains(ownerPermission)).thenReturn(true);
+        when(target.havePermission(managerPermission)).thenReturn(true);
+        when(permissions.contains(removePermissionPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, () -> subscriber.addOwnerPermission(target, store));
         verify(target, never()).addPermission(any());
         verify(permissions, never()).add(any());
     }
