@@ -1,21 +1,22 @@
 package user;
 
 import exceptions.*;
+import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Subscriber extends User {
 
     private final String userName;
     private final Set<Permission> permissions;
 
-    public Subscriber(String userName, Map<Store, Basket> baskets, Set<Permission> permissions) {
-        super(baskets);
+    public Subscriber(String userName) {
+        this(userName, new HashSet<>());
+    }
+
+    Subscriber(String userName, Set<Permission> permissions) {
         this.userName = userName;
         this.permissions = permissions;
     }

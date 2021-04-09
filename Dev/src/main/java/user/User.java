@@ -10,14 +10,20 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class User {
-    private final Map<Store, Basket> baskets;
-    private final Collection<Purchase> purchases = new LinkedList<>();
 
-    public User(Map<Store, Basket> baskets) {
-        this.baskets = baskets;
+    private final Map<Store, Basket> baskets;
+    private final Collection<Purchase> purchases;
+
+    public User() {
+        this(new HashMap<>(), new LinkedList<>());
     }
 
-    public Map<Store, Basket>  getCart()
+    User(Map<Store, Basket> baskets, Collection<Purchase> purchases) {
+        this.baskets = baskets;
+        this.purchases = purchases;
+    }
+
+    public Map<Store, Basket> getCart()
     {
         return baskets;
     }

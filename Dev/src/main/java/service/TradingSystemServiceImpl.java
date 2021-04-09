@@ -9,17 +9,17 @@ import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
+import tradingSystem.TradingSystemBuilder;
 import user.Basket;
 import user.ManagerPermission;
 import user.Subscriber;
-import user.User;
 
 import java.io.*;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import org.apache.log4j.Logger;
+import user.User;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -27,50 +27,56 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     TradingSystem tradingSystem;
 
-    final UserAuthentication auth;
-    final PaymentSystem paymentSystem;
-    final DeliverySystem deliverySystem;
-    final Map<String, Subscriber> subscribers;
-    final Map<String, User> connections;
-    final Map<Integer, Store> stores;
+//    final UserAuthentication auth;
+//    final PaymentSystem paymentSystem;
+//    final DeliverySystem deliverySystem;
+//    final Map<String, Subscriber> subscribers;
+//    final Map<String, User> connections;
+//    final Map<Integer, Store> stores;
+//
+//    public TradingSystemServiceImpl(UserAuthentication userAuthentication, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+//                                    Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores) {
 
-    public TradingSystemServiceImpl(UserAuthentication userAuthentication, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                                    Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores) {
-        this.auth = userAuthentication;
-        this.paymentSystem = paymentSystem;
-        this.deliverySystem = deliverySystem;
-        this.subscribers = subscribers;
-        this.connections = connections;
-        this.stores = stores;
+    public TradingSystemServiceImpl(TradingSystem tradingSystem) {
+
         PropertyConfigurator.configure("Dev/log4j.properties");
+
+        this.tradingSystem = tradingSystem;
     }
 
-    public TradingSystemServiceImpl(UserAuthentication userAuthentication) {
-        this.auth = userAuthentication;
-        this.paymentSystem = new PaymentSystem();
-        this.deliverySystem = new DeliverySystem();
-        this.subscribers = new HashMap<>();
-        this.connections = new HashMap<>();
-        this.stores = new HashMap<>();
-        PropertyConfigurator.configure("Dev/log4j.properties");
-    }
-
-    @Override
-    public void initializeSystem(String userName, String pass) throws SubscriberDoesNotExistException, WrongPasswordException {
-        logger.info("Initialize system with userName: " + userName);
-        tradingSystem = TradingSystem.createTradingSystem(userName, pass, paymentSystem, deliverySystem, auth,
-                subscribers, connections, stores);
-    }
+//        this.auth = userAuthentication;
+//        this.paymentSystem = paymentSystem;
+//        this.deliverySystem = deliverySystem;
+//        this.subscribers = subscribers;
+//        this.connections = connections;
+//        this.stores = stores;
+//    }
+//
+//    @Override
+//    public void initializeSystem(String userName, String pass) throws SubscriberDoesNotExistException, WrongPasswordException {
+//
+//        logger.info("Initialize system with userName: " + userName);
+//
+//        tradingSystem = new TradingSystemBuilder()
+//                .setUserName(userName)
+//                .setPassword(pass)
+//                .setPaymentSystem(paymentSystem)
+//                .setDeliverySystem(deliverySystem)
+//                .setAuth(auth)
+//                .build();
+//    }
 
     @Override
     public String connect() {
-        logger.info("Connect to the system");
-        return tradingSystem.connect();
+        logger.info("New connection request");
+        String connectionId = tradingSystem.connect();
+        return connectionId;
     }
 
     @Override
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
-        logger.info("Register with userName: " + userName + ", password:*********");
+
+        logger.info("Register with userName: " + userName + ", password: *********");
 
         tradingSystem.register(userName, password);
     }
@@ -78,19 +84,24 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void login(String connectionId, String userName, String pass)
             throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
-        logger.info("Login with userName: " + userName + ", password:*********");
+
+        logger.info("Login with userName: " + userName + ", password: *********");
+
         tradingSystem.login(connectionId, userName, pass);
     }
 
     @Override
     public void logout(String connectionId) throws InvalidConnectionIdException, NotLoggedInException {
+
         logger.info("Logout subscriber");
-        tradingSystem.logout(connectionId, new User(new HashMap<>()));
+
+        tradingSystem.logout(connectionId);
     }
 
     @Override
     public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
                                        Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
+
         logger.info("Search for items with the attributes: " +
                 "key word- " + keyWord +
                 ", product name- " + productName +
@@ -100,6 +111,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                 ", rating store- " + ratingStore +
                 ", max price- " + maxPrice +
                 ", min price- " + minPrice);
+
         return tradingSystem.getItems(keyWord,productName,category,subCategory,ratingItem,ratingStore,maxPrice,minPrice);
     }
 

@@ -2,11 +2,11 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.*;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
@@ -27,9 +27,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TradingSystemTest {
 
+    private TradingSystem tradingSystem;
+
     @Mock private UserAuthentication auth;
-    @Mock private PaymentSystem paymentSystem;
-    @Mock private DeliverySystem deliverySystem;
     @Mock private Map<String, Subscriber> subscribers;
     @Mock private Collection<Subscriber> staff;
     @Mock private Map<String, User> connections;
@@ -39,17 +39,24 @@ class TradingSystemTest {
     @Mock private Store store;
     @Mock private Item item;
 
+    @Captor ArgumentCaptor<String> keyCaptor;
+
     private final String connectionId = "9034580392580932458093248590324850932485";
     private final String userName = "Johnny";
     private final String password = "Cash";
     private final int storeId = 984585;
 
-    private TradingSystem tradingSystem;
-
     @BeforeEach
     void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
-        tradingSystem = TradingSystem.createTradingSystem("Roni", "roni12", paymentSystem, deliverySystem,
-                auth, subscribers, connections, stores);
+
+        tradingSystem = new TradingSystemBuilder()
+                .setUserName(userName)
+                .setPassword(password)
+                .setSubscribers(subscribers)
+                .setConnections(connections)
+                .setStores(stores)
+                .setAuth(auth)
+                .build();
     }
 
     @Test
@@ -86,7 +93,7 @@ class TradingSystemTest {
         String connectionId = tradingSystem.connect();
         verify(connections).put(anyString(), any(User.class));
         String uuid = java.util.UUID.randomUUID().toString();
-        assertNotEquals(uuid, connectionId); // verify we got a new uuid
+        assertNotSame(uuid, connectionId); // verify we got a new uuid
         assertEquals(uuid.length(), connectionId.length()); // verify we got the correct length
     }
 
@@ -101,18 +108,18 @@ class TradingSystemTest {
 
     @Test
     void logoutSubscriber() throws InvalidConnectionIdException, NotLoggedInException {
-        when(connections.get(connectionId)).thenReturn(subscriber);
-        when(subscriber.getSubscriber()).thenReturn(subscriber);
-        tradingSystem.logout(connectionId, user);
-        verify(user).makeCart(subscriber);
-        verify(connections).put(connectionId, user);
+        when(connections.get(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+        tradingSystem.logout(connectionId);
+        verify(connections).put(keyCaptor.capture(), any(User.class));
+        assertSame(connectionId, keyCaptor.getValue());
     }
 
     @Test
-    void logoutGuest() throws InvalidConnectionIdException, NotLoggedInException {
+    void logoutGuest() throws NotLoggedInException {
         when(connections.get(connectionId)).thenReturn(user);
-        tradingSystem.logout(connectionId, user);
-        verify(connections, never()).put(anyString(), isA(User.class));
+        doThrow(new NotLoggedInException()).when(user).getSubscriber();
+        assertThrows(NotLoggedInException.class, () -> tradingSystem.logout(connectionId));
     }
 
     @Test

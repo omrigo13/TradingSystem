@@ -4,6 +4,8 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
+import tradingSystem.TradingSystem;
+import tradingSystem.TradingSystemBuilder;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -25,7 +27,6 @@ class TradingSystemServiceTest {
     public void setUp() throws Exception {
 
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
-        service.initializeSystem("Admin1", "ad123"); //initialize system and login to system manager
         admin1Id = service.connect();
         founderStore1Id = service.connect();
         founderStore2Id = service.connect();
@@ -69,15 +70,14 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void initializeSystemWithGoodUserDetails() throws Exception {
-        assertDoesNotThrow(() -> service.initializeSystem("Admin1", "ad123"));
+    void initializeSystemWithGoodUserDetails() {
+        assertDoesNotThrow(() -> new TradingSystemBuilder().setUserName("Admin1").setPassword("ad123").build());
     }
 
     @Test
-    void initializeSystemNotExistedUser() throws Exception {
-        assertThrows(SubscriberDoesNotExistException.class, () ->service.initializeSystem("OzMadmoni", "abc"));
-        assertThrows(SubscriberDoesNotExistException.class, () ->service.initializeSystem("", "abc12345"));
-
+    void initializeSystemNotExistedUser() {
+        assertThrows(SubscriberDoesNotExistException.class, () -> new TradingSystemBuilder().setUserName("OzMadmoni").setPassword("abc").build());
+        assertThrows(SubscriberDoesNotExistException.class, () -> new TradingSystemBuilder().setUserName("").setPassword("abc12345").build());
     }
 
     @Test

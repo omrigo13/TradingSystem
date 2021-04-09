@@ -10,11 +10,6 @@ public class ServiceProxy implements TradingSystemService {
     public void setReal(TradingSystemService real) {
         this.real = real;
     }
-    @Override
-    public void initializeSystem(String userName, String pass) throws Exception {
-        if(real != null)
-            real.initializeSystem(userName, pass);
-    }
 
     @Override
     public String connect() throws Exception {

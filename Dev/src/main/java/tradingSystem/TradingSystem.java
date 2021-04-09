@@ -19,29 +19,27 @@ public class TradingSystem {
     private int storeIdCounter = 1;
     private int purchaseIdCounter = 1;
     private int itemIdCounter=1;
+
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
+
     private final Map<String, Subscriber> subscribers; // key: user name
     private final Map<String, User> connections; // key: connection id
     private final Map<Integer, Store> stores; // key: store id
 
-    private TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                          UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                          Map<Integer, Store> stores) throws SubscriberDoesNotExistException, WrongPasswordException {
+    TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                  UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores)
+            throws SubscriberDoesNotExistException, WrongPasswordException {
+
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
-        auth.authenticate(userName, password); // TODO check if the userName is admin
-    }
 
-    public static TradingSystem createTradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                                                    UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                                                    Map<Integer, Store> stores) throws SubscriberDoesNotExistException, WrongPasswordException {
-        return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        auth.authenticate(userName, password); // TODO check if the userName is admin
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidConnectionIdException {
@@ -71,7 +69,7 @@ public class TradingSystem {
 
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(userName, new HashMap<>(), new HashSet<>()));
+        subscribers.put(userName, new Subscriber(userName));
     }
 
     public String connect()
@@ -79,7 +77,7 @@ public class TradingSystem {
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
-        connections.put(connectionId, new User(new HashMap<>()));
+        connections.put(connectionId, new User());
         return connectionId;
     }
 
@@ -93,12 +91,11 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId, User guest) throws InvalidConnectionIdException, NotLoggedInException {
+    public void logout(String connectionId) throws InvalidConnectionIdException, NotLoggedInException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
-        if (subscriber != null) { // if subscriber is null the user was already a guest so do nothing
-            guest.makeCart(subscriber);
-            connections.put(connectionId, guest);
-        }
+        User guest = new User();
+        guest.makeCart(subscriber);
+        connections.put(connectionId, guest);
     }
 
     public int newStore(Subscriber subscriber, String storeName) throws ItemException {
@@ -195,7 +192,6 @@ public class TradingSystem {
 
     public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws InvalidConnectionIdException, ItemException, NotLoggedInException, WrongReviewException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
-//        User user = getUserByConnectionId(connectionId);
         for (Purchase purchase : subscriber.getPurchases()) {
             if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
                 if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))

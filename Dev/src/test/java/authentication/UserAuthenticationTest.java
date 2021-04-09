@@ -6,6 +6,7 @@ import exceptions.WrongPasswordException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -18,11 +19,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserAuthenticationTest {
 
+    private UserAuthentication auth;
+
     @Mock private Map<String, String> userNamesAndPasswords;
+
     private final String userName = "Lidor";
     private final String password = "lidor12345";
     private final String password1 = "jfh746";
-    private UserAuthentication auth;
 
     @BeforeEach
     void setUp() {
