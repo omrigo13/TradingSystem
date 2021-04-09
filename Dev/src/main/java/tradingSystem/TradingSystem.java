@@ -44,10 +44,10 @@ public class TradingSystem {
         return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 
-    public User getUserByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException {
+    public User getUserByConnectionId(String connectionId) throws InvalidConnectionIdException {
         User user = connections.get(connectionId);
         if (user == null)
-            throw new ConnectionIdDoesNotExistException(connectionId);
+            throw new InvalidConnectionIdException(connectionId);
         return user;
     }
 
@@ -84,7 +84,7 @@ public class TradingSystem {
     }
 
     public void login(String connectionId, String userName, String password)
-            throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
+            throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
 
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
@@ -93,7 +93,7 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId, User guest) throws ConnectionIdDoesNotExistException, NotLoggedInException {
+    public void logout(String connectionId, User guest) throws InvalidConnectionIdException, NotLoggedInException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         if (subscriber != null) { // if subscriber is null the user was already a guest so do nothing
             guest.makeCart(subscriber);
@@ -193,7 +193,7 @@ public class TradingSystem {
         }
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws InvalidConnectionIdException, ItemException, NotLoggedInException, WrongReviewException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
 //        User user = getUserByConnectionId(connectionId);
         for (Purchase purchase : subscriber.getPurchases()) {
@@ -212,7 +212,7 @@ public class TradingSystem {
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
+            throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         Store store = getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);

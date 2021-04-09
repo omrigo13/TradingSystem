@@ -157,7 +157,7 @@ class TradingSystemServiceTest {
 
     @Test
     void userNotExistLogout() throws Exception{
-        assertThrows(ConnectionIdDoesNotExistException.class, () -> service.logout("user999"));
+        assertThrows(InvalidConnectionIdException.class, () -> service.logout("user999"));
     }
 
 //    @Test

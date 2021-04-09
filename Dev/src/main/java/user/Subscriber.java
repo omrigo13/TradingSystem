@@ -97,6 +97,8 @@ public class Subscriber extends User {
         if (target.havePermission(managerPermission))
             validatePermission(RemovePermissionPermission.getInstance(target, store));
 
+        // at this point we know the target is not a manager at this store, or he is a manager appointed by the caller
+
         // add owner, manager and inventory management permissions to the target
         target.addPermission(ownerPermission);
         target.addPermission(managerPermission);
@@ -139,25 +141,19 @@ public class Subscriber extends User {
 
     void removePermission(Subscriber target, Store store, Permission permission) throws NoPermissionException {
 
-        // TODO think if we need this method
-
         // check this user has the permission to perform this action
         validatePermission(RemovePermissionPermission.getInstance(target, store));
 
-        // perform the action (delete the target's permission)
         target.removePermission(permission);
-
-        // TODO for now all we do is delete the permission (if the target has it). need to think on:
-        // remove user's delete-permission permission if the target is no longer store manager?
-        // ok to delete some else's manager permission but keep owner?
-        // what happens when you give yourself permissions (is that relevant?)
     }
 
-    public int addStoreItem(int itemId, Store store, String item, String category, String subCategory, int quantity, double price)
+    // TODO: subscriber should not know about ids (?)
+    public int addStoreItem(int itemId, Store store, String itemName, String category, String subCategory, int quantity, double price)
             throws NoPermissionException, ItemException {
+
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
-        store.addItem(itemId,item, price, category, subCategory, quantity);
+        store.addItem(itemId, itemName, price, category, subCategory, quantity);
         return itemId;
     }
 

@@ -53,14 +53,14 @@ class TradingSystemTest {
     }
 
     @Test
-    void getUserByConnectionId() throws ConnectionIdDoesNotExistException {
+    void getUserByConnectionId() throws InvalidConnectionIdException {
         when(connections.get(connectionId)).thenReturn(user);
         assertSame(tradingSystem.getUserByConnectionId(connectionId), user);
     }
 
     @Test
     void getUserByConnectionId_ConnectionIdDoesNotExist() {
-        assertThrows(ConnectionIdDoesNotExistException.class, () -> tradingSystem.getUserByConnectionId(connectionId));
+        assertThrows(InvalidConnectionIdException.class, () -> tradingSystem.getUserByConnectionId(connectionId));
     }
 
     @Test
@@ -91,7 +91,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void login() throws ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, WrongPasswordException {
+    void login() throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
         when(connections.get(connectionId)).thenReturn(user);
         when(subscribers.get(userName)).thenReturn(subscriber);
         tradingSystem.login(connectionId, userName, password);
@@ -100,7 +100,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void logoutSubscriber() throws ConnectionIdDoesNotExistException, NotLoggedInException {
+    void logoutSubscriber() throws InvalidConnectionIdException, NotLoggedInException {
         when(connections.get(connectionId)).thenReturn(subscriber);
         when(subscriber.getSubscriber()).thenReturn(subscriber);
         tradingSystem.logout(connectionId, user);
@@ -109,7 +109,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void logoutGuest() throws ConnectionIdDoesNotExistException, NotLoggedInException {
+    void logoutGuest() throws InvalidConnectionIdException, NotLoggedInException {
         when(connections.get(connectionId)).thenReturn(user);
         tradingSystem.logout(connectionId, user);
         verify(connections, never()).put(anyString(), isA(User.class));

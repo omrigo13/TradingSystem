@@ -26,9 +26,9 @@ class SubscriberTest {
     @Mock private Set<Permission> permissions;
     @Mock private Collection<Store> stores;
     @Mock private ItemException itemException;
+    @Mock private Store store;
+    @Mock private Subscriber target;
 
-    private final Store store = mock(Store.class);
-    private final Subscriber target = mock(Subscriber.class);
     private final Permission adminPermission = AdminPermission.getInstance();
     private final Permission managerPermission = ManagerPermission.getInstance(store);
     private final Permission ownerPermission = OwnerPermission.getInstance(store);
@@ -134,6 +134,7 @@ class SubscriberTest {
     void addOwnerPermission_ManagerAppointedByCaller() throws AlreadyOwnerException, NoPermissionException {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
+        when(target.havePermission(ownerPermission)).thenReturn(false);
         when(target.havePermission(managerPermission)).thenReturn(true);
         when(permissions.contains(removePermissionPermission)).thenReturn(true);
         subscriber.addOwnerPermission(target, store);
@@ -146,8 +147,8 @@ class SubscriberTest {
     void addOwnerPermission_ManagerAppointedByAnother() {
 
         when(permissions.contains(ownerPermission)).thenReturn(true);
+        when(target.havePermission(ownerPermission)).thenReturn(false);
         when(target.havePermission(managerPermission)).thenReturn(true);
-        when(permissions.contains(removePermissionPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, () -> subscriber.addOwnerPermission(target, store));
         verify(target, never()).addPermission(any());
         verify(permissions, never()).add(any());
