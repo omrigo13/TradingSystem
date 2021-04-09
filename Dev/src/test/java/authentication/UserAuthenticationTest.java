@@ -48,12 +48,12 @@ class UserAuthenticationTest {
     }
 
     @Test
-    void authenticateSubscriberDoesNotExist() {
+    void authenticate_SubscriberDoesNotExist() {
         assertThrows(SubscriberDoesNotExistException.class, () -> auth.authenticate(userName, password));
     }
 
     @Test
-    void authenticateWrongPassword() {
+    void authenticate_WrongPassword() {
         when(userNamesAndPasswords.get(userName)).thenReturn("a different password");
         assertThrows(WrongPasswordException.class, () -> auth.authenticate(userName, password1));
     }

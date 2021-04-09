@@ -51,10 +51,6 @@ public class TradingSystem {
         return user;
     }
 
-    public Subscriber getSubscriberByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException, NotLoggedInException {
-        return getUserByConnectionId(connectionId).getSubscriber();
-    }
-
     public Subscriber getSubscriberByUserName(String userName) throws SubscriberDoesNotExistException {
         Subscriber subscriber = subscribers.get(userName);
         if (subscriber == null)
@@ -97,23 +93,18 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId) throws ConnectionIdDoesNotExistException {
-        User user = getUserByConnectionId(connectionId);
-        User guest = new User(new HashMap<>());
-        guest.makeCart(user);
-        connections.put(connectionId, guest);
+    public void logout(String connectionId, User guest) throws ConnectionIdDoesNotExistException, NotLoggedInException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
+        if (subscriber != null) { // if subscriber is null the user was already a guest so do nothing
+            guest.makeCart(subscriber);
+            connections.put(connectionId, guest);
+        }
     }
 
-    public int newStore(Subscriber subscriber, String storeName) throws NewStoreException {
+    public int newStore(Subscriber subscriber, String storeName) throws ItemException {
 
         // create the new store
-        Store store;
-        try {
-            store = new Store(storeIdCounter, storeName, "description");
-
-        } catch (Exception e) {
-            throw new NewStoreException(storeName, e);
-        }
+        Store store = new Store(storeIdCounter, storeName, "description");
         stores.put(storeIdCounter, store);
 
         // give the subscriber owner permission
@@ -149,7 +140,7 @@ public class TradingSystem {
         return items;
     }
 
-    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
+    public void purchaseCart(String connectionId) throws Exception {
         User user = getUserByConnectionId(connectionId);
         double paymentValue = 0, storePayment = 0;
         Collection<Integer> itemIDs = new LinkedList<>();
@@ -203,7 +194,7 @@ public class TradingSystem {
     }
 
     public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
-        Subscriber subscriber = getSubscriberByConnectionId(connectionId);
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
 //        User user = getUserByConnectionId(connectionId);
         for (Purchase purchase : subscriber.getPurchases()) {
             if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
@@ -221,17 +212,10 @@ public class TradingSystem {
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException, InvalidStoreIdException {
-        Subscriber subscriber =getSubscriberByConnectionId(connectionId);
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, InvalidStoreIdException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         Store store = getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
-        Item item;
-        try {
-
-            item = store.searchItemById(itemId);
-        } catch (Exception e) {
-            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
-        }
         itemIdCounter++;
         return "" + itemId;
     }
