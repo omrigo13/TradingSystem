@@ -357,7 +357,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getEventLog(String connectionId) throws IOException {
+    public Collection<String> getEventLog(String connectionId) throws IOException, InvalidConnectionIdException, NotLoggedInException, NoPermissionException {
         logger.info("Get event log");
         Collection<String> eventLog = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new FileReader("Dev/logging.log"));
@@ -374,12 +374,15 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         reader.close();
         //String content = stringBuilder.toString();
         //System.out.println(content);
-        return eventLog;
+
+        return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }
 
     @Override
     public Collection<String> getErrorLog(String connectionId) {
         logger.info("Get error log");
+
+
         return null;
     }
 

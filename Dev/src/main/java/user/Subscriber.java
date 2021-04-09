@@ -208,4 +208,12 @@ public class Subscriber extends User {
 
         return result;
     }
+
+    public Collection<String> getEventLog(Collection<String> log) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(AdminPermission.getInstance());
+
+        return log;
+    }
 }

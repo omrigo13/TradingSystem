@@ -11,10 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
-import user.Basket;
-import user.ManagerPermission;
-import user.Subscriber;
-import user.User;
+import user.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -57,24 +54,6 @@ class TradingSystemServiceImplTest {
     void setUp() {
         service = new TradingSystemServiceImpl(tradingSystem);
     }
-
-//    @BeforeEach
-//    void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
-//
-//        service = new TradingSystemServiceBuilder()
-//                .setUserAuthentication(auth)
-//                .setSubscribers(subscribers)
-//                .setConnections(connections)
-//                .setStores(stores)
-//                .build();
-//
-//        try (MockedStatic<TradingSystem> tradingSystemMockedStatic = Mockito.mockStatic(TradingSystem.class)) {
-//
-//            tradingSystemMockedStatic.when(() -> new TradingSystemBuilder().setUserName(userName).setPassword(password).setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setAuth(auth).build()).thenReturn(tradingSystem);
-//
-//            service.initializeSystem(userName, password);
-//        }
-//    }
 
     @Test
     void connect() {
@@ -346,14 +325,15 @@ class TradingSystemServiceImplTest {
         assertTrue(result.contains(subscriber1.storePermissionsToString(store)));
     }
 
-//    @Test
-//    void getSalesHistoryByStore() {
-//        service.getSalesHistoryByStore(connectionId,storeId);
-//    }
-
     @Test
-    void getEventLog() throws IOException {
+    void getEventLog() throws IOException, InvalidConnectionIdException, NotLoggedInException, NoPermissionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         service.getEventLog(connectionId);
+
+        verify(subscriber).getEventLog(any());
     }
 
     @Test
