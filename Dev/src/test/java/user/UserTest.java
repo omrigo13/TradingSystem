@@ -4,6 +4,7 @@ import exceptions.NotLoggedInException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Store;
@@ -16,13 +17,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserTest {
 
-    @Mock Map<Store, Basket> baskets;
-    private User user;
+    @InjectMocks private User user;
 
-    @BeforeEach
-    void setUp() {
-        user = new User(baskets);
-    }
+    @Mock private Map<Store, Basket> baskets;
 
     @Test
     void getCart() {

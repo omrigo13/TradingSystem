@@ -23,8 +23,10 @@ import org.apache.log4j.Logger;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
-    TradingSystem tradingSystem;
     private static final Logger logger = Logger.getLogger(TradingSystemServiceImpl.class);
+
+    TradingSystem tradingSystem;
+
     final UserAuthentication auth;
     final PaymentSystem paymentSystem;
     final DeliverySystem deliverySystem;
@@ -32,9 +34,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     final Map<String, User> connections;
     final Map<Integer, Store> stores;
 
-    public TradingSystemServiceImpl(UserAuthentication auth, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+    public TradingSystemServiceImpl(UserAuthentication userAuthentication, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                                     Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores) {
-        this.auth = auth;
+        this.auth = userAuthentication;
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.subscribers = subscribers;
@@ -220,7 +222,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, InvalidStoreIdException, ItemException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         logger.info("Add product to store: " + storeId +
                 ", name- " + itemName +
                 ", category- " + category +
@@ -233,7 +235,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void deleteProductFromStore(String connectionId, String storeId, String itemId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException, InvalidStoreIdException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         logger.info("Delete product from store: " + storeId +
                 ", item- " + itemId);
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
@@ -243,7 +245,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void updateProductDetails(String connectionId, String storeId, String itemId, String newSubCategory, Integer newQuantity, Double newPrice)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException, InvalidStoreIdException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         logger.info("Update item details from store: " + storeId +
                 ", item- " + itemId +
                 ", sub category- " + newSubCategory +

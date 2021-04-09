@@ -154,43 +154,28 @@ public class Subscriber extends User {
     }
 
     public int addStoreItem(int itemId, Store store, String item, String category, String subCategory, int quantity, double price)
-            throws NoPermissionException, AddStoreItemException {
+            throws NoPermissionException, ItemException {
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
-        try {
-            // add the item to the store
-            store.addItem(itemId,item, price, category, subCategory, quantity);
-        } catch (Exception e) {
-            throw new AddStoreItemException(store.getName(), item, price, category, subCategory, quantity, e);
-        }
+        store.addItem(itemId,item, price, category, subCategory, quantity);
         return itemId;
     }
 
-    public void removeStoreItem(Store store, int itemId) throws NoPermissionException, RemoveStoreItemException {
+    public void removeStoreItem(Store store, int itemId) throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
 
-        // remove the item from the store
-        try {
-            store.removeItem(itemId);
-        } catch (Exception e) {
-            throw new RemoveStoreItemException(e);
-        }
+        store.removeItem(itemId);
     }
 
     public void updateStoreItem(Store store, int itemId, String newSubCategory, Integer newQuantity, Double newPrice)
-            throws NoPermissionException, UpdateStoreItemException {
+            throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
 
-        // update the item in the store
-        try {
-            store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
-        } catch (Exception e) {
-            throw new UpdateStoreItemException(e);
-        }
+        store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
     }
 
     public Collection<Store> getAllStores(Collection<Store> stores) throws NoPermissionException {

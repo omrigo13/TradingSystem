@@ -1,9 +1,8 @@
 package acceptanceTests;
 
 import authentication.UserAuthentication;
-import exceptions.SubscriberAlreadyExistsException;
 import service.TradingSystemService;
-import service.TradingSystemServiceImpl;
+import service.TradingSystemServiceBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +21,7 @@ public class Driver {
         Map<String, String> map = new HashMap<>();
         map.put(userName, password);
         UserAuthentication userAuthentication = new UserAuthentication(map);
-        proxy.setReal(new TradingSystemServiceImpl(userAuthentication));
+        proxy.setReal(new TradingSystemServiceBuilder().setUserAuthentication(userAuthentication).create());
         return proxy;
     }
 

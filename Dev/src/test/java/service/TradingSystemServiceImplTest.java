@@ -75,11 +75,20 @@ class TradingSystemServiceImplTest {
     @BeforeEach
     void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
 
-        service = new TradingSystemServiceImpl(auth, paymentSystem, deliverySystem, subscribers, connections, stores);
+        service = new TradingSystemServiceBuilder()
+                .setUserAuthentication(auth)
+                .setPaymentSystem(paymentSystem)
+                .setDeliverySystem(deliverySystem)
+                .setSubscribers(subscribers)
+                .setConnections(connections)
+                .setStores(stores)
+                .create();
 
         try (MockedStatic<TradingSystem> tradingSystemMockedStatic = Mockito.mockStatic(TradingSystem.class)) {
+
             tradingSystemMockedStatic.when(() -> TradingSystem.createTradingSystem(userName, password, paymentSystem,
                     deliverySystem, auth, subscribers, connections, stores)).thenReturn(tradingSystem);
+
             service.initializeSystem(userName, password);
         }
     }
@@ -233,7 +242,7 @@ class TradingSystemServiceImplTest {
 //    }
 
     @Test
-    void deleteProductFromStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException, InvalidStoreIdException {
+    void deleteProductFromStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         when(tradingSystem.getUserByConnectionId(connectionId).getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.deleteProductFromStore(connectionId,storeId,"543");
@@ -241,7 +250,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void updateProductDetails() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException, InvalidStoreIdException {
+    void updateProductDetails() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         when(tradingSystem.getUserByConnectionId(connectionId).getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.updateProductDetails(connectionId,storeId,"543",subCategory,quantity,price);

@@ -427,9 +427,9 @@ class TradingSystemServiceTest {
     void wrongAddProductToStore() throws Exception{
         //TODO: add StoreNotFoundException
         assertThrows(Exception.class, () -> service.addProductToStore(founderStore1Id, "99", "butter", "DiaryProducts", "", 10, 7.5)); //"abc" is not a storeId
-        assertThrows(AddStoreItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "", "DiaryProducts", "", 10, 7.5)); //productName cannot be empty
-        assertThrows(AddStoreItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", -1, 7.5)); //quantity cannot be < 0
-        assertThrows(AddStoreItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", 10, -1)); //price cannot be < 0
+        assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "", "DiaryProducts", "", 10, 7.5)); //productName cannot be empty
+        assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", -1, 7.5)); //quantity cannot be < 0
+        assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", 10, -1)); //price cannot be < 0
 
         assertThrows(NoPermissionException.class, () -> service.addProductToStore(founderStore2Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5)); //founderStore2Id can't add in store1Id
         assertThrows(NoPermissionException.class, () -> service.addProductToStore(subs3Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5)); //subs3Id can't add in store1Id
@@ -449,7 +449,7 @@ class TradingSystemServiceTest {
     void deleteProductFromStoreNotExist() throws Exception{
         //TODO: add StoreNotFoundException
         assertThrows(Exception.class, () -> service.deleteProductFromStore(founderStore1Id, "100", productId1)); //"abc" is not a storeId
-        assertThrows(RemoveStoreItemException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId1, productId3)); //productId3 is not in storeId1
+        assertThrows(ItemException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId1, productId3)); //productId3 is not in storeId1
 
     }
 
@@ -469,7 +469,7 @@ class TradingSystemServiceTest {
 
     @Test
     void updateNotExistProductDetails() throws Exception{
-        assertThrows(UpdateStoreItemException.class, () -> service.updateProductDetails(founderStore1Id, storeId1, productId3, null,25, null)); //productId3 not in storeId1
+        assertThrows(ItemException.class, () -> service.updateProductDetails(founderStore1Id, storeId1, productId3, null,25, null)); //productId3 not in storeId1
     }
 
     @Test

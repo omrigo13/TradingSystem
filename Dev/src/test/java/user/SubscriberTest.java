@@ -4,6 +4,7 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Store;
@@ -19,12 +20,13 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SubscriberTest {
 
-    @Mock Permission permission;
-    @Mock Map<Store, Basket> baskets;
-    @Mock Set<Permission> permissions;
-    @Mock Collection<Store> stores;
+    @InjectMocks private Subscriber subscriber;
 
-    private final Exception exception = mock(ItemException.class);
+    @Mock private Permission permission;
+    @Mock private Set<Permission> permissions;
+    @Mock private Collection<Store> stores;
+    @Mock private ItemException itemException;
+
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
     private final Permission adminPermission = AdminPermission.getInstance();
@@ -39,15 +41,6 @@ class SubscriberTest {
     private final String item = "PS5";
     private final String category = "Electronics";
     private final String subCategory = "Gaming Consoles";
-
-    private Subscriber subscriber;
-
-    @BeforeEach
-    void setUp() {
-        reset(store);
-        reset(target);
-        subscriber = new Subscriber("Shimshon", baskets, permissions);
-    }
 
     @Test
     void validatePermission_HavePermission() throws NoPermissionException {
@@ -186,7 +179,7 @@ class SubscriberTest {
     }
 
     @Test
-    void addStoreItem() throws Exception {
+    void addStoreItem() throws ItemException, NoPermissionException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
         subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price);
@@ -194,24 +187,22 @@ class SubscriberTest {
     }
 
     @Test
-    void addStoreItem_NoPermission() throws Exception {
+    void addStoreItem_NoPermission() throws ItemException {
 
         assertThrows(NoPermissionException.class, () -> subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price));
         verify(store, never()).addItem(anyInt(), any(), anyDouble(), any(), any(), anyInt());
     }
 
     @Test
-    void addStoreItem_AddItemException() throws Exception {
+    void addStoreItem_AddItemException() throws ItemException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).addItem(itemId,item, price, category, subCategory, quantity);
-        Exception wrapper = assertThrows(AddStoreItemException.class,
-                () -> subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price));
-        assertEquals(exception, wrapper.getCause());
+        doThrow(itemException).when(store).addItem(itemId,item, price, category, subCategory, quantity);
+        assertThrows(ItemException.class, () -> subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price));
     }
 
     @Test
-    void removeStoreItem() throws Exception {
+    void removeStoreItem() throws ItemException, NoPermissionException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
         subscriber.removeStoreItem(store, itemId);
@@ -219,23 +210,22 @@ class SubscriberTest {
     }
 
     @Test
-    void removeStoreItem_NoPermission() throws Exception {
+    void removeStoreItem_NoPermission() throws ItemException {
 
         assertThrows(NoPermissionException.class, () -> subscriber.removeStoreItem(store, itemId));
         verify(store, never()).removeItem(anyInt());
     }
 
     @Test
-    void removeStoreItem_RemoveItemException() throws Exception {
+    void removeStoreItem_RemoveItemException() throws ItemException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).removeItem(itemId);
-        Exception wrapper = assertThrows(RemoveStoreItemException.class, () -> subscriber.removeStoreItem(store, itemId));
-        assertEquals(exception, wrapper.getCause());
+        doThrow(itemException).when(store).removeItem(itemId);
+        assertThrows(ItemException.class, () -> subscriber.removeStoreItem(store, itemId));
     }
 
     @Test
-    void updateStoreItem() throws Exception {
+    void updateStoreItem() throws ItemException, NoPermissionException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
         subscriber.updateStoreItem(store, itemId, subCategory, quantity, price);
@@ -243,7 +233,7 @@ class SubscriberTest {
     }
 
     @Test
-    void updateStoreItem_NoPermission() throws Exception {
+    void updateStoreItem_NoPermission() throws ItemException {
 
         assertThrows(NoPermissionException.class,
                 () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
@@ -251,12 +241,10 @@ class SubscriberTest {
     }
 
     @Test
-    void updateStoreItem_ChangeQuantityException() throws Exception {
+    void updateStoreItem_ChangeQuantityException() throws ItemException {
 
         when(permissions.contains(manageInventoryPermission)).thenReturn(true);
-        doThrow(exception).when(store).changeItem(itemId, subCategory, quantity, price);
-        Exception wrapper = assertThrows(UpdateStoreItemException.class,
-                () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
-        assertEquals(exception, wrapper.getCause());
+        doThrow(itemException).when(store).changeItem(itemId, subCategory, quantity, price);
+        assertThrows(ItemException.class, () -> subscriber.updateStoreItem(store, itemId, subCategory, quantity, price));
     }
 }

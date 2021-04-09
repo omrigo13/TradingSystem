@@ -212,7 +212,7 @@ public class TradingSystem {
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, InvalidStoreIdException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, InvalidStoreIdException, ItemException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         Store store = getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
