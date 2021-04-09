@@ -210,7 +210,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void appointStoreManager(String connectionId, String targetUserName, String storeId)
             throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException,
-                NoPermissionException, AlreadyOwnerException, InvalidStoreIdException {
+                NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " manager");
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
@@ -256,7 +256,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void appointStoreOwner(String connectionId, String targetUserName, String storeId)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException, InvalidStoreIdException {
+            throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " owner");
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);

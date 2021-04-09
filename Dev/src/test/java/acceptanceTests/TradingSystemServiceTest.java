@@ -495,7 +495,7 @@ class TradingSystemServiceTest {
 
         //test circular appoint:
         service.appointStoreOwner(founderStore1Id, subs1UserName, storeId1);
-        assertThrows(AlreadyOwnerException.class, () -> service.appointStoreOwner(subs1Id, store1FounderUserName, storeId1));
+        assertThrows(AlreadyManagerException.class, () -> service.appointStoreOwner(subs1Id, store1FounderUserName, storeId1));
 
         assertThrows(SubscriberDoesNotExistException.class, () -> service.appointStoreOwner(founderStore1Id, guest1UserName, storeId1)); //guest1Id is a guest
 

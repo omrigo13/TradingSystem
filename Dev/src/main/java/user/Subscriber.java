@@ -54,7 +54,7 @@ public class Subscriber extends User {
         throw new NoPermissionException(Arrays.toString(permissions));
     }
 
-    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
+    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
 
         // check this user has the permission to perform this action
         validatePermission(OwnerPermission.getInstance(store));
@@ -62,7 +62,7 @@ public class Subscriber extends User {
         // check if the target is already a manager at this store
         Permission managerPermission = ManagerPermission.getInstance(store);
         if (target.havePermission(managerPermission))
-            throw new AlreadyOwnerException(userName);
+            throw new AlreadyManagerException(userName);
 
         // add manager permission to the target
         target.addPermission(managerPermission);
@@ -82,7 +82,7 @@ public class Subscriber extends User {
         removePermission(target, store, ManagerPermission.getInstance(store));
     }
 
-    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
+    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
 
         // check this user has the permission to perform this action
         Permission ownerPermission = OwnerPermission.getInstance(store);
@@ -90,7 +90,7 @@ public class Subscriber extends User {
 
         // check if the target is already an owner at this store
         if (target.havePermission(ownerPermission))
-            throw new AlreadyOwnerException(userName);
+            throw new AlreadyManagerException(userName);
 
         // add owner, manager and inventory management permissions to the target
         target.addPermission(ownerPermission);
