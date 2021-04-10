@@ -4,7 +4,6 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
-import tradingSystem.TradingSystem;
 import tradingSystem.TradingSystemBuilder;
 
 import java.util.Collection;
@@ -293,7 +292,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
-        assertThrows(ItemNotPurchased.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
+        assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
     }
 
     @Test
@@ -302,7 +301,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
-        assertThrows(ItemNotPurchased.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
+        assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, "abc", productId1, "opinion1")); //no such storeId "abc"
     }
 
@@ -449,6 +448,8 @@ class TradingSystemServiceTest {
     void deleteProductFromStoreNotExist() throws Exception{
         //TODO: add StoreNotFoundException
         assertThrows(Exception.class, () -> service.deleteProductFromStore(founderStore1Id, "100", productId1)); //"abc" is not a storeId
+
+        // TODO: this test is wrong!
         assertThrows(ItemException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId1, productId3)); //productId3 is not in storeId1
 
     }

@@ -3,6 +3,10 @@ package store;
 import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import tradingSystem.TradingSystem;
 
 
 import java.util.*;
@@ -10,32 +14,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class StoreTest {
 
-    private static Store store;
-
-    static {
-        try {
-            store = new Store(1,"ebay","www.ebay.com online shopping");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    @Mock private TradingSystem tradingSystem;
+    private Store store;
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new Store(1,"ebay","www.ebay.com online shopping");
+        store = new Store(tradingSystem, 1,"ebay","www.ebay.com online shopping");
     }
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store(1, null, "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, null, "www.ebay.com online shopping"));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store(1, "   ", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, "   ", "www.ebay.com online shopping"));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store(1, "95ebay", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, "95ebay", "www.ebay.com online shopping"));
     }
 
 //    @Test
@@ -60,18 +58,18 @@ public class StoreTest {
     @Test
     void addItemWithoutRating() throws ItemException {
         //checks that item name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store.addItem(1,"12tomato", 20, "vegetables", "red", 5));
+        assertThrows(WrongNameException.class, () -> store.addItem("12tomato", 20, "vegetables", "red", 5));
 
         //checks that item has a positive price
-        assertThrows(WrongPriceException.class, () -> store.addItem(2,"tomato", -5, "vegetables", "red", 5));
+        assertThrows(WrongPriceException.class, () -> store.addItem("tomato", -5, "vegetables", "red", 5));
 
         //checks that item has a positive amount
-        assertThrows(WrongAmountException.class, () -> store.addItem(3,"tomato", 17, "vegetables", "red", -2));
+        assertThrows(WrongAmountException.class, () -> store.addItem("tomato", 17, "vegetables", "red", -2));
 
         //checks that we cannot add an item that already exists
-        store.addItem(4,"tomato", 20, "vegetables", "red", 5);
+        store.addItem("tomato", 20, "vegetables", "red", 5);
 
-        assertThrows(ItemAlreadyExistsException.class, () -> store.addItem(4,"tomato", 20, "vegetables", "red", 5));
+        assertThrows(ItemAlreadyExistsException.class, () -> store.addItem("tomato", 20, "vegetables", "red", 5));
         assertEquals(store.getItems().size(), 1);
     }
 
@@ -79,28 +77,28 @@ public class StoreTest {
 
     @Test
     void searchItemById() throws ItemException{
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        int cucumberId= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int tomato2Id= store.addItem(3,"tomato", 20, "vegetables", "blue", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5);
         assertThrows(ItemNotFoundException.class, () -> store.searchItemById(6));
         assertEquals(store.searchItemById(tomato2Id).getId(), 3);
     }
 
     @Test
     void filterWithoutItemsByPrice() throws ItemException{
-        store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        store.addItem("tomato", 20, "vegetables", "red", 5);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
         assertTrue( store.filterByPrice(null,30, 100).isEmpty());
-        store.addItem(3,"tomato", 20, "vegetables", "blue", 5);
+        store.addItem("tomato", 20, "vegetables", "blue", 5);
         assertEquals(store.filterByPrice(null,15, 20).size(), 3);
     }
 
     @Test
     void filterWithItemsByPrice() throws ItemException{
         ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
         list.add(store.searchItemById(tomatoId));
-        int cucmberId= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        int cucmberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
         list.add(store.searchItemById(cucmberId));
         ConcurrentLinkedQueue<Item> filteredItems=store.filterByPrice(list,15,30);
         assertFalse(filteredItems.isEmpty());
@@ -112,10 +110,10 @@ public class StoreTest {
 
     @Test
     void filterWithoutItemsByRating() throws ItemException{
-        int tomatoId=store.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
         Item tomato = store.searchItemById(tomatoId);
         tomato.setRating(2);
-        int cucumberid=store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
         Item cucumber = store.searchItemById(cucumberid);
         cucumber.setRating(3);
 
@@ -125,11 +123,11 @@ public class StoreTest {
     @Test
     void filterWithItemsByRating() throws ItemException{
         ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
-        int tomatoId=store.addItem(1,"tomato", 20, "vegetables", "red", 5);
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
         Item tomato = store.searchItemById(tomatoId);
         tomato.setRating(2);
         list.add(tomato);
-        int cucumberid=store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
         Item cucumber = store.searchItemById(cucumberid);
         cucumber.setRating(3);
         list.add(cucumber);
@@ -156,8 +154,8 @@ public class StoreTest {
 
     @Test
     void decreaseByQuantity() throws ItemException{
-        int cucumberId= store.addItem(1,"cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem(2,"carrot", 20, "vegetables", "orange", 0);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
         Item cucumber = store.searchItemById(cucumberId);
 
         //checks that the quantity must be 0 or greater
@@ -171,8 +169,8 @@ public class StoreTest {
 
     @Test
     void removeItem() throws ItemException{
-        store.addItem(1,"cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem(2,"carrot", 20, "vegetables", "orange", 0);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
         assertEquals(store.getItems().size(), 2);
 
         //checks that only an existing item can be removed
@@ -200,9 +198,9 @@ public class StoreTest {
 
     @Test
     void searchItems() throws ItemException {
-        store.addItem(1,"carrot", 20, "vegetables", "orange", 8);
-        store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        store.addItem(3,"onion",8.9,"vegetables","white",70);
+        store.addItem("carrot", 20, "vegetables", "orange", 8);
+        store.addItem("cucumber", 15, "vegetables", "green", 10);
+        store.addItem("onion",8.9,"vegetables","white",70);
 
         assertEquals(store.searchItems(null,null,"vegetables").size(),3);
         assertEquals(store.searchItems("r",null,null).size(),2);
@@ -216,9 +214,9 @@ public class StoreTest {
     void filterItems() throws ItemException {
         ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
 
-        int carrotId= store.addItem(1,"carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem(3,"onion",8.9,"vegetable","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
         Item carrot=store.searchItemById(carrotId);
         carrot.setRating(3);
         list.add(carrot);
@@ -241,9 +239,9 @@ public class StoreTest {
     void searchAndFilter() throws ItemException {
         ConcurrentLinkedQueue<Item> list=new ConcurrentLinkedQueue<>();
 
-        int carrotId= store.addItem(1,"carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem(3,"onion",8.9,"vegetables","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetables","white",70);
         Item carrot=store.searchItemById(carrotId);
         carrot.setRating(3);
         list.add(carrot);
@@ -262,9 +260,9 @@ public class StoreTest {
 
     @Test
     void checkAmount() throws ItemException {
-        int carrotId= store.addItem(1,"carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem(3,"onion",8.9,"vegetable","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
 
         assertThrows(WrongAmountException.class, ()->store.checkAmount(carrotId,10));
         assertThrows(WrongAmountException.class,()-> store.checkAmount(cucumberId,-3));
@@ -273,9 +271,9 @@ public class StoreTest {
 
     @Test
     void changeItem() throws ItemException {
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        int cucumberId=store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int tomato2Id=store.addItem(3,"tomato", 20, "vegetables", "blue", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int tomato2Id=store.addItem("tomato", 20, "vegetables", "blue", 5);
 
         assertThrows(ItemNotFoundException.class, () -> store.changeItem(5,"hello",null,30.0));
         assertNotEquals(store.searchItemById(tomatoId).getSubCategory(),"hello");
@@ -303,18 +301,19 @@ public class StoreTest {
 
     @Test
     void calculate() throws ItemException, Exception {
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem(3,"carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
         store.searchItemById(carrotId).lock();
         Map<Item, Integer> items = new HashMap<>();
         items.put(store.searchItemById(tomatoId), 2);
         items.put(store.searchItemById(cucumberID), 2);
         items.put(store.searchItemById(carrotId), 2);
-        assertThrows(Exception.class, () -> store.calculate(items));
+        StringBuilder details = new StringBuilder();
+        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.calculate(items), 110);
+        assertEquals(store.processBasketAndCalculatePrice(items, details), 110);
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
@@ -323,14 +322,14 @@ public class StoreTest {
         items.put(store.searchItemById(tomatoId), 2);
         items.put(store.searchItemById(cucumberID), 2);
         items.put(store.searchItemById(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> store.calculate(items));
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(items, details));
     }
 
     @Test
     void unlockItems() throws ItemException{
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem(3,"carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
         store.searchItemById(carrotId).lock();
         store.searchItemById(tomatoId).lock();
         store.searchItemById(cucumberID).lock();
@@ -345,9 +344,9 @@ public class StoreTest {
 
     @Test
     void rollBack() throws ItemException{
-        int tomatoId= store.addItem(1,"tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem(2,"cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem(3,"carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
         store.searchItemById(carrotId).lock();
         store.searchItemById(tomatoId).lock();
         store.searchItemById(cucumberID).lock();

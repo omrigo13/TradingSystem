@@ -1,25 +1,21 @@
 package service;
 
-import authentication.UserAuthentication;
 import exceptions.*;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
-import tradingSystem.TradingSystemBuilder;
 import user.Basket;
 import user.ManagerPermission;
 import user.Subscriber;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import org.apache.log4j.Logger;
-import user.User;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -170,27 +166,29 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
     @Override
 
-    public void purchaseCart(String connectionId) throws InvalidConnectionIdException, ExternalServicesException, Exception {
-         logger.info("User purchase cart");
-         tradingSystem.purchaseCart(connectionId);
+    public void purchaseCart(String connectionId) throws Exception {
+        logger.info("User purchase cart");
+
+        tradingSystem.purchaseCart(tradingSystem.getUserByConnectionId(connectionId));
     }
 
     @Override
     public Collection<String> getPurchaseHistory(String connectionId) throws NotLoggedInException, InvalidConnectionIdException {
         logger.info("User ask for his purchase history");
-        Subscriber user = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
-        Collection<String> purchases = new LinkedList<>();
-        for (Purchase purchase: user.getPurchases()) {
-            purchases.add(purchase.getDetails());
-        }
-        return purchases;
-    } //TODO add a permission to subscriber user to see his history
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        return subscriber.getPurchaseHistory();
+    }
 
     @Override
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws InvalidConnectionIdException, ItemException, NotLoggedInException, WrongReviewException {
+    public void writeOpinionOnProduct(String connectionId, String storeId, String itemId, String review)
+            throws InvalidConnectionIdException, ItemException, NotLoggedInException, InvalidStoreIdException, WrongReviewException {
+
         logger.info("User write opinion about an Item: " +
-                    "store- " + storeID + ", product- " + productId + ", description: " + desc);
-        tradingSystem.writeOpinionOnProduct(connectionId, storeID, productId, desc);
+                    "store- " + storeId + ", product- " + itemId + ", description: " + review);
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.writeOpinionOnProduct(store, Integer.parseInt(itemId), review);
     }
 
     @Override
@@ -242,7 +240,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                 ", quantity- " + quantity +
                 ", price- " + price);
 
-         return tradingSystem.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
     }
 
     @Override
@@ -345,15 +345,16 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws InvalidConnectionIdException, InvalidStoreIdException {
+    public Collection<String> getSalesHistoryByStore(String connectionId, String storeId)
+            throws InvalidConnectionIdException, InvalidStoreIdException, NotLoggedInException, NoPermissionException {
         //TODO admin permission to see all stores history new function to add use case 6.4
         //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
         logger.info("Get sales history by store");
-        Collection<String> purchases = new LinkedList<>();
-        for (Purchase purchase: tradingSystem.getStore(Integer.parseInt(storeId)).getPurchases()) {
-            purchases.add(purchase.getDetails());
-        }
-        return purchases;
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+
+        return subscriber.getSalesHistoryByStore(store);
     }
 
     @Override

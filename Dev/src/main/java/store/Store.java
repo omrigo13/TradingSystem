@@ -1,16 +1,15 @@
 package store;
 
 import exceptions.*;
-import purchaseAndReview.Purchase;
+import tradingSystem.TradingSystem;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Store {
+
+
 
     private int id;
     private String name;
@@ -23,17 +22,18 @@ public class Store {
     //private String founder;
     private boolean isActive;
     private Inventory inventory;
-    private Collection<Purchase> purchases = new LinkedList<>();
+    private Collection<String> purchases = new LinkedList<>();
 
     /**
      * This method opens a new store and create its inventory
      *
+     * @param tradingSystem
      * @param name        - the name of the new store
      * @param description - the price of the new store
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description) throws ItemException {
+    public Store(TradingSystem tradingSystem, int id, String name, String description) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -47,7 +47,7 @@ public class Store {
         this.description = description;
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
-        this.inventory = new Inventory();
+        this.inventory = new Inventory(tradingSystem);
         this.isActive = true;
     }
 
@@ -84,7 +84,6 @@ public class Store {
         return this.inventory.getItems();
     }
 
-
 //    /**
 //     * This method changes an item's price in the store
 //     * @param name - the name of the item
@@ -111,8 +110,8 @@ public class Store {
      * @param amount      the amount in the store for the new item
      * @throws WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException
      */
-    public int addItem(int itemId,String name, double price, String category, String subCategory, int amount) throws ItemException {
-        return this.inventory.addItem(itemId,name, price, category, subCategory, amount);
+    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
+        return this.inventory.addItem(name, price, category, subCategory, amount);
     }
 
 //    /**
@@ -149,46 +148,20 @@ public class Store {
 //     * @param category - the category of the item
 //     * @param subCategory - the sub category of the item
 //     * @exception  ItemNotFound  */
-    public ConcurrentLinkedQueue<Item> searchItems(String keyWord, String itemName, String category) {
-        ConcurrentLinkedQueue list1 = null;
+    public Collection<Item> searchItems(String keyWord, String itemName, String category) {
+
+        Collection<Item> result = new HashSet<>();
         ConcurrentLinkedQueue list2 = null;
         ConcurrentLinkedQueue list3 = null;
         if (itemName != null && !itemName.isEmpty() && !itemName.trim().isEmpty())
-            list1 = inventory.searchItemByName(itemName);
+            result.addAll(inventory.searchItemByName(itemName));
         if (category != null && !category.isEmpty() && !category.trim().isEmpty())
             list2 = inventory.searchItemByCategory(category);
         if (keyWord != null && !keyWord.isEmpty() && !keyWord.trim().isEmpty())
             list3 = inventory.searchItemByKeyWord(keyWord);
 
 
-        if (list1 != null && list2 != null && list3 != null) {
-            list1.retainAll(list2);
-            list1.retainAll(list3);
-            return list1;
-        }
-        if (list1 != null && list2 == null && list3 != null) {
-            list1.retainAll(list3);
-            return list1;
-        }
-        if (list1 != null && list2 != null && list3 == null) {
-            list1.retainAll(list2);
-            return list1;
-        }
-        if (list1 != null && list2 == null && list3 == null) {
-            return list1;
-        }
-        if (list1 == null && list2 != null && list3 != null) {
-            list3.retainAll(list2);
-            return list3;
-        }
-        if (list1 == null && list2 != null && list3 == null) {
-            return list2;
-        }
-        if (list1 == null && list2 == null && list3 != null) {
-            return list3;
-        }
-        return null;
-
+        return result;
     }
 
 
@@ -402,8 +375,8 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double calculate(Map<Item, Integer> items) throws Exception {
-        return inventory.calculate(items);
+    public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws Exception { // TODO should get basket
+        return inventory.calculate(items, details);
     }
 
     //TODO make an exception for this
@@ -420,7 +393,9 @@ public class Store {
         }
     }
 
-    public void addPurchase(Purchase purchase) {purchases.add(purchase); }
+    public void addPurchase(String purchaseDetails) {
+        purchases.add(purchaseDetails);
+    }
 
-    public Collection<Purchase> getPurchases() { return purchases; }
+    public Collection<String> getPurchaseHistory() { return purchases; }
 }
