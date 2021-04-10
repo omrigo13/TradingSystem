@@ -45,8 +45,11 @@ public class Subscriber extends User {
         }
 
         // add each store purchase details string to the user's purchase history collection
+        String cartPurchase = "";
         for (Map.Entry<Store, String> entry : details.entrySet())
-            purchaseHistory.add("Store: " + entry.getKey().getName() + "\n" + entry.getValue());
+            //purchaseHistory.add("Store: " + entry.getKey().getName() + "\n" + entry.getValue());
+            cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
+        purchaseHistory.add(cartPurchase);
 
         baskets.clear();
     }

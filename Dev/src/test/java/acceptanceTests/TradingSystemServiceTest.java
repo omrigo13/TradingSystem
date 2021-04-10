@@ -211,7 +211,7 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void notValidAddItemToBasket() throws Exception{
+    void notValidAddItemToBasket() throws Exception{ //TODO bad test, we changed back to item id per store and not global item id
         assertThrows(ItemNotFoundException.class, () -> service.addItemToBasket(store1Manager1Id, storeId2, productId1, 2));
         assertThrows(Exception.class, () -> service.addItemToBasket(store1Manager1Id, "asd", productId1, 2));
         assertThrows(ItemNotFoundException.class, () -> service.addItemToBasket(store1Manager1Id, storeId1, "asd", 2));
@@ -252,6 +252,7 @@ class TradingSystemServiceTest {
         String ss1 = s1.toString();
         assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk"));
 
+        //TODO bad test, we changed back to item id per store and not global item id
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId4, 1 ));    // productId4 not added by id4 to his basket
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(subs1Id, storeId2, productId4, 1 ));    // subs1Id didnt add nothing to his basket
         assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, "abc", productId4, 1 ));  // abc store doesnt exist
@@ -449,7 +450,7 @@ class TradingSystemServiceTest {
         //TODO: add StoreNotFoundException
         assertThrows(Exception.class, () -> service.deleteProductFromStore(founderStore1Id, "100", productId1)); //"abc" is not a storeId
 
-        // TODO: this test is wrong!
+        // TODO: this test is wrong!, //TODO bad test, we changed back to item id per store and not global item id
         assertThrows(ItemException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId1, productId3)); //productId3 is not in storeId1
 
     }
@@ -469,7 +470,7 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void updateNotExistProductDetails() throws Exception{
+    void updateNotExistProductDetails() throws Exception{ //TODO bad test, we changed back to item id per store and not global item id
         assertThrows(ItemException.class, () -> service.updateProductDetails(founderStore1Id, storeId1, productId3, null,25, null)); //productId3 not in storeId1
     }
 
