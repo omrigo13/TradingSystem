@@ -177,7 +177,7 @@ class TradingSystemServiceTest {
 
     @Test
     void getItemsByProductName() throws Exception {
-        //TODO to update
+        //TODO didn't finish the test
         Collection<String> items = service.getItems("", "milk", null, null, null, null, null, null);
         assertEquals(items.size(), 2);
         for (String item: items) {
@@ -375,8 +375,8 @@ class TradingSystemServiceTest {
 
     @Test
     void openNewStoreWithWrongName() throws Exception{
-        assertThrows(WrongNameException.class, () -> service.openNewStore(founderStore1Id, null)); //null store name
-        assertThrows(WrongNameException.class, () -> service.openNewStore(founderStore1Id, "")); //empty store name
+        assertThrows(NewStoreException.class, () -> service.openNewStore(founderStore1Id, null)); //null store name
+        assertThrows(NewStoreException.class, () -> service.openNewStore(founderStore1Id, "")); //empty store name
     }
 
     @Test
