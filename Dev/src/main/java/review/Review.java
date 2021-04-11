@@ -1,4 +1,4 @@
-package purchaseAndReview;
+package review;
 
 import store.Item;
 import store.Store;

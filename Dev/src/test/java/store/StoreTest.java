@@ -151,20 +151,20 @@ public class StoreTest {
 //        assertEquals(store.getItems().get(tomato), 2);
 //    }
 
-    @Test
-    void decreaseByQuantity() throws ItemException{
-        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
-        Item cucumber = store.searchItemById(cucumberId);
-
-        //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmountException.class, () -> store.decreaseByQuantity(carrotId,5));
-
-        store.decreaseByQuantity(cucumberId,1);
-        assertEquals(store.getItems().get(cucumber), 9);
-        store.decreaseByQuantity(cucumberId,2);
-        assertEquals(store.getItems().get(cucumber), 7);
-    }
+//    @Test
+//    void decreaseByQuantity() throws ItemException{
+//        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+//        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
+//        Item cucumber = store.searchItemById(cucumberId);
+//
+//        //checks that the quantity must be 0 or greater
+//        assertThrows(WrongAmountException.class, () -> store.decreaseByQuantity(carrotId,5));
+//
+//        store.decreaseByQuantity(cucumberId,1);
+//        assertEquals(store.getItems().get(cucumber), 9);
+//        store.decreaseByQuantity(cucumberId,2);
+//        assertEquals(store.getItems().get(cucumber), 7);
+//    }
 
     @Test
     void removeItem() throws ItemException{

@@ -3,7 +3,7 @@ package store;
 import exceptions.ItemException;
 import exceptions.WrongPriceException;
 import exceptions.WrongRatingException;
-import purchaseAndReview.Review;
+import review.Review;
 
 import java.util.Collection;
 import java.util.LinkedList;

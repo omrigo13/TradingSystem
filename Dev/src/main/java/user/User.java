@@ -51,8 +51,6 @@ public class User {
     public void addCartToPurchases(Map<Store, String> details) {
     }
 
-    public void resetCart() {baskets.clear(); }
-
     public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception { // TODO exception
 
         double totalPrice = 0;

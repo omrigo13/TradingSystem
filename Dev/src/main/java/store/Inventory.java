@@ -206,7 +206,7 @@ public class Inventory {
      * @param itemId- id of the wanted item
      * @param amount - the new amount fo the item
      * @exception WrongAmountException when the amount is illegal*/
-    public void changeQuantity(int itemId, int amount) throws ItemException {
+    public synchronized void changeQuantity(int itemId, int amount) throws ItemException {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
         items.replace(searchItem(itemId), amount);
@@ -225,23 +225,23 @@ public class Inventory {
         return true;
     }
 
-    /**
-     * This method decreases the amount of the item by param quantity.
-     * @param itemID- id of the wanted item
-     * @param quantity - the quantity of the wanted item
-     * @exception WrongAmountException - when the amount is illegal */
-    public void decreaseByQuantity(int itemID, int quantity) throws ItemException {
-        Item item = searchItem(itemID);
-        if(items.get(item) -quantity< 0)
-            throw new WrongAmountException("cannot decrease the quantity of an item with amount of 0");
-        items.replace(item, items.get(item) - quantity);
-    }
+//    /**
+//     * This method decreases the amount of the item by param quantity.
+//     * @param itemID- id of the wanted item
+//     * @param quantity - the quantity of the wanted item
+//     * @exception WrongAmountException - when the amount is illegal */
+//    public synchronized void decreaseByQuantity(int itemID, int quantity) throws ItemException {
+//        Item item = searchItem(itemID);
+//        if(items.get(item) -quantity < 0)
+//            throw new WrongAmountException("cannot decrease the quantity of an item with amount of 0");
+//        items.replace(item, items.get(item) - quantity);
+//    }
 
     /**
      *  This method removes an item
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
-    public Item removeItem(int itemID) throws ItemException {
+    public synchronized Item removeItem(int itemID) throws ItemException {
         Item item=searchItem(itemID);
        items.remove(item);
        return item;
@@ -271,7 +271,7 @@ public class Inventory {
         return itemsDisplay;
     }
 
-    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
+    public synchronized void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
         for ( Item item: items.keySet()) {
             if(item.getId()==itemID)
             {

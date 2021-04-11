@@ -137,20 +137,20 @@ public class InventoryTest {
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 2);
     }
 
-    @Test
-    void decreaseByQuantity() throws ItemException{
-        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 0);
-        Item cucumber = inventory.searchItem(cucumberId);
-
-        //checks that the quantity must be 0 or greater
-        assertThrows(WrongAmountException.class, () -> inventory.decreaseByQuantity(carrotId,4));
-
-        inventory.decreaseByQuantity(cucumberId,1);
-        assertEquals(inventory.getItems().get(cucumber), 9);
-        inventory.decreaseByQuantity(cucumberId,2);
-        assertEquals(inventory.getItems().get(cucumber), 7);
-    }
+//    @Test
+//    void decreaseByQuantity() throws ItemException{
+//        int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
+//        int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 0);
+//        Item cucumber = inventory.searchItem(cucumberId);
+//
+//        //checks that the quantity must be 0 or greater
+//        assertThrows(WrongAmountException.class, () -> inventory.decreaseByQuantity(carrotId,4));
+//
+//        inventory.decreaseByQuantity(cucumberId,1);
+//        assertEquals(inventory.getItems().get(cucumber), 9);
+//        inventory.decreaseByQuantity(cucumberId,2);
+//        assertEquals(inventory.getItems().get(cucumber), 7);
+//    }
 
     @Test
     void removeItem() throws ItemException{

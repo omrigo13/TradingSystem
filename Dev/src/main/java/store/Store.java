@@ -260,9 +260,9 @@ public class Store {
 //     * @param subCategory - the sub category of the wanted item
 //     * @param quantity - the quantity of the wanted item
 //     * @exception WrongAmountException - when the amount is illegal */
-    public void decreaseByQuantity(int itemId, int quantity) throws ItemException {
-        this.inventory.decreaseByQuantity(itemId, quantity);
-    }
+//    public void decreaseByQuantity(int itemId, int quantity) throws ItemException {
+//        this.inventory.decreaseByQuantity(itemId, quantity);
+//    }
 
     /**
      * This method removes an item from the store's inventory

@@ -1,7 +1,7 @@
 package user;
 
 import exceptions.*;
-import purchaseAndReview.Review;
+import review.Review;
 import store.Item;
 import store.Store;
 
