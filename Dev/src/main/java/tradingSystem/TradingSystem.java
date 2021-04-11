@@ -2,23 +2,21 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.*;
-import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
-import externalServices.PaymentData;
 import externalServices.PaymentSystem;
-import purchaseAndReview.Purchase;
-import purchaseAndReview.Review;
 import store.Item;
 import store.Store;
 import user.*;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
 
 public class TradingSystem {
 
-    private int storeIdCounter = 1;
-    private int purchaseIdCounter = 1;
-    private int itemIdCounter=1;
+    private int storeIdCounter = 0;
+    private int purchaseIdCounter = 0;
+    private int itemIdCounter = 0;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -101,7 +99,7 @@ public class TradingSystem {
     public int newStore(Subscriber subscriber, String storeName) throws ItemException {
 
         // create the new store
-        Store store = new Store(storeIdCounter, storeName, "description");
+        Store store = new Store(this, storeIdCounter, storeName, "description");
         stores.put(storeIdCounter, store);
 
         // give the subscriber owner permission
@@ -137,82 +135,11 @@ public class TradingSystem {
         return items;
     }
 
-    public void purchaseCart(String connectionId) throws Exception {
-        User user = getUserByConnectionId(connectionId);
-        double paymentValue = 0, storePayment = 0;
-        Collection<Integer> itemIDs = new LinkedList<>();
-        String details = "";
-        String storeDetails = "";
-        Map<Integer, Collection<Integer>> storeItems = new HashMap<>();
-        Map<Store, Double> storePayments = new HashMap<>();
-        for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
-            storePayment = entry.getKey().calculate(entry.getValue().getItems());
-            storePayments.put(entry.getKey(), storePayment);
-            paymentValue += storePayment;
-        }
-        PaymentData paymentData = new PaymentData(paymentValue);
-        if (paymentSystem.pay(paymentData)) {
-            if (deliverySystem.deliver(new DeliveryData())) {
-                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
-                    entry.getKey().unlockItems(entry.getValue().getItems().keySet());
-                }
-                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
-                    storeDetails = "Store Name: " + entry.getKey().getName() + "\nItems:\n";
-                    for (Item item : entry.getValue().getItems().keySet()) {
-                        itemIDs.add(item.getId());
-                        storeDetails += "\titem name: " + item.getName() + " price: " + item.getPrice() + " quantity: " + entry.getValue().getItems().get(item) + "\n";
-                    }
-                    storeDetails += "Store Price: " + storePayments.get(entry.getKey()) + "\n";
-                    details += storeDetails + "\n";
-                    storeItems.put(entry.getKey().getId(), itemIDs);
-                    Map<Integer, Collection<Integer>> itemsOfStore = new HashMap<>();
-                    itemsOfStore.put(entry.getKey().getId(), itemIDs);
-                    entry.getKey().addPurchase(new Purchase(purchaseIdCounter, itemsOfStore, storeDetails));
-                    itemIDs = new LinkedList<>();
-                }
-                details += "Total Price: " + paymentValue;
-                Purchase purchase = new Purchase(purchaseIdCounter, storeItems, details);
-                user.addPurchase(purchase);
-                purchaseIdCounter++;
-                user.resetCart();
-            } else {
-                paymentSystem.payBack(paymentData);
-                for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
-                    entry.getKey().rollBack(entry.getValue().getItems());
-                }
-                throw new DeliverySystemException();
-            }
-        } else {
-            for (Map.Entry<Store, Basket> entry : user.getCart().entrySet()) {
-                entry.getKey().rollBack(entry.getValue().getItems());
-            }
-            throw new PaymentSystemException();
-        }
+    public void purchaseCart(User user) throws Exception { // TODO exception
+        user.purchaseCart(paymentSystem, deliverySystem);
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws InvalidConnectionIdException, ItemException, NotLoggedInException, WrongReviewException {
-        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
-        for (Purchase purchase : subscriber.getPurchases()) {
-            if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
-                if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))
-                {
-                    Store store = stores.get(Integer.parseInt(storeID));
-                    Item item = store.searchItemById(Integer.parseInt(productId));
-                   if (desc == null || desc.isEmpty() || desc.trim().isEmpty())
-                       throw  new WrongReviewException("review can't be empty or null");
-                    item.addReview(new Review(subscriber, store, item, desc));
-                    return;
-                }
-        }
-        throw new ItemNotPurchased("can't write a review for an item that have not purchased by the user");
-    }
-
-    public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
-        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
-        Store store = getStore(Integer.parseInt(storeId));
-        int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
-        itemIdCounter++;
-        return "" + itemId;
+    public int getNextItemId() {
+        return itemIdCounter++;
     }
 }

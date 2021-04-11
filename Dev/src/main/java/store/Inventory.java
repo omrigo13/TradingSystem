@@ -5,7 +5,11 @@
 package store;
 
 import exceptions.*;
+import tradingSystem.TradingSystem;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,10 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inventory {
 
-    private ConcurrentHashMap<Item, Integer> items;
+//    private final TradingSystem tradingSystem;
+    private final Map<Item, Integer> items;
+    private AtomicInteger id = new AtomicInteger(0);
 
-    public Inventory() {
-        this.items = new ConcurrentHashMap<>();
+    public Inventory(TradingSystem tradingSystem) {
+//        this.tradingSystem = tradingSystem;
+        this.items = Collections.synchronizedMap(new ConcurrentHashMap<>());
     }
 //    /**
 //     * this adds a new item and it's amount to the inventory os a store
@@ -56,7 +63,7 @@ public class Inventory {
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
      * @exception WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException  */
-    public int addItem(int itemId,String name, double price, String category, String subCategory, int amount) throws ItemException {
+    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         if(name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("item name is null or contains only white spaces");
         if(name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -65,24 +72,29 @@ public class Inventory {
             throw new WrongPriceException("item price cannot be negative");
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
-        for (Item item: items.keySet())
-            if(item.getName().equals(name) && item.getCategory().equals(category) && item.getSubCategory().equals(subCategory))
-                throw new ItemAlreadyExistsException("item already exists");
-        if(category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
-            throw new WrongCategoryException("item category cannot start with a number");
-        items.putIfAbsent(new Item(itemId, name, price, category, subCategory, 0), amount);
-        return itemId;
+
+        synchronized (items) {
+            for (Item item : items.keySet())
+                if (item.getName().equals(name) && item.getCategory().equals(category) && item.getSubCategory().equals(subCategory))
+                    throw new ItemAlreadyExistsException("item already exists");
+            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
+                throw new WrongCategoryException("item category cannot start with a number");
+            //int itemId = tradingSystem.getNextItemId();
+            items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
+            return id.getAndIncrement();
+        }
     }
 
     /**
      * This method is used to search the inventory for items that matches the param name.
      * @param name - the name of the wanted item
-     * @exception ItemNotFoundException - On non existing item with param name*/
-    public ConcurrentLinkedQueue<Item> searchItemByName(String name)
+     * @exception ItemNotFoundException - On non existing item with param name
+     * @return*/
+    public Collection<Item> searchItemByName(String name)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: items.keySet())
-            if(item.getName().toLowerCase().equals(name.toLowerCase()))
+            if(item.getName().equalsIgnoreCase(name))
                 foundItems.add(item);
         return foundItems;
     }
@@ -91,13 +103,12 @@ public class Inventory {
      * This method is used to search the inventory for items that matches the param category.
      * @param category - the category of the wanted item
      * @exception ItemNotFoundException - On non existing item with param category*/
-    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category)
+    public Collection<Item> searchItemByCategory(String category)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: items.keySet())
-            if(item.getCategory().toLowerCase().equals(category.toLowerCase()))
+            if(item.getCategory().equalsIgnoreCase(category))
                 foundItems.add(item);
-
         return foundItems;
     }
 
@@ -105,9 +116,9 @@ public class Inventory {
      * This method is used to search the inventory for items that matches the param keyword.
      * @param keyword - the keyword of the wanted item
      * @exception ItemNotFoundException - On non existing item with param keyword*/
-    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword)
+    public Collection<Item> searchItemByKeyWord(String keyword)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: items.keySet())
             if(item.getName().toLowerCase().contains(keyword.toLowerCase()) || item.getCategory().toLowerCase().contains(keyword.toLowerCase()) ||
                     item.getSubCategory().toLowerCase().contains(keyword.toLowerCase()))
@@ -142,9 +153,9 @@ public class Inventory {
      * This method is used to filter the inventory for items that matches the params startPrice and endPrice.
      * @param startPrice - the startPrice of the items price
      * @param endPrice - the endPrice of the items price */
-    public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice)
+    public Collection<Item> filterByPrice(double startPrice, double endPrice)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: items.keySet())
             if(item.getPrice() >= startPrice && item.getPrice() <= endPrice)
                 foundItems.add(item);
@@ -156,26 +167,24 @@ public class Inventory {
      * This method is used to filter the inventory for items that matches the params startPrice and endPrice.
      * @param startPrice - the startPrice of the items price
      * @param endPrice - the endPrice of the items price */
-    public ConcurrentLinkedQueue<Item> filterByPrice(ConcurrentLinkedQueue<Item> itemsList,double startPrice, double endPrice)
+    public Collection<Item> filterByPrice(Collection<Item> itemsList, double startPrice, double endPrice)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: itemsList)
             if(item.getPrice() >= startPrice && item.getPrice() <= endPrice)
                 foundItems.add(item);
-
         return foundItems;
     }
 
     /**
      * This method is used to filter the inventory for items that matches the param rating.
      * @param rating - the keyword of the wanted item */
-    public ConcurrentLinkedQueue<Item> filterByRating(double rating)
+    public Collection<Item> filterByRating(double rating)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: items.keySet())
             if(item.getRating() >= rating)
                 foundItems.add(item);
-
         return foundItems;
     }
 
@@ -183,13 +192,12 @@ public class Inventory {
      * This method is used to filter the inventory for items that matches the param rating.
      * @param rating - the keyword of the wanted item
      * @exception ItemNotFoundException - On non existing item with param rating or greater*/
-    public ConcurrentLinkedQueue<Item> filterByRating(ConcurrentLinkedQueue<Item> itemsList,double rating)
+    public Collection<Item> filterByRating(Collection<Item> itemsList, double rating)
     {
-        ConcurrentLinkedQueue<Item> foundItems = new ConcurrentLinkedQueue();
+        Collection<Item> foundItems = new LinkedList<>();
         for (Item item: itemsList)
             if(item.getRating() >= rating)
                 foundItems.add(item);
-
         return foundItems;
     }
 
@@ -198,10 +206,9 @@ public class Inventory {
      * @param itemId- id of the wanted item
      * @param amount - the new amount fo the item
      * @exception WrongAmountException when the amount is illegal*/
-    public void changeQuantity(int itemId, int amount) throws ItemException {
+    public synchronized void changeQuantity(int itemId, int amount) throws ItemException {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
-
         items.replace(searchItem(itemId), amount);
     }
 
@@ -218,30 +225,30 @@ public class Inventory {
         return true;
     }
 
-    /**
-     * This method decreases the amount of the item by param quantity.
-     * @param itemID- id of the wanted item
-     * @param quantity - the quantity of the wanted item
-     * @exception WrongAmountException - when the amount is illegal */
-    public void decreaseByQuantity(int itemID, int quantity) throws ItemException {
-        Item item = searchItem(itemID);
-        if(items.get(item) -quantity< 0)
-            throw new WrongAmountException("cannot decrease the quantity of an item with amount of 0");
-        items.replace(item, items.get(item) - quantity);
-    }
+//    /**
+//     * This method decreases the amount of the item by param quantity.
+//     * @param itemID- id of the wanted item
+//     * @param quantity - the quantity of the wanted item
+//     * @exception WrongAmountException - when the amount is illegal */
+//    public synchronized void decreaseByQuantity(int itemID, int quantity) throws ItemException {
+//        Item item = searchItem(itemID);
+//        if(items.get(item) -quantity < 0)
+//            throw new WrongAmountException("cannot decrease the quantity of an item with amount of 0");
+//        items.replace(item, items.get(item) - quantity);
+//    }
 
     /**
      *  This method removes an item
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
-    public Item removeItem(int itemID) throws ItemException {
+    public synchronized Item removeItem(int itemID) throws ItemException {
         Item item=searchItem(itemID);
        items.remove(item);
        return item;
 
     }
 
-    public ConcurrentHashMap<Item, Integer> getItems() {
+    public Map<Item, Integer> getItems() {
         return items;
     }
 
@@ -264,11 +271,11 @@ public class Inventory {
         return itemsDisplay;
     }
 
-    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
+    public synchronized void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
         for ( Item item: items.keySet()) {
             if(item.getId()==itemID)
             {
-                if(newSubCategory != null && !newSubCategory.isEmpty() && !newSubCategory.trim().isEmpty())
+                if(newSubCategory != null && !newSubCategory.trim().isEmpty())
                     item.setSubCategory(newSubCategory);
 
                 if(newQuantity !=null)
@@ -284,8 +291,9 @@ public class Inventory {
 
     }
 
-    public double calculate(Map<Item, Integer> items) throws Exception {
+    public double calculate(Map<Item, Integer> items, StringBuilder details) throws Exception {
         double paymentValue = 0;
+        /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())
                 entry.getKey().lock();
@@ -297,11 +305,18 @@ public class Inventory {
                 }
                 throw new Exception("a kind of wait should be here"); //TODO we have to check what to do with locked items
             }
-        }
-        for (Map.Entry<Item, Integer> entry: items.entrySet()) {
-            if(checkAmount(entry.getKey().getId(), entry.getValue())) {
-                paymentValue += (entry.getKey().getPrice() * entry.getValue());
-                this.items.replace(entry.getKey(), this.items.get(entry.getKey()) - entry.getValue());
+        }*/
+
+        synchronized (this.items) {
+            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+                if (checkAmount(entry.getKey().getId(), entry.getValue())) {
+                    Item item = entry.getKey();
+                    int quantity = entry.getValue();
+                    paymentValue += (item.getPrice() * quantity);
+                    this.items.replace(item, this.items.get(item) - quantity);
+                    details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
+                            .append(" Quantity: ").append(quantity).append("\n");
+                }
             }
         }
         return paymentValue;
