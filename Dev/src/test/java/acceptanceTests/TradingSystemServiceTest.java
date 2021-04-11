@@ -325,7 +325,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
-        assertThrows(ItemNotPurchased.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
+        assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
     }
 
     @Test
@@ -334,7 +334,7 @@ class TradingSystemServiceTest {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
-        assertThrows(ItemNotPurchased.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
+        assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, "abc", productId1, "opinion1")); //no such storeId "abc"
     }
 
