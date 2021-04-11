@@ -4,9 +4,9 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import store.Item;
 import store.Store;
 
 import java.util.Collection;
@@ -27,6 +27,9 @@ class SubscriberTest {
     @Mock private Collection<Store> stores;
     @Mock private Store store;
     @Mock private Subscriber target;
+    @Mock private Map<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<String> purchasesDetails;
+
 
     private final Permission adminPermission = AdminPermission.getInstance();
     private final Permission managerPermission = ManagerPermission.getInstance(store);
@@ -41,7 +44,7 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() {
-        subscriber = spy(new Subscriber("Johnny", permissions));
+        subscriber = spy(new Subscriber("Johnny", permissions, itemsPurchased, purchasesDetails));
     }
 
     @Test
@@ -163,8 +166,8 @@ class SubscriberTest {
         String category = "Electronics";
 
         doNothing().when(subscriber).validatePermission(manageInventoryPermission);
-        subscriber.addStoreItem(itemId,store, item, category, subCategory, quantity, price);
-        verify(store).addItem(itemId, item, price, category, subCategory, quantity);
+        subscriber.addStoreItem(store, item, category, subCategory, quantity, price);
+        verify(store).addItem(item, price, category, subCategory, quantity);
     }
 
     @Test

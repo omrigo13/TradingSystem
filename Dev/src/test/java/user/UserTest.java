@@ -4,13 +4,10 @@ import exceptions.NotLoggedInException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import purchaseAndReview.Purchase;
 import store.Store;
 
-import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,11 +19,10 @@ class UserTest {
     private User user;
 
     @Mock private Map<Store, Basket> baskets;
-    @Mock private Collection<Purchase> purchases;
 
     @BeforeEach
     void setUp() {
-        user = new User(baskets, purchases);
+        user = new User(baskets);
     }
 
     @Test

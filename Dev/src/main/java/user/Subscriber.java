@@ -1,7 +1,7 @@
 package user;
 
 import exceptions.*;
-import purchaseAndReview.Purchase;
+import review.Review;
 import store.Item;
 import store.Store;
 
@@ -11,14 +11,18 @@ public class Subscriber extends User {
 
     private final String userName;
     private final Set<Permission> permissions;
+    private final Map<Store, Collection<Item>> itemsPurchased;
+    private final Collection<String> purchaseHistory;
 
     public Subscriber(String userName) {
-        this(userName, new HashSet<>());
+        this(userName, new HashSet<>(), new HashMap<>(), new LinkedList<>());
     }
 
-    Subscriber(String userName, Set<Permission> permissions) {
+    Subscriber(String userName, Set<Permission> permissions, Map<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
         this.userName = userName;
         this.permissions = permissions;
+        this.itemsPurchased = itemsPurchased;
+        this.purchaseHistory = purchaseHistory;
     }
 
     public String getUserName() {
@@ -28,6 +32,26 @@ public class Subscriber extends User {
     @Override
     public Subscriber getSubscriber() {
         return this;
+    }
+
+    @Override
+    public void addCartToPurchases(Map<Store, String> details) { // TODO unit test
+
+        for (Map.Entry<Store, Basket> entry : baskets.entrySet()) {
+            Store store = entry.getKey();
+            Basket basket = entry.getValue();
+            Collection<Item> itemsPurchasedFromStore = itemsPurchased.computeIfAbsent(store, k -> new HashSet<>());
+            itemsPurchasedFromStore.addAll(basket.getItems().keySet());
+        }
+
+        // add each store purchase details string to the user's purchase history collection
+        String cartPurchase = "";
+        for (Map.Entry<Store, String> entry : details.entrySet())
+            //purchaseHistory.add("Store: " + entry.getKey().getName() + "\n" + entry.getValue());
+            cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
+        purchaseHistory.add(cartPurchase);
+
+        baskets.clear();
     }
 
     public void addPermission(Permission permission) {
@@ -148,14 +172,13 @@ public class Subscriber extends User {
         target.removePermission(permission);
     }
 
-    // TODO: subscriber should not know about ids (?)
-    public int addStoreItem(int itemId, Store store, String itemName, String category, String subCategory, int quantity, double price)
+    public int addStoreItem(Store store, String itemName, String category, String subCategory, int quantity, double price)
             throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
-        store.addItem(itemId, itemName, price, category, subCategory, quantity);
-        return itemId;
+
+        return store.addItem(itemName, price, category, subCategory, quantity);
     }
 
     public void removeStoreItem(Store store, int itemId) throws NoPermissionException, ItemException {
@@ -215,5 +238,28 @@ public class Subscriber extends User {
         validatePermission(AdminPermission.getInstance());
 
         return log;
+    }
+
+    public Collection<String> getSalesHistoryByStore(Store store) throws NoPermissionException {
+
+        validateAtLeastOnePermission(AdminPermission.getInstance(), ManagerPermission.getInstance(store));
+
+        return store.getPurchaseHistory();
+    }
+
+    public Collection<String> getPurchaseHistory() {
+        return purchaseHistory;
+    }
+
+    public void writeOpinionOnProduct(Store store, int itemId, String review) throws ItemException, WrongReviewException {
+
+        if (review == null || review.trim().isEmpty())
+            throw new WrongReviewException("Review can't be empty or null");
+
+        Item item = store.searchItemById(itemId);
+        if (!itemsPurchased.get(store).contains(item))
+            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+
+        item.addReview(new Review(this, store, item, review));
     }
 }

@@ -1,11 +1,9 @@
 package service;
 
-import authentication.UserAuthentication;
 import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
@@ -44,7 +42,7 @@ class TradingSystemServiceImplTest {
     private final String password = "1234";
     private final String connectionId = "4523532453245";
     private final String storeId = "43534532";
-    private final String productId = "42341";
+    private final String itemId = "42341";
     private final int quantity = 3;
     private final String category = "category";
     private final String subCategory = "subCategory";
@@ -94,10 +92,10 @@ class TradingSystemServiceImplTest {
     @Test
     void addItemToBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
-        when(store.searchItemById(Integer.parseInt(productId))).thenReturn(item1);
+        when(store.searchItemById(Integer.parseInt(itemId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getBasket(store)).thenReturn(basket);
-        service.addItemToBasket(connectionId, storeId, productId, quantity);
+        service.addItemToBasket(connectionId, storeId, itemId, quantity);
         verify(basket).addItem(item1, quantity);
     }
 
@@ -121,10 +119,10 @@ class TradingSystemServiceImplTest {
     @Test
     void updateProductAmountInBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
-        when(store.searchItemById(Integer.parseInt(productId))).thenReturn(item1);
+        when(store.searchItemById(Integer.parseInt(itemId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getBasket(store)).thenReturn(basket);
-        service.updateProductAmountInBasket(connectionId, storeId, productId, quantity);
+        service.updateProductAmountInBasket(connectionId, storeId, itemId, quantity);
         verify(basket).setQuantity(item1, quantity);
     }
 
@@ -141,9 +139,13 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void writeOpinionOnProduct() throws NotLoggedInException, ItemException, InvalidConnectionIdException, WrongReviewException {
-        String description = "good product";
-        service.writeOpinionOnProduct(connectionId, storeId, productId, description);
+    void writeOpinionOnProduct() throws NotLoggedInException, ItemException, InvalidConnectionIdException, WrongReviewException, InvalidStoreIdException {
+        String review = "good product";
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
+        when(user.getSubscriber()).thenReturn(subscriber);
+        service.writeOpinionOnProduct(connectionId, storeId, itemId, review);
+        verify(subscriber).writeOpinionOnProduct(store, Integer.parseInt(itemId), review);
     }
 
     @Test
@@ -212,17 +214,13 @@ class TradingSystemServiceImplTest {
 
     @Test
     void addProductToStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, ItemException, InvalidStoreIdException {
-//        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
-//        when(user.getSubscriber()).thenReturn(subscriber);
-//        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
-//        String itemName = "tomato";
-//        when(subscriber.addStoreItem(5, store, itemName, category, subCategory, quantity, price)).thenReturn(5);
-//        service.addProductToStore(connectionId,storeId, itemName,category,subCategory,quantity,price);
-//        verify(store).searchItemById(5);
 
         String itemName = "cucumber";
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
+        when(user.getSubscriber()).thenReturn(subscriber);
         service.addProductToStore(connectionId, storeId, itemName, category, subCategory, quantity, price);
-        verify(tradingSystem).addProductToStore(connectionId, storeId, itemName, category, subCategory, quantity, price);
+        verify(subscriber).addStoreItem(store, itemName, category, subCategory, quantity, price);
     }
 
     @Test
