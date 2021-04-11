@@ -313,14 +313,16 @@ class TradingSystemServiceImplTest {
         subscribers.add(subscriber1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
+        when(subscriber.getUserName()).thenReturn("Barak");
+        when(subscriber1.getUserName()).thenReturn("Lidor");
 
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(tradingSystem.getStoreStaff(eq(subscriber), eq(store), any())).thenReturn(subscribers);
         Collection<String> result = service.showStaffInfo(connectionId,storeId);
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.contains(subscriber.storePermissionsToString(store)));
-        assertTrue(result.contains(subscriber1.storePermissionsToString(store)));
+        assertTrue(result.contains("Barak : " + subscriber.storePermissionsToString(store)));
+        assertTrue(result.contains("Lidor : " + subscriber1.storePermissionsToString(store)));
     }
 
     @Test

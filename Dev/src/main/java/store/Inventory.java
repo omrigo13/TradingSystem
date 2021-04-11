@@ -291,7 +291,7 @@ public class Inventory {
 
     }
 
-    public double calculate(Map<Item, Integer> items, StringBuilder details) throws Exception {
+    public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
         double paymentValue = 0;
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
