@@ -7,6 +7,7 @@ import service.TradingSystemService;
 import tradingSystem.TradingSystem;
 import tradingSystem.TradingSystemBuilder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -160,11 +161,11 @@ class TradingSystemServiceTest {
         assertThrows(InvalidConnectionIdException.class, () -> service.logout("user999"));
     }
 
-//    @Test
-//    void alreadyLoggedOut() throws Exception{
-//        service.logout(subs3Id);
-//        assertThrows(Exception.class, () -> service.logout(subs3Id));
-//    }
+    @Test
+    void alreadyLoggedOut() throws Exception{
+        service.logout(subs3Id);
+        assertThrows(NotLoggedInException.class, () -> service.logout(subs3Id));
+    }
 
     @Test
     void getItemsByKeyWord() throws Exception{
@@ -177,27 +178,51 @@ class TradingSystemServiceTest {
 
     @Test
     void getItemsByProductName() throws Exception {
-        //TODO didn't finish the test
         Collection<String> items = service.getItems("", "milk", null, null, null, null, null, null);
         assertEquals(items.size(), 2);
         for (String item: items) {
-            assertTrue(items.contains("milk"));
+            assertTrue(item.contains("milk"));
         }
-//        assertTrue(!str.isEmpty());
-//        str = service.getItems("", "baguette", null, null, null, null, null, null);
-//        assertTrue(!service.getItems("", "baguette", null, null, null, null, null, null).isEmpty());
+    }
+
+    @Test
+    void getItemsByNameNotExist() throws Exception {
+        Collection<String> items = service.getItems("", "butter", null, null, null, null, null, null);
+        assertEquals(items.size(), 0);
     }
 
     @Test
     void getItemsByCategory() throws Exception {
-        assertTrue(!service.getItems("", "", "bread", null, null, null, null, null).isEmpty());
+        Collection<String> items = service.getItems("", "", "bread", null, null, null, null, null);
+        assertTrue(items.size() == 1);
+        assertTrue(items.toString().contains("baguette"));
+    }
+
+    @Test
+    void getItemsByCategoryNotExist() throws Exception {
+        Collection<String> items = service.getItems("", "", "bottle", null, null, null, null, null);
+        assertTrue(items.size() == 0);
     }
 
     @Test
     void getItemsByPrice() throws Exception {
-        Collection<String> collect = new LinkedList<>();
-        collect = service.getItems("", "", "", null, null, null, 1000.0, 0.5);
-        assertTrue(!collect.isEmpty());
+        Collection<String> collect = service.getItems("", "", "", null, null, null, 1000.0, 0.5);
+        assertTrue(collect.size() == 4);
+        assertTrue(collect.toString().contains("milk"));
+        assertTrue(collect.toString().contains("cheese"));
+        assertTrue(collect.toString().contains("baguette"));
+    }
+
+    @Test
+    void getItemsByNegativePrice() throws Exception {
+        Collection<String> collect = service.getItems("", "", "", null, null, null, -0.5, -2.5);
+        assertTrue(collect.size() == 0);
+    }
+
+    @Test
+    void getItemsByNotExistPriceRange() throws Exception {
+        Collection<String> collect = service.getItems("", "", "", null, null, null, 200.0, 100.0);
+        assertTrue(collect.size() == 0);
     }
 
     @Test
@@ -213,6 +238,7 @@ class TradingSystemServiceTest {
 
     @Test
     void notValidAddItemToBasket() throws Exception{
+        //TODO impl: fix exception
         assertThrows(ItemNotFoundException.class, () -> service.addItemToBasket(store1Manager1Id, storeId2, productId1, 2));
         assertThrows(Exception.class, () -> service.addItemToBasket(store1Manager1Id, "asd", productId1, 2));
         assertThrows(ItemNotFoundException.class, () -> service.addItemToBasket(store1Manager1Id, storeId1, "asd", 2));
@@ -220,42 +246,44 @@ class TradingSystemServiceTest {
 
     @Test
     void showCart() throws Exception{
-        //TODO verify items in the collection; edge case
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
-        assertTrue(service.showCart(store1Manager1Id).size() == 3);
+        Collection<String> collect = service.showCart(store1Manager1Id);
+        assertTrue(collect.size() == 3);
+        assertTrue(collect.toString().contains("milk"));
+        assertTrue(collect.toString().contains("cheese"));
+        assertTrue(service.showCart(subs3Id).isEmpty());
     }
 
     @Test
     void showBasket() throws Exception{
-        //TODO verify items in the collection; edge case
-
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         Collection<String> s1 = service.showBasket(store1Manager1Id,storeId1);
         assertTrue(s1 != null && !s1.isEmpty());
+        assertTrue(s1.toString().contains("milk") && s1.toString().contains("cheese"));
         Collection<String> s2 = service.showBasket(store1Manager1Id,storeId2);
         assertTrue(s2 != null && !s2.isEmpty());
+        assertTrue(s2.toString().contains("milk"));
+        assertTrue(service.showBasket(subs3Id, storeId1).isEmpty());
     }
 
     @Test
     void updateProductAmountInBasket() throws Exception{
-        //TODO negative amount; If trying to update an item which not exist in the basket, the amount will be updated.
+        //TODO impl: fix: when updating amount to 0, remove the item from the basket
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         Collection<String> s1 = service.showBasket(store1Manager1Id,storeId1);
-        assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk"));
+        assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk") && s1.toString().contains("cheese"));
         service.updateProductAmountInBasket(store1Manager1Id, storeId1, productId1, 0);
         s1 = service.showBasket(store1Manager1Id,storeId1);
-        String ss1 = s1.toString();
-        assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk"));
-
-        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId4, 1 ));    // productId4 not added by id4 to his basket
-        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(subs1Id, storeId2, productId4, 1 ));    // subs1Id didnt add nothing to his basket
-        assertThrows(Exception.class, () -> service.updateProductAmountInBasket(store1Manager1Id, "abc", productId4, 1 ));  // abc store doesnt exist
+        assertTrue(s1 != null && !s1.isEmpty() && !s1.toString().contains("milk") && s1.toString().contains("cheese"));
+        service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId4, 1 );    // productId4 not added by store1Manager1Id to his basket
+        Collection<String> str = service.showBasket(store1Manager1Id, storeId2);
+        assertTrue(str.contains("baguette"));
     }
 
     @Test
@@ -265,14 +293,18 @@ class TradingSystemServiceTest {
 
     @Test
     void getPurchaseHistory() throws Exception{
-        //TODO: every purchase is a String element in the collection.
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
         service.purchaseCart(store1Manager1Id);
-//        Collection<String> str = service.getPurchaseHistory(store1Manager1Id);
-
-        assertTrue(service.getPurchaseHistory(store1Manager1Id) != null && service.getPurchaseHistory(store1Manager1Id).size() == 3);
+        Collection<String> str = service.getPurchaseHistory(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("milk"));
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("cheese"));
+        service.addItemToBasket(store1Manager1Id, storeId2, productId4, 1);
+        service.purchaseCart(store1Manager1Id);
+        str = service.getPurchaseHistory(store1Manager1Id);
+        assertTrue(str.size() == 2);
+        assertTrue(((LinkedList)str).get(1).toString().contains("baguette"));
     }
 
     @Test
@@ -319,6 +351,7 @@ class TradingSystemServiceTest {
 
     @Test
     void getStoresInfo() throws Exception{
+        //TODO impl: fix prob
         String adminConnect = service.connect();
         service.login(adminConnect, admin1UserName, "ad123");
         assertTrue(service.getStoresInfo(adminConnect).size()>0); //there are 2 stores opened
@@ -335,14 +368,14 @@ class TradingSystemServiceTest {
 
     @Test
     void validGetItemsByStore() throws Exception{
-        //TODO expand tests
-        //id2 is store founder of storeId1, id3 is store founder of storeId2. id1 is a system manager.
-        //system manager invokes:
-//        assertTrue(service.getItemsByStore(admin1Id, storeId1).size() == 2);
-//        assertTrue(service.getItemsByStore(admin1Id, storeId2).size() == 2);
-        //store owner invokes:
-        assertTrue(service.getItemsByStore(founderStore1Id, storeId1).size() == 2);
-        assertTrue(service.getItemsByStore(founderStore2Id, storeId2).size() == 2);
+        Collection<String> s1 = service.getItemsByStore(founderStore1Id, storeId1);
+        Collection<String> s2 = service.getItemsByStore(founderStore2Id, storeId2);
+        assertTrue(s1.size() == 2);
+        assertTrue(s2.size() == 2);
+        assertTrue(s1.toString().contains("milk"));
+        assertTrue(s1.toString().contains("cheese"));
+        assertTrue(s2.toString().contains("milk"));
+        assertTrue(s2.toString().contains("baguette"));
     }
 
     @Test
@@ -364,7 +397,6 @@ class TradingSystemServiceTest {
         assertTrue(newStoreId2 != null && !newStoreId2.isEmpty());
         String newStoreId3 = service.openNewStore(subs1Id, "newStore3"); //a subscriber opens a store
         assertTrue(newStoreId3 != null && !newStoreId3.isEmpty());
-
     }
 
     @Test
@@ -374,9 +406,9 @@ class TradingSystemServiceTest {
     }
 
     @Test
-    void openNewStoreWithWrongName() throws Exception{
-        assertThrows(NewStoreException.class, () -> service.openNewStore(founderStore1Id, null)); //null store name
-        assertThrows(NewStoreException.class, () -> service.openNewStore(founderStore1Id, "")); //empty store name
+   void openNewStoreWithWrongName() throws Exception{
+        assertThrows(WrongNameException.class, () -> service.openNewStore(founderStore1Id, null)); //null store name
+        assertThrows(WrongNameException.class, () -> service.openNewStore(founderStore1Id, "")); //empty store name
     }
 
     @Test
@@ -402,10 +434,9 @@ class TradingSystemServiceTest {
 
     @Test
     void appointAnAlreadyStoreManager() throws Exception{
-        //TODO: change exception to Already*Manager*Exception
-        assertThrows(Exception.class, () -> service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1));
+        assertThrows(AlreadyManagerException.class, () -> service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1));
         //test circular appoint:
-        assertThrows(Exception.class, () -> service.appointStoreManager(store1Manager1Id, store1Manager1UserName, storeId1));
+        assertThrows(NoPermissionException.class, () -> service.appointStoreManager(store1Manager1Id, store1Manager1UserName, storeId1));
 
     }
 
@@ -418,15 +449,14 @@ class TradingSystemServiceTest {
 
     @Test
     void validAddProductToStore() throws Exception{
-        //TODO: expand the test
         String prod1 = service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5);
         assertTrue(prod1 != null && !prod1.isEmpty());
+        assertTrue(service.getItemsByStore(founderStore1Id, storeId1).toString().contains("butter"));
     }
 
     @Test
     void wrongAddProductToStore() throws Exception{
-        //TODO: add StoreNotFoundException
-        assertThrows(Exception.class, () -> service.addProductToStore(founderStore1Id, "99", "butter", "DiaryProducts", "", 10, 7.5)); //"abc" is not a storeId
+        assertThrows(InvalidStoreIdException.class, () -> service.addProductToStore(founderStore1Id, "99", "butter", "DiaryProducts", "", 10, 7.5)); //"abc" is not a storeId
         assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "", "DiaryProducts", "", 10, 7.5)); //productName cannot be empty
         assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", -1, 7.5)); //quantity cannot be < 0
         assertThrows(ItemException.class, () -> service.addProductToStore(founderStore1Id, storeId1, "butter", "DiaryProducts", "", 10, -1)); //price cannot be < 0
@@ -434,7 +464,6 @@ class TradingSystemServiceTest {
         assertThrows(NoPermissionException.class, () -> service.addProductToStore(founderStore2Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5)); //founderStore2Id can't add in store1Id
         assertThrows(NoPermissionException.class, () -> service.addProductToStore(subs3Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5)); //subs3Id can't add in store1Id
         assertThrows(NotLoggedInException.class, () -> service.addProductToStore(guest1Id, storeId1, "butter", "DiaryProducts", "", 10, 7.5)); //guest1Id can't add in store1Id
-
     }
 
     @Test
@@ -447,8 +476,7 @@ class TradingSystemServiceTest {
 
     @Test
     void deleteProductFromStoreNotExist() throws Exception{
-        //TODO: add StoreNotFoundException
-        assertThrows(Exception.class, () -> service.deleteProductFromStore(founderStore1Id, "100", productId1)); //"abc" is not a storeId
+        assertThrows(InvalidStoreIdException.class, () -> service.deleteProductFromStore(founderStore1Id, "100", productId1)); //"abc" is not a storeId
         assertThrows(ItemException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId1, productId3)); //productId3 is not in storeId1
 
     }
@@ -457,14 +485,16 @@ class TradingSystemServiceTest {
     void deleteProductFromStoreYouDontBelongTo() throws Exception{
         assertThrows(NoPermissionException.class, () -> service.deleteProductFromStore(founderStore1Id, storeId2, productId3));
         assertThrows(NotLoggedInException.class, () -> service.deleteProductFromStore(guest1Id, storeId1, productId1));
-
     }
 
     @Test
     void validUpdateProductDetails() throws Exception{
-        assertDoesNotThrow(() -> service.updateProductDetails(founderStore1Id, storeId1, productId1, null,25, null));
-        assertDoesNotThrow(() -> service.updateProductDetails(founderStore1Id, storeId1, productId1, "newSub1",null, null));
-        assertDoesNotThrow(() -> service.updateProductDetails(founderStore1Id, storeId1, productId1, null,null, 11.5));
+        //TODO impl: fix update
+        service.updateProductDetails(founderStore1Id, storeId1, productId1, null,25, null);
+        service.updateProductDetails(founderStore1Id, storeId1, productId1, "newSub1",null, null);
+        service.updateProductDetails(founderStore1Id, storeId1, productId1, null,null, 11.5);
+        assertTrue(service.getItems(null, null, null, "newSub1", null, null ,null, null).toString().contains("milk"));
+        assertTrue(service.getItems(null, "milk", null, null, null, null ,null, null).toString().contains("11.5"));
     }
 
     @Test
@@ -481,12 +511,9 @@ class TradingSystemServiceTest {
 
     @Test
     void validAppointStoreOwner() throws Exception{
-        //TODO expand test
-        assertDoesNotThrow(() -> service.appointStoreOwner(founderStore1Id, subs1UserName, storeId1));
-        assertDoesNotThrow(() -> service.appointStoreOwner(founderStore1Id, store1Manager1UserName, storeId1));
-        assertDoesNotThrow(() -> service.appointStoreOwner(founderStore2Id, store1Manager1UserName, storeId2));
-        assertDoesNotThrow(() -> service.appointStoreOwner(founderStore2Id, store1FounderUserName, storeId2));
-
+        service.appointStoreOwner(founderStore1Id, subs1UserName, storeId1);
+        service.appointStoreOwner(founderStore2Id, store1Manager1UserName, storeId2);
+        service.appointStoreOwner(founderStore2Id, store1FounderUserName, storeId2);
     }
 
     @Test
@@ -495,17 +522,19 @@ class TradingSystemServiceTest {
 
         //test circular appoint:
         service.appointStoreOwner(founderStore1Id, subs1UserName, storeId1);
-        assertThrows(AlreadyManagerException.class, () -> service.appointStoreOwner(subs1Id, store1FounderUserName, storeId1));
+        assertThrows(AlreadyOwnerException.class, () -> service.appointStoreOwner(subs1Id, store1FounderUserName, storeId1));
 
         assertThrows(SubscriberDoesNotExistException.class, () -> service.appointStoreOwner(founderStore1Id, guest1UserName, storeId1)); //guest1Id is a guest
+        assertThrows(SubscriberDoesNotExistException.class, () -> service.appointStoreOwner(founderStore1Id, "abc", storeId1)); //connection id not exist
+
 
     }
 
     @Test
     void validAllowManagerToUpdateProducts() throws Exception{
-        assertDoesNotThrow(() -> service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName));
-        assertDoesNotThrow(() -> service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null));
-
+        service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
+        service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null);
+        assertTrue(service.getItems(null, null, null, "newSubCateg", null, null, null, null).toString().contains("milk"));
     }
 
     @Test
@@ -541,25 +570,24 @@ class TradingSystemServiceTest {
 
     @Test
     void validAllowManagerToEditPolicies() throws Exception{
-        assertDoesNotThrow(() -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName));
         //TODO: when requirements of policies will be ready, expand this test.
+        assertDoesNotThrow(() -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName));
     }
 
     @Test
     void wrongAllowManagerToEditPolicies() throws Exception{
+        //TODO: when requirements of policies will be ready, expand this test.
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore2Id, storeId1, store1Manager1UserName)); //founderStore2Id is not a an owner of store1
-        //TODO: when requirements of policies will be ready, expand this test.
 
     }
 
     @Test
     void disableManagerFromEditPolicies() throws Exception{
-        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
         //TODO: when requirements of policies will be ready, expand this test.
-
+        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
     @Test
@@ -627,11 +655,14 @@ class TradingSystemServiceTest {
 
     @Test
     void validRemoveManager() throws Exception{
-        assertTrue(service.showStaffInfo(founderStore1Id, storeId1).size() == 2); //currently only 1 owner and 1 manager
+        //TODO impl: showStaffInfo doesn't show username and permissions of staff
         Collection<String> str = service.showStaffInfo(founderStore1Id, storeId1);
+        assertTrue(str.size() == 2); //currently only 1 owner and 1 manager
+        assertTrue(str.toString().contains(store1Manager1UserName));
         assertTrue(service.removeManager(founderStore1Id, storeId1, store1Manager1UserName) == true);
-        assertTrue(service.showStaffInfo(founderStore1Id, storeId1).size() == 1);
         str = service.showStaffInfo(founderStore1Id, storeId1);
+        assertTrue(str.size() == 1);
+        assertTrue(!str.toString().contains(store1Manager1UserName));
     }
 
     @Test
@@ -648,15 +679,23 @@ class TradingSystemServiceTest {
 
     @Test
     void showStaffInfo() throws Exception{
-        assertTrue(service.showStaffInfo(founderStore1Id, storeId1).size() == 2); //currently only 1 owner and 1 manager
-        assertTrue(service.showStaffInfo(founderStore2Id, storeId2).size() == 1); //currently only 1 owner
+        //TODO impl: showStaffInfo doesn't show username and permissions of staff
+        Collection<String> collection = service.showStaffInfo(founderStore1Id, storeId1);
+        assertTrue(collection.size() == 2); //currently only 1 owner and 1 manager
+        assertTrue(collection.toString().contains(store1FounderUserName));
+        assertTrue(collection.toString().contains(store1Manager1UserName));
 
+        collection = service.showStaffInfo(founderStore2Id, storeId2);
+        assertTrue(collection.size() == 1); //currently only 1 owner
+        assertTrue(collection.toString().contains(store2FounderUserName));
     }
 
     @Test
     void showStaffInfoStoreNotExist() throws Exception{
-        //TODO: add StoreNotFoundException
-        assertThrows(Exception.class, () -> service.showStaffInfo(admin1Id, "storeIdNotExist"));
+        //TODO impl: fix admin not logged in exception, fix exception of store id not found
+        assertThrows(InvalidStoreIdException.class, () -> service.showStaffInfo(founderStore2Id, "storeIdNotExist"));
+
+        assertThrows(InvalidStoreIdException.class, () -> service.showStaffInfo(admin1Id, "storeIdNotExist"));
      }
 
     @Test
@@ -715,6 +754,9 @@ class TradingSystemServiceTest {
 
     @Test
     void getEventLog() throws Exception{
+        //TODO impl: fix admin not logged in exception
+        //TODO test: expand test after further implementation
+
         //events of adding items to basket
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
         service.addItemToBasket(subs1Id, storeId1, productId2, 1);
@@ -722,7 +764,7 @@ class TradingSystemServiceTest {
         service.openNewStore(subs1Id, "store3");
 
         assertTrue(service.getEventLog(admin1Id).size() > 0);
-        //TODO: expand test after further implementation
+        assertTrue(service.getEventLog(admin1Id).contains("store3"));
     }
 
     @Test
