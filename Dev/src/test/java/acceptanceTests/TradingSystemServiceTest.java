@@ -127,8 +127,8 @@ class TradingSystemServiceTest {
 //        String id2 = service.connect();
 //        service.register("tempUser1", "1234");
 //
-//        assertDoesNotThrow(() -> service.login(id1, "tempUser1", "1234"));
-//        assertThrows(LoginException.class, () -> service.login(id2, "tempUser1", "1234"));
+//        service.login(id1, "tempUser1", "1234"));
+//        assertThrows(NoPermissionException.class, () -> service.login(id2, "tempUser1", "1234"));
 //    }
 
     @Test
