@@ -1,21 +1,22 @@
 package user;
 
 import exceptions.*;
+import purchaseAndReview.Purchase;
 import store.Item;
 import store.Store;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Subscriber extends User {
 
     private final String userName;
     private final Set<Permission> permissions;
 
-    public Subscriber(String userName, Map<Store, Basket> baskets, Set<Permission> permissions) {
-        super(baskets);
+    public Subscriber(String userName) {
+        this(userName, new HashSet<>());
+    }
+
+    Subscriber(String userName, Set<Permission> permissions) {
         this.userName = userName;
         this.permissions = permissions;
     }
@@ -54,7 +55,7 @@ public class Subscriber extends User {
         throw new NoPermissionException(Arrays.toString(permissions));
     }
 
-    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
+    public void addManagerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyManagerException {
 
         // check this user has the permission to perform this action
         validatePermission(OwnerPermission.getInstance(store));
@@ -62,13 +63,13 @@ public class Subscriber extends User {
         // check if the target is already a manager at this store
         Permission managerPermission = ManagerPermission.getInstance(store);
         if (target.havePermission(managerPermission))
-            throw new AlreadyOwnerException(userName);
+            throw new AlreadyManagerException(userName);
 
         // add manager permission to the target
         target.addPermission(managerPermission);
 
         // give the user permission to delete the new permission that was added to the target
-        addPermission(new RemovePermissionPermission(target, store));
+        addPermission(RemovePermissionPermission.getInstance(target, store));
     }
 
     public void removeManagerPermission(Subscriber target, Store store) throws NoPermissionException {
@@ -92,13 +93,20 @@ public class Subscriber extends User {
         if (target.havePermission(ownerPermission))
             throw new AlreadyOwnerException(userName);
 
+        // check if the target is a manager that was appointed by someone else
+        ManagerPermission managerPermission = ManagerPermission.getInstance(store);
+        if (target.havePermission(managerPermission))
+            validatePermission(RemovePermissionPermission.getInstance(target, store));
+
+        // at this point we know the target is not a manager at this store, or he is a manager appointed by the caller
+
         // add owner, manager and inventory management permissions to the target
         target.addPermission(ownerPermission);
-        target.addPermission(ManagerPermission.getInstance(store));
+        target.addPermission(managerPermission);
         target.addPermission(ManageInventoryPermission.getInstance(store));
 
         // give the user permission to delete the new permission that was added to the target
-        addPermission(new RemovePermissionPermission(target, store));
+        addPermission(RemovePermissionPermission.getInstance(target, store));
     }
 
     public void removeOwnerPermission(Subscriber target, Store store) throws NoPermissionException {
@@ -134,58 +142,37 @@ public class Subscriber extends User {
 
     void removePermission(Subscriber target, Store store, Permission permission) throws NoPermissionException {
 
-        // TODO think if we need this method
-
         // check this user has the permission to perform this action
         validatePermission(RemovePermissionPermission.getInstance(target, store));
 
-        // perform the action (delete the target's permission)
         target.removePermission(permission);
-
-        // TODO for now all we do is delete the permission (if the target has it). need to think on:
-        // remove user's delete-permission permission if the target is no longer store manager?
-        // ok to delete some else's manager permission but keep owner?
-        // what happens when you give yourself permissions (is that relevant?)
     }
 
-    public int addStoreItem(int itemId, Store store, String item, String category, String subCategory, int quantity, double price)
-            throws NoPermissionException, AddStoreItemException {
+    // TODO: subscriber should not know about ids (?)
+    public int addStoreItem(int itemId, Store store, String itemName, String category, String subCategory, int quantity, double price)
+            throws NoPermissionException, ItemException {
+
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
-        try {
-            // add the item to the store
-            store.addItem(itemId,item, price, category, subCategory, quantity);
-        } catch (Exception e) {
-            throw new AddStoreItemException(store.getName(), item, price, category, subCategory, quantity, e);
-        }
+        store.addItem(itemId, itemName, price, category, subCategory, quantity);
         return itemId;
     }
 
-    public void removeStoreItem(Store store, int itemId) throws NoPermissionException, RemoveStoreItemException {
+    public void removeStoreItem(Store store, int itemId) throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
 
-        // remove the item from the store
-        try {
-            store.removeItem(itemId);
-        } catch (Exception e) {
-            throw new RemoveStoreItemException(e);
-        }
+        store.removeItem(itemId);
     }
 
     public void updateStoreItem(Store store, int itemId, String newSubCategory, Integer newQuantity, Double newPrice)
-            throws NoPermissionException, UpdateStoreItemException {
+            throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
         validatePermission(ManageInventoryPermission.getInstance(store));
 
-        // update the item in the store
-        try {
-            store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
-        } catch (Exception e) {
-            throw new UpdateStoreItemException(e);
-        }
+        store.changeItem(itemId,  newSubCategory, newQuantity, newPrice);
     }
 
     public Collection<Store> getAllStores(Collection<Store> stores) throws NoPermissionException {
@@ -220,5 +207,13 @@ public class Subscriber extends User {
             result += manageInventoryPermission.toString() + " ";
 
         return result;
+    }
+
+    public Collection<String> getEventLog(Collection<String> log) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(AdminPermission.getInstance());
+
+        return log;
     }
 }

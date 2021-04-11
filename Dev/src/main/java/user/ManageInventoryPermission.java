@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class ManageInventoryPermission extends StorePermission
 {
-    public ManageInventoryPermission(Store store) {
+    private ManageInventoryPermission(Store store) {
         super(store);
     }
 

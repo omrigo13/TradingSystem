@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class AdminPermission extends Permission
 {
-    public AdminPermission() {
+    private AdminPermission() {
     }
 
     public static AdminPermission getInstance() {

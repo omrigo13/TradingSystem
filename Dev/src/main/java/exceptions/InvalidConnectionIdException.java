@@ -1,15 +1,15 @@
 package exceptions;
 
-public class ConnectionIdDoesNotExistException extends Exception {
+public class InvalidConnectionIdException extends Exception {
     final String connectionId;
 
-    public ConnectionIdDoesNotExistException(String connectionId) {
+    public InvalidConnectionIdException(String connectionId) {
         this.connectionId = connectionId;
     }
 
     @Override
     public String toString() {
-        return "ConnectionIdDoesNotExistException{" +
+        return "InvalidConnectionIdException{" +
                 "connectionId='" + connectionId + '\'' +
                 '}';
     }

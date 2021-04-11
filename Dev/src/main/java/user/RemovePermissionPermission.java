@@ -8,7 +8,7 @@ public class RemovePermissionPermission extends StorePermission
 {
     private final Subscriber target;
 
-    public RemovePermissionPermission(Subscriber target, Store store) {
+    private RemovePermissionPermission(Subscriber target, Store store) {
         super(store);
         this.target = target;
     }

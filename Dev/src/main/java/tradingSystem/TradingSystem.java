@@ -19,46 +19,34 @@ public class TradingSystem {
     private int storeIdCounter = 1;
     private int purchaseIdCounter = 1;
     private int itemIdCounter=1;
+
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
+
     private final Map<String, Subscriber> subscribers; // key: user name
     private final Map<String, User> connections; // key: connection id
     private final Map<Integer, Store> stores; // key: store id
 
-    private TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                          UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                          Map<Integer, Store> stores) throws LoginException {
+    TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                  UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores)
+            throws SubscriberDoesNotExistException, WrongPasswordException {
+
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
-        try {
-            auth.authenticate(userName, password); // TODO check if the userName is admin
-        } catch (SubscriberDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (WrongPasswordException e) {
-            throw new LoginException(e);
-        }
+
+        auth.authenticate(userName, password); // TODO check if the userName is admin
     }
 
-    public static TradingSystem createTradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                                                    UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections,
-                                                    Map<Integer, Store> stores) throws LoginException {
-        return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
-    }
-
-    public User getUserByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException {
+    public User getUserByConnectionId(String connectionId) throws InvalidConnectionIdException {
         User user = connections.get(connectionId);
         if (user == null)
-            throw new ConnectionIdDoesNotExistException(connectionId);
+            throw new InvalidConnectionIdException(connectionId);
         return user;
-    }
-
-    public Subscriber getSubscriberByConnectionId(String connectionId) throws ConnectionIdDoesNotExistException, NotLoggedInException {
-        return getUserByConnectionId(connectionId).getSubscriber();
     }
 
     public Subscriber getSubscriberByUserName(String userName) throws SubscriberDoesNotExistException {
@@ -72,13 +60,16 @@ public class TradingSystem {
         return stores.values();
     }
 
-    public Store getStore(int storeId) {
-        return stores.get(storeId);
+    public Store getStore(int storeId) throws InvalidStoreIdException {
+        Store store = stores.get(storeId);
+        if (store == null)
+            throw new InvalidStoreIdException(storeId);
+        return store;
     }
 
     public void register(String userName, String password) throws SubscriberAlreadyExistsException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(userName, new HashMap<>(), new HashSet<>()));
+        subscribers.put(userName, new Subscriber(userName));
     }
 
     public String connect()
@@ -86,45 +77,31 @@ public class TradingSystem {
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
-        connections.put(connectionId, new User(new HashMap<>()));
+        connections.put(connectionId, new User());
         return connectionId;
     }
 
-    public void login(String connectionId, String userName, String password) throws LoginException {
+    public void login(String connectionId, String userName, String password)
+            throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
 
-        try {
-            User user = getUserByConnectionId(connectionId);
-            auth.authenticate(userName, password);
-            User subscriber = getSubscriberByUserName(userName);
-            subscriber.makeCart(user);
-            connections.put(connectionId, subscriber);
-
-        } catch (ConnectionIdDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (SubscriberDoesNotExistException e) {
-            throw new LoginException(e);
-        } catch (WrongPasswordException e) {
-            throw new LoginException(e);
-        }
+        User user = getUserByConnectionId(connectionId);
+        auth.authenticate(userName, password);
+        User subscriber = getSubscriberByUserName(userName);
+        subscriber.makeCart(user);
+        connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId) throws ConnectionIdDoesNotExistException {
-        User user = getUserByConnectionId(connectionId);
-        User guest = new User(new HashMap<>());
-        guest.makeCart(user);
+    public void logout(String connectionId) throws InvalidConnectionIdException, NotLoggedInException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
+        User guest = new User();
+        guest.makeCart(subscriber);
         connections.put(connectionId, guest);
     }
 
-    public int newStore(Subscriber subscriber, String storeName) throws NewStoreException {
+    public int newStore(Subscriber subscriber, String storeName) throws ItemException {
 
         // create the new store
-        Store store;
-        try {
-            store = new Store(storeIdCounter, storeName, "description");
-
-        } catch (Exception e) {
-            throw new NewStoreException(storeName, e);
-        }
+        Store store = new Store(storeIdCounter, storeName, "description");
         stores.put(storeIdCounter, store);
 
         // give the subscriber owner permission
@@ -160,7 +137,7 @@ public class TradingSystem {
         return items;
     }
 
-    public void purchaseCart(String connectionId) throws ConnectionIdDoesNotExistException, ExternalServicesException, Exception {
+    public void purchaseCart(String connectionId) throws Exception {
         User user = getUserByConnectionId(connectionId);
         double paymentValue = 0, storePayment = 0;
         Collection<Integer> itemIDs = new LinkedList<>();
@@ -213,9 +190,8 @@ public class TradingSystem {
         }
     }
 
-    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws ConnectionIdDoesNotExistException, ItemException, NotLoggedInException, WrongReviewException {
-        Subscriber subscriber = getSubscriberByConnectionId(connectionId);
-//        User user = getUserByConnectionId(connectionId);
+    public void writeOpinionOnProduct(String connectionId, String storeID, String productId, String desc) throws InvalidConnectionIdException, ItemException, NotLoggedInException, WrongReviewException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         for (Purchase purchase : subscriber.getPurchases()) {
             if(purchase.getStoreItems().containsKey(Integer.parseInt(storeID)))
                 if(purchase.getStoreItems().get(Integer.parseInt(storeID)).contains(Integer.parseInt(productId)))
@@ -232,17 +208,10 @@ public class TradingSystem {
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
-            throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException {
-        Subscriber subscriber =getSubscriberByConnectionId(connectionId);
+            throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         Store store = getStore(Integer.parseInt(storeId));
         int itemId=subscriber.addStoreItem(itemIdCounter,store, itemName, category, subCategory, quantity, price);
-        Item item;
-        try {
-
-            item = store.searchItemById(itemId);
-        } catch (Exception e) {
-            throw new GetStoreItemException(store.getName(), itemName, category, subCategory, e);
-        }
         itemIdCounter++;
         return "" + itemId;
     }

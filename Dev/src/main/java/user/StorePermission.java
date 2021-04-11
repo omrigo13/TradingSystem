@@ -11,7 +11,7 @@ public abstract class StorePermission extends Permission {
 
     protected final Store store;
 
-    public StorePermission(Store store) {
+    protected StorePermission(Store store) {
         this.store = store;
     }
 
