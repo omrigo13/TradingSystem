@@ -13,7 +13,7 @@ public interface TradingSystemService {
     /* Initialize system and login to a system manager.
     params: system manager details
     preconditions: user details corresponds to a system manager user that is registered in the user authenticator. */
-    void initializeSystem(String userName, String pass) throws Exception;
+//    void initializeSystem(String userName, String pass) throws Exception;
 
     //returns a connectId.
     String connect() throws Exception;

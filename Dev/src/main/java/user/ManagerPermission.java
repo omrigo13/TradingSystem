@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class ManagerPermission extends StorePermission
 {
-    public ManagerPermission(Store store) {
+    private ManagerPermission(Store store) {
         super(store);
     }
 

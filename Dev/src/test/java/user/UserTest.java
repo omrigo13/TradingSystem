@@ -4,10 +4,13 @@ import exceptions.NotLoggedInException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import purchaseAndReview.Purchase;
 import store.Store;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,33 +19,29 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserTest {
 
-    @Mock Map<Store, Basket> baskets;
     private User user;
+
+    @Mock private Map<Store, Basket> baskets;
+    @Mock private Collection<Purchase> purchases;
 
     @BeforeEach
     void setUp() {
-        user = new User(baskets);
+        user = new User(baskets, purchases);
     }
 
     @Test
-    void getCart() {
-        assertEquals(baskets, user.getCart());
-    }
-
-    @Test
-    void makeCartWhenEmpty() {
+    void makeCart_WhenEmpty() {
         when(baskets.isEmpty()).thenReturn(true);
         User from = mock(User.class);
         user.makeCart(from);
-        verify(baskets).putAll(from.getCart());
+        verify(baskets).putAll(any());
     }
 
     @Test
-    void makeCartWhenNotEmpty() {
-        when(baskets.isEmpty()).thenReturn(false);
+    void makeCart_WhenNotEmpty() {
         User from = mock(User.class);
         user.makeCart(from);
-        verify(baskets, never()).putAll(from.getCart());
+        verify(baskets, never()).putAll(any());
     }
 
     @Test

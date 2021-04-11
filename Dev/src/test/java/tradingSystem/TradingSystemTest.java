@@ -1,171 +1,163 @@
 package tradingSystem;
 
-import authentication.*;
+import authentication.UserAuthentication;
 import exceptions.*;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import store.Item;
 import store.Store;
-import user.Subscriber;
-import user.User;
+import user.*;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TradingSystemTest {
 
+    private TradingSystem tradingSystem;
+
     @Mock private UserAuthentication auth;
-    @Mock private PaymentSystem paymentSystem;
-    @Mock private DeliverySystem deliverySystem;
     @Mock private Map<String, Subscriber> subscribers;
+    @Mock private Collection<Subscriber> staff;
     @Mock private Map<String, User> connections;
     @Mock private Map<Integer, Store> stores;
+    @Mock private Subscriber subscriber;
     @Mock private User user;
+    @Mock private Store store;
+    @Mock private Item item;
 
-    private final String adminName = "Roni";
-    private final String adminPassword = "jsbs03";
+    @Captor ArgumentCaptor<String> keyCaptor;
+
     private final String connectionId = "9034580392580932458093248590324850932485";
+    private final String userName = "Johnny";
+    private final String password = "Cash";
+    private final int storeId = 984585;
 
-    @Test
-    void testConstructorException() throws WrongPasswordException, SubscriberDoesNotExistException {
-        UserAuthentication auth = mock(UserAuthentication.class);
-        PaymentSystem paymentSystem = mock(PaymentSystem.class);
-        DeliverySystem deliverySystem = mock(DeliverySystem.class);
-        Exception exception;
+    @BeforeEach
+    void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
 
-        doThrow(SubscriberDoesNotExistException.class).when(auth).authenticate(adminName, adminPassword);
-        exception = assertThrows(LoginException.class, () -> TradingSystem.createTradingSystem(adminName, adminPassword,
-                paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
-        assertEquals(SubscriberDoesNotExistException.class, exception.getCause().getClass());
-
-        doThrow(WrongPasswordException.class).when(auth).authenticate(adminName, adminPassword);
-        exception = assertThrows(LoginException.class, () -> TradingSystem.createTradingSystem(adminName, adminPassword,
-                paymentSystem, deliverySystem, auth, new HashMap<>(), new HashMap<>(), new HashMap<>()));
-        assertEquals(WrongPasswordException.class, exception.getCause().getClass());
-    }
-
-    TradingSystem setupTradingSystem() throws LoginException {
-        return TradingSystem.createTradingSystem(adminName, adminPassword, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        tradingSystem = new TradingSystemBuilder()
+                .setUserName(userName)
+                .setPassword(password)
+                .setSubscribers(subscribers)
+                .setConnections(connections)
+                .setStores(stores)
+                .setAuth(auth)
+                .build();
     }
 
     @Test
-    void getUserByConnectionId() throws LoginException, ConnectionIdDoesNotExistException {
-        TradingSystem ts = setupTradingSystem();
-        assertThrows(ConnectionIdDoesNotExistException.class, () -> ts.getUserByConnectionId(connectionId));
+    void getUserByConnectionId() throws InvalidConnectionIdException {
         when(connections.get(connectionId)).thenReturn(user);
-        assertEquals(user, ts.getUserByConnectionId(connectionId));
+        assertSame(tradingSystem.getUserByConnectionId(connectionId), user);
     }
 
     @Test
-    void getUserByName() {
+    void getUserByConnectionId_ConnectionIdDoesNotExist() {
+        assertThrows(InvalidConnectionIdException.class, () -> tradingSystem.getUserByConnectionId(connectionId));
     }
 
     @Test
-    void getStore() {
+    void getStore() throws InvalidStoreIdException {
+        when(stores.get(storeId)).thenReturn(store);
+        assertSame(store, tradingSystem.getStore(storeId));
+    }
+
+    @Test
+    void getStore_InvalidStoreId() {
+        assertThrows(InvalidStoreIdException.class, () -> tradingSystem.getStore(storeId));
+    }
+
+    @Test
+    void register() throws SubscriberAlreadyExistsException {
+        tradingSystem.register(userName, password);
+        verify(auth).register(userName, password);
+        verify(subscribers).put(eq(userName), any(Subscriber.class));
     }
 
     @Test
     void connect() {
+        String connectionId = tradingSystem.connect();
+        verify(connections).put(anyString(), any(User.class));
+        String uuid = java.util.UUID.randomUUID().toString();
+        assertNotSame(uuid, connectionId); // verify we got a new uuid
+        assertEquals(uuid.length(), connectionId.length()); // verify we got the correct length
     }
 
     @Test
-    void login() {
+    void login() throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
+        when(connections.get(connectionId)).thenReturn(user);
+        when(subscribers.get(userName)).thenReturn(subscriber);
+        tradingSystem.login(connectionId, userName, password);
+        verify(subscriber).makeCart(user);
+        verify(connections).put(connectionId, subscriber);
     }
 
     @Test
-    void logout() {
+    void logoutSubscriber() throws InvalidConnectionIdException, NotLoggedInException {
+        when(connections.get(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+        tradingSystem.logout(connectionId);
+        verify(connections).put(keyCaptor.capture(), any(User.class));
+        assertSame(connectionId, keyCaptor.getValue());
     }
 
     @Test
-    void purchaseCart() throws LoginException {
+    void logoutGuest() throws NotLoggedInException {
+        when(connections.get(connectionId)).thenReturn(user);
+        doThrow(new NotLoggedInException()).when(user).getSubscriber();
+        assertThrows(NotLoggedInException.class, () -> tradingSystem.logout(connectionId));
+    }
+
+    @Test
+    void newStore() throws ItemException {
+
+        tradingSystem.newStore(subscriber, "Toy Story");
+        verify(subscriber).addPermission(OwnerPermission.getInstance(store));
+        verify(subscriber).addPermission(ManagerPermission.getInstance(store));
+        verify(subscriber).addPermission(ManageInventoryPermission.getInstance(store));
+    }
+
+    @Test
+    void getStoreStaff() throws NoPermissionException {
+        Collection<Subscriber> allSubscribers = new HashSet<>();
+        allSubscribers.add(subscriber);
+        when(subscribers.values()).thenReturn(allSubscribers);
+        when(subscriber.havePermission(ManagerPermission.getInstance(store))).thenReturn(true);
+        tradingSystem.getStoreStaff(subscriber, store, staff);
+        verify(staff).add(subscriber);
+    }
+
+    @Test
+    void getItems() {
+        String s = "S";
+        Double d = 1.0;
+        Collection<Store> storesCollection = new LinkedList<>();
+        storesCollection.add(store);
+        when(stores.values()).thenReturn(storesCollection);
+        ConcurrentLinkedQueue<Item> items = new ConcurrentLinkedQueue<>(); // TODO why ConcurrentLinkedQueue!?
+        items.add(item);
+        when(store.searchAndFilter(s, s, s, d, d, d, d)).thenReturn(items);
+        Collection<String> result = tradingSystem.getItems(s, s, s, s, d, d, d, d);
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void purchaseCart() {
         //TODO add a test here
     }
-
-//    @Test
-//    void addAndGetItems() throws UserDoesNotExistException {
-//        String guestID = trade.connectGuest();
-//        trade.addItemToBasket(guestID, storeID, item1,amount1);
-//        trade.addItemToBasket(guestID, storeID, item2,amount2);
-//        Basket basket = trade.getUserBasket(guestID, storeID);
-//        ItemRecord itemRecord1 = basket.getItem(item1);
-//        ItemRecord itemRecord2 = basket.getItem(item2);
-//        assertEquals(amount1, itemRecord1.getAmount());
-//        assertEquals(amount2, itemRecord2.getAmount());
-//    }
-//
-//    @Test
-//    void getItemsNonExistingUser() {
-//        String userID = "4hfbhdf583f";
-//        assertThrows(UserDoesNotExistException.class, () ->trade.getUserBasket(userID,storeID));
-//    }
-//
-//    @Test
-//    void addItemToNonExistingUser() {
-//        // adding item to an NonExistingUser user
-//        String userID = "2avb65gt";
-//        assertThrows(UserDoesNotExistException.class, () ->trade.addItemToBasket(userID, storeID, item1,amount1));
-//    }
-//
-//    @Test
-//    void getBasket() throws UserDoesNotExistException {
-//        String userID = trade.connectGuest();
-//        trade.addItemToBasket(userID, storeID, item1,amount1);
-//        Collection<String> items = trade.getBasket(userID, storeID);
-//        assertEquals(amount1, items.size());
-//        assertTrue(items.contains("1, X-Box"));
-//    }
-//
-//    @Test
-//    void getStores() throws UserDoesNotExistException {
-//        String userID = trade.connectGuest();
-//        trade.addItemToBasket(userID, storeID, item1,amount1);
-//        String storeID1 = "Amazon";
-//        trade.addItemToBasket(userID, storeID1, item2,amount2);
-//        Collection<String> stores = trade.getStores(userID);
-//        assertEquals(2, stores.size());
-//        assertTrue(stores.contains(storeID));
-//        assertTrue(stores.contains(storeID1));
-//    }
-//
-//    @Test
-//    void login() throws LoginException, UserAlreadyExistsException {
-//        String userID = trade.connectGuest();
-//        trade.register(userName, password);
-//        trade.login(userID, userName, password);
-//    }
-//
-//    @Test
-//    void loginNonExistingUser() {
-//        String userID = trade.connectGuest();
-//        assertThrows(UserDoesNotExistException.class, () ->trade.login(userID, userName, password));
-//    }
-//
-//    @Test
-//    void loginWrongPassword() throws UserAlreadyExistsException {
-//        String userID = trade.connectGuest();
-//        trade.register(userName, password);
-//        assertThrows(WrongPasswordException.class, () ->trade.login(userID, userName, wrongPassword));
-//    }
-//
-//    @Test
-//    void logout() throws UserAlreadyExistsException, LoginException, LogoutGuestException {
-//        String userID = trade.connectGuest();
-//        assertThrows(LogoutGuestException.class, () -> trade.logout(userID));
-//        trade.register(userName, password);
-//        trade.login(userID, userName, password);
-//        trade.logout(userID);
-//    }
-
-//    @Test
-//    void connectGuest() {
-//        TradingSystem tradingSystem = new TradingSystem();
-//        String connectID = tradingSystem.connectGuest();
-//    }
 }

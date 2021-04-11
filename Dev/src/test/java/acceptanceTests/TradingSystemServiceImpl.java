@@ -5,10 +5,6 @@ import service.TradingSystemService;
 import java.util.Collection;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
-    @Override
-    public void initializeSystem(String userName, String pass) throws Exception {
-
-    }
 
     @Override
     public String connect() throws Exception {

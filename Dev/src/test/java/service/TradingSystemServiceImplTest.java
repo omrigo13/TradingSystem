@@ -2,26 +2,18 @@ package service;
 
 import authentication.UserAuthentication;
 import exceptions.*;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
-import user.Basket;
-import user.ManagerPermission;
-import user.Subscriber;
-import user.User;
+import user.*;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -33,24 +25,20 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TradingSystemServiceImplTest {
 
-    @Mock UserAuthentication auth;
-    @Mock PaymentSystem paymentSystem;
-    @Mock DeliverySystem deliverySystem;
-    @Mock Map<String, Subscriber> subscribers;
-    @Mock TradingSystem tradingSystem;
-    @Mock Map<String, User> connections;
-    @Mock Map<Integer, Store> stores;
-    @Mock Map<Store, Basket> cart;
-    @Mock Collection<Store> stores1;
-    @Mock Collection<Subscriber> subscribersCol;
-    @Mock Subscriber subscriber;
-    @Mock Subscriber subscriber1;
-    @Mock Store store;
-    @Mock Store store1;
-    @Mock Item item1;
-    @Mock Item item2;
-    @Mock User user;
-    @Mock Basket basket;
+    private TradingSystemServiceImpl service;
+
+    @Mock private TradingSystem tradingSystem;
+    @Mock private Map<Store, Basket> cart;
+    @Mock private Collection<Store> stores1;
+    @Mock private Collection<Subscriber> subscribersCol;
+    @Mock private Subscriber subscriber;
+    @Mock private Subscriber subscriber1;
+    @Mock private Store store;
+    @Mock private Store store1;
+    @Mock private Item item1;
+    @Mock private Item item2;
+    @Mock private User user;
+    @Mock private Basket basket;
 
     private final String userName = "Barak";
     private final String password = "1234";
@@ -58,34 +46,16 @@ class TradingSystemServiceImplTest {
     private final String storeId = "43534532";
     private final String productId = "42341";
     private final int quantity = 3;
-    private final String keyWord = "key";
-    private final String productName = "product";
     private final String category = "category";
     private final String subCategory = "subCategory";
-    private final Double ratingItem = 4.5;
-    private final Double ratingStore = 4.0;
-    private final Double maxPrice = 150.0;
-    private final Double minPrice = 10.0;
-    private final String description = "good product";
-    private final String newStoreName = "Zara";
-    private final String itemName = "tomato";
     private final Double price = 450.6;
 
-    TradingSystemServiceImpl service;
-
     @BeforeEach
-    void setUp() throws LoginException {
-
-        service = new TradingSystemServiceImpl(auth, paymentSystem, deliverySystem, subscribers, connections, stores);
-
-        try (MockedStatic<TradingSystem> tradingSystemMockedStatic = Mockito.mockStatic(TradingSystem.class)) {
-            tradingSystemMockedStatic.when(() -> TradingSystem.createTradingSystem(userName, password, paymentSystem,
-                    deliverySystem, auth, subscribers, connections, stores)).thenReturn(tradingSystem);
-            service.initializeSystem(userName, password);
-        }
+    void setUp() {
+        service = new TradingSystemServiceImpl(tradingSystem);
     }
 
-        @Test
+    @Test
     void connect() {
         service.connect();
         verify(tradingSystem).connect();
@@ -94,29 +64,35 @@ class TradingSystemServiceImplTest {
     @Test
     void register() throws SubscriberAlreadyExistsException {
         service.register(userName, password);
-        verify(auth).register(userName, password);
+        verify(tradingSystem).register(userName, password);
     }
 
     @Test
-    void login() throws LoginException {
+    void login() throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
         service.login(connectionId, userName, password);
         verify(tradingSystem).login(connectionId, userName, password);
     }
 
     @Test
-    void logout() throws ConnectionIdDoesNotExistException {
+    void logout() throws InvalidConnectionIdException, NotLoggedInException {
         service.logout(connectionId);
         verify(tradingSystem).logout(connectionId);
     }
 
     @Test
     void getItems() {
+        String keyWord = "key";
+        String productName = "product";
+        Double ratingItem = 4.5;
+        Double ratingStore = 4.0;
+        Double maxPrice = 150.0;
+        Double minPrice = 10.0;
         service.getItems(keyWord, productName, category, subCategory, ratingItem, ratingStore, maxPrice, minPrice);
         verify(tradingSystem).getItems(keyWord, productName, category, subCategory, ratingItem, ratingStore, maxPrice, minPrice);
     }
 
     @Test
-    void addItemToBasket() throws ItemException, ConnectionIdDoesNotExistException {
+    void addItemToBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(store.searchItemById(Integer.parseInt(productId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
@@ -126,7 +102,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showCart() throws ConnectionIdDoesNotExistException {
+    void showCart() throws InvalidConnectionIdException {
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getCart()).thenReturn(cart);
         service.showCart(connectionId);
@@ -134,7 +110,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showBasket() throws ConnectionIdDoesNotExistException {
+    void showBasket() throws InvalidConnectionIdException, InvalidStoreIdException {
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getBasket(store)).thenReturn(basket);
@@ -143,7 +119,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void updateProductAmountInBasket() throws ItemException, ConnectionIdDoesNotExistException {
+    void updateProductAmountInBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(store.searchItemById(Integer.parseInt(productId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
@@ -158,22 +134,27 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void getPurchaseHistory() throws NotLoggedInException, ConnectionIdDoesNotExistException {
+    void getPurchaseHistory() throws NotLoggedInException, InvalidConnectionIdException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
         service.getPurchaseHistory(connectionId);
     }
 
     @Test
-    void writeOpinionOnProduct() throws NotLoggedInException, ItemException, ConnectionIdDoesNotExistException, WrongReviewException {
+    void writeOpinionOnProduct() throws NotLoggedInException, ItemException, InvalidConnectionIdException, WrongReviewException {
+        String description = "good product";
         service.writeOpinionOnProduct(connectionId, storeId, productId, description);
     }
 
     @Test
-    void getStoresInfo() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException {
+    void getStoresInfo() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException {
         Collection<Store> stores = new LinkedList<>();
         stores.add(store);
         stores.add(store1);
 
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getStores()).thenReturn(stores1);
         when(subscriber.getAllStores(stores1)).thenReturn(stores);
         when(store.toString()).thenReturn("st");
@@ -187,13 +168,14 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void getItemsByStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException {
+    void getItemsByStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException {
 
         Collection<Item> items = new LinkedList<>();
         items.add(item1);
         items.add(item2);
 
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(subscriber.getStoreItems(store)).thenReturn(items);
         when(item1.getName()).thenReturn("item1");
@@ -208,49 +190,64 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void openNewStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NewStoreException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void openNewStore() throws NotLoggedInException, InvalidConnectionIdException, ItemException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        String newStoreName = "Zara";
         service.openNewStore(connectionId, newStoreName);
         verify(tradingSystem).newStore(subscriber, newStoreName);
     }
 
     @Test
-    void appointStoreManager() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void appointStoreManager() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.appointStoreManager(connectionId, userName, storeId);
         verify(subscriber).addManagerPermission(subscriber1, store);
     }
 
-//    @Test
-//    void addProductToStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, AddStoreItemException, GetStoreItemException, ItemException {
-//        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    @Test
+    void addProductToStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, ItemException, InvalidStoreIdException {
+//        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+//        when(user.getSubscriber()).thenReturn(subscriber);
 //        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
-//        when(subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price)).thenReturn(5);
-//        service.addProductToStore(connectionId,storeId,itemName,category,subCategory,quantity,price);
+//        String itemName = "tomato";
+//        when(subscriber.addStoreItem(5, store, itemName, category, subCategory, quantity, price)).thenReturn(5);
+//        service.addProductToStore(connectionId,storeId, itemName,category,subCategory,quantity,price);
 //        verify(store).searchItemById(5);
-//    }
+
+        String itemName = "cucumber";
+        service.addProductToStore(connectionId, storeId, itemName, category, subCategory, quantity, price);
+        verify(tradingSystem).addProductToStore(connectionId, storeId, itemName, category, subCategory, quantity, price);
+    }
 
     @Test
-    void deleteProductFromStore() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, RemoveStoreItemException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void deleteProductFromStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.deleteProductFromStore(connectionId,storeId,"543");
         verify(subscriber).removeStoreItem(store, Integer.parseInt("543"));
     }
 
     @Test
-    void updateProductDetails() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException, UpdateStoreItemException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void updateProductDetails() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.updateProductDetails(connectionId,storeId,"543",subCategory,quantity,price);
         verify(subscriber).updateStoreItem(store,Integer.parseInt("543"),subCategory,quantity,price);
     }
 
     @Test
-    void appointStoreOwner() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, AlreadyOwnerException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void appointStoreOwner() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException, AlreadyOwnerException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.appointStoreOwner(connectionId, userName, storeId);
@@ -258,8 +255,10 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void allowManagerToUpdateProducts() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void allowManagerToUpdateProducts() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException, InvalidStoreIdException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.allowManagerToUpdateProducts(connectionId, storeId, userName);
@@ -267,8 +266,10 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void disableManagerFromUpdateProducts() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void disableManagerFromUpdateProducts() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.disableManagerFromUpdateProducts(connectionId,storeId,userName);
@@ -296,8 +297,10 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void removeManager() throws NotLoggedInException, ConnectionIdDoesNotExistException, SubscriberDoesNotExistException, NoPermissionException {
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+    void removeManager() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(subscriber1.havePermission(ManagerPermission.getInstance(store))).thenReturn(true);
@@ -306,11 +309,13 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showStaffInfo() throws NotLoggedInException, ConnectionIdDoesNotExistException, NoPermissionException {
+    void showStaffInfo() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException {
         Collection<Subscriber> subscribers = new LinkedList<>();
         subscribers.add(subscriber);
         subscribers.add(subscriber1);
-        when(tradingSystem.getSubscriberByConnectionId(connectionId)).thenReturn(subscriber);
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(tradingSystem.getStoreStaff(eq(subscriber), eq(store), any())).thenReturn(subscribers);
         Collection<String> result = service.showStaffInfo(connectionId,storeId);
@@ -320,14 +325,15 @@ class TradingSystemServiceImplTest {
         assertTrue(result.contains(subscriber1.storePermissionsToString(store)));
     }
 
-//    @Test
-//    void getSalesHistoryByStore() {
-//        service.getSalesHistoryByStore(connectionId,storeId);
-//    }
-
     @Test
-    void getEventLog() throws IOException {
+    void getEventLog() throws IOException, InvalidConnectionIdException, NotLoggedInException, NoPermissionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
         service.getEventLog(connectionId);
+
+        verify(subscriber).getEventLog(any());
     }
 
     @Test
