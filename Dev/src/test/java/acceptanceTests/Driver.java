@@ -25,8 +25,11 @@ public class Driver {
         Map<String, String> map = new HashMap<>();
         map.put(userName, password);
         UserAuthentication userAuthentication = new UserAuthentication(map);
-        proxy.setReal(new TradingSystemServiceImpl(new TradingSystemBuilder().setUserName(userName).setPassword(password)
-                .setAuth(userAuthentication).build()));
+        TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
+                .setAuth(userAuthentication).build();
+        map.clear();
+        TradingSystemServiceImpl real = new TradingSystemServiceImpl(build);
+        proxy.setReal(real);
         return proxy;
     }
 

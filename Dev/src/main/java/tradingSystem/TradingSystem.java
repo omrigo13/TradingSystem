@@ -38,6 +38,7 @@ public class TradingSystem {
         this.stores = stores;
 
         auth.authenticate(userName, password); // TODO check if the userName is admin
+
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidConnectionIdException {

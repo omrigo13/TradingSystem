@@ -6,6 +6,7 @@ import org.apache.log4j.PropertyConfigurator;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
+import user.AdminPermission;
 import user.Basket;
 import user.ManagerPermission;
 import user.Subscriber;
@@ -38,6 +39,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         PropertyConfigurator.configure("Dev/log4j.properties");
 
         this.tradingSystem = tradingSystem;
+        try {
+            tradingSystem.register("Admin1", "ad123");
+            Subscriber admin = tradingSystem.getSubscriberByUserName("Admin1");
+            admin.addPermission(AdminPermission.getInstance());
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
     }
 
 //        this.auth = userAuthentication;
@@ -340,15 +348,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         Collection<Subscriber> staff = tradingSystem.getStoreStaff(subscriber, store, new LinkedList<>());
         Collection<String> staffList = new LinkedList<>();
         for (Subscriber staffMember : staff)
-            staffList.add(staffMember.storePermissionsToString(store));
+            staffList.add(staffMember.getUserName() + " : " + staffMember.storePermissionsToString(store));
         return staffList;
     }
 
     @Override
     public Collection<String> getSalesHistoryByStore(String connectionId, String storeId)
             throws InvalidConnectionIdException, InvalidStoreIdException, NotLoggedInException, NoPermissionException {
-        //TODO admin permission to see all stores history new function to add use case 6.4
-        //TODO store owner get a permission to see store purchase history and he can add a permission to a manager to see the store history also
+        // TODO should enable to add a permission to a manager to see the store history also
         logger.info("Get sales history by store");
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();

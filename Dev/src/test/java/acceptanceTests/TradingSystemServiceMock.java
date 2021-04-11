@@ -4,7 +4,7 @@ import service.TradingSystemService;
 
 import java.util.Collection;
 
-public class TradingSystemServiceImpl implements TradingSystemService {
+public class TradingSystemServiceMock implements TradingSystemService {
 
     @Override
     public String connect() throws Exception {

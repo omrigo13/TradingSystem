@@ -80,8 +80,8 @@ public class User {
     }
 
     private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws Exception {
-        StringBuilder purchaseDetails = new StringBuilder();
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
             Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
             double price = store.processBasketAndCalculatePrice(basket, purchaseDetails);
