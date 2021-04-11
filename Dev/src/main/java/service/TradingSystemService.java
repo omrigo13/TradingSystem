@@ -28,11 +28,10 @@ public interface TradingSystemService {
     /* Logout from system */
     void logout(String connectID) throws Exception;
 
-    /* Get product by filter. */
+    /* Get product by filter, uses spellchecking. */
     Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws Exception;
-    // TODO to check empty string or null
     // the String in the collection represent item.toString()
-    // use spellChecking
+    // TODO use spellChecking
 
     /* Save product in basket of a store. */
     void addItemToBasket(String userID, String storeId, String productId, int amount) throws Exception;
@@ -48,8 +47,7 @@ public interface TradingSystemService {
     void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws Exception;
 
     /* make purchase for every product in all of the user's baskets */
-    //TODO: each purchase matches to an item from a store with the appropriate quantity.
-    // for example, if userId1 bought 3 "milk" products and 2 "eggs" products from storeId1, there will be 2 purchases for the user.
+    //each purchase matches to an item from a store with the appropriate quantity.
     void purchaseCart(String userID) throws Exception;
 
     /* get purchase history of a user by permissions: user himself / system manager.
@@ -75,8 +73,7 @@ public interface TradingSystemService {
 
     /* Get all products of the store, with store id.
     preconditions: invoker is the owner/manager of the store or is a system manager.*/
-    //TODO: each String element in the collection represents an item in the store.
-    //for example, if storeId1 has 2 "milk" products and 3 "eggs" products, the collection returned will have 2 String elements.
+    //each String element in the collection represents an item in the store.
     Collection<String> getItemsByStore(String userID, String storeId) throws Exception;
 
     /* creates a new store. username is the founder and owner.
@@ -95,7 +92,7 @@ public interface TradingSystemService {
     /* adds a product to a store.
     // returns the product ID
     preconditions: invoker is the store owner or is a manager of it, with permissions to make changes in products. */
-    //TODO: category and subCategory can be null or empty string. productName cannot be null or empty string. quantity and price cannot be < 0.
+    //category and subCategory can be null or empty string. productName cannot be null or empty string. quantity and price cannot be < 0.
     String addProductToStore(String userID, String storeId, String productName, String category, String subCategory, int quantity, double price) throws Exception;
 
     /* deletes a product from a store 
@@ -151,17 +148,17 @@ public interface TradingSystemService {
         
     /* removes a user from a store manager role.
      * pre-condition: the invoker is an owner of the store and is the assignor of the manager*/
-    //TODO: returns true if manager removed, else returns false.
+    //returns true if manager removed, else returns false.
     boolean removeManager(String userID, String storeId, String managerUserName) throws Exception;
 
     /* shows store staff information and their permissions in the store
     precondition: invoker has the permissions to get the info. */
-    //TODO: every string element in the collection represents one staff member and his permissions.
+    //every string element in the collection represents one staff member username and his permissions.
     Collection<String> showStaffInfo(String userID, String storeId) throws Exception;
 
     /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
     precondition: invoker has the permissions to get the info. */
-    //TODO: every string element in the collection represents a purchase of an item from the store, with the quantity that was sale to a specific user.
+    //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws Exception;
 
     
