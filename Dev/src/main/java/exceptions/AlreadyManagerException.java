@@ -1,6 +1,6 @@
 package exceptions;
 
-public class AlreadyManagerException extends Exception {
+public class AlreadyManagerException extends InvalidActionException {
 
     final String userName;
 

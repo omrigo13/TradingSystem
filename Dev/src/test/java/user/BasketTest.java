@@ -26,7 +26,7 @@ class BasketTest {
 
     @BeforeEach
     void setUp() {
-        basket = new Basket(store, user, items);
+        basket = new Basket(store, items);
     }
 
     @Test

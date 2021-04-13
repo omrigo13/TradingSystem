@@ -5,10 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Store;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,7 +20,7 @@ class UserTest {
 
     private User user;
 
-    @Mock private Map<Store, Basket> baskets;
+    @Spy private ConcurrentHashMap<Store, Basket> baskets;
 
     @BeforeEach
     void setUp() {
@@ -27,7 +29,6 @@ class UserTest {
 
     @Test
     void makeCart_WhenEmpty() {
-        when(baskets.isEmpty()).thenReturn(true);
         User from = mock(User.class);
         user.makeCart(from);
         verify(baskets).putAll(any());
@@ -35,6 +36,7 @@ class UserTest {
 
     @Test
     void makeCart_WhenNotEmpty() {
+        when(baskets.isEmpty()).thenReturn(false);
         User from = mock(User.class);
         user.makeCart(from);
         verify(baskets, never()).putAll(any());
@@ -55,7 +57,7 @@ class UserTest {
     void getExistingBasket() {
         Store store = mock(Store.class);
         Basket basket = mock(Basket.class);
-        when(baskets.get(store)).thenReturn(basket);
-        assertEquals(basket, user.getBasket(store));
+        baskets.put(store, basket);
+        assertSame(basket, user.getBasket(store));
     }
 }

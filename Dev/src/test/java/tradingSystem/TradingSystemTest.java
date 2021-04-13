@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,10 +31,10 @@ class TradingSystemTest {
     private TradingSystem tradingSystem;
 
     @Mock private UserAuthentication auth;
-    @Mock private Map<String, Subscriber> subscribers;
+    @Mock private ConcurrentHashMap<String, Subscriber> subscribers;
+    @Mock private ConcurrentHashMap<Integer, Store> stores;
     @Mock private Collection<Subscriber> staff;
     @Mock private Map<String, User> connections;
-    @Mock private Map<Integer, Store> stores;
     @Mock private Subscriber subscriber;
     @Mock private User user;
     @Mock private Store store;
@@ -47,8 +48,9 @@ class TradingSystemTest {
     private final int storeId = 984585;
 
     @BeforeEach
-    void setUp() throws SubscriberDoesNotExistException, WrongPasswordException {
+    void setUp() throws InvalidActionException {
 
+        when(subscribers.get(userName)).thenReturn(subscriber);
         tradingSystem = new TradingSystemBuilder()
                 .setUserName(userName)
                 .setPassword(password)
@@ -57,10 +59,11 @@ class TradingSystemTest {
                 .setStores(stores)
                 .setAuth(auth)
                 .build();
+        reset(subscribers);
     }
 
     @Test
-    void getUserByConnectionId() throws InvalidConnectionIdException {
+    void getUserByConnectionId() throws InvalidActionException {
         when(connections.get(connectionId)).thenReturn(user);
         assertSame(tradingSystem.getUserByConnectionId(connectionId), user);
     }
@@ -82,7 +85,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void register() throws SubscriberAlreadyExistsException {
+    void register() throws InvalidActionException {
         tradingSystem.register(userName, password);
         verify(auth).register(userName, password);
         verify(subscribers).put(eq(userName), any(Subscriber.class));
@@ -98,7 +101,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void login() throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
+    void login() throws InvalidActionException {
         when(connections.get(connectionId)).thenReturn(user);
         when(subscribers.get(userName)).thenReturn(subscriber);
         tradingSystem.login(connectionId, userName, password);
@@ -107,7 +110,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void logoutSubscriber() throws InvalidConnectionIdException, NotLoggedInException {
+    void logoutSubscriber() throws InvalidActionException {
         when(connections.get(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
         tradingSystem.logout(connectionId);
@@ -123,7 +126,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void newStore() throws ItemException {
+    void newStore() throws InvalidActionException {
 
         tradingSystem.newStore(subscriber, "Toy Story");
         verify(subscriber).addPermission(OwnerPermission.getInstance(store));
@@ -132,7 +135,7 @@ class TradingSystemTest {
     }
 
     @Test
-    void getStoreStaff() throws NoPermissionException {
+    void getStoreStaff() throws InvalidActionException {
         Collection<Subscriber> allSubscribers = new HashSet<>();
         allSubscribers.add(subscriber);
         when(subscribers.values()).thenReturn(allSubscribers);

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -21,7 +21,7 @@ class UserAuthenticationTest {
     private UserAuthentication auth;
 
     @Mock
-    private Map<String, String> userNamesAndPasswords;
+    private ConcurrentHashMap<String, String> userNamesAndPasswords;
 
     private final String userName = "Jones";
     private final String password = "jones12345";

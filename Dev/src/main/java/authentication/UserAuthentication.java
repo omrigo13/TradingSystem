@@ -5,13 +5,15 @@ import exceptions.SubscriberDoesNotExistException;
 import exceptions.WrongPasswordException;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-// TODO need to be mock when we have real authentication system
+@SuppressWarnings("ClassCanBeRecord")
 public class UserAuthentication {
 
-    private final Map<String, String> userNamesAndPasswords; // TODO need to consider concurrency
+    private final ConcurrentHashMap<String, String> userNamesAndPasswords;
 
-    public UserAuthentication(Map<String, String> userNamesAndPasswords) {
+    public UserAuthentication(ConcurrentHashMap<String, String> userNamesAndPasswords) {
         this.userNamesAndPasswords = userNamesAndPasswords;
     }
 

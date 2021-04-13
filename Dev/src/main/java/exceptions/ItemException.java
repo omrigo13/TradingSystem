@@ -1,4 +1,4 @@
 package exceptions;
 
-public class ItemException extends Exception {
+public class ItemException extends InvalidActionException {
 }

@@ -1,31 +1,22 @@
 package user;
 
-import exceptions.ItemException;
 import store.Item;
 import store.Store;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Basket {
 
     private final Store store;
-    private final User user;
     private final Map<Item, Integer> items; // item : quantity
 
-    public Basket(Store store, User user, Map<Item, Integer> items) {
+    public Basket(Store store, Map<Item, Integer> items) {
         this.store = store;
-        this.user = user;
         this.items = items;
     }
 
     public Store getStore() {
         return store;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public void addItem(Item item, int quantity)  {

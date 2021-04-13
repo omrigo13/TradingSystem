@@ -1,6 +1,6 @@
 package exceptions;
 
-public class TargetIsNotStoreManagerException extends Exception {
+public class TargetIsNotStoreManagerException extends InvalidActionException {
 
     private final String userName;
     private final String name;

@@ -1,6 +1,6 @@
 package exceptions;
 
-public class InvalidConnectionIdException extends Exception {
+public class InvalidConnectionIdException extends InvalidActionException {
     final String connectionId;
 
     public InvalidConnectionIdException(String connectionId) {
