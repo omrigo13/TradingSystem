@@ -2,6 +2,7 @@ package user;
 
 import store.Store;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 public class ManageInventoryPermission extends StorePermission
@@ -11,13 +12,9 @@ public class ManageInventoryPermission extends StorePermission
     }
 
     public static ManageInventoryPermission getInstance(Store store) {
-        int hash = Objects.hash(ManageInventoryPermission.class, store);
-        ManageInventoryPermission permission = (ManageInventoryPermission)permissions.get(hash);
-        if (permission == null) {
-            permission = new ManageInventoryPermission(store);
-            permissions.put(hash, permission);
-        }
-        return permission;
+
+        ManageInventoryPermission key = new ManageInventoryPermission(store);
+        return (ManageInventoryPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
     }
 
     @Override

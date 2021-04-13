@@ -2,6 +2,7 @@ package user;
 
 import store.Store;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 public class RemovePermissionPermission extends StorePermission
@@ -14,13 +15,9 @@ public class RemovePermissionPermission extends StorePermission
     }
 
     public static RemovePermissionPermission getInstance(Subscriber target, Store store) {
-        int hash = Objects.hash(RemovePermissionPermission.class, target, store);
-        RemovePermissionPermission permission = (RemovePermissionPermission)permissions.get(hash);
-        if (permission == null) {
-            permission = new RemovePermissionPermission(target, store);
-            permissions.put(hash, permission);
-        }
-        return permission;
+
+        RemovePermissionPermission key = new RemovePermissionPermission(target, store);
+        return (RemovePermissionPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
     }
 
     @Override
