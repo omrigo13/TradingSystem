@@ -2,9 +2,6 @@ package acceptanceTests;
 
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
-import exceptions.NoPermissionException;
-import exceptions.SubscriberDoesNotExistException;
-import exceptions.WrongPasswordException;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
 import tradingSystem.TradingSystem;
@@ -12,9 +9,8 @@ import tradingSystem.TradingSystemBuilder;
 import user.AdminPermission;
 import user.Subscriber;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Driver {
 
@@ -31,7 +27,8 @@ public class Driver {
         map.put(userName, password);
         UserAuthentication userAuthentication = new UserAuthentication(map);
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
-        Subscriber admin = new Subscriber(userName);
+        AtomicInteger subscriberIdCounter = new AtomicInteger();
+        Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
         TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)

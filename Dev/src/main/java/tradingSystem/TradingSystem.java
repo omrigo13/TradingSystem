@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TradingSystem {
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
+    private final AtomicInteger subscriberIdCounter;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -27,10 +28,11 @@ public class TradingSystem {
 
     private final Map<String, User> connections; // key: connection id
 
-    TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+    TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers,
                   Map<String, User> connections, ConcurrentHashMap<Integer, Store> stores) throws InvalidActionException {
 
+        this.subscriberIdCounter = subscriberIdCounter;
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
@@ -69,7 +71,7 @@ public class TradingSystem {
 
     public void register(String userName, String password) throws InvalidActionException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(userName));
+        subscribers.put(userName, new Subscriber(subscriberIdCounter.getAndIncrement(), userName));
     }
 
     public String connect()

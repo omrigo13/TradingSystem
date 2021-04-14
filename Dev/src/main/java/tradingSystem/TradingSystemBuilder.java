@@ -2,9 +2,6 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
-import exceptions.NoPermissionException;
-import exceptions.SubscriberDoesNotExistException;
-import exceptions.WrongPasswordException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import store.Store;
@@ -14,6 +11,7 @@ import user.User;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystemBuilder {
 
@@ -25,6 +23,7 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<String, Subscriber> subscribers;
     private ConcurrentHashMap<Integer, Store> stores;
     private Map<String, User> connections;
+    private AtomicInteger subscriberIdCounter;
 
     public TradingSystemBuilder setUserName(String userName) {
 
@@ -74,6 +73,12 @@ public class TradingSystemBuilder {
         return this;
     }
 
+    public TradingSystemBuilder setSubscriberIdCounter(AtomicInteger subscriberIdCounter){
+
+        this.subscriberIdCounter = subscriberIdCounter;
+        return this;
+    }
+
     public TradingSystem build() throws InvalidActionException {
 
         paymentSystem = (paymentSystem == null) ? new PaymentSystem() : paymentSystem;
@@ -82,7 +87,8 @@ public class TradingSystemBuilder {
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
         connections = (connections == null) ? new HashMap<>() : connections;
         stores = (stores == null) ? new ConcurrentHashMap<>() : stores;
+        subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
 
-        return new TradingSystem(userName, password, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
     }
 }

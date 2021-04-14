@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -24,12 +25,12 @@ class SubscriberTest {
 
     @Mock private Permission permission;
     @Mock private Set<Permission> permissions;
+    @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private Store store;
     @Mock private Subscriber target;
     @Mock private Map<Store, Collection<Item>> itemsPurchased;
     @Mock private Collection<String> purchasesDetails;
-
 
     private final Permission adminPermission = AdminPermission.getInstance();
     private final Permission managerPermission = ManagerPermission.getInstance(store);
@@ -43,8 +44,20 @@ class SubscriberTest {
     private final String subCategory = "Gaming Consoles";
 
     @BeforeEach
-    void setUp() {
-        subscriber = spy(new Subscriber("Johnny", permissions, itemsPurchased, purchasesDetails));
+    void setUp() throws NoSuchFieldException, IllegalAccessException {
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
+
+        // set target's private fields so that the synchronized code lines would work
+
+        Field privateField = target.getClass().getDeclaredField("id");
+        privateField.setAccessible(true);
+        privateField.set(target, 123456);
+        privateField.setAccessible(false);
+
+        privateField = target.getClass().getDeclaredField("permissions");
+        privateField.setAccessible(true);
+        privateField.set(target, targetPermissions);
+        privateField.setAccessible(false);
     }
 
     @Test
