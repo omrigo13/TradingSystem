@@ -113,10 +113,7 @@ public class TradingSystem {
         Store store = new Store(this, id, storeName, "description");
         stores.put(id, store);
 
-        // give the subscriber owner permission
-        subscriber.addPermission(OwnerPermission.getInstance(store));
-        subscriber.addPermission(ManagerPermission.getInstance(store));
-        subscriber.addPermission(ManageInventoryPermission.getInstance(store));
+        subscriber.addOwnerPermissions(store);
 
         return id;
     }

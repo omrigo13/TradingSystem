@@ -114,17 +114,27 @@ public class Subscriber extends User {
                 target.addPermission(managerPermission);
 
                 // give the user permission to delete the new permission that was added to the target
-                addPermission(RemovePermissionPermission.getInstance(target, store));
+                addPermission(AppointerPermission.getInstance(target, store));
             }
         }
     }
 
     public void removeManagerPermission(Subscriber target, Store store) throws NoPermissionException {
 
-        removeOwnerPermission(target, store); // removes all store permissions
+        removeOwnerPermissions(target, store); // removes all store permissions
     }
 
-    public void addOwnerPermission(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
+    public void addOwnerPermissions(Store store) {
+
+        synchronized (permissions) {
+            addPermission(OwnerPermission.getInstance(store));
+            addPermission(ManagerPermission.getInstance(store));
+            addPermission(ManageInventoryPermission.getInstance(store));
+            addPermission(GetHistoryPermission.getInstance(store));
+        }
+    }
+
+    public void addOwnerPermissions(Subscriber target, Store store) throws NoPermissionException, AlreadyOwnerException {
 
         synchronized (target.id < id ? target.permissions : permissions) {
             synchronized (target.id < id ? permissions : target.permissions) {
@@ -140,37 +150,56 @@ public class Subscriber extends User {
                 // check if the target is a manager that was appointed by someone else
                 ManagerPermission managerPermission = ManagerPermission.getInstance(store);
                 if (target.havePermission(managerPermission))
-                    validatePermission(RemovePermissionPermission.getInstance(target, store));
+                    validatePermission(AppointerPermission.getInstance(target, store));
 
-                // at this point we know the target is not a manager at this store, or he is a manager appointed by the caller
-
-                // add owner, manager and inventory management permissions to the target
-                target.addPermission(ownerPermission);
-                target.addPermission(managerPermission);
-                target.addPermission(ManageInventoryPermission.getInstance(store));
+                target.addOwnerPermissions(store);
 
                 // give the user permission to delete the new permission that was added to the target
-                addPermission(RemovePermissionPermission.getInstance(target, store));
+                addPermission(AppointerPermission.getInstance(target, store));
             }
         }
     }
 
-    public void removeOwnerPermission(Subscriber target, Store store) throws NoPermissionException {
+    public void removeOwnerPermissions(Subscriber target, Store store) throws NoPermissionException {
 
         synchronized (target.id < id ? target.permissions : permissions) {
             synchronized (target.id < id ? permissions : target.permissions) {
 
                 // check this user has the permission to perform this action
-                validatePermission(RemovePermissionPermission.getInstance(target, store));
+                validatePermission(AppointerPermission.getInstance(target, store));
 
-                removePermission(target, store, OwnerPermission.getInstance(store));
-                removePermission(target, store, ManageInventoryPermission.getInstance(store));
-                removePermission(target, store, ManagerPermission.getInstance(store));
+                target.removePermission(OwnerPermission.getInstance(store));
+                target.removePermission(ManageInventoryPermission.getInstance(store));
+                target.removePermission(GetHistoryPermission.getInstance(store));
+                target.removePermission(ManagerPermission.getInstance(store));
+
+                // remove the user's permission to change the target's permissions
+                removePermission(AppointerPermission.getInstance(target, store));
             }
         }
     }
 
-    public void addInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotStoreManagerException {
+    public void addInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
+
+        addPermissionToManager(target, store, ManageInventoryPermission.getInstance(store));
+    }
+
+    public void removeInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
+
+        removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
+    }
+
+    public void addGetHistoryPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
+
+        addPermissionToManager(target, store, GetHistoryPermission.getInstance(store));
+    }
+
+    public void removeGetHistoryPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
+
+        removePermissionFromManager(target, store, GetHistoryPermission.getInstance(store));
+    }
+
+    void addPermissionToManager(Subscriber target, Store store, Permission permission) throws NoPermissionException, TargetIsNotManagerException {
 
         synchronized (target.id < id ? target.permissions : permissions) {
             synchronized (target.id < id ? permissions : target.permissions) {
@@ -179,35 +208,24 @@ public class Subscriber extends User {
                 validatePermission(OwnerPermission.getInstance(store));
 
                 if (!target.havePermission(ManagerPermission.getInstance(store)))
-                    throw new TargetIsNotStoreManagerException(target.getUserName(), store.getName()); // TODO test
+                    throw new TargetIsNotManagerException(target.getUserName(), store.getName());
 
                 // add the permission to the target (if he doesn't already have it)
-                target.addPermission(ManageInventoryPermission.getInstance(store));
+                target.addPermission(permission);
             }
         }
     }
 
-    public void removeInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException {
+    void removePermissionFromManager(Subscriber target, Store store, Permission permission) throws NoPermissionException, TargetIsOwnerException {
 
         synchronized (target.id < id ? target.permissions : permissions) {
             synchronized (target.id < id ? permissions : target.permissions) {
 
                 // check this user has the permission to perform this action
-                validatePermission(RemovePermissionPermission.getInstance(target, store));
+                validatePermission(AppointerPermission.getInstance(target, store));
 
-                // remove the permission from the target (if he has it)
-                target.removePermission(ManageInventoryPermission.getInstance(store));
-            }
-        }
-    }
-
-    void removePermission(Subscriber target, Store store, Permission permission) throws NoPermissionException {
-
-        synchronized (target.id < id ? target.permissions : permissions) {
-            synchronized (target.id < id ? permissions : target.permissions) {
-
-                // check this user has the permission to perform this action
-                validatePermission(RemovePermissionPermission.getInstance(target, store));
+                if (target.havePermission(OwnerPermission.getInstance(store)))
+                    throw new TargetIsOwnerException(target.getUserName(), store.getName());
 
                 target.removePermission(permission);
             }
@@ -260,20 +278,20 @@ public class Subscriber extends User {
 
         synchronized (permissions) {
 
-            String result = "";
+            StringBuilder result = new StringBuilder();
 
             Permission ownerPermission = OwnerPermission.getInstance(store);
             Permission managerPermission = ManagerPermission.getInstance(store);
             Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
 
             if (havePermission(ownerPermission))
-                result += ownerPermission.toString() + " ";
+                result.append(ownerPermission.toString()).append(" ");
             if (havePermission(managerPermission))
-                result += managerPermission.toString() + " ";
+                result.append(managerPermission.toString()).append(" ");
             if (havePermission(manageInventoryPermission))
-                result += manageInventoryPermission.toString() + " ";
+                result.append(manageInventoryPermission.toString()).append(" ");
 
-            return result;
+            return result.toString();
         }
     }
 
@@ -287,12 +305,13 @@ public class Subscriber extends User {
 
     public Collection<String> getSalesHistoryByStore(Store store) throws NoPermissionException {
 
-        validateAtLeastOnePermission(AdminPermission.getInstance(), ManagerPermission.getInstance(store));
+        validateAtLeastOnePermission(AdminPermission.getInstance(), GetHistoryPermission.getInstance(store));
 
         return store.getPurchaseHistory();
     }
 
     public Collection<String> getPurchaseHistory() {
+
         return new ArrayList<>(purchaseHistory);
     }
 

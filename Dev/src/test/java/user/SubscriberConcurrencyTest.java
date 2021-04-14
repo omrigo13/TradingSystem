@@ -88,7 +88,7 @@ class SubscriberConcurrencyTest {
         @Override
         public void run() {
             try {
-                subscriber.addOwnerPermission(target, store);
+                subscriber.addOwnerPermissions(target, store);
             } catch (NoPermissionException | AlreadyOwnerException ignored) {
             }
             latch.countDown();

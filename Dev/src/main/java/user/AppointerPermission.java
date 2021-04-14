@@ -5,26 +5,26 @@ import store.Store;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
-public class RemovePermissionPermission extends StorePermission
+public class AppointerPermission extends StorePermission
 {
     private final Subscriber target;
 
-    private RemovePermissionPermission(Subscriber target, Store store) {
+    private AppointerPermission(Subscriber target, Store store) {
         super(store);
         this.target = target;
     }
 
-    public static RemovePermissionPermission getInstance(Subscriber target, Store store) {
+    public static AppointerPermission getInstance(Subscriber target, Store store) {
 
-        RemovePermissionPermission key = new RemovePermissionPermission(target, store);
-        return (RemovePermissionPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
+        AppointerPermission key = new AppointerPermission(target, store);
+        return (AppointerPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o || (o != null && getClass() == o.getClass())) return true;
         if (!super.equals(o)) return false;
-        RemovePermissionPermission that = (RemovePermissionPermission) o;
+        AppointerPermission that = (AppointerPermission) o;
         return Objects.equals(target, that.target);
     }
 
@@ -35,7 +35,7 @@ public class RemovePermissionPermission extends StorePermission
 
     @Override
     public String toString() {
-        return "RemovePermissionPermission{" +
+        return "AppointerPermission{" +
                 "store=" + store.getName() +
                 "target=" + target.getUserName() +
                 '}';

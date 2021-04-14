@@ -267,7 +267,7 @@ class TradingSystemServiceImplTest {
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.appointStoreOwner(connectionId, userName, storeId);
-        verify(subscriber).addOwnerPermission(subscriber1, store);
+        verify(subscriber).addOwnerPermissions(subscriber1, store);
     }
 
     @Test
@@ -305,13 +305,27 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void allowManagerToGetHistory() {
-        service.allowManagerToGetHistory(connectionId,storeId,userName);
+    void allowManagerToGetHistory() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
+        service.allowManagerToGetHistory(connectionId, storeId, userName);
+        verify(subscriber).addGetHistoryPermission(subscriber1, store);
     }
 
     @Test
-    void disableManagerFromGetHistory() {
+    void disableManagerFromGetHistory() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.disableManagerFromGetHistory(connectionId,storeId,userName);
+        verify(subscriber).removeGetHistoryPermission(subscriber1, store);
     }
 
     @Test

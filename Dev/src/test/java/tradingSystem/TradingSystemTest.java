@@ -43,6 +43,7 @@ class TradingSystemTest {
     @Mock private Item item;
 
     @Captor ArgumentCaptor<String> keyCaptor;
+    @Captor ArgumentCaptor<Store> storeCaptor;
 
     private final String connectionId = "9034580392580932458093248590324850932485";
     private final String userName = "Johnny";
@@ -131,9 +132,8 @@ class TradingSystemTest {
     void newStore() throws InvalidActionException {
 
         tradingSystem.newStore(subscriber, "Toy Story");
-        verify(subscriber).addPermission(OwnerPermission.getInstance(store));
-        verify(subscriber).addPermission(ManagerPermission.getInstance(store));
-        verify(subscriber).addPermission(ManageInventoryPermission.getInstance(store));
+        verify(stores).put(anyInt(), storeCaptor.capture());
+        verify(subscriber).addOwnerPermissions(storeCaptor.getValue());
     }
 
     @Test

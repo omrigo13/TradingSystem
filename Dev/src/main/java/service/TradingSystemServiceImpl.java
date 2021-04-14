@@ -274,7 +274,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        subscriber.addOwnerPermission(target, store);
+        subscriber.addOwnerPermissions(target, store);
     }
 
     @Override
@@ -312,15 +312,25 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void allowManagerToGetHistory(String connectionId, String storeId, String managerUserName) {
+    public void allowManagerToGetHistory(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
 
         logger.info("allow manager to get history");
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.addGetHistoryPermission(target, store);
     }
 
     @Override
-    public void disableManagerFromGetHistory(String connectionId, String storeId, String managerUserName) {
+    public void disableManagerFromGetHistory(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
 
         logger.info("disable manager to get history");
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.removeGetHistoryPermission(target, store);
     }
 
     @Override
@@ -357,7 +367,6 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> getSalesHistoryByStore(String connectionId, String storeId) throws InvalidActionException {
 
-        // TODO should enable to add a permission to a manager to see the store history also
         logger.info("Get sales history by store");
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
