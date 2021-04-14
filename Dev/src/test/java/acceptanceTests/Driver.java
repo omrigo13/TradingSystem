@@ -32,7 +32,7 @@ public class Driver {
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
         TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
-                .setSubscribers(subscribers).setAuth(userAuthentication).build();
+                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
         map.clear();
         TradingSystemServiceImpl real = new TradingSystemServiceImpl(build);
         proxy.setReal(real);
