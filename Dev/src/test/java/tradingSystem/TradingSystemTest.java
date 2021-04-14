@@ -1,7 +1,10 @@
 package tradingSystem;
 
 import authentication.UserAuthentication;
-import exceptions.*;
+import exceptions.InvalidActionException;
+import exceptions.InvalidConnectionIdException;
+import exceptions.InvalidStoreIdException;
+import exceptions.NotLoggedInException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +19,6 @@ import user.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -34,7 +36,7 @@ class TradingSystemTest {
     @Mock private ConcurrentHashMap<String, Subscriber> subscribers;
     @Mock private ConcurrentHashMap<Integer, Store> stores;
     @Mock private Collection<Subscriber> staff;
-    @Mock private Map<String, User> connections;
+    @Mock private ConcurrentHashMap<String, User> connections;
     @Mock private Subscriber subscriber;
     @Mock private User user;
     @Mock private Store store;

@@ -1,6 +1,6 @@
 package service;
 
-import exceptions.*;
+import exceptions.InvalidActionException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import store.Item;
@@ -12,12 +12,9 @@ import user.ManagerPermission;
 import user.Subscriber;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -93,8 +90,8 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public void addItemToBasket(String connectionId, String storeId, String productId, int quantity) throws InvalidActionException {
 
-        logger.info("Add item to basket: store-" + storeId + ", product-" + productId
-                + ", quantity- " + quantity);
+        logger.info("Add item to basket: store-" + storeId + ", product-" + productId + ", quantity- " + quantity);
+
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
@@ -104,6 +101,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> showCart(String connectionId) throws InvalidActionException {
 
         logger.info("Show user cart");
+
         Collection<String> itemList = new LinkedList<>();
         Map<Store, Basket> cart = tradingSystem.getUserByConnectionId(connectionId).getCart();
         for (Map.Entry<Store, Basket> storeBasketEntry : cart.entrySet()) {
@@ -126,23 +124,26 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> showBasket(String connectionId, String storeId) throws InvalidActionException {
 
         logger.info("Show user basket for store: " + storeId);
-        Collection<String> itemList = new LinkedList<>();
+
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Basket basket = tradingSystem.getUserByConnectionId(connectionId).getBasket(store);
-        for (Map.Entry<Item, Integer> itemQuantityEntry : basket.getItems().entrySet()) {
-            Item item = itemQuantityEntry.getKey();
-            Integer quantity = itemQuantityEntry.getValue();
-            String itemString = "Store: " + store.getName() + " Item: " + item.getName() + " Quantity: " + quantity;
-            itemList.add(itemString);
+
+        Set<Map.Entry<Item, Integer>> entries = basket.getItems().entrySet();
+        Collection<String> items = new ArrayList<>(entries.size());
+
+        for (Map.Entry<Item, Integer> entry : entries) {
+            String name = entry.getKey().getName();
+            Integer quantity = entry.getValue();
+            items.add("Store: " + store.getName() + " Item: " + name + " Quantity: " + quantity);
         }
-        return itemList;
+        return items;
     }
 
     @Override
     public void updateProductAmountInBasket(String connectionId, String storeId, String productId, int quantity) throws InvalidActionException {
 
-        logger.info("User update the amount of product-" + productId + " of the store-" + storeId +
-                    " with the new quantity-" + quantity);
+        logger.info("User update the amount of product-" + productId + " of the store-" + storeId + " with the new quantity-" + quantity);
+
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
@@ -150,6 +151,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
 
     public void purchaseCart(String connectionId) throws InvalidActionException {
+
         logger.info("User purchase cart");
 
         tradingSystem.purchaseCart(tradingSystem.getUserByConnectionId(connectionId));
@@ -159,13 +161,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getPurchaseHistory(String connectionId) throws InvalidActionException {
 
         logger.info("User ask for his purchase history");
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         return subscriber.getPurchaseHistory();
     }
 
     @Override
-    public void writeOpinionOnProduct(String connectionId, String storeId, String itemId, String review)
-            throws InvalidActionException {
+    public void writeOpinionOnProduct(String connectionId, String storeId, String itemId, String review) throws InvalidActionException {
 
         logger.info("User write opinion about an Item: " +
                     "store- " + storeId + ", product- " + itemId + ", description: " + review);
@@ -179,10 +181,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getStoresInfo(String connectionId) throws InvalidActionException {
 
         logger.info("User ask for stores info");
+
         Collection<String> infoList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         for (Store store : subscriber.getAllStores(tradingSystem.getStores()))
             infoList.add(store.toString());
+
         return infoList;
     }
 
@@ -190,11 +194,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getItemsByStore(String connectionId, String storeId) throws InvalidActionException {
 
         logger.info("User ask for store: " + storeId + "info");
+
         Collection<String> itemList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         for (Item item : subscriber.getStoreItems(store))
             itemList.add(item.getName());
+
         return itemList;
     }
 
@@ -202,6 +208,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public String openNewStore(String connectionId, String newStoreName) throws InvalidActionException {
 
         logger.info("User open new store named: " + newStoreName);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         return "" + tradingSystem.newStore(subscriber, newStoreName);
     }
@@ -211,6 +218,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
             throws InvalidActionException {
 
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " manager");
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -234,8 +242,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void deleteProductFromStore(String connectionId, String storeId, String itemId)
-            throws InvalidActionException {
+    public void deleteProductFromStore(String connectionId, String storeId, String itemId) throws InvalidActionException {
 
         logger.info("Delete product from store: " + storeId +
                 ", item- " + itemId);
@@ -253,6 +260,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
                 ", sub category- " + newSubCategory +
                 ", quantity- " + newQuantity +
                 ", price- " + newPrice);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.updateStoreItem(store, Integer.parseInt(itemId), newSubCategory, newQuantity, newPrice);
@@ -262,6 +270,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public void appointStoreOwner(String connectionId, String targetUserName, String storeId) throws InvalidActionException {
 
         logger.info("User appoint " + targetUserName + " for store: " + storeId + " owner");
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -272,6 +281,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public void allowManagerToUpdateProducts(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
 
         logger.info("User allow " + targetUserName + " to update products for store: " + storeId);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -282,6 +292,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public void disableManagerFromUpdateProducts(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
 
         logger.info("User disable " + targetUserName + " from update products for store: " + storeId);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
@@ -290,21 +301,25 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public void allowManagerToEditPolicies(String connectionId, String storeId, String managerUserName) {
+
         logger.info("allow manager to edit policies");
     }
 
     @Override
     public void disableManagerFromEditPolicies(String connectionId, String storeId, String managerUserName) {
+
         logger.info("disable manager to edit policies");
     }
 
     @Override
     public void allowManagerToGetHistory(String connectionId, String storeId, String managerUserName) {
+
         logger.info("allow manager to get history");
     }
 
     @Override
     public void disableManagerFromGetHistory(String connectionId, String storeId, String managerUserName) {
+
         logger.info("disable manager to get history");
     }
 
@@ -312,11 +327,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public boolean removeManager(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
 
         logger.info("User remove " + targetUserName + " from manage store: " + storeId);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+
         if (!target.havePermission(ManagerPermission.getInstance(store)))
             return false;
+
         subscriber.removeManagerPermission(target, store);
         return true;
     }
@@ -325,12 +343,14 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> showStaffInfo(String connectionId, String storeId) throws InvalidActionException {
 
         logger.info("Show staff info of store: " + storeId);
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Collection<Subscriber> staff = tradingSystem.getStoreStaff(subscriber, store, new LinkedList<>());
         Collection<String> staffList = new LinkedList<>();
         for (Subscriber staffMember : staff)
             staffList.add(staffMember.getUserName() + " : " + staffMember.storePermissionsToString(store));
+
         return staffList;
     }
 
@@ -350,6 +370,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getEventLog(String connectionId) throws InvalidActionException, IOException {
 
         logger.info("Get event log");
+
         Collection<String> eventLog = new LinkedList<>();
         BufferedReader reader = new BufferedReader(new FileReader("Dev/logging.log"));
         //StringBuilder stringBuilder = new StringBuilder();
@@ -371,6 +392,7 @@ public class TradingSystemServiceImpl implements TradingSystemService {
 
     @Override
     public Collection<String> getErrorLog(String connectionId) {
+
         logger.info("Get error log");
 
         return null;

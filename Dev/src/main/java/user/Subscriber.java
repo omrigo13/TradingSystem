@@ -6,25 +6,26 @@ import store.Item;
 import store.Store;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Subscriber extends User {
 
     private final int id;
     private final String userName;
-    private final Set<Permission> permissions;
-    private final Map<Store, Collection<Item>> itemsPurchased;
-    private final Collection<String> purchaseHistory;
+    private final Set<Permission> permissions; // synchronized manually
+    private final ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    private final Collection<String> purchaseHistory; // synchronized in constructor
 
     public Subscriber(int id, String userName) {
-        this(id, userName, new HashSet<>(), new HashMap<>(), new LinkedList<>());
+        this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
     }
 
-    Subscriber(int id, String userName, Set<Permission> permissions, Map<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
+    Subscriber(int id, String userName, Set<Permission> permissions, ConcurrentHashMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
         this.id = id;
         this.userName = userName;
         this.permissions = permissions;
         this.itemsPurchased = itemsPurchased;
-        this.purchaseHistory = purchaseHistory;
+        this.purchaseHistory = Collections.synchronizedCollection(purchaseHistory);
     }
 
     public String getUserName() {
@@ -292,7 +293,7 @@ public class Subscriber extends User {
     }
 
     public Collection<String> getPurchaseHistory() {
-        return purchaseHistory;
+        return new ArrayList<>(purchaseHistory);
     }
 
     public void writeOpinionOnProduct(Store store, int itemId, String review) throws ItemException, WrongReviewException {

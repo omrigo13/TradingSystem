@@ -10,8 +10,8 @@ import store.Item;
 import store.Store;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +24,7 @@ class SubscriberConcurrencyTest {
     @Mock private Set<Permission> permissions1;
     @Mock private Set<Permission> permissions2;
     @Mock private Store store;
-    @Mock private Map<Store, Collection<Item>> itemsPurchased;
+    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     @Mock private Collection<String> purchaseHistory;
 
     @Test

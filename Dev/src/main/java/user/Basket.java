@@ -4,23 +4,16 @@ import store.Item;
 import store.Store;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Basket {
-
-    private final Store store;
-    private final Map<Item, Integer> items; // item : quantity
-
-    public Basket(Store store, Map<Item, Integer> items) {
-        this.store = store;
-        this.items = items;
-    }
+public record Basket(Store store, ConcurrentHashMap<Item, Integer> items) {
 
     public Store getStore() {
         return store;
     }
 
-    public void addItem(Item item, int quantity)  {
-        items.put(item, items.getOrDefault(item, 0) + quantity); // add to existing quantity
+    public void addItem(Item item, int quantity) {
+        items.compute(item, (k, v) -> v  == null ? quantity : v + quantity); // add to existing quantity
     }
 
     public int getQuantity(Item item) {
@@ -31,8 +24,7 @@ public class Basket {
         items.put(item, quantity);
     }
 
-    public Map<Item, Integer> getItems()
-    {
+    public Map<Item, Integer> getItems() {
         return items;
     }
 

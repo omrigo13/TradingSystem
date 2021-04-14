@@ -1,7 +1,10 @@
 package tradingSystem;
 
 import authentication.UserAuthentication;
-import exceptions.*;
+import exceptions.InvalidActionException;
+import exceptions.InvalidConnectionIdException;
+import exceptions.InvalidStoreIdException;
+import exceptions.SubscriberDoesNotExistException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import store.Item;
@@ -10,7 +13,6 @@ import user.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,12 +27,12 @@ public class TradingSystem {
 
     private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
-
-    private final Map<String, User> connections; // key: connection id
+    private final ConcurrentHashMap<String, User> connections; // key: connection id
 
     TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                  UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers,
-                  Map<String, User> connections, ConcurrentHashMap<Integer, Store> stores) throws InvalidActionException {
+                  UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
+                  ConcurrentHashMap<Integer, Store> stores)
+            throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
         this.paymentSystem = paymentSystem;
@@ -45,6 +47,7 @@ public class TradingSystem {
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {
+
         User user = connections.get(connectionId);
         if (user == null)
             throw new InvalidConnectionIdException(connectionId);
@@ -52,6 +55,7 @@ public class TradingSystem {
     }
 
     public Subscriber getSubscriberByUserName(String userName) throws InvalidActionException {
+
         Subscriber subscriber = subscribers.get(userName);
         if (subscriber == null)
             throw new SubscriberDoesNotExistException(userName);
@@ -63,6 +67,7 @@ public class TradingSystem {
     }
 
     public Store getStore(int storeId) throws InvalidStoreIdException {
+
         Store store = stores.get(storeId);
         if (store == null)
             throw new InvalidStoreIdException(storeId);
@@ -74,8 +79,8 @@ public class TradingSystem {
         subscribers.put(userName, new Subscriber(subscriberIdCounter.getAndIncrement(), userName));
     }
 
-    public String connect()
-    {
+    public String connect() {
+
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
@@ -93,6 +98,7 @@ public class TradingSystem {
     }
 
     public void logout(String connectionId) throws InvalidActionException {
+
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         User guest = new User();
         guest.makeCart(subscriber);
@@ -141,6 +147,7 @@ public class TradingSystem {
     }
 
     public void purchaseCart(User user) throws InvalidActionException {
+
         user.purchaseCart(paymentSystem, deliverySystem);
     }
 }

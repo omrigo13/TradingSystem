@@ -1,6 +1,9 @@
 package user;
 
-import exceptions.*;
+import exceptions.AlreadyManagerException;
+import exceptions.AlreadyOwnerException;
+import exceptions.ItemException;
+import exceptions.NoPermissionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +14,9 @@ import store.Store;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -29,7 +31,7 @@ class SubscriberTest {
     @Mock private Collection<Store> stores;
     @Mock private Store store;
     @Mock private Subscriber target;
-    @Mock private Map<Store, Collection<Item>> itemsPurchased;
+    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     @Mock private Collection<String> purchasesDetails;
 
     private final Permission adminPermission = AdminPermission.getInstance();

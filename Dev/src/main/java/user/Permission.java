@@ -8,8 +8,7 @@ import java.util.WeakHashMap;
 
 public abstract class Permission {
 
-    protected static final Map<Permission, WeakReference<Permission>> pool
-            = Collections.synchronizedMap(new WeakHashMap<>());
+    protected static final Map<Permission, WeakReference<Permission>> pool = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public boolean equals(Object o) {

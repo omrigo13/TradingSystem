@@ -8,8 +8,6 @@ import store.Store;
 import user.Subscriber;
 import user.User;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,7 +20,7 @@ public class TradingSystemBuilder {
     private UserAuthentication auth;
     private ConcurrentHashMap<String, Subscriber> subscribers;
     private ConcurrentHashMap<Integer, Store> stores;
-    private Map<String, User> connections;
+    private ConcurrentHashMap<String, User> connections;
     private AtomicInteger subscriberIdCounter;
 
     public TradingSystemBuilder setUserName(String userName) {
@@ -61,7 +59,7 @@ public class TradingSystemBuilder {
         return this;
     }
 
-    public TradingSystemBuilder setConnections(Map<String, User> connections) {
+    public TradingSystemBuilder setConnections(ConcurrentHashMap<String, User> connections) {
 
         this.connections = connections;
         return this;
@@ -85,7 +83,7 @@ public class TradingSystemBuilder {
         deliverySystem = (deliverySystem == null) ? new DeliverySystem() : deliverySystem;
         auth = (auth == null) ? new UserAuthentication(new ConcurrentHashMap<>()) : auth;
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
-        connections = (connections == null) ? new HashMap<>() : connections;
+        connections = (connections == null) ? new ConcurrentHashMap<>() : connections;
         stores = (stores == null) ? new ConcurrentHashMap<>() : stores;
         subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
 

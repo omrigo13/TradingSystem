@@ -10,6 +10,7 @@ import tradingSystem.TradingSystemBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -301,7 +302,9 @@ class AcceptanceTestsV1 {
         service.purchaseCart(store1Manager1Id);
         str = service.getPurchaseHistory(store1Manager1Id);
         assertTrue(str.size() == 2);
-        assertTrue(((LinkedList)str).get(1).toString().contains("baguette"));
+
+        // TODO this is wrong - you shouldn't assume the returned Collection is a List
+        assertTrue(((List)str).get(1).toString().contains("baguette"));
     }
 
     @Test
