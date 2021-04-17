@@ -1,14 +1,19 @@
 package user;
 
 import exceptions.NotLoggedInException;
+import externalServices.DeliverySystem;
+import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import store.Inventory;
+import store.Item;
 import store.Store;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -59,5 +64,16 @@ class UserTest {
         Basket basket = mock(Basket.class);
         baskets.put(store, basket);
         assertSame(basket, user.getBasket(store));
+    }
+
+    @Test
+    void purchaseCart() throws Exception {
+        PaymentSystem paymentSystem = mock(PaymentSystem.class);
+        DeliverySystem deliverySystem = mock(DeliverySystem.class);
+
+        user.purchaseCart(paymentSystem, deliverySystem);
+
+        //TODO empty cart should work for subscriber and user and not only for subscriber
+        //TODO if fails nothing done (try to purchase more quantity then available)
     }
 }
