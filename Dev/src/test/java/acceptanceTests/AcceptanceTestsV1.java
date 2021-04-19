@@ -4,12 +4,9 @@ import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
-import tradingSystem.TradingSystem;
-import tradingSystem.TradingSystemBuilder;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -301,7 +298,9 @@ class AcceptanceTestsV1 {
         service.purchaseCart(store1Manager1Id);
         str = service.getPurchaseHistory(store1Manager1Id);
         assertTrue(str.size() == 2);
-        assertTrue(((LinkedList)str).get(1).toString().contains("baguette"));
+
+        // TODO this is wrong - you shouldn't assume the returned Collection is a List
+        assertTrue(((List)str).get(1).toString().contains("baguette"));
     }
 
     @Test
@@ -535,7 +534,7 @@ class AcceptanceTestsV1 {
     @Test
     void wrongAllowManagerToUpdateProducts() throws Exception{
         assertThrows(NoPermissionException.class, () -> service.allowManagerToUpdateProducts(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
-        assertThrows(TargetIsNotStoreManagerException.class, () -> service.allowManagerToUpdateProducts(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
+        assertThrows(TargetIsNotManagerException.class, () -> service.allowManagerToUpdateProducts(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
         assertThrows(SubscriberDoesNotExistException.class, () -> service.allowManagerToUpdateProducts(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
 
         assertThrows(NoPermissionException.class, () -> service.allowManagerToUpdateProducts(founderStore2Id, storeId1, store1Manager1UserName)); //founderStore2Id is not a an owner of store1
@@ -586,7 +585,6 @@ class AcceptanceTestsV1 {
     }
 
     @Test
-    //TODO not yet implemented
     void validAllowManagerToGetHistory() throws Exception{
         //2 purchases from store1:
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
@@ -595,12 +593,11 @@ class AcceptanceTestsV1 {
         service.addItemToBasket(subs1Id, storeId2, productId3, 1);
         assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
         assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
-        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 2);
+        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 2); // TODO this test is wrong
     }
 
 
     @Test
-    //TODO not yet implemented
     void wrongAllowManagerToGetHistory() throws Exception{
         //2 items from store1:
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
@@ -626,7 +623,6 @@ class AcceptanceTestsV1 {
 
 
     @Test
-    //TODO not yet implemented
     void disableManagerFromGetHistory() throws Exception{
         service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
         assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
@@ -635,7 +631,6 @@ class AcceptanceTestsV1 {
     }
 
     @Test
-        //TODO not yet implemented
     void disableManagerFromGetHistoryWithoutPermissionsInStore() throws Exception{
         assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
         assertThrows(Exception.class, () ->service.disableManagerFromGetHistory(founderStore2Id, storeId1, store1Manager1UserName));

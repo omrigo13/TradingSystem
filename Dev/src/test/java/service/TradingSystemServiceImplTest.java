@@ -55,30 +55,35 @@ class TradingSystemServiceImplTest {
 
     @Test
     void connect() {
+
         service.connect();
         verify(tradingSystem).connect();
     }
 
     @Test
-    void register() throws SubscriberAlreadyExistsException {
+    void register() throws InvalidActionException {
+
         service.register(userName, password);
         verify(tradingSystem).register(userName, password);
     }
 
     @Test
-    void login() throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
+    void login() throws InvalidActionException {
+
         service.login(connectionId, userName, password);
         verify(tradingSystem).login(connectionId, userName, password);
     }
 
     @Test
-    void logout() throws InvalidConnectionIdException, NotLoggedInException {
+    void logout() throws InvalidActionException {
+
         service.logout(connectionId);
         verify(tradingSystem).logout(connectionId);
     }
 
     @Test
     void getItems() {
+
         String keyWord = "key";
         String productName = "product";
         Double ratingItem = 4.5;
@@ -90,7 +95,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void addItemToBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
+    void addItemToBasket() throws InvalidActionException {
+
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(store.searchItemById(Integer.parseInt(itemId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
@@ -100,7 +106,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showCart() throws InvalidConnectionIdException {
+    void showCart() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getCart()).thenReturn(cart);
         service.showCart(connectionId);
@@ -108,7 +115,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showBasket() throws InvalidConnectionIdException, InvalidStoreIdException {
+    void showBasket() throws InvalidActionException {
+
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getBasket(store)).thenReturn(basket);
@@ -117,7 +125,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void updateProductAmountInBasket() throws ItemException, InvalidConnectionIdException, InvalidStoreIdException {
+    void updateProductAmountInBasket() throws InvalidActionException {
+
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(store.searchItemById(Integer.parseInt(itemId))).thenReturn(item1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
@@ -128,18 +137,21 @@ class TradingSystemServiceImplTest {
 
     @Test
     void purchaseCart() throws Exception {
+
         service.purchaseCart(connectionId);
     }
 
     @Test
-    void getPurchaseHistory() throws NotLoggedInException, InvalidConnectionIdException {
+    void getPurchaseHistory() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
         service.getPurchaseHistory(connectionId);
     }
 
     @Test
-    void writeOpinionOnProduct() throws NotLoggedInException, ItemException, InvalidConnectionIdException, WrongReviewException, InvalidStoreIdException {
+    void writeOpinionOnProduct() throws InvalidActionException {
+
         String review = "good product";
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
@@ -149,7 +161,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void getStoresInfo() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException {
+    void getStoresInfo() throws InvalidActionException {
+
         Collection<Store> stores = new LinkedList<>();
         stores.add(store);
         stores.add(store1);
@@ -170,7 +183,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void getItemsByStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException {
+    void getItemsByStore() throws InvalidActionException {
 
         Collection<Item> items = new LinkedList<>();
         items.add(item1);
@@ -192,7 +205,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void openNewStore() throws NotLoggedInException, InvalidConnectionIdException, ItemException {
+    void openNewStore() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -202,7 +216,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void appointStoreManager() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, AlreadyManagerException, InvalidStoreIdException {
+    void appointStoreManager() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -213,7 +228,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void addProductToStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, ItemException, InvalidStoreIdException {
+    void addProductToStore() throws InvalidActionException {
 
         String itemName = "cucumber";
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
@@ -224,7 +239,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void deleteProductFromStore() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
+    void deleteProductFromStore() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
@@ -233,7 +249,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void updateProductDetails() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException, ItemException {
+    void updateProductDetails() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -243,17 +260,19 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void appointStoreOwner() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException, AlreadyOwnerException {
+    void appointStoreOwner() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.appointStoreOwner(connectionId, userName, storeId);
-        verify(subscriber).addOwnerPermission(subscriber1, store);
+        verify(subscriber).addOwnerPermissions(subscriber1, store);
     }
 
     @Test
-    void allowManagerToUpdateProducts() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, TargetIsNotStoreManagerException, InvalidStoreIdException {
+    void allowManagerToUpdateProducts() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -264,7 +283,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void disableManagerFromUpdateProducts() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
+    void disableManagerFromUpdateProducts() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -285,17 +305,32 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void allowManagerToGetHistory() {
-        service.allowManagerToGetHistory(connectionId,storeId,userName);
+    void allowManagerToGetHistory() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
+        service.allowManagerToGetHistory(connectionId, storeId, userName);
+        verify(subscriber).addGetHistoryPermission(subscriber1, store);
     }
 
     @Test
-    void disableManagerFromGetHistory() {
+    void disableManagerFromGetHistory() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.disableManagerFromGetHistory(connectionId,storeId,userName);
+        verify(subscriber).removeGetHistoryPermission(subscriber1, store);
     }
 
     @Test
-    void removeManager() throws NotLoggedInException, InvalidConnectionIdException, SubscriberDoesNotExistException, NoPermissionException, InvalidStoreIdException {
+    void removeManager() throws InvalidActionException {
+
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
 
@@ -307,7 +342,8 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void showStaffInfo() throws NotLoggedInException, InvalidConnectionIdException, NoPermissionException, InvalidStoreIdException {
+    void showStaffInfo() throws InvalidActionException {
+
         Collection<Subscriber> subscribers = new LinkedList<>();
         subscribers.add(subscriber);
         subscribers.add(subscriber1);
@@ -326,7 +362,7 @@ class TradingSystemServiceImplTest {
     }
 
     @Test
-    void getEventLog() throws IOException, InvalidConnectionIdException, NotLoggedInException, NoPermissionException {
+    void getEventLog() throws IOException, InvalidActionException {
 
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);

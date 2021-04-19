@@ -2,7 +2,7 @@ package exceptions;
 
 import java.util.Arrays;
 
-public class WrongPasswordException extends Exception {
+public class WrongPasswordException extends InvalidActionException {
     final String userName;
     final String password;
     final String maskedPassword;

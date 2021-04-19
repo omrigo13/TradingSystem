@@ -9,7 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -20,10 +20,11 @@ class UserAuthenticationTest {
 
     private UserAuthentication auth;
 
-    @Mock private Map<String, String> userNamesAndPasswords;
+    @Mock
+    private ConcurrentHashMap<String, String> userNamesAndPasswords;
 
-    private final String userName = "Lidor";
-    private final String password = "lidor12345";
+    private final String userName = "Jones";
+    private final String password = "jones12345";
     private final String password1 = "jfh746";
 
     @BeforeEach
@@ -38,7 +39,7 @@ class UserAuthenticationTest {
     }
 
     @Test
-    void registerExistingUser() {
+    void register_existingUser() {
         when(userNamesAndPasswords.putIfAbsent(userName, password)).thenReturn("password1234");
         assertThrows(SubscriberAlreadyExistsException.class, () -> auth.register(userName, password));
     }
@@ -50,12 +51,12 @@ class UserAuthenticationTest {
     }
 
     @Test
-    void authenticate_SubscriberDoesNotExist() {
+    void authenticate_subscriberDoesNotExist() {
         assertThrows(SubscriberDoesNotExistException.class, () -> auth.authenticate(userName, password));
     }
 
     @Test
-    void authenticate_WrongPassword() {
+    void authenticate_wrongPassword() {
         when(userNamesAndPasswords.get(userName)).thenReturn("a different password");
         assertThrows(WrongPasswordException.class, () -> auth.authenticate(userName, password1));
     }

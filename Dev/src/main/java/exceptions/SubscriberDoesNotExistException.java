@@ -1,6 +1,6 @@
 package exceptions;
 
-public class SubscriberDoesNotExistException extends Exception {
+public class SubscriberDoesNotExistException extends InvalidActionException {
     final String userName;
 
     public SubscriberDoesNotExistException(String userName) {

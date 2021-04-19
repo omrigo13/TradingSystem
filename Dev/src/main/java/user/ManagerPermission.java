@@ -2,6 +2,7 @@ package user;
 
 import store.Store;
 
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 public class ManagerPermission extends StorePermission
@@ -11,13 +12,9 @@ public class ManagerPermission extends StorePermission
     }
 
     public static ManagerPermission getInstance(Store store) {
-        int hash = Objects.hash(ManagerPermission.class, store);
-        ManagerPermission permission = (ManagerPermission)permissions.get(hash);
-        if (permission == null) {
-            permission = new ManagerPermission(store);
-            permissions.put(hash, permission);
-        }
-        return permission;
+
+        ManagerPermission key = new ManagerPermission(store);
+        return (ManagerPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package exceptions;
 
-public class SubscriberAlreadyExistsException extends Exception {
+public class SubscriberAlreadyExistsException extends InvalidActionException {
     final String userName;
 
     public SubscriberAlreadyExistsException(String userName) {

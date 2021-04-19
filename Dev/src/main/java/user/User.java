@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
@@ -10,16 +11,17 @@ import store.Store;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
-    protected final Map<Store, Basket> baskets;
+    protected final ConcurrentHashMap<Store, Basket> baskets;
 
     public User() {
-        this(new HashMap<>());
+        this(new ConcurrentHashMap<>());
     }
 
-    User(Map<Store, Basket> baskets) {
+    User(ConcurrentHashMap<Store, Basket> baskets) {
         this.baskets = baskets;
     }
 
@@ -28,30 +30,27 @@ public class User {
         return baskets;
     }
 
-    public void makeCart(User from)
-    {
+    public void makeCart(User from) {
+
         if (baskets.isEmpty())
             baskets.putAll(from.getCart());
     }
 
     public Subscriber getSubscriber() throws NotLoggedInException {
+
         throw new NotLoggedInException();
     }
 
     public Basket getBasket(Store store) {
 
-        Basket basket = baskets.get(store);
-        if (basket == null) {
-            basket = new Basket(store, this, new HashMap<>());
-            baskets.put(store, basket);
-        }
-        return basket;
+        return baskets.computeIfAbsent(store, k -> new Basket(k, new ConcurrentHashMap<>()));
     }
 
     public void addCartToPurchases(Map<Store, String> details) {
+        // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception { // TODO exception
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
@@ -79,7 +78,7 @@ public class User {
         addCartToPurchases(storePurchaseDetails);
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws Exception {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException {
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();

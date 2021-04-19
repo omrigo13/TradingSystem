@@ -7,18 +7,18 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 
-class RemovePermissionPermissionTest {
+class AppointerPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
     private final Subscriber differentTarget = mock(Subscriber.class);
 
-    private final StorePermission permission = RemovePermissionPermission.getInstance(target, store);
-    private final StorePermission samePermission = RemovePermissionPermission.getInstance(target, store);
-    private final StorePermission differentTargetPermission = RemovePermissionPermission.getInstance(differentTarget, store);
-    private final StorePermission differentStorePermission = RemovePermissionPermission.getInstance(target, differentStore);
-    private final StorePermission differentAllPermission = RemovePermissionPermission.getInstance(differentTarget, differentStore);
+    private final StorePermission permission = AppointerPermission.getInstance(target, store);
+    private final StorePermission samePermission = AppointerPermission.getInstance(target, store);
+    private final StorePermission differentTargetPermission = AppointerPermission.getInstance(differentTarget, store);
+    private final StorePermission differentStorePermission = AppointerPermission.getInstance(target, differentStore);
+    private final StorePermission differentAllPermission = AppointerPermission.getInstance(differentTarget, differentStore);
 
     @Test
     void testPermissionSame() {

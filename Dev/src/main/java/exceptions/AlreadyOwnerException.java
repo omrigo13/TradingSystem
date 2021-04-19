@@ -1,6 +1,6 @@
 package exceptions;
 
-public class AlreadyOwnerException extends Exception {
+public class AlreadyOwnerException extends InvalidActionException {
 
     final String userName;
 

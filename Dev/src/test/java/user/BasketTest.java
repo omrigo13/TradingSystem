@@ -8,50 +8,64 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
 
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class BasketTest {
 
     private Basket basket;
-    @Mock User user;
+
     @Mock Store store;
-    @Mock Map<Item, Integer> items;
     @Mock Item item;
+
+    private final ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
+
     private final int quantity = 3;
+    private final int differentQuantity = 5;
 
     @BeforeEach
     void setUp() {
-        basket = new Basket(store, user, items);
+        items.clear();
+        items.put(item, quantity);
+        basket = new Basket(store, items);
     }
 
     @Test
-    void addItem() {
-        int addedQuantity = 5;
-        when(items.getOrDefault(item, 0)).thenReturn(quantity);
-        basket.addItem(item, addedQuantity);
-        verify(items).put(item, quantity + addedQuantity);
+    void addItem_notInBasket() {
+        items.clear();
+        basket.addItem(item, quantity);
+        assertEquals(quantity, items.get(item));
+    }
+
+    @Test
+    void addItem_alreadyInBasket() {
+        basket.addItem(item, differentQuantity);
+        assertEquals(quantity + differentQuantity, items.get(item));
     }
 
     @Test
     void getQuantity() {
-        when(items.getOrDefault(item, 0)).thenReturn(quantity);
         assertEquals(quantity, basket.getQuantity(item));
     }
 
     @Test
-    void setQuantity() {
-        basket.setQuantity(item, quantity);
-        verify(items).put(item, quantity);
+    void setQuantity_notInBasket() {
+        items.clear();
+        basket.setQuantity(item, differentQuantity);
+        assertEquals(differentQuantity, items.get(item));
+    }
+
+    @Test
+    void setQuantity_alreadyInBasket() {
+        basket.setQuantity(item, differentQuantity);
+        assertEquals(differentQuantity, items.get(item));
     }
 
     @Test
     void removeItem() {
         basket.removeItem(item);
-        verify(items).remove(item);
+        assertEquals(0, items.size());
     }
 }

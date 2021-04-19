@@ -1,6 +1,6 @@
 package user;
 
-import java.util.Objects;
+import java.lang.ref.WeakReference;
 
 public class AdminPermission extends Permission
 {
@@ -8,13 +8,9 @@ public class AdminPermission extends Permission
     }
 
     public static AdminPermission getInstance() {
-        int hash = Objects.hash(AdminPermission.class);
-        AdminPermission permission = (AdminPermission)permissions.get(hash);
-        if (permission == null) {
-            permission = new AdminPermission();
-            permissions.put(hash, permission);
-        }
-        return permission;
+
+        AdminPermission key = new AdminPermission();
+        return (AdminPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
     }
 
     @Override

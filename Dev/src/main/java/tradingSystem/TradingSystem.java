@@ -1,7 +1,10 @@
 package tradingSystem;
 
 import authentication.UserAuthentication;
-import exceptions.*;
+import exceptions.InvalidActionException;
+import exceptions.InvalidConnectionIdException;
+import exceptions.InvalidStoreIdException;
+import exceptions.SubscriberDoesNotExistException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import store.Item;
@@ -10,26 +13,28 @@ import user.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
 
-    private int storeIdCounter = 0;
-    private int purchaseIdCounter = 0;
-    private int itemIdCounter = 0;
+    private final AtomicInteger storeIdCounter = new AtomicInteger();
+    private final AtomicInteger subscriberIdCounter;
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
 
-    private final Map<String, Subscriber> subscribers; // key: user name
-    private final Map<String, User> connections; // key: connection id
-    private final Map<Integer, Store> stores; // key: store id
+    private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
+    private final ConcurrentHashMap<Integer, Store> stores; // key: store id
+    private final ConcurrentHashMap<String, User> connections; // key: connection id
 
-    TradingSystem(String userName, String password, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                  UserAuthentication auth, Map<String, Subscriber> subscribers, Map<String, User> connections, Map<Integer, Store> stores)
-            throws SubscriberDoesNotExistException, WrongPasswordException {
+    TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                  UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
+                  ConcurrentHashMap<Integer, Store> stores)
+            throws InvalidActionException {
 
+        this.subscriberIdCounter = subscriberIdCounter;
         this.paymentSystem = paymentSystem;
         this.deliverySystem = deliverySystem;
         this.auth = auth;
@@ -37,18 +42,20 @@ public class TradingSystem {
         this.connections = connections;
         this.stores = stores;
 
-        auth.authenticate(userName, password); // TODO check if the userName is admin
-
+        auth.authenticate(userName, password);
+        subscribers.get(userName).validatePermission(AdminPermission.getInstance());
     }
 
-    public User getUserByConnectionId(String connectionId) throws InvalidConnectionIdException {
+    public User getUserByConnectionId(String connectionId) throws InvalidActionException {
+
         User user = connections.get(connectionId);
         if (user == null)
             throw new InvalidConnectionIdException(connectionId);
         return user;
     }
 
-    public Subscriber getSubscriberByUserName(String userName) throws SubscriberDoesNotExistException {
+    public Subscriber getSubscriberByUserName(String userName) throws InvalidActionException {
+
         Subscriber subscriber = subscribers.get(userName);
         if (subscriber == null)
             throw new SubscriberDoesNotExistException(userName);
@@ -60,19 +67,20 @@ public class TradingSystem {
     }
 
     public Store getStore(int storeId) throws InvalidStoreIdException {
+
         Store store = stores.get(storeId);
         if (store == null)
             throw new InvalidStoreIdException(storeId);
         return store;
     }
 
-    public void register(String userName, String password) throws SubscriberAlreadyExistsException {
+    public void register(String userName, String password) throws InvalidActionException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(userName));
+        subscribers.put(userName, new Subscriber(subscriberIdCounter.getAndIncrement(), userName));
     }
 
-    public String connect()
-    {
+    public String connect() {
+
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
 
@@ -80,8 +88,7 @@ public class TradingSystem {
         return connectionId;
     }
 
-    public void login(String connectionId, String userName, String password)
-            throws InvalidConnectionIdException, SubscriberDoesNotExistException, WrongPasswordException {
+    public void login(String connectionId, String userName, String password) throws InvalidActionException {
 
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
@@ -90,28 +97,28 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId) throws InvalidConnectionIdException, NotLoggedInException {
+    public void logout(String connectionId) throws InvalidActionException {
+
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         User guest = new User();
         guest.makeCart(subscriber);
         connections.put(connectionId, guest);
     }
 
-    public int newStore(Subscriber subscriber, String storeName) throws ItemException {
+    public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
+
+        int id = storeIdCounter.getAndIncrement();
 
         // create the new store
-        Store store = new Store(this, storeIdCounter, storeName, "description");
-        stores.put(storeIdCounter, store);
+        Store store = new Store(this, id, storeName, "description");
+        stores.put(id, store);
 
-        // give the subscriber owner permission
-        subscriber.addPermission(OwnerPermission.getInstance(store));
-        subscriber.addPermission(ManagerPermission.getInstance(store));
-        subscriber.addPermission(ManageInventoryPermission.getInstance(store));
+        subscriber.addOwnerPermissions(store);
 
-        return storeIdCounter++;
+        return id;
     }
 
-    public Collection<Subscriber> getStoreStaff(Subscriber subscriber, Store store, Collection<Subscriber> staff) throws NoPermissionException {
+    public Collection<Subscriber> getStoreStaff(Subscriber subscriber, Store store, Collection<Subscriber> staff) throws InvalidActionException {
 
         subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), ManagerPermission.getInstance(store));
 
@@ -136,11 +143,8 @@ public class TradingSystem {
         return items;
     }
 
-    public void purchaseCart(User user) throws Exception { // TODO exception
-        user.purchaseCart(paymentSystem, deliverySystem);
-    }
+    public void purchaseCart(User user) throws InvalidActionException {
 
-    public int getNextItemId() {
-        return itemIdCounter++;
+        user.purchaseCart(paymentSystem, deliverySystem);
     }
 }

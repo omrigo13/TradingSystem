@@ -322,7 +322,7 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws Exception { // TODO should get basket
+    public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws ItemException { // TODO should get basket
         return inventory.calculate(items, details);
     }
 

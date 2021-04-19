@@ -1,6 +1,6 @@
 package exceptions;
 
-public class WrongReviewException extends Exception{
+public class WrongReviewException extends InvalidActionException {
 
     private String msg;
 

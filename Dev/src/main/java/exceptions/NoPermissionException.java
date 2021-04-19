@@ -1,6 +1,6 @@
 package exceptions;
 
-public class NoPermissionException extends Exception {
+public class NoPermissionException extends InvalidActionException {
     final String permission;
 
     public NoPermissionException(String permission) {

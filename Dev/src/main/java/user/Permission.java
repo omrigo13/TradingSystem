@@ -1,12 +1,14 @@
 package user;
 
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
 public abstract class Permission {
-    protected static final Map<Integer, Permission> permissions = Collections.synchronizedMap(new WeakHashMap<>());
+
+    protected static final Map<Permission, WeakReference<Permission>> pool = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public boolean equals(Object o) {

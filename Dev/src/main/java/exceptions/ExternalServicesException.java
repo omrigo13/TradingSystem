@@ -1,4 +1,4 @@
 package exceptions;
 
-public class ExternalServicesException extends Exception {
+public class ExternalServicesException extends InvalidActionException {
 }

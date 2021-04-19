@@ -1,6 +1,6 @@
 package exceptions;
 
-public class InvalidStoreIdException extends Exception {
+public class InvalidStoreIdException extends InvalidActionException {
     private int storeId;
 
     public InvalidStoreIdException(int storeId) {
