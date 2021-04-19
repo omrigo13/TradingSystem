@@ -308,15 +308,18 @@ public class Inventory {
         }*/
 
         synchronized (this.items) {
+            // check that every item has quantity in inventory
             for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                if (checkAmount(entry.getKey().getId(), entry.getValue())) {
+                checkAmount(entry.getKey().getId(), entry.getValue());
+            }
+            // update inventory quantity and calculate basket price
+            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
                     paymentValue += (item.getPrice() * quantity);
                     this.items.replace(item, this.items.get(item) - quantity);
                     details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                             .append(" Quantity: ").append(quantity).append("\n");
-                }
             }
         }
         return paymentValue;
