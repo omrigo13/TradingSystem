@@ -14,13 +14,13 @@ public class OwnerPermission extends StorePermission
     public static OwnerPermission getInstance(Store store) {
 
         OwnerPermission key = new OwnerPermission(store);
-        return (OwnerPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
+        return (OwnerPermission)pool.computeIfAbsent(key, WeakReference::new).get();
     }
 
     @Override
     public String toString() {
         return "OwnerPermission{" +
-                "store=" + store.getName() +
+                "store=" + (store == null ? null : store.getName()) +
                 '}';
     }
 }

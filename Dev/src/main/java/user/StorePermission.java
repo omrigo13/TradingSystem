@@ -15,10 +15,14 @@ public abstract class StorePermission extends Permission {
         this.store = store;
     }
 
+    public Store getStore() {
+        return store;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o || (o != null && getClass() == o.getClass())) return true;
-        if (!super.equals(o)) return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass() || !super.equals(o)) return false;
         StorePermission that = (StorePermission) o;
         return Objects.equals(store, that.store);
     }
@@ -31,7 +35,7 @@ public abstract class StorePermission extends Permission {
     @Override
     public String toString() {
         return getClass().toString() + "{" +
-                "store=" + store +
+                "store=" + (store == null ? null : store.getName()) +
                 '}';
     }
 }
