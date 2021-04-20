@@ -76,15 +76,4 @@ class UserTest {
         //TODO empty cart should work for subscriber and user and not only for subscriber
         //TODO if fails nothing done (try to purchase more quantity then available)
     }
-
-    @Test
-    void purchaseCart() throws Exception {
-        PaymentSystem paymentSystem = mock(PaymentSystem.class);
-        DeliverySystem deliverySystem = mock(DeliverySystem.class);
-
-        user.purchaseCart(paymentSystem, deliverySystem);
-
-        //TODO empty cart should work for subscriber and user and not only for subscriber
-        //TODO if fails nothing done (try to purchase more quantity then available)
-    }
 }
