@@ -12,7 +12,7 @@ class PaymentSystemTest {
     @Test
     void pay() {
         PaymentData paymentData = new PaymentData(0);
-        PaymentSystem paymentSystem = new PaymentSystem();
+        PaymentSystem paymentSystem = new PaymentSystemBasicImpl();
         paymentSystem.pay(paymentData);
     }
 }

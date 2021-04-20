@@ -12,7 +12,7 @@ class DeliverySystemTest {
     @Test
     void deliver() {
         DeliveryData deliveryData = new DeliveryData();
-        DeliverySystem deliverySystem = new DeliverySystem();
+        DeliverySystem deliverySystem = new DeliverySystemBasicImpl();
         deliverySystem.deliver(deliveryData);
     }
 }

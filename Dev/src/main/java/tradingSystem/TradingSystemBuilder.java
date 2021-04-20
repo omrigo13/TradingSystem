@@ -3,7 +3,9 @@ package tradingSystem;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import externalServices.DeliverySystem;
+import externalServices.DeliverySystemBasicImpl;
 import externalServices.PaymentSystem;
+import externalServices.PaymentSystemBasicImpl;
 import store.Store;
 import user.Subscriber;
 import user.User;
@@ -79,8 +81,8 @@ public class TradingSystemBuilder {
 
     public TradingSystem build() throws InvalidActionException {
 
-        paymentSystem = (paymentSystem == null) ? new PaymentSystem() : paymentSystem;
-        deliverySystem = (deliverySystem == null) ? new DeliverySystem() : deliverySystem;
+        paymentSystem = (paymentSystem == null) ? new PaymentSystemBasicImpl() : paymentSystem;
+        deliverySystem = (deliverySystem == null) ? new DeliverySystemBasicImpl() : deliverySystem;
         auth = (auth == null) ? new UserAuthentication(new ConcurrentHashMap<>()) : auth;
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
         connections = (connections == null) ? new ConcurrentHashMap<>() : connections;

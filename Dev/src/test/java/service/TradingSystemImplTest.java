@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
+import tradingSystem.TradingSystemImpl;
 import user.*;
 
 import java.io.IOException;
@@ -21,9 +22,9 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TradingSystemServiceImplTest {
+class TradingSystemImplTest {
 
-    private TradingSystemServiceImpl service;
+    private TradingSystemImpl service;
 
     @Mock private TradingSystem tradingSystem;
     @Mock private Map<Store, Basket> cart;
@@ -50,7 +51,7 @@ class TradingSystemServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new TradingSystemServiceImpl(tradingSystem);
+        service = new TradingSystemImpl(tradingSystem);
     }
 
     @Test
@@ -366,8 +367,8 @@ class TradingSystemServiceImplTest {
 
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
-
-        service.getEventLog(connectionId);
+        Collection<String> log = new LinkedList<>();
+        service.getEventLog(connectionId, log);
 
         verify(subscriber).getEventLog(any());
     }
