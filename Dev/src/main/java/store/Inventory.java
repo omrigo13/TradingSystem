@@ -206,10 +206,13 @@ public class Inventory {
      * @param itemId- id of the wanted item
      * @param amount - the new amount fo the item
      * @exception WrongAmountException when the amount is illegal*/
-    public synchronized void changeQuantity(int itemId, int amount) throws ItemException {
+    public void changeQuantity(int itemId, int amount) throws ItemException {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
-        items.replace(searchItem(itemId), amount);
+        synchronized (this.items)
+        {
+            items.replace(searchItem(itemId), amount);
+        }
     }
 
     /**
@@ -241,9 +244,12 @@ public class Inventory {
      *  This method removes an item
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
-    public synchronized Item removeItem(int itemID) throws ItemException {
-        Item item=searchItem(itemID);
-       items.remove(item);
+    public Item removeItem(int itemID) throws ItemException {
+       Item item=searchItem(itemID);
+       synchronized (this.items)
+       {
+           items.remove(item);
+       }
        return item;
 
     }
@@ -271,24 +277,26 @@ public class Inventory {
         return itemsDisplay;
     }
 
-    public synchronized void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
-        for ( Item item: items.keySet()) {
-            if(item.getId()==itemID)
-            {
-                if(newSubCategory != null && !newSubCategory.trim().isEmpty())
-                    item.setSubCategory(newSubCategory);
+    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
+        synchronized (this.items)
+        {
+            for ( Item item: items.keySet()) {
+                if(item.getId()==itemID)
+                {
+                    if(newSubCategory != null && !newSubCategory.trim().isEmpty())
+                        item.setSubCategory(newSubCategory);
 
-                if(newQuantity !=null)
-                    changeQuantity(itemID,newQuantity);
+                    if(newQuantity !=null)
+                        changeQuantity(itemID,newQuantity);
 
-                if(newPrice != null)
-                    item.setPrice(newPrice);
+                    if(newPrice != null)
+                        item.setPrice(newPrice);
 
-                return;
+                    return;
+                }
             }
+            throw new ItemNotFoundException("no item in inventory matching item id");
         }
-        throw new ItemNotFoundException("no item in inventory matching item id");
-
     }
 
     public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
