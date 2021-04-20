@@ -4,6 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
+import tradingSystem.TradingSystemImpl;
 import tradingSystem.TradingSystem;
 import tradingSystem.TradingSystemBuilder;
 import user.AdminPermission;
@@ -34,7 +35,8 @@ public class Driver {
         TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
                 .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
         map.clear();
-        TradingSystemServiceImpl real = new TradingSystemServiceImpl(build);
+        TradingSystemImpl trade = new TradingSystemImpl(build);
+        TradingSystemServiceImpl real = new TradingSystemServiceImpl(trade);
         proxy.setReal(real);
         return proxy;
     }
