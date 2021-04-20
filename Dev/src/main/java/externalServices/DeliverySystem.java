@@ -1,7 +1,5 @@
 package externalServices;
 
-public class DeliverySystem {
-    public boolean deliver(DeliveryData data) {
-        return true;
-    }
+public interface DeliverySystem {
+    boolean deliver(DeliveryData data);
 }
