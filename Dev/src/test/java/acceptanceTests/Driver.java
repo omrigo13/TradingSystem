@@ -24,17 +24,15 @@ public class Driver {
     public static TradingSystemService getService(String userName, String password) throws InvalidActionException {
         ServiceProxy proxy = new ServiceProxy();
         // uncomment when real application is ready
-        ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
-        map.put(userName, password);
-        UserAuthentication userAuthentication = new UserAuthentication(map);
+        UserAuthentication auth = new UserAuthentication();
+        auth.register(userName, password);
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
         Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
         TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
-        map.clear();
+                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(auth).build();
         TradingSystemImpl trade = new TradingSystemImpl(build);
         TradingSystemServiceImpl real = new TradingSystemServiceImpl(trade);
         proxy.setReal(real);

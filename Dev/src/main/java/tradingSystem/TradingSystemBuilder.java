@@ -83,7 +83,7 @@ public class TradingSystemBuilder {
 
         paymentSystem = (paymentSystem == null) ? new PaymentSystemBasicImpl() : paymentSystem;
         deliverySystem = (deliverySystem == null) ? new DeliverySystemBasicImpl() : deliverySystem;
-        auth = (auth == null) ? new UserAuthentication(new ConcurrentHashMap<>()) : auth;
+        auth = (auth == null) ? new UserAuthentication() : auth;
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
         connections = (connections == null) ? new ConcurrentHashMap<>() : connections;
         stores = (stores == null) ? new ConcurrentHashMap<>() : stores;

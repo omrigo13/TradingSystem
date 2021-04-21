@@ -26,7 +26,7 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Mock private Collection<String> purchasesDetails;
+    @Mock private Collection<String> purchasesHistory;
 
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
@@ -45,7 +45,7 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
 
         reset(store);
         reset(target);
