@@ -21,8 +21,10 @@ public class Store {
     private String discountPolicy;     // TODO: should check how to implement
     //private String founder;
     private boolean isActive;
-    private Inventory inventory;
+    private Inventory inventory = new Inventory();
     private Collection<String> purchases = new LinkedList<>();
+
+    public Store() {}
 
     /**
      * This method opens a new store and create its inventory
@@ -47,7 +49,6 @@ public class Store {
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
 //        this.inventory = new Inventory(tradingSystem);
-        this.inventory = new Inventory();
         this.isActive = true;
     }
 

@@ -28,8 +28,8 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Spy private Collection<String> purchasesDetails = new LinkedList<>();
-    @Spy private Item item = new Item(0, "cheese", 7.0, "cat1", "sub1", 3.0);
+    @Spy private final Collection<String> purchasesDetails = new LinkedList<>();
+    @Spy private Item item;
     @Mock private Item item2;
 
     private final Store store = mock(Store.class);
