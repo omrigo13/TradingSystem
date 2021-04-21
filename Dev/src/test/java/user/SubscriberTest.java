@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import review.Review;
 import store.Item;
@@ -27,9 +28,9 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Mock private Collection<String> purchasesDetails;
-    @Mock private Item item, item2;
-    @Mock private Review review;
+    @Spy private Collection<String> purchasesDetails = new LinkedList<>();
+    @Spy private Item item = new Item(0, "cheese", 7.0, "cat1", "sub1", 3.0);
+    @Mock private Item item2;
 
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
@@ -48,7 +49,6 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        purchasesDetails = new LinkedList<>();
         subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
 
         reset(store);
@@ -289,7 +289,6 @@ class SubscriberTest {
     void writeOpinionOnProduct() throws ItemException, WrongReviewException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
-
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
 
@@ -301,19 +300,14 @@ class SubscriberTest {
 
         when(store.searchItemById(0)).thenReturn(item);
         subscriber.writeOpinionOnProduct(store, item.getId(), "good product");
-        Collection<Review> reviews = new LinkedList<>();            //TODO how can i really check the reviews size of the item (should be 1)
-        reviews.add(review);
-        when(item.getReviews()).thenReturn(reviews);
         assertEquals(1, item.getReviews().size());
     }
 
     @Test
     void getPurchaseHistory() {
-        Collection<String> history = new LinkedList<>();
-        history.add("milk");
-        history.add("cheese");
         assertEquals(0, subscriber.getPurchaseHistory().size());
-        when(subscriber.getPurchaseHistory()).thenReturn(history);
+        purchasesDetails.add("milk");
+        purchasesDetails.add("cheese");
         assertEquals(2, subscriber.getPurchaseHistory().size());
         assertTrue(subscriber.getPurchaseHistory().contains("milk"));
         assertTrue(subscriber.getPurchaseHistory().contains("cheese"));
@@ -321,10 +315,9 @@ class SubscriberTest {
 
     @Test
     void getSalesHistoryByStore() throws NoPermissionException {
-        Collection<String> history = new LinkedList<>();
-        history.add("milk");
-        history.add("cheese");
-        when(store.getPurchaseHistory()).thenReturn(history);
+        purchasesDetails.add("milk");
+        purchasesDetails.add("cheese");
+        when(store.getPurchaseHistory()).thenReturn(purchasesDetails);
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);

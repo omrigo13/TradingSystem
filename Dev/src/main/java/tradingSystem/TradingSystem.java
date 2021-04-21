@@ -110,7 +110,7 @@ public class TradingSystem {
         int id = storeIdCounter.getAndIncrement();
 
         // create the new store
-        Store store = new Store(this, id, storeName, "description");
+        Store store = new Store(id, storeName, "description");
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);

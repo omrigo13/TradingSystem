@@ -21,7 +21,7 @@ public class Inventory {
     private final Map<Item, Integer> items;
     private AtomicInteger id = new AtomicInteger(0);
 
-    public Inventory(TradingSystem tradingSystem) {
+    public Inventory() {
 //        this.tradingSystem = tradingSystem;
         this.items = Collections.synchronizedMap(new ConcurrentHashMap<>());
     }
