@@ -11,8 +11,7 @@ import store.Item;
 import store.Store;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
