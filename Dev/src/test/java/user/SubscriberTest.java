@@ -50,6 +50,7 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
+        purchasesDetails = new LinkedList<>();
         subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
 
         // set target's private fields so that the synchronized code lines would work
@@ -295,10 +296,9 @@ class SubscriberTest {
         history.add("milk");
         history.add("cheese");
         when(store.getPurchaseHistory()).thenReturn(history);
-        when(subscriber.havePermission(managerPermission)).thenReturn(false);
-        when(subscriber.havePermission(adminPermission)).thenReturn(false);
+        when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
-        when(subscriber.havePermission(managerPermission)).thenReturn(true);
+        when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
         assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
