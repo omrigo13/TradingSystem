@@ -28,6 +28,7 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<String> purchasesHistory;
     @Spy private final Collection<String> purchasesDetails = new LinkedList<>();
     @Spy private Item item;
     @Mock private Item item2;
@@ -49,7 +50,7 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
 
         reset(store);
         reset(target);
