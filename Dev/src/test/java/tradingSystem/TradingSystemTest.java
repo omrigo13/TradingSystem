@@ -133,7 +133,7 @@ class TradingSystemTest {
 
         tradingSystem.newStore(subscriber, "Toy Story");
         verify(stores).put(anyInt(), storeCaptor.capture());
-        verify(subscriber).addOwnerPermissions(storeCaptor.getValue());
+        verify(subscriber).addOwnerPermission(storeCaptor.getValue());
     }
 
     @Test

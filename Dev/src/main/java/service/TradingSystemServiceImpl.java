@@ -4,19 +4,14 @@ import Logger.EventLog;
 import exceptions.InvalidActionException;
 import org.apache.log4j.PropertyConfigurator;
 import tradingSystem.TradingSystemImpl;
-import user.AdminPermission;
-import user.Subscriber;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedList;
 
-public class TradingSystemServiceImpl implements TradingSystemService{
+public class TradingSystemServiceImpl implements TradingSystemService {
 
-    private TradingSystemImpl tradingSystemImpl;
-    private EventLog eventLog;
+    private final TradingSystemImpl tradingSystemImpl;
+    private final EventLog eventLog;
 
     public TradingSystemServiceImpl(TradingSystemImpl tradingSystemImpl) {
         eventLog = new EventLog();
@@ -26,7 +21,7 @@ public class TradingSystemServiceImpl implements TradingSystemService{
     }
 
     @Override
-    public String connect() throws InvalidActionException {
+    public String connect() {
         eventLog.writeToLogger("New connection request");
         return tradingSystemImpl.connect();
     }
@@ -177,13 +172,13 @@ public class TradingSystemServiceImpl implements TradingSystemService{
     }
 
     @Override
-    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
+    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) {
         eventLog.writeToLogger("allow manager to edit policies");
         tradingSystemImpl.allowManagerToEditPolicies(userID, storeId, managerUserName);
     }
 
     @Override
-    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
+    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) {
         eventLog.writeToLogger("disable manager to edit policies");
         tradingSystemImpl.disableManagerFromEditPolicies(userID, storeId, managerUserName);
     }
@@ -207,6 +202,13 @@ public class TradingSystemServiceImpl implements TradingSystemService{
     }
 
     @Override
+    public boolean removeOwner(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
+
+        eventLog.writeToLogger("User remove " + targetUserName + " from store owner position for store id: " + storeId);
+        return tradingSystemImpl.removeOwner(connectionId, storeId, targetUserName);
+    }
+
+    @Override
     public Collection<String> showStaffInfo(String userID, String storeId) throws InvalidActionException {
         eventLog.writeToLogger("Show staff info of store: " + storeId);
         return tradingSystemImpl.showStaffInfo(userID, storeId);
@@ -226,7 +228,7 @@ public class TradingSystemServiceImpl implements TradingSystemService{
     }
 
     @Override
-    public Collection<String> getErrorLog(String userID) throws InvalidActionException {
+    public Collection<String> getErrorLog(String userID) {
         eventLog.writeToLogger("Get error log");
         return tradingSystemImpl.getErrorLog(userID);
     }

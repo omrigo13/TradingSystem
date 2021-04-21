@@ -186,6 +186,13 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
+    public boolean removeOwner(String userID, String storeId, String targetUserName) throws InvalidActionException {
+        if(real != null)
+            return real.removeOwner(userID, storeId, targetUserName);
+        return false;
+    }
+
+    @Override
     public Collection<String> showStaffInfo(String userID, String storeId) throws InvalidActionException {
         if(real != null)
             return real.showStaffInfo(userID, storeId);

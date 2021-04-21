@@ -268,7 +268,7 @@ class TradingSystemImplTest {
         when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.appointStoreOwner(connectionId, userName, storeId);
-        verify(subscriber).addOwnerPermissions(subscriber1, store);
+        verify(subscriber).addOwnerPermission(subscriber1, store);
     }
 
     @Test

@@ -154,6 +154,11 @@ public interface TradingSystemService {
     //returns true if manager removed, else returns false.
     boolean removeManager(String userID, String storeId, String managerUserName) throws InvalidActionException;
 
+    /* removes a user from a store owner role.
+     * pre-condition: the invoker is an owner of the store and is the assignor of the owner */
+    //returns true if manager removed, else returns false.
+    boolean removeOwner(String connId, String storeId, String targetUserName) throws InvalidActionException;
+
     /* shows store staff information and their permissions in the store
     precondition: invoker has the permissions to get the info. */
     //every string element in the collection represents one staff member username and his permissions.
