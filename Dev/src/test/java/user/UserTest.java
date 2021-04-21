@@ -29,25 +29,20 @@ class UserTest {
 
     private User user;
 
-    private ConcurrentHashMap<Item, Integer> items;
+    private ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
 
     @Spy private Store store;
     @Spy private Item item;
-    @Spy private Basket basket;
+    @Spy private Basket basket = new Basket(store, items);
     @Spy private ConcurrentHashMap<Store, Basket> baskets;
 
-    UserTest() throws ItemException {
-        items = new ConcurrentHashMap<>();
-        store = new Store(0, "eBay", "desc");
-        item = new Item(0, "cheese", 7.0, "cat1", "sub1", 5);
-        basket = new Basket(store, items);
-    }
+    @Mock private PaymentSystem paymentSystem;
+    @Mock private DeliverySystem deliverySystem;
 
     @BeforeEach
     void setUp() throws ItemException {
         user = new User(baskets);
-        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
-        item = store.searchItemById(0);
+        basket = new Basket(store, items);
     }
 
     @Test
@@ -86,26 +81,57 @@ class UserTest {
 
     @Test
     void purchaseCart() throws Exception {
-        PaymentSystem paymentSystem = mock(PaymentSystem.class);
-        DeliverySystem deliverySystem = mock(DeliverySystem.class);
-
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        item = store.searchItemById(0);
         baskets.put(store, basket);
 
-        // trying to purchase more quantity than available
-        items.put(item, 10);
-        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
-
-        // trying to purchase negative quantity
-        basket.setQuantity(item, -2);
-        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
-
-        basket.setQuantity(item, 3);
+        items.put(item, 3);
         assertEquals(1, user.getCart().size());
         assertEquals(5, store.getItems().get(item));
         user.purchaseCart(paymentSystem, deliverySystem);
-        assertTrue(store.getPurchaseHistory().toString().contains("21.0")); // checks that the purchase value correct
-        assertTrue(store.getPurchaseHistory().toString().contains("cheese")); // checks that the purchase added to store history
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
         assertEquals(2, store.getItems().get(item)); // checks that the inventory quantity updated
+    }
+
+    @Test
+    void purchaseCartNegativeQuantity() throws ItemException {
+        // trying to purchase negative quantity
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        baskets.put(store, basket);
+        items.put(item, -2);
+
+        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+    }
+
+    @Test
+    void purchaseCartBigQuantityThanAvailable() throws ItemException {
+        // trying to purchase more quantity than available
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        baskets.put(store, basket);
+        items.put(item, 10);
+
+        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+    }
+
+    @Test
+    void purchaseCartCorrectValueCalculation() throws ItemException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        baskets.put(store, basket);
+        item = store.searchItemById(0);
+        items.put(item, 3);
+
+        user.purchaseCart(paymentSystem, deliverySystem);
+        assertTrue(store.getPurchaseHistory().toString().contains("21.0")); // checks that the purchase value correct
+    }
+
+    @Test
+    void purchaseCartPurchaseHistoryUpdated() throws ItemException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        baskets.put(store, basket);
+        item = store.searchItemById(0);
+        items.put(item, 3);
+
+        user.purchaseCart(paymentSystem, deliverySystem);
+        assertTrue(store.getPurchaseHistory().toString().contains("cheese")); // checks that the purchase added to store history
     }
 }

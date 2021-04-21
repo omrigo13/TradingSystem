@@ -286,21 +286,34 @@ class SubscriberTest {
     }
 
     @Test
-    void writeOpinionOnProduct() throws ItemException, WrongReviewException {
+    void writeOpinionOnProductGoodDetails() throws ItemException, WrongReviewException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
+
+        when(itemsPurchased.get(store)).thenReturn(items);
+        when(store.searchItemById(0)).thenReturn(item);
+
+        assertEquals(0, item.getReviews().size());
+        subscriber.writeOpinionOnProduct(store, item.getId(), "good product");
+        assertEquals(1, item.getReviews().size());
+    }
+
+    @Test
+    void writeOpnionOnProductBadReviewDetails() {
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
+    }
 
+    @Test
+    void writeOpnionOnProductNotPurchasedItem() throws ItemException {
+        Collection<Item> items = new LinkedList<>();
+        items.add(item);
         when(store.searchItemById(0)).thenReturn(item2);
         when(itemsPurchased.get(store)).thenReturn(items);
+
         assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getId(), "good product"));
         assertEquals(0, item.getReviews().size());
         assertEquals(0, item2.getReviews().size());
-
-        when(store.searchItemById(0)).thenReturn(item);
-        subscriber.writeOpinionOnProduct(store, item.getId(), "good product");
-        assertEquals(1, item.getReviews().size());
     }
 
     @Test
@@ -318,11 +331,16 @@ class SubscriberTest {
         purchasesDetails.add("milk");
         purchasesDetails.add("cheese");
         when(store.getPurchaseHistory()).thenReturn(purchasesDetails);
-        when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
-        assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
+
         assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
+    }
+
+    @Test
+    void getSalesHistoryByStoreNoPremission() {
+        when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
     }
 }
