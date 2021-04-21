@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import review.Review;
 import store.Item;
 import store.Store;
 
@@ -28,8 +27,7 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Mock private Collection<String> purchasesHistory;
-    @Spy private final Collection<String> purchasesDetails = new LinkedList<>();
+    @Spy private final Collection<String> purchasesHistory = new LinkedList<>();
     @Spy private Item item;
     @Mock private Item item2;
 
@@ -320,8 +318,8 @@ class SubscriberTest {
     @Test
     void getPurchaseHistory() {
         assertEquals(0, subscriber.getPurchaseHistory().size());
-        purchasesDetails.add("milk");
-        purchasesDetails.add("cheese");
+        purchasesHistory.add("milk");
+        purchasesHistory.add("cheese");
         assertEquals(2, subscriber.getPurchaseHistory().size());
         assertTrue(subscriber.getPurchaseHistory().contains("milk"));
         assertTrue(subscriber.getPurchaseHistory().contains("cheese"));
@@ -329,9 +327,9 @@ class SubscriberTest {
 
     @Test
     void getSalesHistoryByStore() throws NoPermissionException {
-        purchasesDetails.add("milk");
-        purchasesDetails.add("cheese");
-        when(store.getPurchaseHistory()).thenReturn(purchasesDetails);
+        purchasesHistory.add("milk");
+        purchasesHistory.add("cheese");
+        when(store.getPurchaseHistory()).thenReturn(purchasesHistory);
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
 
         assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
