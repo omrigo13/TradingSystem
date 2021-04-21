@@ -280,10 +280,38 @@ class AcceptanceTestsV1 {
         assertTrue(str.toString().contains("baguette"));
     }
 
+    void purchaseItemsUseCase() throws InvalidActionException {
+        service.addItemToBasket(subs1Id, storeId1, productId1, 10);
+        service.addItemToBasket(subs1Id, storeId2, productId4, 4);
+        service.addItemToBasket(subs2Id, storeId1, productId2, 2);
+    }
+
     @Test
     void purchaseCart() throws Exception{
-        assertTrue(1==0); // TODO not yet implemented
+        // TODO not yet implemented
+        PaymentSystemMock paymentSystemMock;
+//        paymentSystemMock.setSucceed(true); //valid purchase
+        purchaseItemsUseCase(); //run use case
+        service.purchaseCart(subs1Id);
+//        assertEquals(101, driv);
+
+        service.purchaseCart(subs2Id);
     }
+
+    @Test
+    void purchaseCartBadDetails() throws Exception{
+        PaymentSystemMock paymentSystemMock;
+//        paymentSystemMock.setSucceed(false); //invalid purchase
+        purchaseItemsUseCase(); //run use case
+        Exception e = assertThrows(WrongAmountException.class, () -> service.purchaseCart(subs1Id));
+        assertEquals("there is not enough from the item", e.getMessage());
+//            throw new WrongAmountException("there is not enough from the item");
+        assertFalse(paymentSystemMock.getPayments().contains(subs1UserName));
+
+        service.purchaseCart(subs2Id);
+    }
+
+
 
     @Test
     void getPurchaseHistory() throws Exception{
