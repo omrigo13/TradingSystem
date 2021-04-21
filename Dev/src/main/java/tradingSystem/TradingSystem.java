@@ -113,7 +113,7 @@ public class TradingSystem {
         Store store = new Store(this, id, storeName, "description");
         stores.put(id, store);
 
-        subscriber.addOwnerPermissions(store);
+        subscriber.addOwnerPermission(store);
 
         return id;
     }

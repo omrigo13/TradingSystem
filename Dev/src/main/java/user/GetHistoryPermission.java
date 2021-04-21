@@ -13,13 +13,13 @@ public class GetHistoryPermission extends StorePermission
     public static GetHistoryPermission getInstance(Store store) {
 
         GetHistoryPermission key = new GetHistoryPermission(store);
-        return (GetHistoryPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
+        return (GetHistoryPermission)pool.computeIfAbsent(key, WeakReference::new).get();
     }
 
     @Override
     public String toString() {
         return "GetHistoryPermission{" +
-                "store=" + store.getName() +
+                "store=" + (store == null ? null : store.getName()) +
                 '}';
     }
 }

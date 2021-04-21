@@ -143,6 +143,11 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
+    public boolean removeOwner(String connId, String storeId, String targetUserName) throws InvalidActionException {
+        return false;
+    }
+
+    @Override
     public Collection<String> showStaffInfo(String userID, String storeId) throws InvalidActionException {
         return null;
     }

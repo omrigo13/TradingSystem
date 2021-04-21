@@ -14,16 +14,20 @@ public class AppointerPermission extends StorePermission
         this.target = target;
     }
 
+    public Subscriber getTarget() {
+        return target;
+    }
+
     public static AppointerPermission getInstance(Subscriber target, Store store) {
 
         AppointerPermission key = new AppointerPermission(target, store);
-        return (AppointerPermission)pool.computeIfAbsent(key, k -> new WeakReference<>(key)).get();
+        return (AppointerPermission)pool.computeIfAbsent(key, WeakReference::new).get();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o || (o != null && getClass() == o.getClass())) return true;
-        if (!super.equals(o)) return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass() || !super.equals(o)) return false;
         AppointerPermission that = (AppointerPermission) o;
         return Objects.equals(target, that.target);
     }
@@ -36,8 +40,8 @@ public class AppointerPermission extends StorePermission
     @Override
     public String toString() {
         return "AppointerPermission{" +
-                "store=" + store.getName() +
-                "target=" + target.getUserName() +
+                "store=" + (store == null ? null : store.getName()) +
+                " target=" + (target == null ? null : target.getUserName()) +
                 '}';
     }
 }
