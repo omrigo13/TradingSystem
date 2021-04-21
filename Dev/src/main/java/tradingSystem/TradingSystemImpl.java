@@ -15,15 +15,6 @@ public class TradingSystemImpl {
     public TradingSystemImpl(TradingSystem tradingSystem) {
 
         this.tradingSystem = tradingSystem;
-
-        // TODO this code is a workaround so that admin actions can be tested
-        try {
-            tradingSystem.register("Admin1", "ad123");
-            Subscriber admin = tradingSystem.getSubscriberByUserName("Admin1");
-            admin.addPermission(AdminPermission.getInstance());
-        } catch (Exception e){
-            System.out.println(e.getMessage());
-        }
     }
 
     public String connect() {
