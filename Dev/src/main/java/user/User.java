@@ -76,6 +76,7 @@ public class User {
             entry.getKey().addPurchase(entry.getValue());
 
         addCartToPurchases(storePurchaseDetails);
+        baskets.clear();
     }
 
     private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException {

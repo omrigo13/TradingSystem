@@ -21,19 +21,20 @@ public class Store {
     private String discountPolicy;     // TODO: should check how to implement
     //private String founder;
     private boolean isActive;
-    private Inventory inventory;
+    private Inventory inventory = new Inventory();
     private Collection<String> purchases = new LinkedList<>();
+
+    public Store() {}
 
     /**
      * This method opens a new store and create its inventory
      *
-     * @param tradingSystem
      * @param name        - the name of the new store
      * @param description - the price of the new store
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(TradingSystem tradingSystem, int id, String name, String description) throws ItemException {
+    public Store(int id, String name, String description) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -47,7 +48,7 @@ public class Store {
         this.description = description;
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
-        this.inventory = new Inventory(tradingSystem);
+//        this.inventory = new Inventory(tradingSystem);
         this.isActive = true;
     }
 

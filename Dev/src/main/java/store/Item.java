@@ -19,6 +19,8 @@ public class Item {
     private boolean isLocked = false;
     private Collection<Review> reviews = new LinkedList<>();
 
+    public Item() {}
+
     public Item(int id, String name, double price, String category, String subCategory, double rating) {
         this.id = id;
         this.name = name;

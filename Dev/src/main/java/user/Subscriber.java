@@ -54,7 +54,6 @@ public class Subscriber extends User {
             cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
         purchaseHistory.add(cartPurchase);
 
-        baskets.clear();
     }
 
     public void addPermission(Permission permission) {
