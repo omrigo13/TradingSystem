@@ -2,6 +2,8 @@ package acceptanceTests;
 
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
+import externalServices.DeliverySystem;
+import externalServices.PaymentSystem;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
 import tradingSystem.TradingSystemImpl;
@@ -14,6 +16,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Driver {
+
+    private static PaymentSystem paymentSystem = new PaymentSystemMock();
+    private static DeliverySystem deliverySystem = new DeliverySystemMock();
+
+    public static PaymentSystem getPaymentSystem() {
+        return paymentSystem;
+    }
+
+    public static DeliverySystem getDeliverySystem() {
+        return deliverySystem;
+    }
 
     /**
      *
@@ -32,7 +45,7 @@ public class Driver {
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
         TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(auth).setPaymentSystem(new PaymentSystemMock()).setDeliverySystem(new DeliverySystemMock()).build();
+                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(auth).setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
         TradingSystemImpl trade = new TradingSystemImpl(build);
         TradingSystemServiceImpl real = new TradingSystemServiceImpl(trade);
         proxy.setReal(real);

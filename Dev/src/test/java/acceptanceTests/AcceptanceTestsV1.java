@@ -1,10 +1,13 @@
 package acceptanceTests;
 
 import exceptions.*;
+import externalServices.DeliverySystem;
+import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.TradingSystemService;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -19,7 +22,8 @@ class AcceptanceTestsV1 {
     private String admin1UserName="Admin1", store1FounderUserName="store1FounderUserName", store2FounderUserName="store2FounderUserName",
             store1Manager1UserName="Store1Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
-
+    private PaymentSystemMock paymentSystem = (PaymentSystemMock) Driver.getPaymentSystem();
+    private DeliverySystemMock deliverySystem = (DeliverySystemMock) Driver.getDeliverySystem();
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -89,10 +93,14 @@ class AcceptanceTestsV1 {
         assertTrue(!(s.equals(s2)));
     }
 
+    void registerUserCase() throws Exception {
+        service.register("LidorRubi", "123456");
+        service.register("asdasd", "123456");
+    }
+
     @Test
     void registerGoodDetails() throws Exception{
-        assertDoesNotThrow(() -> service.register("LidorRubi", "123456"));
-        assertDoesNotThrow(() -> service.register("asdasd", "123456"));
+        registerUserCase();
     }
 
 //    @Test
@@ -103,19 +111,22 @@ class AcceptanceTestsV1 {
 
     @Test
     void registerSubscriberAlreadyExist() throws Exception{
-        service.register("AAA",  "123");
-        assertThrows(SubscriberAlreadyExistsException.class, () -> service.register("AAA",  "123"));
+//        service.register("AAA",  "123");
+//        assertThrows(SubscriberAlreadyExistsException.class, () -> service.register("AAA",  "123"));
+        registerGoodDetails();
+        assertThrows(SubscriberAlreadyExistsException.class, () -> registerGoodDetails());
     }
 
     @Test
     void validlogin() throws Exception{
+        registerUserCase();
+
         String id1 = service.connect();
         String id2 = service.connect();
-        service.register("tempUser1", "1234");
-        service.register("tempUser2", "1234");
 
-        assertDoesNotThrow(() -> service.login(id1, "tempUser1", "1234"));
-        assertDoesNotThrow(() -> service.login(id2, "tempUser2", "1234"));
+        service.login(id1, "LidorRubi", "123456");
+        service.login(id2, "asdasd", "123456");
+
     }
 
 //    @Test
@@ -131,17 +142,16 @@ class AcceptanceTestsV1 {
     @Test
     void subscriberNotExistLogin() throws Exception{
         String id1 = service.connect();
-        String id2 = service.connect();
-        assertThrows(SubscriberDoesNotExistException.class, () -> service.login(id2, "user999", "1234"));
+        assertThrows(SubscriberDoesNotExistException.class, () -> service.login(id1, "user999", "1234"));
     }
 
     @Test
     void wrongPasswordLogin() throws Exception{
         String id1 = service.connect();
         String id2 = service.connect();
-        service.register("tempUser1", "1234");
+        registerUserCase();
 
-        assertThrows(WrongPasswordException.class, () -> service.login(id2, "tempUser1", "1"));
+        assertThrows(WrongPasswordException.class, () -> service.login(id2, "asdasd", "1"));
     }
 
 
@@ -169,7 +179,6 @@ class AcceptanceTestsV1 {
         assertTrue(!service.getItems("milk", null, null, null, null, null, null, null).isEmpty());
         assertTrue(service.getItems("milk", null, null, null, null, null, null, null).size() == 2);
         assertTrue(service.getItems("milk", null, null, null, null, null, null, null).toString().contains("milk"));
-
 
     }
 
@@ -280,62 +289,73 @@ class AcceptanceTestsV1 {
         assertTrue(str.toString().contains("baguette"));
     }
 
-    void purchaseItemsUseCase() throws InvalidActionException {
+    void addToBasketUseCase() throws Exception {
         service.addItemToBasket(subs1Id, storeId1, productId1, 10);
         service.addItemToBasket(subs1Id, storeId2, productId4, 4);
         service.addItemToBasket(subs2Id, storeId1, productId2, 2);
+        //user 1 bought p.1 (milk), p.4 (baguette)
+        //user 2 bought p.2 (cheese)
     }
 
     @Test
-    void purchaseCart() throws Exception{
-        // TODO not yet implemented
-        PaymentSystemMock paymentSystemMock;
-//        paymentSystemMock.setSucceed(true); //valid purchase
-        purchaseItemsUseCase(); //run use case
+    void validPurchaseCart() throws Exception{
+        addToBasketUseCase(); //run use case
+        assertFalse(paymentSystem.getPayments().keySet().contains(subs1UserName));
+        assertFalse(deliverySystem.getDeliveries().keySet().contains(subs1UserName));
+
         service.purchaseCart(subs1Id);
-//        assertEquals(101, driv);
+        assertTrue(paymentSystem.getPayments().keySet().contains(subs1UserName));
+        assertTrue(paymentSystem.getPayments().get(subs1UserName).get(0) == 101);
+        assertTrue(deliverySystem.getDeliveries().keySet().contains(subs1UserName));
 
+        assertFalse(deliverySystem.getDeliveries().keySet().contains(subs2UserName));
         service.purchaseCart(subs2Id);
+        assertTrue(paymentSystem.getPayments().keySet().contains(subs2UserName));
+        assertTrue(paymentSystem.getPayments().get(subs2UserName).get(0) == 6);
+        assertTrue(deliverySystem.getDeliveries().keySet().contains(subs2UserName));
+
     }
 
     @Test
-    void purchaseCartBadDetails() throws Exception{
-        PaymentSystemMock paymentSystemMock;
+    void purchaseCartWrongAmount() throws Exception{
 //        paymentSystemMock.setSucceed(false); //invalid purchase
-        purchaseItemsUseCase(); //run use case
-        Exception e = assertThrows(WrongAmountException.class, () -> service.purchaseCart(subs1Id));
+        addToBasketUseCase(); //run use case
+        service.purchaseCart(subs1Id);
+        service.addItemToBasket(subs3Id, storeId1, productId1, 1);
+        Exception e = assertThrows(WrongAmountException.class, () -> service.purchaseCart(subs3Id)); //amount in store is currently 0, thus cannot make purchase
         assertEquals("there is not enough from the item", e.getMessage());
-//            throw new WrongAmountException("there is not enough from the item");
-        assertFalse(paymentSystemMock.getPayments().contains(subs1UserName));
-
-        service.purchaseCart(subs2Id);
+        assertFalse(paymentSystem.getPayments().keySet().contains(subs3UserName));
+        assertFalse(deliverySystem.getDeliveries().keySet().contains(subs3UserName));
     }
 
 
 
     @Test
     void getPurchaseHistory() throws Exception{
+        addToBasketUseCase();
+
+        //user 1 bought p.1 (milk), p.4 (baguette)
+        //user 2 bought p.2 (cheese)
+        service.purchaseCart(subs1Id);
+        assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("milk"));
+        assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("baguette"));
+        service.addItemToBasket(subs1Id, storeId2, productId2, 1);
+        service.purchaseCart(subs1Id);
+        Collection<String> str = service.getPurchaseHistory(subs1Id);
+        assertTrue(str.size() == 2);
+        assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("cheese"));
+
+    }
+
+    void purchaseUserCase2() throws Exception {
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
-        service.purchaseCart(store1Manager1Id);
-        Collection<String> str = service.getPurchaseHistory(store1Manager1Id);
-        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("milk"));
-        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("cheese"));
-        service.addItemToBasket(store1Manager1Id, storeId2, productId4, 1);
-        service.purchaseCart(store1Manager1Id);
-        str = service.getPurchaseHistory(store1Manager1Id);
-        assertTrue(str.size() == 2);
-
-        // TODO this is wrong - you shouldn't assume the returned Collection is a List
-        assertTrue(((List)str).get(1).toString().contains("baguette"));
     }
 
     @Test
     void validWriteOpinionOnProduct() throws Exception{
-        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
-        service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
-        service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
+        purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         assertDoesNotThrow(() -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "desc example1"));
         assertDoesNotThrow(() -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "desc example2"));
@@ -345,18 +365,14 @@ class AcceptanceTestsV1 {
 
     @Test
     void writeOpinionOnProductNotPurchased() throws Exception {
-        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
-        service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
-        service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
+        purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
     }
 
     @Test
     void writeOpinionOnProductNotExist() throws Exception {
-        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
-        service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
-        service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
+        purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         assertThrows(ItemNotFoundException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
         assertThrows(InvalidStoreIdException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, "99", productId1, "opinion1")); //no such storeId "abc"
@@ -364,9 +380,7 @@ class AcceptanceTestsV1 {
 
     @Test
     void writeOpinionOnProductWrongDesc() throws Exception {
-        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
-        service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
-        service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
+        purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
 
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, null)); //null opinion
@@ -510,11 +524,14 @@ class AcceptanceTestsV1 {
         assertThrows(NotLoggedInException.class, () -> service.deleteProductFromStore(guest1Id, storeId1, productId1));
     }
 
-    @Test
-    void validUpdateProductDetails() throws Exception{
+    void updateProductDetailsUseCase() throws InvalidActionException {
         service.updateProductDetails(founderStore1Id, storeId1, productId1, null,25, null);
         service.updateProductDetails(founderStore1Id, storeId1, productId1, "newSub1",null, null);
         service.updateProductDetails(founderStore1Id, storeId1, productId1, null,null, 11.5);
+    }
+    @Test
+    void validUpdateProductDetails() throws Exception{
+        updateProductDetailsUseCase();
         assertTrue(service.getItems(null, null, null, "newSub1", null, null ,null, null).toString().contains("milk"));
         assertTrue(service.getItems(null, "milk", null, null, null, null ,null, null).toString().contains("11.5"));
     }
@@ -536,6 +553,7 @@ class AcceptanceTestsV1 {
         service.appointStoreOwner(founderStore1Id, subs1UserName, storeId1);
         service.appointStoreOwner(founderStore2Id, store1Manager1UserName, storeId2);
         service.appointStoreOwner(founderStore2Id, store1FounderUserName, storeId2);
+
     }
 
     @Test
@@ -593,7 +611,7 @@ class AcceptanceTestsV1 {
     @Test
     void validAllowManagerToEditPolicies() throws Exception{
         //TODO: when requirements of policies will be ready, expand this test.
-        assertDoesNotThrow(() -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName));
+        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
     @Test
@@ -612,26 +630,31 @@ class AcceptanceTestsV1 {
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
-    @Test
-    void validAllowManagerToGetHistory() throws Exception{
+    void addItemToBasketUseCase3() throws Exception {
         //2 purchases from store1:
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
         service.addItemToBasket(subs1Id, storeId1, productId2, 1);
         //1 purchase from store2:
         service.addItemToBasket(subs1Id, storeId2, productId3, 1);
-        assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
-        assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
-        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 2); // TODO this test is wrong
+    }
+
+    @Test
+    void validAllowManagerToGetHistory() throws Exception{
+        addItemToBasketUseCase3();
+        service.purchaseCart(subs1Id);
+        assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 1);
+        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).toString().contains("milk"));
+        assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).toString().contains("cheese"));
+
     }
 
 
     @Test
     void wrongAllowManagerToGetHistory() throws Exception{
-        //2 items from store1:
-        service.addItemToBasket(subs1Id, storeId1, productId1, 1);
-        service.addItemToBasket(subs1Id, storeId1, productId2, 1);
-        //1 items from store2:
-        service.addItemToBasket(subs1Id, storeId2, productId3, 1);
+        addItemToBasketUseCase3();
+
         //make the purchases: 2 from store1 and 1 from store2.
         service.purchaseCart(subs1Id);
 
@@ -653,16 +676,16 @@ class AcceptanceTestsV1 {
     @Test
     void disableManagerFromGetHistory() throws Exception{
         service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
-        assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+        service.getSalesHistoryByStore(store1Manager1Id, storeId1);
         service.disableManagerFromGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
         assertThrows(Exception.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
     }
 
     @Test
     void disableManagerFromGetHistoryWithoutPermissionsInStore() throws Exception{
-        assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
         assertThrows(Exception.class, () ->service.disableManagerFromGetHistory(founderStore2Id, storeId1, store1Manager1UserName));
-        assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+        service.getSalesHistoryByStore(store1Manager1Id, storeId1);
 
         //try to disable user that is not a manager in the store:
         assertThrows(Exception.class, () -> service.disableManagerFromGetHistory(founderStore1Id, storeId1, guest1UserName)); //guest1UserName in not a manager
@@ -765,8 +788,6 @@ class AcceptanceTestsV1 {
 
     @Test
     void getEventLog() throws Exception{
-        //TODO test: expand test after further implementation
-
         //events of adding items to basket
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
         service.addItemToBasket(subs1Id, storeId1, productId2, 1);
@@ -774,12 +795,25 @@ class AcceptanceTestsV1 {
         service.openNewStore(subs1Id, "store3");
 
         assertTrue(service.getEventLog(admin1Id).size() > 0);
-        assertTrue(service.getEventLog(admin1Id).toString().contains("store3"));
+
+        assertTrue(service.getEventLog(admin1Id).toString().contains("Register with userName: subs1UserName, password: *********"));
+
+        assertTrue(service.getEventLog(admin1Id).toString().contains("User open new store named: store3"));
     }
 
     @Test
     void wrongGetEventLog() throws Exception{
         assertThrows(NoPermissionException.class, () -> service.getEventLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
+    }
+
+    @Test
+    void passNotVisibleInLog() throws Exception {
+        assertTrue(service.getEventLog(admin1Id).toString().contains(admin1UserName));
+        assertTrue(service.getEventLog(admin1Id).toString().contains(subs1UserName));
+
+        assertTrue(!service.getEventLog(admin1Id).toString().contains("1234"));
+        assertTrue(!service.getEventLog(admin1Id).toString().contains("ad123"));
+
     }
 
     @Test
@@ -796,9 +830,76 @@ class AcceptanceTestsV1 {
     }
 
     @Test
-    void wrongGetErrorLog() throws Exception{
+    void getErrorLogStoreOwner() throws Exception{
         //TODO: expand test after further implementation
-        assertTrue(1 == 0);
-//        assertThrows(Exception.class, () -> service.getErrorLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
+        assertThrows(NoPermissionException.class, () -> service.getErrorLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
+    }
+
+    //TODO test spell checking
+
+    @Test
+    void spellCheckByKeyWordByName() throws Exception{
+        //keyword by name
+        assertTrue(service.getItems("milkk", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("milkk", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).size() == 1);
+        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).toString().contains("cheese"));
+
+        assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).toString().contains("milk"));
+
+    }
+
+    @Test
+    void spellCheckByKeyWordByCategory() throws Exception{
+        //keyword by name
+        assertTrue(service.getItems("Dairy", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("Dairy", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("dairy", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("dairy", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("daiyr", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("daiyr", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("bred", null, null, null, null, null, null, null).size() == 2);
+        assertTrue(service.getItems("bred", null, null, null, null, null, null, null).toString().contains("baguette"));
+    }
+
+    @Test
+    void spellCheckByProductName() throws Exception {
+        Collection<String> items = service.getItems("", "milkk", null, null, null, null, null, null);
+        assertEquals(items.size(), 2);
+        assertTrue(items.toString().contains("milk"));
+
+        items = service.getItems("", "mikl", null, null, null, null, null, null);
+        assertEquals(items.size(), 2);
+        assertTrue(items.toString().contains("milk"));
+
+        items = service.getItems("", "Milk", null, null, null, null, null, null);
+        assertEquals(items.size(), 2);
+        assertTrue(items.toString().contains("milk"));
+
+    }
+
+    @Test
+    void spellCheckByCategory() throws Exception {
+        Collection<String> items = service.getItems("", "", "bred", null, null, null, null, null);
+        assertTrue(items.size() == 1);
+        assertTrue(items.toString().contains("baguette"));
+
+        items = service.getItems("", "", "DairyProducst", null, null, null, null, null);
+        assertTrue(items.size() == 1);
+        assertTrue(items.toString().contains("baguette"));
+    }
+
+
+    //TODO add concurrency tests - stress test
+    void testMultiplePurchases(){
+
     }
 }

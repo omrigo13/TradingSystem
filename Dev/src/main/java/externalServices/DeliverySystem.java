@@ -1,5 +1,5 @@
 package externalServices;
 
 public interface DeliverySystem {
-    boolean deliver(DeliveryData data);
+    boolean deliver(DeliveryData data) throws Exception;
 }
