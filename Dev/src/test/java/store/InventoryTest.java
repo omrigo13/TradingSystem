@@ -23,7 +23,7 @@ public class InventoryTest {
 
     @BeforeEach
     void setUp() {
-        inventory = new Inventory(tradingSystem);
+        inventory = new Inventory();
     }
 
 //    @Test

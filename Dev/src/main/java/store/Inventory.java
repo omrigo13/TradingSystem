@@ -21,7 +21,7 @@ public class Inventory {
     private final Map<Item, Integer> items;
     private AtomicInteger id = new AtomicInteger(0);
 
-    public Inventory(TradingSystem tradingSystem) {
+    public Inventory() {
 //        this.tradingSystem = tradingSystem;
         this.items = Collections.synchronizedMap(new ConcurrentHashMap<>());
     }
@@ -206,10 +206,13 @@ public class Inventory {
      * @param itemId- id of the wanted item
      * @param amount - the new amount fo the item
      * @exception WrongAmountException when the amount is illegal*/
-    public synchronized void changeQuantity(int itemId, int amount) throws ItemException {
+    public void changeQuantity(int itemId, int amount) throws ItemException {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
-        items.replace(searchItem(itemId), amount);
+        synchronized (this.items)
+        {
+            items.replace(searchItem(itemId), amount);
+        }
     }
 
     /**
@@ -241,9 +244,12 @@ public class Inventory {
      *  This method removes an item
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
-    public synchronized Item removeItem(int itemID) throws ItemException {
-        Item item=searchItem(itemID);
-       items.remove(item);
+    public Item removeItem(int itemID) throws ItemException {
+       Item item=searchItem(itemID);
+       synchronized (this.items)
+       {
+           items.remove(item);
+       }
        return item;
 
     }
@@ -271,24 +277,26 @@ public class Inventory {
         return itemsDisplay;
     }
 
-    public synchronized void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
-        for ( Item item: items.keySet()) {
-            if(item.getId()==itemID)
-            {
-                if(newSubCategory != null && !newSubCategory.trim().isEmpty())
-                    item.setSubCategory(newSubCategory);
+    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
+        synchronized (this.items)
+        {
+            for ( Item item: items.keySet()) {
+                if(item.getId()==itemID)
+                {
+                    if(newSubCategory != null && !newSubCategory.trim().isEmpty())
+                        item.setSubCategory(newSubCategory);
 
-                if(newQuantity !=null)
-                    changeQuantity(itemID,newQuantity);
+                    if(newQuantity !=null)
+                        changeQuantity(itemID,newQuantity);
 
-                if(newPrice != null)
-                    item.setPrice(newPrice);
+                    if(newPrice != null)
+                        item.setPrice(newPrice);
 
-                return;
+                    return;
+                }
             }
+            throw new ItemNotFoundException("no item in inventory matching item id");
         }
-        throw new ItemNotFoundException("no item in inventory matching item id");
-
     }
 
     public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
@@ -308,15 +316,18 @@ public class Inventory {
         }*/
 
         synchronized (this.items) {
+            // check that every item has quantity in inventory
             for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                if (checkAmount(entry.getKey().getId(), entry.getValue())) {
+                checkAmount(entry.getKey().getId(), entry.getValue());
+            }
+            // update inventory quantity and calculate basket price
+            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
                     paymentValue += (item.getPrice() * quantity);
                     this.items.replace(item, this.items.get(item) - quantity);
                     details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                             .append(" Quantity: ").append(quantity).append("\n");
-                }
             }
         }
         return paymentValue;
