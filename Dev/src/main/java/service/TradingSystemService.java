@@ -111,6 +111,46 @@ public interface TradingSystemService {
      * pre-condition: assignee is not an owner in this store and is a subscriber (not guest) */
     void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws InvalidActionException;
 
+
+    /*The next block of functions deals with store policies. */
+    //******************************************************************************
+
+    /**
+     * used to get discount and purchase policies of a store.
+     * @param userId - invoker
+     * @param storeId - store id
+     * @return discount and purchase policies
+     * @throws InvalidActionException
+     */
+    Collection<String> getStorePolicy(String userId, String storeId) throws InvalidActionException;
+
+    /**
+     * adds discount policy to a store.
+     * if param==null, it will not be counted.
+     * @param userId - invoker
+     * @param storeId - store id
+     * @param productId
+     * @param discountPercentage
+     * @throws InvalidActionException
+     */
+    void addStoreItemDiscountPolicy(String userId, String storeId, String productId, Double discountPercentage) throws InvalidActionException;
+
+    void addStoreCategoryDiscountPolicy(String userId, String storeId, String category, Double discountPercentage) throws InvalidActionException;
+
+
+    /**
+     * sets minimum price for purchasing basket from the store
+     * @param userId
+     * @param storeId
+     * @param minCartPrice
+     */
+    void addBasketPriceLimit(String userId, String storeId, Double minCartPrice);
+
+
+    //end of block dealing with store policies
+    //******************************************************************************
+
+
     /*The next block of functions deals with store manager permissions. A new store manager has only the
         basic permissions in the store. */
     //******************************************************************************
