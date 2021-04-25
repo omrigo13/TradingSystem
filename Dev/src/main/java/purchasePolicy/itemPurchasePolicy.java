@@ -5,9 +5,9 @@ import user.Basket;
 
 public class itemPurchasePolicy extends simplePurchasePolicy {
 
-    private Item item;
-    private int minQuantity;
-    private int maxQuantity;
+    private final Item item;
+    private final int minQuantity;
+    private final int maxQuantity;
 
     // if i got 0 in minQuantity or maxQuantity i will ignore it
     public itemPurchasePolicy(Item item, int minQuantity, int maxQuantity) {
