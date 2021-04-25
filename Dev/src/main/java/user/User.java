@@ -55,11 +55,14 @@ public class User {
     public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, policyException {
 
         double totalPrice = 0;
+        boolean validPolicy;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
         purchasePolicy storePolicy;
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
             storePolicy = storeBasketEntry.getKey().getPurchasePolicy();
-            storePolicy.isValidPurchase(storeBasketEntry.getValue());
+            validPolicy = storePolicy.isValidPurchase(storeBasketEntry.getValue());
+            if(!validPolicy)
+                throw new policyException();
         }
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
         PaymentData paymentData = null;
