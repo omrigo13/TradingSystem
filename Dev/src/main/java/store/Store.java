@@ -1,6 +1,7 @@
 package store;
 
 import exceptions.*;
+import purchasePolicy.*;
 import tradingSystem.TradingSystem;
 
 import java.util.*;
@@ -17,8 +18,9 @@ public class Store {
     private double rating;
     private String purchaseType;     // TODO: should check how to implement
     private String discountType;     // TODO: should check how to implement
-    private String purchasePolicy;     // TODO: should check how to implement
+    //private String purchasePolicy;     // TODO: should check how to implement
     private String discountPolicy;     // TODO: should check how to implement
+    private purchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
     private Inventory inventory = new Inventory();
@@ -34,7 +36,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description) throws ItemException {
+    public Store(int id, String name, String description, purchasePolicy purchasePolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -49,6 +51,7 @@ public class Store {
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
 //        this.inventory = new Inventory(tradingSystem);
+        this.purchasePolicy = purchasePolicy;
         this.isActive = true;
     }
 
@@ -292,7 +295,7 @@ public class Store {
         return discountType;
     }
 
-    public String getPurchasePolicy() {
+    public purchasePolicy getPurchasePolicy() {
         return purchasePolicy;
     }
 
@@ -310,8 +313,7 @@ public class Store {
     public void setDiscountPolicy() {
     }
 
-    public void setPurchasePolicy() {
-    }
+    public void setPurchasePolicy(purchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 
 
     public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
