@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import purchasePolicy.defaultPurchasePolicy;
 import tradingSystem.TradingSystem;
 
 
@@ -21,18 +22,18 @@ public class StoreTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new Store( 1,"ebay","www.ebay.com online shopping");
+        store = new Store( 1,"ebay","www.ebay.com online shopping", new defaultPurchasePolicy());
     }
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", new defaultPurchasePolicy()));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", new defaultPurchasePolicy()));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", new defaultPurchasePolicy()));
     }
 
 //    @Test
