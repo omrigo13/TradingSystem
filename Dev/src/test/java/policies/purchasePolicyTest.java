@@ -23,9 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class purchasePolicyTest {
 
-    //TODO should check these things
-    //TODO check all compound policies xor, or , and with simple policiy from quantity of item, category while making purchaseCart
-
     private User user;
     private Collection<simplePurchasePolicy> policies = new ArrayList<>();
 
