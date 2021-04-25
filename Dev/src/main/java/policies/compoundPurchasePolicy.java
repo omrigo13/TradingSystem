@@ -1,5 +1,6 @@
 package policies;
 
+import exceptions.policyException;
 import user.Basket;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public abstract class compoundPurchasePolicy implements purchasePolicy{
             this.purchasePolicies = purchasePolicies;
     }
 
-    public abstract boolean isValidPurchase(Basket purchaseBasket);
+    public abstract boolean isValidPurchase(Basket purchaseBasket) throws policyException;
 
     public void add(simplePurchasePolicy purchasePolicy) { this.purchasePolicies.add(purchasePolicy); }
 

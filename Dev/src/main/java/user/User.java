@@ -2,10 +2,12 @@ package user;
 
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
+import exceptions.policyException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import policies.purchasePolicy;
 import store.Item;
 import store.Store;
 
@@ -50,10 +52,15 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, policyException {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
+        purchasePolicy storePolicy;
+        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            storePolicy = storeBasketEntry.getKey().getPurchasePolicy();
+            storePolicy.isValidPurchase(storeBasketEntry.getValue());
+        }
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
         PaymentData paymentData = null;
         boolean paymentDone = false;

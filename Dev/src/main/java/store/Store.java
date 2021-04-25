@@ -1,6 +1,7 @@
 package store;
 
 import exceptions.*;
+import policies.defaultPurchasePolicy;
 import policies.purchasePolicy;
 
 import java.util.*;
@@ -17,7 +18,7 @@ public class Store {
     private String discountType;     // TODO: should check how to implement
     //private String purchasePolicy;     // TODO: should check how to implement
     private String discountPolicy;     // TODO: should check how to implement
-    private policies.purchasePolicy purchasePolicy;
+    private purchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
     private Inventory inventory = new Inventory();
@@ -48,6 +49,8 @@ public class Store {
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
 //        this.inventory = new Inventory(tradingSystem);
+        if(purchasePolicy == null)
+            this.purchasePolicy = new defaultPurchasePolicy();
         this.purchasePolicy = purchasePolicy;
         this.isActive = true;
     }

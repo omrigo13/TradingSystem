@@ -1,9 +1,10 @@
 package policies;
 
+import exceptions.policyException;
 import user.Basket;
 
 public interface purchasePolicy {
 
-    public abstract boolean isValidPurchase(Basket purchaseBasket);
+    boolean isValidPurchase(Basket purchaseBasket) throws policyException;
 
 }

@@ -1,5 +1,7 @@
 package policies;
 
+import exceptions.orPolicyException;
+import exceptions.policyException;
 import user.Basket;
 
 import java.util.Collection;
@@ -11,11 +13,11 @@ public class orPolicy extends compoundPurchasePolicy {
     }
 
     @Override
-    public boolean isValidPurchase(Basket purchaseBasket) {
+    public boolean isValidPurchase(Basket purchaseBasket) throws policyException {
         for (simplePurchasePolicy purchase: purchasePolicies) {
             if(purchase.isValidPurchase(purchaseBasket))
                 return true;
         }
-        return false;
+        throw new orPolicyException();
     }
 }

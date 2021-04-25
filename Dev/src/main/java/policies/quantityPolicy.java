@@ -1,5 +1,7 @@
 package policies;
 
+import exceptions.policyException;
+import exceptions.quantityPolicyException;
 import store.Item;
 import user.Basket;
 
@@ -19,29 +21,29 @@ public class quantityPolicy extends simplePurchasePolicy {
     }
 
     @Override
-    public boolean isValidPurchase(Basket purchaseBasket) {
+    public boolean isValidPurchase(Basket purchaseBasket) throws policyException {
         if(minQuantity < 0 || maxQuantity < 0)
-            return false;
-        if(minQuantity > maxQuantity)
-            return false;
+            throw new quantityPolicyException();
+        if((minQuantity > maxQuantity) && (maxQuantity != 0))
+            throw new quantityPolicyException();
         for(Item item: items)
             if(!purchaseBasket.getItems().containsKey(item))
-                return false;
+                throw new quantityPolicyException();
         if(minQuantity == 0 && maxQuantity != 0) {
             for(Item item: items)
                 if(purchaseBasket.getItems().get(item) > maxQuantity)
-                    return false;
+                    throw new quantityPolicyException();
             return true;
         }
         if(minQuantity != 0) {
             for(Item item: items)
                 if(purchaseBasket.getItems().get(item) < minQuantity)
-                    return false;
+                    throw new quantityPolicyException();
             return true;
         }
         for(Item item: items)
             if((purchaseBasket.getItems().get(item) < minQuantity) || (purchaseBasket.getItems().get(item) > maxQuantity))
-                return false;
+                throw new quantityPolicyException();
         return true;
     }
 }
