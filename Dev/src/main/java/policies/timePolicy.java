@@ -1,8 +1,9 @@
-package purchasePolicy;
+package policies;
 
 import user.Basket;
 
-public class userPurchasePolicy extends simplePurchasePolicy {
+public class timePolicy extends simplePurchasePolicy {
+
     @Override
     public boolean isValidPurchase(Basket purchaseBasket) {
         return false;

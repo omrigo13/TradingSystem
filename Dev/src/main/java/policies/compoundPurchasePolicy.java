@@ -1,11 +1,11 @@
-package purchasePolicy;
+package policies;
 
 import user.Basket;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class compoundPurchasePolicy implements purchasePolicy {
+public abstract class compoundPurchasePolicy implements purchasePolicy{
 
     protected Collection<simplePurchasePolicy> purchasePolicies;
 
@@ -17,7 +17,6 @@ public abstract class compoundPurchasePolicy implements purchasePolicy {
             this.purchasePolicies = purchasePolicies;
     }
 
-    @Override
     public abstract boolean isValidPurchase(Basket purchaseBasket);
 
     public void add(simplePurchasePolicy purchasePolicy) { this.purchasePolicies.add(purchasePolicy); }

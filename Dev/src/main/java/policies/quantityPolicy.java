@@ -1,18 +1,18 @@
-package purchasePolicy;
+package policies;
 
 import store.Item;
 import user.Basket;
 
 import java.util.Collection;
 
-public class categoryPurchasePolicy extends simplePurchasePolicy {
+public class quantityPolicy extends simplePurchasePolicy {
 
     private final Collection<Item> items;
     private final int minQuantity;
     private final int maxQuantity;
 
     // if i got 0 in minQuantity or maxQuantity i will ignore it
-    public categoryPurchasePolicy(Collection<Item> items, int minQuantity, int maxQuantity) {
+    public quantityPolicy(Collection<Item> items, int minQuantity, int maxQuantity) {
         this.items = items;
         this.minQuantity = minQuantity;
         this.maxQuantity = maxQuantity;

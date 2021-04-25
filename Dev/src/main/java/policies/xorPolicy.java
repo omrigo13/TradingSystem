@@ -1,11 +1,12 @@
-package purchasePolicy;
+package policies;
 
 import user.Basket;
 
 import java.util.Collection;
 
-public class xorPurchasePolicy extends compoundPurchasePolicy {
-    public xorPurchasePolicy(Collection<simplePurchasePolicy> purchasePolicies) {
+public class xorPolicy extends compoundPurchasePolicy {
+
+    public xorPolicy(Collection<simplePurchasePolicy> purchasePolicies) {
         super(purchasePolicies);
     }
 
@@ -21,7 +22,6 @@ public class xorPurchasePolicy extends compoundPurchasePolicy {
             boolean second = purchasePolicies.stream().toList().get(1).isValidPurchase(purchaseBasket);
             return ((first && !second) || (!first && second));
         }
-
         return false;
     }
 }

@@ -1,18 +1,18 @@
-package purchasePolicy;
+package policies;
 
 import user.Basket;
 
 import java.util.Collection;
 
-public class andPurchasePolicy extends compoundPurchasePolicy {
+public class andPolicy extends compoundPurchasePolicy {
 
-    public andPurchasePolicy(Collection<simplePurchasePolicy> purchasePolicies) {
+    public andPolicy(Collection<simplePurchasePolicy> purchasePolicies) {
         super(purchasePolicies);
     }
 
     @Override
     public boolean isValidPurchase(Basket purchaseBasket) {
-        for (purchasePolicy purchase: purchasePolicies) {
+        for (simplePurchasePolicy purchase: purchasePolicies) {
             if(!purchase.isValidPurchase(purchaseBasket))
                 return false;
         }

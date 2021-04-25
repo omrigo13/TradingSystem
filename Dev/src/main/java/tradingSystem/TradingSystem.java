@@ -7,7 +7,7 @@ import exceptions.InvalidStoreIdException;
 import exceptions.SubscriberDoesNotExistException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
-import purchasePolicy.defaultPurchasePolicy;
+import policies.defaultPurchasePolicy;
 import store.Item;
 import store.Store;
 import user.*;

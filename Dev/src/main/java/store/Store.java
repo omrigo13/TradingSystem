@@ -1,12 +1,9 @@
 package store;
 
 import exceptions.*;
-import purchasePolicy.*;
-import tradingSystem.TradingSystem;
+import policies.purchasePolicy;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Store {
 
@@ -20,7 +17,7 @@ public class Store {
     private String discountType;     // TODO: should check how to implement
     //private String purchasePolicy;     // TODO: should check how to implement
     private String discountPolicy;     // TODO: should check how to implement
-    private purchasePolicy purchasePolicy;
+    private policies.purchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
     private Inventory inventory = new Inventory();
