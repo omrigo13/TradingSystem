@@ -5,6 +5,7 @@ import policies.defaultDiscountPolicy;
 import policies.defaultPurchasePolicy;
 import policies.discountPolicy;
 import policies.purchasePolicy;
+import spellChecker.Spelling;
 import user.Basket;
 
 import java.util.*;
@@ -151,6 +152,10 @@ public class Store {
 
     public Collection<Item> searchAndFilter(String keyWord, String itemName, String category, Double ratingItem,
                                                        Double ratingStore, Double maxPrice, Double minPrice) {
+        Spelling spelling = new Spelling();
+        keyWord = spelling.correct(keyWord);
+        itemName = spelling.correct(itemName);
+        category = spelling.correct(category);
         Collection<Item> search = searchItems(keyWord, itemName, category);
         return filterItems(search, ratingItem, ratingStore, maxPrice, minPrice);
     }
