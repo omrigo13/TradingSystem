@@ -18,4 +18,9 @@ public class plusDiscountPolicy extends compoundDiscountPolicy {
     public void updateBasket(Basket purchaseBasket) {
 
     }
+
+    @Override
+    public double cartTotalValue(Basket purchaseBasket) {
+        return 0;
+    }
 }

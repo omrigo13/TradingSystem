@@ -51,16 +51,34 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
     }
 
     @Override
-    //TODO we want to update the item's price only on the basket or also on the store?
-    //TODO maybe to make that when a store set a discount policy it updates all the items in the store according to the policy
-    public void updateBasket(Basket purchaseBasket) throws policyException, ItemException {
+    public double cartTotalValue(Basket purchaseBasket) {
+        double value = 0.0;
         boolean validPolicy;
         try { validPolicy = policy.isValidPurchase(purchaseBasket); }
         catch (policyException p) { validPolicy = false; }
-        if(!validPolicy)
-            return;
-        for(Item item: purchaseBasket.getItems().keySet())
-            if(items.contains(item))
-                item.setPrice(((100 - (double)discount) / 100) * item.getPrice());
+        for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
+        {
+            Item item = itemsAndQuantity.getKey();
+            int quantity = itemsAndQuantity.getValue();
+            if(items.contains(item) && validPolicy)
+                value += ((((100 - (double)discount) / 100) * item.getPrice()) * quantity);
+            else
+                value += (item.getPrice() * quantity);
+        }
+        return value;
+    }
+
+    @Override
+    //TODO we want to update the item's price only on the basket or also on the store?
+    //TODO maybe to make that when a store set a discount policy it updates all the items in the store according to the policy
+    public void updateBasket(Basket purchaseBasket) throws policyException, ItemException {
+//        boolean validPolicy;
+//        try { validPolicy = policy.isValidPurchase(purchaseBasket); }
+//        catch (policyException p) { validPolicy = false; }
+//        if(!validPolicy)
+//            return;
+//        for(Item item: purchaseBasket.getItems().keySet())
+//            if(items.contains(item))
+//                item.setPrice(((100 - (double)discount) / 100) * item.getPrice());
     }
 }

@@ -5,7 +5,9 @@
 package store;
 
 import exceptions.*;
+import policies.discountPolicy;
 import tradingSystem.TradingSystem;
+import user.Basket;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -299,8 +301,7 @@ public class Inventory {
         }
     }
 
-    public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
-        double paymentValue = 0;
+    public double calculate(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException {
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())
@@ -314,22 +315,22 @@ public class Inventory {
                 throw new Exception("a kind of wait should be here"); //TODO we have to check what to do with locked items
             }
         }*/
-
+        double totalValue;
         synchronized (this.items) {
             // check that every item has quantity in inventory
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                 checkAmount(entry.getKey().getId(), entry.getValue());
             }
             // update inventory quantity and calculate basket price
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+            totalValue = storeDiscountPolicy.cartTotalValue(basket);
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
-                    paymentValue += (item.getPrice() * quantity);
                     this.items.replace(item, this.items.get(item) - quantity);
                     details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                             .append(" Quantity: ").append(quantity).append("\n");
             }
         }
-        return paymentValue;
+        return totalValue;
     }
 }

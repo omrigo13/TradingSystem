@@ -5,6 +5,7 @@ import policies.defaultDiscountPolicy;
 import policies.defaultPurchasePolicy;
 import policies.discountPolicy;
 import policies.purchasePolicy;
+import user.Basket;
 
 import java.util.*;
 
@@ -332,8 +333,8 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws ItemException { // TODO should get basket
-        return inventory.calculate(items, details);
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException { // TODO should get basket
+        return inventory.calculate(basket, details, storeDiscountPolicy);
     }
 
     //TODO make an exception for this
