@@ -36,9 +36,10 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
     public double calculateDiscount(Basket purchaseBasket) throws policyException {
         double value = 0.0;
         boolean validPolicy;
-        validPolicy = policy.isValidPurchase(purchaseBasket);
+        try { validPolicy = policy.isValidPurchase(purchaseBasket); }
+        catch (policyException p) { validPolicy = false; }
         if(!validPolicy)
-            throw new quantityDiscountPolicyException();
+            return value;
         for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
         {
             Item item = itemsAndQuantity.getKey();
@@ -53,15 +54,12 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
     //TODO we want to update the item's price only on the basket or also on the store?
     public void updateBasket(Basket purchaseBasket) throws policyException, ItemException {
         boolean validPolicy;
-        validPolicy = policy.isValidPurchase(purchaseBasket);
+        try { validPolicy = policy.isValidPurchase(purchaseBasket); }
+        catch (policyException p) { validPolicy = false; }
         if(!validPolicy)
-            throw new quantityDiscountPolicyException();
-        for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
-        {
-            Item item = itemsAndQuantity.getKey();
-            int quantity = itemsAndQuantity.getValue();
+            return;
+        for(Item item: purchaseBasket.getItems().keySet())
             if(items.contains(item))
-                item.setPrice(((100 - discount) / 100) * item.getPrice());
-        }
+                item.setPrice(((100 - (double)discount) / 100) * item.getPrice());
     }
 }

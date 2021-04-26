@@ -1,7 +1,9 @@
 package store;
 
 import exceptions.*;
+import policies.defaultDiscountPolicy;
 import policies.defaultPurchasePolicy;
+import policies.discountPolicy;
 import policies.purchasePolicy;
 
 import java.util.*;
@@ -17,7 +19,8 @@ public class Store {
     private String purchaseType;     // TODO: should check how to implement
     private String discountType;     // TODO: should check how to implement
     //private String purchasePolicy;     // TODO: should check how to implement
-    private String discountPolicy;     // TODO: should check how to implement
+   // private String discountPolicy;     // TODO: should check how to implement
+    private discountPolicy discountPolicy;
     private purchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
@@ -34,7 +37,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description, purchasePolicy purchasePolicy) throws ItemException {
+    public Store(int id, String name, String description, purchasePolicy purchasePolicy, discountPolicy discountPolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -51,7 +54,12 @@ public class Store {
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
             this.purchasePolicy = new defaultPurchasePolicy();
-        this.purchasePolicy = purchasePolicy;
+        else
+            this.purchasePolicy = purchasePolicy;
+        if(discountPolicy == null)
+            this.discountPolicy = new defaultDiscountPolicy();
+        else
+            this.discountPolicy = discountPolicy;
         this.isActive = true;
     }
 
@@ -299,7 +307,7 @@ public class Store {
         return purchasePolicy;
     }
 
-    public String getDiscountPolicy() {
+    public discountPolicy getDiscountPolicy() {
         return discountPolicy;
     }
 
@@ -310,8 +318,7 @@ public class Store {
     public void setPurchaseType() {
     }
 
-    public void setDiscountPolicy() {
-    }
+    public void setDiscountPolicy(discountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
 
     public void setPurchasePolicy(purchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 

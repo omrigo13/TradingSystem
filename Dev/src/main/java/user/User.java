@@ -7,6 +7,7 @@ import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import policies.discountPolicy;
 import policies.purchasePolicy;
 import store.Item;
 import store.Store;
@@ -57,12 +58,15 @@ public class User {
         double totalPrice = 0;
         boolean validPolicy;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
-        purchasePolicy storePolicy;
+        purchasePolicy storePurchasePolicy;
+        discountPolicy storeDiscountPolicy;
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
-            storePolicy = storeBasketEntry.getKey().getPurchasePolicy();
-            validPolicy = storePolicy.isValidPurchase(storeBasketEntry.getValue());
+            storePurchasePolicy = storeBasketEntry.getKey().getPurchasePolicy();
+            storeDiscountPolicy = storeBasketEntry.getKey().getDiscountPolicy();
+            validPolicy = storePurchasePolicy.isValidPurchase(storeBasketEntry.getValue());
             if(!validPolicy)
                 throw new policyException();
+            storeDiscountPolicy.updateBasket(storeBasketEntry.getValue());
         }
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
         PaymentData paymentData = null;

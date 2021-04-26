@@ -24,10 +24,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class purchasePolicyTest {
 
     private User user;
-    private Collection<simplePurchasePolicy> policies = new ArrayList<>();
+    private final Collection<simplePurchasePolicy> policies = new ArrayList<>();
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private discountPolicy discountPolicy;
 
     @Spy private Store store;
     @Spy private Item item1, item2, item3;
@@ -37,6 +38,7 @@ public class purchasePolicyTest {
         user = new User();
         user.makeCart(user);
         store.setPurchasePolicy(new defaultPurchasePolicy());
+        store.setDiscountPolicy(discountPolicy);
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         store.addItem("tomato", 4.5, "cat2", "sub2", 12);
         item1 = store.searchItemById(0);

@@ -46,6 +46,7 @@ class UserTest {
         user = new User(baskets);
         basket = new Basket(store, items);
         store.setPurchasePolicy(new defaultPurchasePolicy());
+        store.setDiscountPolicy(new defaultDiscountPolicy());
     }
 
     @Test
