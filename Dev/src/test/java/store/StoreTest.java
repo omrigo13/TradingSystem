@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import policies.defaultDiscountPolicy;
 import policies.defaultPurchasePolicy;
@@ -27,20 +26,20 @@ public class StoreTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new Store( 1,"ebay","www.ebay.com online shopping", new defaultPurchasePolicy(), new defaultDiscountPolicy());
+        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null);
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
         basket = new Basket(new Store(), items);
     }
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", new defaultPurchasePolicy(), new defaultDiscountPolicy()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", new defaultPurchasePolicy(), new defaultDiscountPolicy()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", new defaultPurchasePolicy(), new defaultDiscountPolicy()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null));
     }
 
 //    @Test
@@ -319,7 +318,7 @@ public class StoreTest {
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new defaultDiscountPolicy()), 110);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, new defaultDiscountPolicy(store.getItems().keySet())), 110);
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
@@ -328,7 +327,7 @@ public class StoreTest {
         basket.addItem(store.searchItemById(0), 2);
         basket.addItem(store.searchItemById(1), 2);
         basket.addItem(store.searchItemById(2), 8);
-        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new defaultDiscountPolicy()));
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new defaultDiscountPolicy(store.getItems().keySet())));
     }
 
     @Test

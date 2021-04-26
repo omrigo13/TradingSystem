@@ -3,9 +3,15 @@ package policies;
 import store.Item;
 import user.Basket;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class defaultDiscountPolicy extends simpleDiscountPolicy {
+
+    public defaultDiscountPolicy(Collection<Item> items) {
+        super(0, items);
+    }
+
     @Override
     public double calculateDiscount(Basket purchaseBasket) {
         return 0;
@@ -27,4 +33,6 @@ public class defaultDiscountPolicy extends simpleDiscountPolicy {
         }
         return value;
     }
+
+    public Collection<Item> getItems() { return this.items; }
 }

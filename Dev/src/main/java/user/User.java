@@ -10,7 +10,6 @@ import externalServices.PaymentSystem;
 import policies.defaultDiscountPolicy;
 import policies.discountPolicy;
 import policies.purchasePolicy;
-import store.Item;
 import store.Store;
 
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class User {
         boolean validPolicy;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
         purchasePolicy storePurchasePolicy;
-        discountPolicy storeDiscountPolicy = new defaultDiscountPolicy();
+        discountPolicy storeDiscountPolicy = null;
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
             storePurchasePolicy = storeBasketEntry.getKey().getPurchasePolicy();
             storeDiscountPolicy = storeBasketEntry.getKey().getDiscountPolicy();
@@ -93,7 +92,7 @@ public class User {
         baskets.clear();
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails, discountPolicy storeDiscountPolicy) throws ItemException {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails, discountPolicy storeDiscountPolicy) throws ItemException, policyException {
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();

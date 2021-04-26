@@ -58,7 +58,7 @@ public class Store {
         else
             this.purchasePolicy = purchasePolicy;
         if(discountPolicy == null)
-            this.discountPolicy = new defaultDiscountPolicy();
+            this.discountPolicy = new defaultDiscountPolicy(this.inventory.getItems().keySet());
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
@@ -333,7 +333,7 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException { // TODO should get basket
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException, policyException { // TODO should get basket
         return inventory.calculate(basket, details, storeDiscountPolicy);
     }
 

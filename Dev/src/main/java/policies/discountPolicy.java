@@ -10,5 +10,5 @@ public interface discountPolicy {
 
     void updateBasket(Basket purchaseBasket) throws policyException, ItemException;
 
-    double cartTotalValue(Basket purchaseBasket);
+    double cartTotalValue(Basket purchaseBasket) throws policyException;
 }

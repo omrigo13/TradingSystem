@@ -13,12 +13,11 @@ import java.util.Map;
 
 public class quantityDiscountPolicy extends simpleDiscountPolicy {
 
-    private final int discount;
     private final Collection<Item> items;
     private final compoundPurchasePolicy policy;
 
     public quantityDiscountPolicy(int discount, Collection<Item> items, compoundPurchasePolicy policy) throws quantityDiscountPolicyException {
-        this.discount = discount;
+        super(discount, items);
         if(discount < 0)
             throw new quantityDiscountPolicyException();
         this.items = items;
@@ -81,4 +80,6 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
 //            if(items.contains(item))
 //                item.setPrice(((100 - (double)discount) / 100) * item.getPrice());
     }
+
+    public Collection<Item> getItems() { return this.items; }
 }

@@ -1,5 +1,6 @@
 package policies;
 
+import exceptions.policyException;
 import user.Basket;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public abstract class compoundDiscountPolicy implements discountPolicy {
             this.discountPolicies = discountPolicies;
     }
 
-    public abstract double calculateDiscount(Basket purchaseBasket);
+    public abstract double calculateDiscount(Basket purchaseBasket) throws policyException;
 
     public abstract void updateBasket(Basket purchaseBasket);
 

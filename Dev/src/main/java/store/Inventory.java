@@ -301,7 +301,7 @@ public class Inventory {
         }
     }
 
-    public double calculate(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException {
+    public double calculate(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException, policyException {
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())

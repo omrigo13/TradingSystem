@@ -1,26 +1,18 @@
 package store;
 
-import com.sun.jdi.ArrayReference;
 import exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import policies.defaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
-import user.User;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class InventoryTest {
@@ -229,7 +221,7 @@ public class InventoryTest {
 //        assertThrows(Exception.class, () -> inventory.calculate(items, details));
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 5);
         inventory.searchItem(carrotId).unlock();
-        assertEquals(inventory.calculate(basket, details, new defaultDiscountPolicy()), 110);
+        assertEquals(inventory.calculate(basket, details, new defaultDiscountPolicy(inventory.getItems().keySet())), 110);
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 3);
         inventory.searchItem(tomatoId).unlock();
         inventory.searchItem(cucumberID).unlock();
@@ -238,7 +230,7 @@ public class InventoryTest {
         basket.addItem(inventory.searchItem(tomatoId), 2);
         basket.addItem(inventory.searchItem(cucumberID), 2);
         basket.addItem(inventory.searchItem(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new defaultDiscountPolicy()));
+        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new defaultDiscountPolicy(inventory.getItems().keySet())));
     }
 //
 //    @Test

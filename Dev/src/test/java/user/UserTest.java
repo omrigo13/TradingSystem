@@ -13,14 +13,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import policies.*;
-import store.Inventory;
 import store.Item;
 import store.Store;
-import tradingSystem.TradingSystem;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +41,7 @@ class UserTest {
         user = new User(baskets);
         basket = new Basket(store, items);
         store.setPurchasePolicy(new defaultPurchasePolicy());
-        store.setDiscountPolicy(new defaultDiscountPolicy());
+        store.setDiscountPolicy(new defaultDiscountPolicy(store.getItems().keySet()));
     }
 
     @Test
