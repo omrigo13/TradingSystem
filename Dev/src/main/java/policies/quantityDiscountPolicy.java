@@ -52,6 +52,7 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
 
     @Override
     //TODO we want to update the item's price only on the basket or also on the store?
+    //TODO maybe to make that when a store set a discount policy it updates all the items in the store according to the policy
     public void updateBasket(Basket purchaseBasket) throws policyException, ItemException {
         boolean validPolicy;
         try { validPolicy = policy.isValidPurchase(purchaseBasket); }
