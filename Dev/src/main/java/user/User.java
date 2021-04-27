@@ -58,10 +58,10 @@ public class User {
         PaymentData paymentData = null;
         boolean paymentDone = false;
         try {
-            paymentData = new PaymentData(totalPrice);
+            paymentData = new PaymentData(totalPrice); //TODO there is no username for a user only for subscriber
             paymentSystem.pay(paymentData);
             paymentDone = true;
-            deliverySystem.deliver(new DeliveryData());
+            deliverySystem.deliver(new DeliveryData()); //TODO there is no address for user and subscriber right now
         } catch (Exception e) {
             if (paymentDone)
                 paymentSystem.payBack(paymentData);
