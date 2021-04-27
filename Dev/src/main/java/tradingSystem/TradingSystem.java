@@ -7,6 +7,8 @@ import exceptions.InvalidStoreIdException;
 import exceptions.SubscriberDoesNotExistException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import policies.defaultDiscountPolicy;
+import policies.defaultPurchasePolicy;
 import store.Item;
 import store.Store;
 import user.*;
@@ -110,7 +112,7 @@ public class TradingSystem {
         int id = storeIdCounter.getAndIncrement();
 
         // create the new store
-        Store store = new Store(id, storeName, "description");
+        Store store = new Store(id, storeName, "description", null, null);
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);

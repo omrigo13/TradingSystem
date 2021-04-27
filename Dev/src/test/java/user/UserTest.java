@@ -3,6 +3,7 @@ package user;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.WrongAmountException;
+import exceptions.policyException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,14 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import store.Inventory;
+import policies.*;
 import store.Item;
 import store.Store;
-import tradingSystem.TradingSystem;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,6 +40,8 @@ class UserTest {
     void setUp() throws ItemException {
         user = new User(baskets);
         basket = new Basket(store, items);
+        store.setPurchasePolicy(new defaultPurchasePolicy());
+        store.setDiscountPolicy(new defaultDiscountPolicy(store.getItems().keySet()));
     }
 
     @Test
@@ -114,7 +113,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartCorrectValueCalculation() throws ItemException {
+    void purchaseCartCorrectValueCalculation() throws ItemException, policyException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
@@ -125,7 +124,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartPurchaseHistoryUpdated() throws ItemException {
+    void purchaseCartPurchaseHistoryUpdated() throws ItemException , policyException{
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
