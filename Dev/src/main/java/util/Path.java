@@ -10,7 +10,9 @@ public class Path {
         public static final String PURCHASE = "/purchase";
         public static final String SHOWBASKET = "/showBasket";
         public static final String UPDATEPRODUCTAMOUNTINBASKET = "/updateProductAmountInBasket";
+        public static final String PURCHASEHISTORY = "/purchaseHistory";
         public static final String CART = "/cart";
+        public static final String SEARCH = "/search";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
         //public static final String BOOKS = "/books";
@@ -28,6 +30,7 @@ public class Path {
         public static final String Cart = "/velocity/cart/cart.vm";
         public static final String SHOWBASKET = "/velocity/cart/showBasket.vm";
         public static final String UPDATEPRODUCTAMOUNTINBASKET = "velocity/cart/updateProductAmountInBasket.vm";
+        public static final String PURCHASEHISTORY = "velocity/cart/purchaseHistory.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
     }
 }

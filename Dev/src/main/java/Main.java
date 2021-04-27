@@ -44,8 +44,11 @@ public class Main {
             post(Path.Web.UPDATEPRODUCTAMOUNTINBASKET, tradingSystem.handleUpdateProductAmountInBasketPost);
             get(Path.Web.CART, tradingSystem.serveCartPage);
             post(Path.Web.CART, tradingSystem.handleCartPost);
+            get(Path.Web.PURCHASEHISTORY, tradingSystem.servePurchaseHistoryPage);
+            post(Path.Web.PURCHASEHISTORY, tradingSystem.handlePurchaseHistoryPost);
             post(Path.Web.LOGIN, tradingSystem.handleLoginPost);
             post(Path.Web.LOGOUT, tradingSystem.handleLogoutPost);
+            post(Path.Web.SEARCH, tradingSystem.handleSearchPost);
         });
 
         app.error(404, ViewUtil.NotFound);

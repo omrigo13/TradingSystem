@@ -3,6 +3,17 @@
     #if($purchase)
         <p class="good notification">$msg.get("PURCHASE_CART_SUCCEEDED")</p>
     #end
+    #if($search)
+        <h1>search result came back</h1>
+        <div class="row row-3">
+            #foreach($result in $search)
+                <div class="col">
+                    $result
+                </div>
+            #end
+        </div>
+        <p class="good notification">search successfully done</p>
+    #end
     <form id="connect" method="post">
     </form>
 <script>

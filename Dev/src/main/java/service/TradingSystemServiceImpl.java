@@ -99,6 +99,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> getPurchaseHistory(String userID) throws InvalidActionException {
         eventLog.writeToLogger("User ask for his purchase history");
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.getPurchaseHistory(userID);
     }
 

@@ -33,6 +33,10 @@ public class RequestUtil {
         return ctx.formParam("productID");
     }
 
+    public static String getSearchBox(Context ctx) {
+        return ctx.formParam("searchBox");
+    }
+
     public static int getAmount(Context ctx) {
         return Integer.parseInt(ctx.formParam("amount"));
     }

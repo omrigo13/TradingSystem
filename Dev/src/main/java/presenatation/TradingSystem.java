@@ -43,7 +43,7 @@ public class TradingSystem {
 
     public static Handler serveHomePage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
-        ctx.render(Path.Template.HOME, model);
+        ctx.render(Path.Template.ROOT, model);
     };
 
     public static Handler serveShowBasketPage = ctx -> {
@@ -64,8 +64,12 @@ public class TradingSystem {
 
     public static Handler serveCartPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
-        //model.put("cart", tradingSystemService.showCart(model.get("connectID").toString()));
         ctx.render(Path.Template.Cart, model);
+    };
+
+    public static Handler servePurchaseHistoryPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.PURCHASEHISTORY, model);
     };
 
     public static Handler handlePurchasePost = ctx -> {
@@ -106,6 +110,16 @@ public class TradingSystem {
         }
     };
 
+    public static Handler handleSearchPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("search", tradingSystemService.getItems(RequestUtil.getSearchBox(ctx),null,null,null,null,null,null,null));
+            ctx.render(Path.Template.ROOT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }
+    };
+
     public static Handler handleCartPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
@@ -113,6 +127,19 @@ public class TradingSystem {
             ctx.render(Path.Template.Cart, model);
         }catch (InvalidConnectionIdException ex) {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }
+    };
+
+    public static Handler handlePurchaseHistoryPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("purchaseHistory", tradingSystemService.getPurchaseHistory(RequestUtil.getConnectionID(ctx)));
+            ctx.render(Path.Template.PURCHASEHISTORY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("HistoryFailed", true);
+            ctx.render(Path.Template.ROOT, model);
         }
     };
 

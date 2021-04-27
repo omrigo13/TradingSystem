@@ -70,6 +70,22 @@ li a:hover {
     background-color: #66ccff94;
 }
 
+#searchBox {
+    width: 200px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+    margin: 3px;
+    background-color: #333;
+    color: white;
+}
+
+#searchBox:hover{
+    background-color: #66ccff94;
+}
+
 #cartA{
     padding: 0px;
 }
