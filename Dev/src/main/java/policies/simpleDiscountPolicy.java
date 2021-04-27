@@ -17,12 +17,7 @@ public abstract class simpleDiscountPolicy implements discountPolicy {
         this.items = items;
     }
 
-    public abstract double calculateDiscount(Basket purchaseBasket) throws policyException;
-
-    public abstract void updateBasket(Basket purchaseBasket) throws policyException, ItemException;
-
     public int getDiscount() { return discount; }
 
     public Collection<Item> getItems() { return items; }
-
 }

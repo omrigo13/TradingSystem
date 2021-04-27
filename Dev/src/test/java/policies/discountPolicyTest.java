@@ -25,7 +25,7 @@ public class discountPolicyTest {
 
     private User user;
     private final Collection<simplePurchasePolicy> policies = new ArrayList<>();
-    private final Collection<simpleDiscountPolicy> discountPolicies = new ArrayList<>();
+    private final Collection<discountPolicy> discountPolicies = new ArrayList<>();
     private Collection<Item> items = new ArrayList<>();
 
     @Mock
@@ -211,5 +211,21 @@ public class discountPolicyTest {
 
         user.purchaseCart(paymentSystem, deliverySystem);
         assertTrue(store.getPurchaseHistory().toString().contains("33.675")); // checks that the purchase value correct
+    }
+
+    @Test // discount on tomatoes in basket or cheese depends on best price basket for user plus discount 20% on store
+    void compoundPlusAndMaxDiscount() throws ItemException, policyException {
+        Collection<Item> cheese = store.searchItems(null, "cheese", null);
+        Collection<Item> tomato = store.searchItems(null, "tomato", null);
+        Collection<Item> storeItems = store.getItems().keySet();
+        Collection<discountPolicy> maxDiscountPolicies = new ArrayList<>();
+        maxDiscountPolicies.add(new quantityDiscountPolicy(5, cheese, null)); // discount 5% on cheese
+        maxDiscountPolicies.add(new quantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
+        discountPolicies.add(new quantityDiscountPolicy(20, storeItems, null)); // discount 20% on store
+        discountPolicies.add(new maxDiscountPolicy(maxDiscountPolicies));
+        store.setDiscountPolicy(new plusDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese plus 20% on store
+        //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5
+        user.purchaseCart(paymentSystem, deliverySystem);
+        assertTrue(store.getPurchaseHistory().toString().contains("32.55")); // checks that the purchase value correct
     }
 }

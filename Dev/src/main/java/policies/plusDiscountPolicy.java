@@ -9,18 +9,12 @@ import java.util.Collection;
 import java.util.Map;
 
 public class plusDiscountPolicy extends compoundDiscountPolicy {
-    public plusDiscountPolicy(Collection<simpleDiscountPolicy> discountPolicies) {
+
+    public plusDiscountPolicy(Collection<discountPolicy> discountPolicies) {
         super(discountPolicies);
-    }
-
-    @Override
-    public double calculateDiscount(Basket purchaseBasket) {
-        return 0;
-    }
-
-    @Override
-    public void updateBasket(Basket purchaseBasket) {
-
+        for (discountPolicy discountPolicy: discountPolicies) {
+            items.addAll(discountPolicy.getItems());
+        }
     }
 
     @Override
@@ -43,7 +37,8 @@ public class plusDiscountPolicy extends compoundDiscountPolicy {
             int totalDiscount = 0;
             Collection<Item> items = new ArrayList<>();
             items.add(item);
-            for (simpleDiscountPolicy discountPolicy : discountPolicies) {
+            for (discountPolicy discountPolicy : discountPolicies) {
+                discountPolicy.cartTotalValue(purchaseBasket);
                 if(discountPolicy.getItems().contains(item))
                     totalDiscount += discountPolicy.getDiscount();
             }
