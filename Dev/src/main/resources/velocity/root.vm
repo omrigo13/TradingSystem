@@ -1,0 +1,17 @@
+#parse("/velocity/layout.vm")
+#@mainLayout()
+    #if($purchase)
+        <p class="good notification">$msg.get("PURCHASE_CART_SUCCEEDED")</p>
+    #end
+    <form id="connect" method="post">
+    </form>
+<script>
+    #if ($connectID)
+        localStorage.setItem("connectID", "$connectID");
+        // alert("again");
+    #else
+        if (!localStorage.getItem("connectID"))
+            document.forms["connect"].submit();
+    #end
+</script>
+#end

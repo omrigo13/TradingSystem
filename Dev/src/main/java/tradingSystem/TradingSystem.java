@@ -29,9 +29,9 @@ public class TradingSystem {
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
     private final ConcurrentHashMap<String, User> connections; // key: connection id
 
-    TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
-                  UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
-                  ConcurrentHashMap<Integer, Store> stores)
+    public TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
+                         UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
+                         ConcurrentHashMap<Integer, Store> stores)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -43,7 +43,7 @@ public class TradingSystem {
         this.stores = stores;
 
         auth.authenticate(userName, password);
-        subscribers.get(userName).validatePermission(AdminPermission.getInstance());
+        //subscribers.get(userName).validatePermission(AdminPermission.getInstance());
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {

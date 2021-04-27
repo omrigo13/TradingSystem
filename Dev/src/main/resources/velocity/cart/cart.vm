@@ -1,0 +1,42 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    #if($cart)
+        <h1>$msg.get("ITEMS_HEADING_ALL")</h1>
+        <div class="row row-3">
+            #foreach($item in $cart)
+                <div class="col">
+                    $item
+                </div>
+            #end
+        </div>
+        <p class="good notification">cart successfully approached</p>
+    #else
+    <form id="cartForm" method="post">
+        <input type="hidden" name="connectionID" id="connectionID" value="">
+        <script type="text/javascript">
+            document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            document.forms["cartForm"].submit();
+        </script>
+    </form>
+    #end
+
+    <form id="purchaseForm" action="/purchase" method="post">
+        <input type="hidden" name="connectionID" id="connectionID" value="">
+        <script type="text/javascript">
+            document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+        </script>
+        <input type="submit" value="$msg.get("PURCHASE_BUTTON")">
+    </form>
+</main>
+</body>
+</html>

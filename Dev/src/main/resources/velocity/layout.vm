@@ -1,0 +1,24 @@
+#parse("/velocity/navbar.vm")
+#macro(mainLayout)
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+    <main>
+        <img id="mainPicture" src="/img/logo.png" alt="Java lin Library">
+        <div id="content">
+            $bodyContent
+        </div>
+    </main>
+    <footer>
+        $msg.get("COMMON_FOOTER_TEXT")
+    </footer>
+</body>
+</html>
+#end
