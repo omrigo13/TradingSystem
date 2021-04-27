@@ -228,4 +228,20 @@ public class discountPolicyTest {
         user.purchaseCart(paymentSystem, deliverySystem);
         assertTrue(store.getPurchaseHistory().toString().contains("32.55")); // checks that the purchase value correct
     }
+
+    @Test // discount on tomatoes in basket plus discount on store and max with discount on cheese
+    void compoundMaxAndPlusDiscount() throws ItemException, policyException {
+        Collection<Item> cheese = store.searchItems(null, "cheese", null);
+        Collection<Item> tomato = store.searchItems(null, "tomato", null);
+        Collection<Item> storeItems = store.getItems().keySet();
+        Collection<discountPolicy> plusDiscountPolicies = new ArrayList<>();
+        plusDiscountPolicies.add(new quantityDiscountPolicy(20, storeItems, null)); // discount 20% on store
+        plusDiscountPolicies.add(new quantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
+        discountPolicies.add(new quantityDiscountPolicy(70, cheese, null)); // discount 70% on cheese
+        discountPolicies.add(new plusDiscountPolicy(plusDiscountPolicies));
+        store.setDiscountPolicy(new maxDiscountPolicy(discountPolicies)); //policy for 10% on tomato and 20% store or 50% cheese
+        //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5
+        user.purchaseCart(paymentSystem, deliverySystem);
+        assertTrue(store.getPurchaseHistory().toString().contains("28.8")); // checks that the purchase value correct
+    }
 }
