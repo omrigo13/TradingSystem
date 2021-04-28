@@ -179,10 +179,6 @@ public interface TradingSystemService {
     preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
     void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException;
 
-    //TODO (removes the whole policy of the store)?
-    //TODO how to assign the policy to the store?
-    //TODO should i check that the policy really belongs to the store?
-
     /* remove policy of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
     void removePolicy(String userID, String storeId, int policy) throws InvalidActionException;
