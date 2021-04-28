@@ -5,8 +5,7 @@
 package store;
 
 import exceptions.*;
-import policies.discountPolicy;
-import tradingSystem.TradingSystem;
+import policies.DiscountPolicy;
 import user.Basket;
 
 import java.util.Collection;
@@ -14,7 +13,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inventory {
@@ -79,8 +77,8 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equals(name) && item.getCategory().equals(category) && item.getSubCategory().equals(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
-                throw new WrongCategoryException("item category cannot start with a number");
+//            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
+//                throw new WrongCategoryException("item category cannot start with a number");
             //int itemId = tradingSystem.getNextItemId();
             items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
             return id.getAndIncrement();
@@ -301,7 +299,7 @@ public class Inventory {
         }
     }
 
-    public double calculate(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException, policyException {
+    public double calculate(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())

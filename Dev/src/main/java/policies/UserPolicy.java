@@ -2,7 +2,7 @@ package policies;
 
 import user.Basket;
 
-public class timePolicy extends simplePurchasePolicy {
+public class UserPolicy extends SimplePurchasePolicy {
 
     @Override
     public boolean isValidPurchase(Basket purchaseBasket) {

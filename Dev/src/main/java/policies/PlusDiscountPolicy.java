@@ -1,6 +1,6 @@
 package policies;
 
-import exceptions.policyException;
+import exceptions.PolicyException;
 import store.Item;
 import user.Basket;
 
@@ -8,17 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class plusDiscountPolicy extends compoundDiscountPolicy {
+public class PlusDiscountPolicy extends CompoundDiscountPolicy {
 
-    public plusDiscountPolicy(Collection<discountPolicy> discountPolicies) {
+    public PlusDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
         super(discountPolicies);
-        for (discountPolicy discountPolicy: discountPolicies) {
+        for (DiscountPolicy discountPolicy: discountPolicies) {
             items.addAll(discountPolicy.getItems());
         }
     }
 
     @Override
-    public double cartTotalValue(Basket purchaseBasket) throws policyException {
+    public double cartTotalValue(Basket purchaseBasket) throws PolicyException {
         double value = 0;
         if(discountPolicies.size() == 0) {
             for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
@@ -37,7 +37,7 @@ public class plusDiscountPolicy extends compoundDiscountPolicy {
             int totalDiscount = 0;
             Collection<Item> items = new ArrayList<>();
             items.add(item);
-            for (discountPolicy discountPolicy : discountPolicies) {
+            for (DiscountPolicy discountPolicy : discountPolicies) {
                 discountPolicy.cartTotalValue(purchaseBasket);
                 if(discountPolicy.getItems().contains(item))
                     totalDiscount += discountPolicy.getDiscount();
