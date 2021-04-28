@@ -1,34 +1,34 @@
 package policies;
 
-import exceptions.policyException;
-import exceptions.quantityPolicyException;
+import exceptions.PolicyException;
+import exceptions.QuantityPolicyException;
 import store.Item;
 import user.Basket;
 
 import java.util.Collection;
 
-public class quantityPolicy extends simplePurchasePolicy {
+public class QuantityPolicy extends SimplePurchasePolicy {
 
     private final Collection<Item> items;
     private final int minQuantity;
     private final int maxQuantity;
 
     // if i got 0 in minQuantity or maxQuantity i will ignore it
-    public quantityPolicy(Collection<Item> items, int minQuantity, int maxQuantity) throws quantityPolicyException {
+    public QuantityPolicy(Collection<Item> items, int minQuantity, int maxQuantity) throws QuantityPolicyException {
         this.items = items;
         if(minQuantity < 0 || maxQuantity < 0)
-            throw new quantityPolicyException();
+            throw new QuantityPolicyException();
         if((minQuantity > maxQuantity) && (maxQuantity != 0))
-            throw new quantityPolicyException();
+            throw new QuantityPolicyException();
         this.minQuantity = minQuantity;
         this.maxQuantity = maxQuantity;
     }
 
     @Override
-    public boolean isValidPurchase(Basket purchaseBasket) throws policyException {
+    public boolean isValidPurchase(Basket purchaseBasket) throws PolicyException {
         for(Item item: items)
             if(!purchaseBasket.getItems().containsKey(item))
-                throw new quantityPolicyException();
+                throw new QuantityPolicyException();
         if(minQuantity == 0 && maxQuantity != 0) {
             for(Item item: items)
                 if(purchaseBasket.getItems().get(item) > maxQuantity)

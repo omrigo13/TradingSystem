@@ -3,7 +3,7 @@ package user;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.WrongAmountException;
-import exceptions.policyException;
+import exceptions.PolicyException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +40,8 @@ class UserTest {
     void setUp() throws ItemException {
         user = new User(baskets);
         basket = new Basket(store, items);
-        store.setPurchasePolicy(new defaultPurchasePolicy());
-        store.setDiscountPolicy(new defaultDiscountPolicy(store.getItems().keySet()));
+        store.setPurchasePolicy(new DefaultPurchasePolicy());
+        store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().keySet()));
     }
 
     @Test
@@ -113,7 +113,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartCorrectValueCalculation() throws ItemException, policyException {
+    void purchaseCartCorrectValueCalculation() throws ItemException, PolicyException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
@@ -124,7 +124,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartPurchaseHistoryUpdated() throws ItemException , policyException{
+    void purchaseCartPurchaseHistoryUpdated() throws ItemException , PolicyException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);

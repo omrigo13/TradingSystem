@@ -169,7 +169,8 @@ public interface TradingSystemService {
     //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
 
-    
+    //TODO add all purchase and discount policies options here
+
     // ***********************************************************************
     // Topics: service level, external systems
     // ***********************************************************************
