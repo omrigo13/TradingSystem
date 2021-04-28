@@ -114,6 +114,11 @@ public class TradingSystem {
         int id = storeIdCounter.getAndIncrement();
 
         // create the new store
+        for (Store s: stores.values()) {
+            if(storeName.equals(s.getName()))
+                throw new StoreAlreadyExistsException();
+        }
+
         Store store = new Store(id, storeName, "description", null, null);
         stores.put(id, store);
 
