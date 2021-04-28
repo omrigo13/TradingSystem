@@ -13,6 +13,15 @@ public class Path {
         public static final String PURCHASEHISTORY = "/purchaseHistory";
         public static final String CART = "/cart";
         public static final String SEARCH = "/search";
+        public static final String OPENNEWSTORE = "/openNewStore";
+        public static final String ADDITEMTOSTORE = "/addItemToStore";
+        public static final String PERMISSIONSFORMANAGER = "/permissionsForManager";
+        public static final String ALLOWMANAGERTOUPDATEPRODUCTS = "/allowManagerToUpdateProducts";
+        public static final String DISABLEMANAGERFROMUPDATEPRODUCTS = "/disableManagerFromUpdateProducts";
+        public static final String ALLOWMANAGERTOEDITPOLICIES = "/allowManagerToEditPolicies";
+        public static final String DISABLEMANAGERFROMEDITPOLICIES = "/disableManagerFromEditPolicies";
+        public static final String ALLOWMANAGERTOGETHISTORY = "/allowManagerToGetHistory";
+        public static final String DISABLEMANAGERFROMGETHISTORY = "/disableManagerFromGetHistory";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
         //public static final String BOOKS = "/books";
@@ -31,6 +40,9 @@ public class Path {
         public static final String SHOWBASKET = "/velocity/cart/showBasket.vm";
         public static final String UPDATEPRODUCTAMOUNTINBASKET = "velocity/cart/updateProductAmountInBasket.vm";
         public static final String PURCHASEHISTORY = "velocity/cart/purchaseHistory.vm";
+        public static final String OPENNEWSTORE = "velocity/store/openNewStore.vm";
+        public static final String ADDITEMTOSTORE = "velocity/store/addItemToStore.vm";
+        public static final String PERMISSIONSFORMANAGER = "velocity/store/permissionsForManager.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
     }
 }

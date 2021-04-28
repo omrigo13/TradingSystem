@@ -28,9 +28,10 @@
                         <i class="fa fa-caret-down"></i>
                     </button>
                     <div class="dropdown-content">
-                        <a href="/register">addItemToBasket</a>
-                        <a href="/purchaseHistory">getPurchaseHistory</a>
-                        <a href="/showBasket">writeOpinionOnProduct</a>
+                        <a href="/openNewStore">open new store</a>
+                        <a href="/purchaseHistory">get purchase history</a>
+                        <a href="/addItemToStore">add item to store</a>
+                        <a href="/permissionsForManager">add/remove permissions</a>
                     </div>
                 </div>
             </div>

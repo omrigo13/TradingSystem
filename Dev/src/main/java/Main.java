@@ -46,6 +46,19 @@ public class Main {
             post(Path.Web.CART, tradingSystem.handleCartPost);
             get(Path.Web.PURCHASEHISTORY, tradingSystem.servePurchaseHistoryPage);
             post(Path.Web.PURCHASEHISTORY, tradingSystem.handlePurchaseHistoryPost);
+            get(Path.Web.OPENNEWSTORE, tradingSystem.serveOpenNewStorePage);
+            post(Path.Web.OPENNEWSTORE, tradingSystem.handleOpenNewStorePost);
+            get(Path.Web.ADDITEMTOSTORE, tradingSystem.serveAddItemToStorePage);
+
+            post(Path.Web.ALLOWMANAGERTOUPDATEPRODUCTS, tradingSystem.handleAllowManagerToUpdateProductsPost);
+            post(Path.Web.DISABLEMANAGERFROMUPDATEPRODUCTS, tradingSystem.handleDisableManagerFromUpdateProductsPost);
+            post(Path.Web.ALLOWMANAGERTOEDITPOLICIES, tradingSystem.handleAllowManagerToEditPoliciesPost);
+            post(Path.Web.DISABLEMANAGERFROMEDITPOLICIES, tradingSystem.handleDisableManagerFromEditPoliciesPost);
+            post(Path.Web.ALLOWMANAGERTOGETHISTORY, tradingSystem.handleAllowManagerToGetHistoryPost);
+            post(Path.Web.DISABLEMANAGERFROMGETHISTORY, tradingSystem.handleDisableManagerFromGetHistoryPost);
+            get(Path.Web.PERMISSIONSFORMANAGER, tradingSystem.servePermissionsForManagerPage);
+
+            post(Path.Web.ADDITEMTOSTORE, tradingSystem.handleAddItemToStorePost);
             post(Path.Web.LOGIN, tradingSystem.handleLoginPost);
             post(Path.Web.LOGOUT, tradingSystem.handleLogoutPost);
             post(Path.Web.SEARCH, tradingSystem.handleSearchPost);

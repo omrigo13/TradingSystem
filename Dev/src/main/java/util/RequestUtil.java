@@ -33,6 +33,26 @@ public class RequestUtil {
         return ctx.formParam("productID");
     }
 
+    public static String getProduceName(Context ctx) {
+        return ctx.formParam("productName");
+    }
+
+    public static String getCategory(Context ctx) {
+        return ctx.formParam("category");
+    }
+
+    public static String getSubCategory(Context ctx) {
+        return ctx.formParam("subCategory");
+    }
+
+    public static String getManagerUserName(Context ctx) {
+        return ctx.formParam("managerUserName");
+    }
+
+    public static Double getPrice(Context ctx) {
+        return Double.parseDouble(ctx.formParam("price"));
+    }
+
     public static String getSearchBox(Context ctx) {
         return ctx.formParam("searchBox");
     }
@@ -47,6 +67,9 @@ public class RequestUtil {
 
     public static String getSessionLocale(Context ctx) {
         return (String) ctx.sessionAttribute("locale");
+    }
+    public static String getStoreName(Context ctx) {
+        return ctx.formParam("storeName");
     }
 
     public static String getSessionCurrentUser(Context ctx) {

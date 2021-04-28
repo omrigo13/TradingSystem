@@ -72,6 +72,42 @@ public class TradingSystem {
         ctx.render(Path.Template.PURCHASEHISTORY, model);
     };
 
+    public static Handler serveOpenNewStorePage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.OPENNEWSTORE, model);
+    };
+
+    public static Handler handleOpenNewStorePost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("storeID", tradingSystemService.openNewStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreName(ctx)));
+            ctx.render(Path.Template.OPENNEWSTORE, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("openStoreFailed", true);
+            ctx.render(Path.Template.OPENNEWSTORE, model);
+        }
+    };
+
+    public static Handler serveAddItemToStorePage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.ADDITEMTOSTORE, model);
+    };
+
+    public static Handler handleAddItemToStorePost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("itemID", tradingSystemService.addProductToStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProduceName(ctx), RequestUtil.getCategory(ctx), RequestUtil.getSubCategory(ctx), RequestUtil.getAmount(ctx), RequestUtil.getPrice(ctx)));
+            ctx.render(Path.Template.ADDITEMTOSTORE, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("addItemToStoreFailed", true);
+            ctx.render(Path.Template.ADDITEMTOSTORE, model);
+        }
+    };
+
     public static Handler handlePurchasePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
@@ -205,6 +241,95 @@ public class TradingSystem {
         ctx.sessionAttribute("currentUser", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);
+    };
+
+    public static Handler servePermissionsForManagerPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+    };
+
+    public static Handler handleAllowManagerToUpdateProductsPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.allowManagerToUpdateProducts(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
+    };
+
+    public static Handler handleDisableManagerFromUpdateProductsPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.disableManagerFromUpdateProducts(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
+    };
+
+    public static Handler handleAllowManagerToEditPoliciesPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.allowManagerToEditPolicies(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
+    };
+
+    public static Handler handleDisableManagerFromEditPoliciesPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.disableManagerFromEditPolicies(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
+    };
+
+    public static Handler handleAllowManagerToGetHistoryPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.allowManagerToGetHistory(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
+    };
+
+    public static Handler handleDisableManagerFromGetHistoryPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.disableManagerFromGetHistory(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
+        }
     };
 
 }
