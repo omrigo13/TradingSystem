@@ -13,4 +13,6 @@ public interface DiscountPolicy {
     int getDiscount();
 
     Collection<Item> getItems();
+
+    Collection<DiscountPolicy> getDiscountPolicies();
 }

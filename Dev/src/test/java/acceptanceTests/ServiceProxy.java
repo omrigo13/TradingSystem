@@ -214,9 +214,9 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException {
+    public void assignStorePurchasePolicy(int policy, String userID, String storeId) throws InvalidActionException {
         if(real != null)
-            real.assignPolicy(policy, userID, storeId);
+            real.assignStorePurchasePolicy(policy, userID, storeId);
     }
 
     @Override
@@ -264,6 +264,46 @@ public class ServiceProxy implements TradingSystemService {
     public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
         if(real != null)
             return real.xorPolicy(userID, storeId, policy1, policy2);
+        return -1;
+    }
+
+    @Override
+    public Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            return real.getStoreDiscounts(userID, storeId);
+        return null;
+    }
+
+    @Override
+    public void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            real.assignStoreDiscountPolicy(discountId, userID, storeId);
+    }
+
+    @Override
+    public void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException {
+        if(real != null)
+            real.removeDiscount(userID, storeId, discountId);
+    }
+
+    @Override
+    public int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        if(real != null)
+            return real.makeQuantityDiscount(userID, storeId, discount, items, policyId);
+        return -1;
+    }
+
+    @Override
+    public int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        if(real != null)
+            return real.makePlusDiscount(userID, storeId, discountId1, discountId2);
+        return -1;
+    }
+
+    @Override
+    public int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        if(real != null)
+            return real.makeMaxDiscount(userID, storeId, discountId1, discountId2);
         return -1;
     }
 

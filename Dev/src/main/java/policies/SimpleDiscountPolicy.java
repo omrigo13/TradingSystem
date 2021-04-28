@@ -3,6 +3,7 @@ package policies;
 import store.Item;
 
 import java.util.Collection;
+import java.util.LinkedList;
 
 public abstract class SimpleDiscountPolicy implements DiscountPolicy {
 
@@ -17,4 +18,8 @@ public abstract class SimpleDiscountPolicy implements DiscountPolicy {
     public int getDiscount() { return discount; }
 
     public Collection<Item> getItems() { return items; }
+
+    public Collection<DiscountPolicy> getDiscountPolicies() {
+        return new LinkedList<>();
+    }
 }

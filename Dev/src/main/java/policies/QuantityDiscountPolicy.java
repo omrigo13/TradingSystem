@@ -11,9 +11,9 @@ import java.util.Map;
 
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
 
-    private final CompoundPurchasePolicy policy;
+    private final PurchasePolicy policy;
 
-    public QuantityDiscountPolicy(int discount, Collection<Item> items, CompoundPurchasePolicy policy) throws QuantityDiscountPolicyException {
+    public QuantityDiscountPolicy(int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
         super(discount, items);
         if(discount < 0)
             throw new QuantityDiscountPolicyException();

@@ -101,10 +101,10 @@ public class TradingSystemImpl {
         return tradingSystem.getStorePolicies(store);
     }
 
-    public void assignPolicy(int policy, String connectionId, String storeId) throws InvalidActionException {
+    public void assignStorePurchasePolicy(int policy, String connectionId, String storeId) throws InvalidActionException {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        tradingSystem.assignPolicy(policy, store);
+        tradingSystem.assignStorePurchasePolicy(policy, store);
     }
 
     public void removePolicy(String connectionId, String storeId, int policy) throws InvalidActionException {
@@ -156,6 +156,46 @@ public class TradingSystemImpl {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         return tradingSystem.xorPolicy(store, policy1, policy2);
+    }
+
+    public Collection<Integer> getStoreDiscounts(String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        return tradingSystem.getStoreDiscounts(store);
+    }
+
+    public void assignStoreDiscountPolicy(int discountId, String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        tradingSystem.assignStoreDiscountPolicy(discountId, store);
+    }
+
+    public void removeDiscount(String connectionId, String storeId, int discountId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        tradingSystem.removeDiscount(store, discountId);
+    }
+
+    public int makeQuantityDiscount(String connectionId, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Collection<Item> discountItems = new ArrayList<>();
+        for (String item: items) {
+            discountItems.add(store.searchItemById(Integer.parseInt(item)));
+        }
+        return tradingSystem.makeQuantityDiscount(store, discount, discountItems, policyId);
+    }
+
+    public int makePlusDiscount(String connectionId, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        return tradingSystem.makePlusDiscount(store, discountId1, discountId2);
+    }
+
+    public int makeMaxDiscount(String connectionId, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        return tradingSystem.makeMaxDiscount(store, discountId1, discountId2);
     }
 
     public void purchaseCart(String connectionId) throws InvalidActionException {

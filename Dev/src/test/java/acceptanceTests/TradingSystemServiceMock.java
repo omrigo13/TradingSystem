@@ -163,7 +163,7 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
-    public void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException {
+    public void assignStorePurchasePolicy(int policy, String userID, String storeId) throws InvalidActionException {
     }
 
     @Override
@@ -198,6 +198,36 @@ public class TradingSystemServiceMock implements TradingSystemService {
 
     @Override
     public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
+    public void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException {
+
+    }
+
+    @Override
+    public void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException {
+
+    }
+
+    @Override
+    public int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
         return 0;
     }
 
