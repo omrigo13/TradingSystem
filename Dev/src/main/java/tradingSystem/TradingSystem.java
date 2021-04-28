@@ -7,12 +7,14 @@ import exceptions.InvalidStoreIdException;
 import exceptions.SubscriberDoesNotExistException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import notifications.Observable;
 import store.Item;
 import store.Store;
 import user.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,6 +30,8 @@ public class TradingSystem {
     private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
     private final ConcurrentHashMap<String, User> connections; // key: connection id
+
+    private final Map<Store, Observable> observables;
 
     TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
@@ -114,6 +118,8 @@ public class TradingSystem {
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);
+
+        observables.put(store, new Observable());
 
         return id;
     }

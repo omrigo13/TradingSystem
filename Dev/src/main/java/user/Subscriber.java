@@ -342,6 +342,42 @@ public class Subscriber extends User {
         if (!itemsPurchased.get(store).contains(item))
             throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
 
-        item.addReview(new Review(this, store, item, review));
+        Review review1 = new Review(this, store, item, review)
+        item.addReview(review1);
+        store.notifyItemOpinion(review1);
+
+    }
+
+    public void subscribe(Store store){
+        store.subscribe(this);
+    }
+
+    public void unsubscribe(Store store){
+        store.unsubscribe(this);
+
+    }
+
+    public void notifyObserverPurchase(User buyer, Map<Item, Integer> basket) {
+        //todo: decide if to postpone the notification
+    }
+
+    public void notifyObserverStoreStatus(boolean isActive) {
+        //todo: decide if to postpone the notification
+
+    }
+
+    public void notifyObserverItemOpinion(Review review) {
+        //todo: decide if to postpone the notification
+
+    }
+
+    public void notifyObserverLotteryStatus() {
+        //todo: implement
+
+    }
+
+    public void notifyObserverMessage(){
+        //todo: implement
+
     }
 }

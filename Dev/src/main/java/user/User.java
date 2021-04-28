@@ -6,9 +6,11 @@ import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import notifications.Observable;
 import store.Item;
 import store.Store;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -76,6 +78,11 @@ public class User {
             entry.getKey().addPurchase(entry.getValue());
 
         addCartToPurchases(storePurchaseDetails);
+        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            Store store = storeBasketEntry.getKey();
+            Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
+            store.notifyPurchase(this, basket);
+        }
         baskets.clear();
     }
 

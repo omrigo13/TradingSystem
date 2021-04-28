@@ -1,7 +1,11 @@
 package store;
 
 import exceptions.*;
+import notifications.Observable;
+import review.Review;
 import tradingSystem.TradingSystem;
+import user.Subscriber;
+import user.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +27,7 @@ public class Store {
     private boolean isActive;
     private Inventory inventory = new Inventory();
     private Collection<String> purchases = new LinkedList<>();
+    private Observable observable;
 
     public Store() {}
 
@@ -34,7 +39,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description) throws ItemException {
+    public Store(int id, String name, String description, Observable observable) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -50,6 +55,7 @@ public class Store {
         // this.founder = founder; // TODO: should check how to implement
 //        this.inventory = new Inventory(tradingSystem);
         this.isActive = true;
+        this.observable = observable;
     }
 
     public int getId() {
@@ -322,6 +328,20 @@ public class Store {
         return isActive;
     }
 
+    public void setNotActive(){
+        if(isActive == false)
+            return;
+        this.isActive = false;
+        observable.notifyStoreStatus(isActive);
+    }
+
+    public void setActive(){
+        if(isActive == true)
+            return;
+        this.isActive = true;
+        observable.notifyStoreStatus(isActive);
+    }
+
     //TODO remember to deal with policies and types in a furure version
     public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws ItemException { // TODO should get basket
         return inventory.calculate(items, details);
@@ -346,4 +366,20 @@ public class Store {
     }
 
     public Collection<String> getPurchaseHistory() { return purchases; }
+
+    public void notifyPurchase(User buyer, Map<Item, Integer> basket) {
+        observable.notifyPurchase(buyer, basket);
+    }
+
+    public void subscribe(Subscriber subscriber) {
+        observable.subscribe(subscriber);
+    }
+
+    public void unsubscribe(Subscriber subscriber) {
+        observable.unsubscribe(subscriber);
+    }
+
+    public void notifyItemOpinion(Review review) {
+        observable.notifyItemOpinion(review);
+    }
 }
