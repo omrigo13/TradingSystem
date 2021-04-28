@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DiscountPolicyTest {
 
     private User user;
-    private final Collection<SimplePurchasePolicy> policies = new ArrayList<>();
+    private final Collection<PurchasePolicy> policies = new ArrayList<>();
     private final Collection<DiscountPolicy> discountPolicies = new ArrayList<>();
     private Collection<Item> items = new ArrayList<>();
 

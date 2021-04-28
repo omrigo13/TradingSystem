@@ -82,6 +82,46 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         tradingSystemImpl.updateProductAmountInBasket(userID, storeId, productId, newAmount);
     }
 
+    public int newPolicy(String userID, String storeId) throws InvalidActionException { //creates empty policy
+        eventLog.writeToLogger("User create a new policy of the store-" + storeId);
+        return tradingSystemImpl.newPolicy(userID, storeId);
+    }
+
+    public void removePolicy(String userID, String storeId, int policy) throws InvalidActionException {
+        eventLog.writeToLogger("User remove a policy of the store-" + storeId);
+        tradingSystemImpl.removePolicy(userID, storeId, policy);
+    }
+
+    public void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        eventLog.writeToLogger("User make quantity policy of the store-" + storeId);
+        tradingSystemImpl.makeQuantityPolicy(userID, storeId, policy, items, minQuantity, maxQuantity);
+    }
+
+    public void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException {
+        eventLog.writeToLogger("User make basket purchase policy of the store-" + storeId);
+        tradingSystemImpl.makeBasketPurchasePolicy(userID, storeId, policy, minBasketValue);
+    }
+
+    public void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
+        eventLog.writeToLogger("User make time policy of the store-" + storeId);
+        tradingSystemImpl.makeTimePolicy(userID, storeId, policy, items, time);
+    }
+
+    public int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make and policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.andPolicy(userID, storeId, policy1, policy2);
+    }
+
+    public int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make or policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.orPolicy(userID, storeId, policy1, policy2);
+    }
+
+    public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make xor policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.xorPolicy(userID, storeId, policy1, policy2);
+    }
+
     @Override
     public void purchaseCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("User purchase cart");

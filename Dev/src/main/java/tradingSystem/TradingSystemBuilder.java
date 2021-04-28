@@ -6,6 +6,7 @@ import externalServices.DeliverySystem;
 import externalServices.DeliverySystemBasicImpl;
 import externalServices.PaymentSystem;
 import externalServices.PaymentSystemBasicImpl;
+import policies.PurchasePolicy;
 import store.Store;
 import user.Subscriber;
 import user.User;
@@ -24,6 +25,7 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<Integer, Store> stores;
     private ConcurrentHashMap<String, User> connections;
     private AtomicInteger subscriberIdCounter;
+    private ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies;
 
     public TradingSystemBuilder setUserName(String userName) {
 
@@ -73,6 +75,12 @@ public class TradingSystemBuilder {
         return this;
     }
 
+    public TradingSystemBuilder setPurchasePolicies(ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies) {
+
+        this.purchasePolicies = purchasePolicies;
+        return this;
+    }
+
     public TradingSystemBuilder setSubscriberIdCounter(AtomicInteger subscriberIdCounter){
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -87,8 +95,9 @@ public class TradingSystemBuilder {
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
         connections = (connections == null) ? new ConcurrentHashMap<>() : connections;
         stores = (stores == null) ? new ConcurrentHashMap<>() : stores;
+        purchasePolicies = (purchasePolicies == null) ? new ConcurrentHashMap<>() : purchasePolicies;
         subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
 
-        return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores, purchasePolicies);
     }
 }

@@ -8,7 +8,7 @@ import java.util.Collection;
 
 public class XorPolicy extends CompoundPurchasePolicy {
 
-    public XorPolicy(Collection<SimplePurchasePolicy> purchasePolicies) {
+    public XorPolicy(Collection<PurchasePolicy> purchasePolicies) {
         super(purchasePolicies);
     }
 

@@ -1,16 +1,16 @@
 package tradingSystem;
 
 import authentication.UserAuthentication;
-import exceptions.InvalidActionException;
-import exceptions.InvalidConnectionIdException;
-import exceptions.InvalidStoreIdException;
-import exceptions.SubscriberDoesNotExistException;
+import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import policies.*;
 import store.Item;
 import store.Store;
 import user.*;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +20,8 @@ public class TradingSystem {
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
     private final AtomicInteger subscriberIdCounter;
+    private final AtomicInteger policyIdCounter = new AtomicInteger();
+    private final AtomicInteger discountIdCounter = new AtomicInteger();
 
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
@@ -28,10 +30,11 @@ public class TradingSystem {
     private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
     private final ConcurrentHashMap<String, User> connections; // key: connection id
+    private final ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies; // key: purchase policy id
 
     TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
-                  ConcurrentHashMap<Integer, Store> stores)
+                  ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -41,6 +44,7 @@ public class TradingSystem {
         this.subscribers = subscribers;
         this.connections = connections;
         this.stores = stores;
+        this.purchasePolicies = purchasePolicies;
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
@@ -141,6 +145,80 @@ public class TradingSystem {
                 items.add(item.toString());
         }
         return items;
+    }
+
+    public int newPolicy(Store store) {
+
+        int id = policyIdCounter.getAndIncrement();
+        // create the new purchase policy
+        PurchasePolicy purchasePolicy = new DefaultPurchasePolicy();
+        store.setPurchasePolicy(purchasePolicy);
+        purchasePolicies.put(id, purchasePolicy);
+
+        return id;
+    }
+
+    public void removePolicy(Store store, int policy) {
+        purchasePolicies.remove(policy);
+        PurchasePolicy purchasePolicy = new DefaultPurchasePolicy();
+        store.setPurchasePolicy(purchasePolicy);
+    }
+
+    public void makeQuantityPolicy(Store store, int policy, Collection<Item> items, int minQuantity, int maxQuantity) throws PolicyException {
+        PurchasePolicy purchasePolicy = new QuantityPolicy(items, minQuantity, maxQuantity);
+        purchasePolicies.put(policy, purchasePolicy);
+        store.setPurchasePolicy(purchasePolicy);
+    }
+
+    public void makeBasketPurchasePolicy(Store store, int policy, int minBasketValue) throws PolicyException{
+        PurchasePolicy purchasePolicy = new BasketPurchasePolicy(minBasketValue);
+        purchasePolicies.put(policy, purchasePolicy);
+        store.setPurchasePolicy(purchasePolicy);
+    }
+
+    public void makeTimePolicy(Store store, int policy, Collection<Item> items, LocalTime time) {
+        PurchasePolicy purchasePolicy = new TimePolicy(items, time);
+        purchasePolicies.put(policy, purchasePolicy);
+        store.setPurchasePolicy(purchasePolicy);
+    }
+
+    public int andPolicy(Store store, int policy1, int policy2) {
+
+        int id = policyIdCounter.getAndIncrement();
+        Collection<PurchasePolicy> andPolicies = new ArrayList<>();
+        andPolicies.add(purchasePolicies.get(policy1));
+        andPolicies.add(purchasePolicies.get(policy2));
+        PurchasePolicy andPurchasePolicy = new AndPolicy(andPolicies);
+        purchasePolicies.put(id, andPurchasePolicy);
+        store.setPurchasePolicy(andPurchasePolicy);
+
+        return id;
+    }
+
+    public int orPolicy(Store store, int policy1, int policy2) {
+
+        int id = policyIdCounter.getAndIncrement();
+        Collection<PurchasePolicy> orPolicies = new ArrayList<>();
+        orPolicies.add(purchasePolicies.get(policy1));
+        orPolicies.add(purchasePolicies.get(policy2));
+        PurchasePolicy orPurchasePolicy = new OrPolicy(orPolicies);
+        purchasePolicies.put(id, orPurchasePolicy);
+        store.setPurchasePolicy(orPurchasePolicy);
+
+        return id;
+    }
+
+    public int xorPolicy(Store store, int policy1, int policy2) {
+
+        int id = policyIdCounter.getAndIncrement();
+        Collection<PurchasePolicy> xorPolicies = new ArrayList<>();
+        xorPolicies.add(purchasePolicies.get(policy1));
+        xorPolicies.add(purchasePolicies.get(policy2));
+        PurchasePolicy xorPurchasePolicy = new XorPolicy(xorPolicies);
+        purchasePolicies.put(id, xorPurchasePolicy);
+        store.setPurchasePolicy(xorPurchasePolicy);
+
+        return id;
     }
 
     public void purchaseCart(User user) throws InvalidActionException {

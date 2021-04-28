@@ -8,13 +8,13 @@ import java.util.Collection;
 
 public class AndPolicy extends CompoundPurchasePolicy {
 
-    public AndPolicy(Collection<SimplePurchasePolicy> purchasePolicies) {
+    public AndPolicy(Collection<PurchasePolicy> purchasePolicies) {
         super(purchasePolicies);
     }
 
     @Override
     public boolean isValidPurchase(Basket purchaseBasket) throws PolicyException {
-        for (SimplePurchasePolicy purchase: purchasePolicies) {
+        for (PurchasePolicy purchase: purchasePolicies) {
             if(!purchase.isValidPurchase(purchaseBasket))
                 throw new AndPolicyException();
         }

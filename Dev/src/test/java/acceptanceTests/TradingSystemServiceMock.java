@@ -158,6 +158,46 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
+    public int newPolicy(String userID, String storeId) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public void removePolicy(String userID, String storeId, int policy) throws InvalidActionException {
+
+    }
+
+    @Override
+    public void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+
+    }
+
+    @Override
+    public void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException {
+
+    }
+
+    @Override
+    public void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
+
+    }
+
+    @Override
+    public int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
     public Collection<String> getEventLog(String userID) throws InvalidActionException {
         return null;
     }

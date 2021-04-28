@@ -8,9 +8,9 @@ import java.util.Collection;
 
 public abstract class CompoundPurchasePolicy implements PurchasePolicy {
 
-    protected Collection<SimplePurchasePolicy> purchasePolicies;
+    protected Collection<PurchasePolicy> purchasePolicies;
 
-    public CompoundPurchasePolicy(Collection<SimplePurchasePolicy> purchasePolicies)
+    public CompoundPurchasePolicy(Collection<PurchasePolicy> purchasePolicies)
     {
         if(purchasePolicies == null)
             this.purchasePolicies = new ArrayList<>();
@@ -24,5 +24,5 @@ public abstract class CompoundPurchasePolicy implements PurchasePolicy {
 
     public void remove(SimplePurchasePolicy purchasePolicy) { this.purchasePolicies.remove(purchasePolicy); }
 
-    public Collection<SimplePurchasePolicy> getPurchasePolicies() { return this.purchasePolicies; }
+    public Collection<PurchasePolicy> getPurchasePolicies() { return this.purchasePolicies; }
 }

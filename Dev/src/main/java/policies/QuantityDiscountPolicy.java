@@ -20,7 +20,7 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         this.items = items;
         if(policy == null)
         {
-            Collection<SimplePurchasePolicy> policies = new ArrayList<>();
+            Collection<PurchasePolicy> policies = new ArrayList<>();
             policies.add(new DefaultPurchasePolicy());
             this.policy = new AndPolicy(policies);
         }

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PurchasePolicyTest {
 
     private User user;
-    private final Collection<SimplePurchasePolicy> policies = new ArrayList<>();
+    private final Collection<PurchasePolicy> policies = new ArrayList<>();
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;

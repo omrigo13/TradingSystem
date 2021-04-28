@@ -207,6 +207,59 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
+    public int newPolicy(String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            return real.newPolicy(userID, storeId);
+        return -1;
+    }
+
+    @Override
+    public void removePolicy(String userID, String storeId, int policy) throws InvalidActionException {
+        if(real != null)
+            real.removePolicy(userID, storeId, policy);
+    }
+
+    @Override
+    public void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        if(real != null)
+            real.makeQuantityPolicy(userID, storeId, policy, items, minQuantity, maxQuantity);
+    }
+
+    @Override
+    public void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException {
+        if(real != null)
+            real.makeBasketPurchasePolicy(userID, storeId, policy, minBasketValue);
+    }
+
+    @Override
+    public void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
+        if(real != null)
+            real.makeTimePolicy(userID, storeId, policy, items, time);
+
+    }
+
+    @Override
+    public int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        if(real != null)
+            return real.andPolicy(userID, storeId, policy1, policy2);
+        return -1;
+    }
+
+    @Override
+    public int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        if(real != null)
+            return real.orPolicy(userID, storeId, policy1, policy2);
+        return -1;
+    }
+
+    @Override
+    public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        if(real != null)
+            return real.xorPolicy(userID, storeId, policy1, policy2);
+        return -1;
+    }
+
+    @Override
     public Collection<String> getEventLog(String userID) throws InvalidActionException, IOException {
         if(real != null)
             return real.getEventLog(userID);
