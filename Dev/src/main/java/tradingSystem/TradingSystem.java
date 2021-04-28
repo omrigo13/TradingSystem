@@ -31,10 +31,16 @@ public class TradingSystem {
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
     private final ConcurrentHashMap<String, User> connections; // key: connection id
     private final ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies; // key: purchase policy id
+    private final ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies; // key: discount policy id
+    private final ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; // key: store, value: purchase policies
+    private final ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; // key: store, value: discount policies
+
 
     TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
-                  ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies)
+                  ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies,
+                  ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies, ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies,
+                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -45,6 +51,9 @@ public class TradingSystem {
         this.connections = connections;
         this.stores = stores;
         this.purchasePolicies = purchasePolicies;
+        this.discountPolicies = discountPolicies;
+        this.storesPurchasePolicies = storesPurchasePolicies;
+        this.storesDiscountPolicies = storesDiscountPolicies;
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
@@ -154,39 +163,52 @@ public class TradingSystem {
         return items;
     }
 
-    public int newPolicy(Store store) {
-
-        int id = policyIdCounter.getAndIncrement();
-        // create the new purchase policy
-        PurchasePolicy purchasePolicy = new DefaultPurchasePolicy();
-        store.setPurchasePolicy(purchasePolicy);
-        purchasePolicies.put(id, purchasePolicy);
-
-        return id;
+    public Collection<Integer> getStorePolicies(Store store) {
+        Collection<Integer> storePolicies = new LinkedList<>();
+        for (Integer purchasePolicy: storesPurchasePolicies.get(store)) {
+            storePolicies.add(purchasePolicy);
+        }
+        return storePolicies;
     }
 
-    public void removePolicy(Store store, int policy) {
+    public void assignPolicy(int policy, Store store) {
+        store.setPurchasePolicy(purchasePolicies.get(policy));
+    }
+
+    public void removePolicy(Store store, int policy) { //TODO add exception
         purchasePolicies.remove(policy);
         PurchasePolicy purchasePolicy = new DefaultPurchasePolicy();
         store.setPurchasePolicy(purchasePolicy);
     }
 
-    public void makeQuantityPolicy(Store store, int policy, Collection<Item> items, int minQuantity, int maxQuantity) throws PolicyException {
+    public int makeQuantityPolicy(Store store, Collection<Item> items, int minQuantity, int maxQuantity) throws PolicyException {
+        int id = policyIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = new QuantityPolicy(items, minQuantity, maxQuantity);
-        purchasePolicies.put(policy, purchasePolicy);
+        purchasePolicies.put(id, purchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(purchasePolicy);
+        return id;
     }
 
-    public void makeBasketPurchasePolicy(Store store, int policy, int minBasketValue) throws PolicyException{
+    public int makeBasketPurchasePolicy(Store store, int minBasketValue) throws PolicyException{
+        int id = policyIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = new BasketPurchasePolicy(minBasketValue);
-        purchasePolicies.put(policy, purchasePolicy);
+        purchasePolicies.put(id, purchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(purchasePolicy);
+        return id;
     }
 
-    public void makeTimePolicy(Store store, int policy, Collection<Item> items, LocalTime time) {
+    public int makeTimePolicy(Store store, Collection<Item> items, LocalTime time) {
+        int id = policyIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = new TimePolicy(items, time);
-        purchasePolicies.put(policy, purchasePolicy);
+        purchasePolicies.put(id, purchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(purchasePolicy);
+        return id;
     }
 
     public int andPolicy(Store store, int policy1, int policy2) {
@@ -197,8 +219,9 @@ public class TradingSystem {
         andPolicies.add(purchasePolicies.get(policy2));
         PurchasePolicy andPurchasePolicy = new AndPolicy(andPolicies);
         purchasePolicies.put(id, andPurchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(andPurchasePolicy);
-
         return id;
     }
 
@@ -210,8 +233,9 @@ public class TradingSystem {
         orPolicies.add(purchasePolicies.get(policy2));
         PurchasePolicy orPurchasePolicy = new OrPolicy(orPolicies);
         purchasePolicies.put(id, orPurchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(orPurchasePolicy);
-
         return id;
     }
 
@@ -223,8 +247,9 @@ public class TradingSystem {
         xorPolicies.add(purchasePolicies.get(policy2));
         PurchasePolicy xorPurchasePolicy = new XorPolicy(xorPolicies);
         purchasePolicies.put(id, xorPurchasePolicy);
+        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.get(store).add(id);
         store.setPurchasePolicy(xorPurchasePolicy);
-
         return id;
     }
 

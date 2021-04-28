@@ -207,10 +207,16 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public int newPolicy(String userID, String storeId) throws InvalidActionException {
+    public Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException {
         if(real != null)
-            return real.newPolicy(userID, storeId);
-        return -1;
+            return real.getStorePolicies(userID, storeId);
+        return null;
+    }
+
+    @Override
+    public void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            real.assignPolicy(policy, userID, storeId);
     }
 
     @Override
@@ -220,22 +226,24 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+    public int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
         if(real != null)
-            real.makeQuantityPolicy(userID, storeId, policy, items, minQuantity, maxQuantity);
+            return real.makeQuantityPolicy(userID, storeId, items, minQuantity, maxQuantity);
+        return -1;
     }
 
     @Override
-    public void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException {
+    public int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException {
         if(real != null)
-            real.makeBasketPurchasePolicy(userID, storeId, policy, minBasketValue);
+            return real.makeBasketPurchasePolicy(userID, storeId, minBasketValue);
+        return -1;
     }
 
     @Override
-    public void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
+    public int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException {
         if(real != null)
-            real.makeTimePolicy(userID, storeId, policy, items, time);
-
+            return real.makeTimePolicy(userID, storeId, items, time);
+        return -1;
     }
 
     @Override

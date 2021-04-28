@@ -94,10 +94,17 @@ public class TradingSystemImpl {
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
     }
 
-    public int newPolicy(String connectionId, String storeId) throws InvalidActionException {
+    public Collection<Integer> getStorePolicies(String connectionId, String storeId) throws InvalidActionException {
+
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        return tradingSystem.newPolicy(store);
+        return tradingSystem.getStorePolicies(store);
+    }
+
+    public void assignPolicy(int policy, String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        tradingSystem.assignPolicy(policy, store);
     }
 
     public void removePolicy(String connectionId, String storeId, int policy) throws InvalidActionException {
@@ -106,23 +113,23 @@ public class TradingSystemImpl {
         tradingSystem.removePolicy(store, policy);
     }
 
-    public void makeQuantityPolicy(String connectionId, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+    public int makeQuantityPolicy(String connectionId, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Collection<Item> policyItems = new ArrayList<>();
         for (String item: items) {
             policyItems.add(store.searchItemById(Integer.parseInt(item)));
         }
-        tradingSystem.makeQuantityPolicy(store, policy, policyItems, minQuantity, maxQuantity);
+        return tradingSystem.makeQuantityPolicy(store, policyItems, minQuantity, maxQuantity);
     }
 
-    public void makeBasketPurchasePolicy(String connectionId, String storeId, int policy, int minBasketValue) throws InvalidActionException {
+    public int makeBasketPurchasePolicy(String connectionId, String storeId, int minBasketValue) throws InvalidActionException {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        tradingSystem.makeBasketPurchasePolicy(store, policy, minBasketValue);
+        return tradingSystem.makeBasketPurchasePolicy(store, minBasketValue);
     }
 
-    public void makeTimePolicy(String connectionId, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
+    public int makeTimePolicy(String connectionId, String storeId, Collection<String> items, String time) throws InvalidActionException {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Collection<Item> policyItems = new ArrayList<>();
@@ -130,7 +137,7 @@ public class TradingSystemImpl {
             policyItems.add(store.searchItemById(Integer.parseInt(item)));
         }
         LocalTime policyTime = LocalTime.parse(time);
-        tradingSystem.makeTimePolicy(store, policy, policyItems, policyTime);
+        return tradingSystem.makeTimePolicy(store, policyItems, policyTime);
     }
 
     public int andPolicy(String connectionId, String storeId, int policy1, int policy2) throws InvalidActionException {

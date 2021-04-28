@@ -171,9 +171,13 @@ public interface TradingSystemService {
 
     //TODO permissions for policies and discounts
 
-    /* create a new policy of a store.
+    /* get all policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
-    int newPolicy(String userID, String storeId) throws InvalidActionException;
+    Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException;
+
+    /* assign a policy to a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
+    void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException;
 
     //TODO (removes the whole policy of the store)?
     //TODO how to assign the policy to the store?
@@ -185,15 +189,15 @@ public interface TradingSystemService {
 
     /* create quantity policy of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException;
+    int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException;
 
     /* create minimum basket purchase value policy of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException;
+    int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException;
 
     /* create time policy of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException;
+    int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException;
 
     /* create and policy between two policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/

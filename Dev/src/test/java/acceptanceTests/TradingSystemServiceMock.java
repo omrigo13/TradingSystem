@@ -158,8 +158,12 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
-    public int newPolicy(String userID, String storeId) throws InvalidActionException {
-        return 0;
+    public Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
+    public void assignPolicy(int policy, String userID, String storeId) throws InvalidActionException {
     }
 
     @Override
@@ -168,18 +172,18 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
-    public void makeQuantityPolicy(String userID, String storeId, int policy, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
-
+    public int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        return 0;
     }
 
     @Override
-    public void makeBasketPurchasePolicy(String userID, String storeId, int policy, int minBasketValue) throws InvalidActionException {
-
+    public int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException {
+        return 0;
     }
 
     @Override
-    public void makeTimePolicy(String userID, String storeId, int policy, Collection<String> items, String time) throws InvalidActionException {
-
+    public int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException {
+        return 0;
     }
 
     @Override
