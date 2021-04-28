@@ -7,4 +7,8 @@ public class PaymentData {
     public PaymentData(double paymentValue) {
         this.paymentValue = paymentValue;
     }
+
+    public double getPaymentValue() {
+        return paymentValue;
+    }
 }

@@ -1,7 +1,6 @@
 package user;
 
-import exceptions.ItemException;
-import exceptions.NotLoggedInException;
+import exceptions.*;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
@@ -50,6 +49,31 @@ public class User {
         // overridden in subclass
     }
 
+    public PaymentData calculatePaymentData() {
+        double price = 0.0;
+        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            for (Map.Entry<Item, Integer> items : storeBasketEntry.getValue().getItems().entrySet()) {
+                price += items.getKey().getPrice() * items.getValue();
+            }
+        }
+        return new PaymentData(price);
+    }
+
+    public DeliveryData createDeliveryData() {
+        return null;
+    }
+
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, ExternalServicesException {
+
+        if (!baskets.isEmpty()) {
+            if (!paymentSystem.pay(calculatePaymentData()))
+                throw new PaymentSystemException();
+            if (!deliverySystem.deliver(createDeliveryData()))
+                throw new DeliverySystemException();
+        }
+    }
+
+    /*
     public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException {
 
         double totalPrice = 0;
@@ -91,4 +115,6 @@ public class User {
         }
         return totalPrice;
     }
+
+     */
 }

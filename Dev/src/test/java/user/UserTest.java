@@ -1,9 +1,9 @@
 package user;
 
-import exceptions.ItemException;
-import exceptions.NotLoggedInException;
-import exceptions.WrongAmountException;
+import exceptions.*;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,18 +31,21 @@ class UserTest {
 
     private ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
 
-    @Spy private Store store;
-    @Spy private Item item;
-    @Spy private Basket basket = new Basket(store, items);
-    @Spy private ConcurrentHashMap<Store, Basket> baskets;
-
+    @Mock private Store store;
+    @Mock private Item item;
+    @Mock private Basket basket;
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
+
+    private final ConcurrentHashMap<Store, Basket> baskets = new ConcurrentHashMap<>();
 
     @BeforeEach
-    void setUp() throws ItemException {
-        user = new User(baskets);
-        basket = new Basket(store, items);
+    void setUp() {
+        baskets.clear();
+        user = spy(new User(baskets));
+//        basket = new Basket(store, items);
     }
 
     @Test
@@ -79,6 +82,89 @@ class UserTest {
         assertSame(basket, user.getBasket(store));
     }
 
+    @Test
+    void purchaseEmptyCart() throws ItemException, ExternalServicesException {
+
+        user.purchaseCart(paymentSystem, deliverySystem);
+
+        verifyNoInteractions(paymentSystem);
+        verifyNoInteractions(deliverySystem);
+    }
+
+    @Test
+    void calculatePaymentData_oneItem() {
+
+        baskets.put(store, basket);
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(item, 3);
+        when(basket.getItems()).thenReturn(items);
+        when(item.getPrice()).thenReturn(10.0);
+
+        PaymentData paymentData = user.calculatePaymentData();
+
+        assertEquals(30.0, paymentData.getPaymentValue());
+    }
+
+    @Test
+    void calculatePaymentData_twoItems() {
+
+        baskets.put(store, basket);
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(item, 3);
+        Item item2 = mock(Item.class);
+        items.put(item2, 5);
+        when(basket.getItems()).thenReturn(items);
+        when(item.getPrice()).thenReturn(10.0);
+        when(item2.getPrice()).thenReturn(5.0);
+
+        PaymentData paymentData = user.calculatePaymentData();
+
+        assertEquals(55.0, paymentData.getPaymentValue());
+    }
+
+    @Test
+    void purchaseCart() throws ItemException, ExternalServicesException {
+
+        baskets.put(store, basket);
+        doReturn(paymentData).when(user).calculatePaymentData();
+        doReturn(deliveryData).when(user).createDeliveryData();
+//        when(user.calculatePaymentData()).thenReturn(paymentData);
+//        when(user.createDeliveryData()).thenReturn(deliveryData);
+        when(paymentSystem.pay(paymentData)).thenReturn(true);
+        when(deliverySystem.deliver(deliveryData)).thenReturn(true);
+
+        user.purchaseCart(paymentSystem, deliverySystem);
+
+        verify(paymentSystem).pay(paymentData);
+        verify(deliverySystem).deliver(deliveryData);
+    }
+
+    @Test
+    void purchaseCart_paymentFailed() {
+
+        baskets.put(store, basket);
+        doReturn(paymentData).when(user).calculatePaymentData();
+//        doThrow(PaymentSystemException.class).when(paymentSystem).pay(paymentData);
+
+        assertThrows(PaymentSystemException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+
+        verifyNoInteractions(deliverySystem);
+    }
+
+    @Test
+    void purchaseCart_deliveryFailed() {
+
+        baskets.put(store, basket);
+        doReturn(paymentData).when(user).calculatePaymentData();
+//        when(user.calculatePaymentData()).thenReturn(paymentData);
+        when(paymentSystem.pay(paymentData)).thenReturn(true);
+
+        assertThrows(DeliverySystemException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+    }
+
+
+
+    /*
     @Test
     void purchaseCart() throws Exception {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
@@ -134,4 +220,6 @@ class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem);
         assertTrue(store.getPurchaseHistory().toString().contains("cheese")); // checks that the purchase added to store history
     }
+
+    */
 }
