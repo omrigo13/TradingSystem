@@ -77,8 +77,8 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equals(name) && item.getCategory().equals(category) && item.getSubCategory().equals(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
-                throw new WrongCategoryException("item category cannot start with a number");
+//            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
+//                throw new WrongCategoryException("item category cannot start with a number");
             //int itemId = tradingSystem.getNextItemId();
             items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
             return id.getAndIncrement();
