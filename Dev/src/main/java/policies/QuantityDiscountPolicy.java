@@ -1,9 +1,7 @@
 package policies;
 
-import exceptions.ItemException;
-import exceptions.policyException;
-import exceptions.quantityDiscountPolicyException;
-import exceptions.quantityPolicyException;
+import exceptions.PolicyException;
+import exceptions.QuantityDiscountPolicyException;
 import store.Item;
 import user.Basket;
 
@@ -11,20 +9,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-public class quantityDiscountPolicy extends simpleDiscountPolicy {
+public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
 
-    private final compoundPurchasePolicy policy;
+    private final PurchasePolicy policy;
 
-    public quantityDiscountPolicy(int discount, Collection<Item> items, compoundPurchasePolicy policy) throws quantityDiscountPolicyException {
+    public QuantityDiscountPolicy(int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
         super(discount, items);
         if(discount < 0)
-            throw new quantityDiscountPolicyException();
+            throw new QuantityDiscountPolicyException();
         this.items = items;
         if(policy == null)
         {
-            Collection<simplePurchasePolicy> policies = new ArrayList<>();
-            policies.add(new defaultPurchasePolicy());
-            this.policy = new andPolicy(policies);
+            Collection<PurchasePolicy> policies = new ArrayList<>();
+            policies.add(new DefaultPurchasePolicy());
+            this.policy = new AndPolicy(policies);
         }
         else
             this.policy = policy;
@@ -35,7 +33,7 @@ public class quantityDiscountPolicy extends simpleDiscountPolicy {
         double value = 0.0;
         boolean validPolicy;
         try { validPolicy = policy.isValidPurchase(purchaseBasket); }
-        catch (policyException p) { validPolicy = false; }
+        catch (PolicyException p) { validPolicy = false; }
         for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
         {
             Item item = itemsAndQuantity.getKey();

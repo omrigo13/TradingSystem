@@ -158,6 +158,80 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
+    public Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
+    public void assignStorePurchasePolicy(int policy, String userID, String storeId) throws InvalidActionException {
+    }
+
+    @Override
+    public void removePolicy(String userID, String storeId, int policy) throws InvalidActionException {
+
+    }
+
+    @Override
+    public int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
+    public void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException {
+
+    }
+
+    @Override
+    public void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException {
+
+    }
+
+    @Override
+    public int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
+    public int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        return 0;
+    }
+
+    @Override
     public Collection<String> getEventLog(String userID) throws InvalidActionException {
         return null;
     }

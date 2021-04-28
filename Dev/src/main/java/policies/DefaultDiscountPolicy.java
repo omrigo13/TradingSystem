@@ -6,9 +6,9 @@ import user.Basket;
 import java.util.Collection;
 import java.util.Map;
 
-public class defaultDiscountPolicy extends simpleDiscountPolicy {
+public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
 
-    public defaultDiscountPolicy(Collection<Item> items) {
+    public DefaultDiscountPolicy(Collection<Item> items) {
         super(0, items);
     }
 

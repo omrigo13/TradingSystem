@@ -1,10 +1,10 @@
 package store;
 
 import exceptions.*;
-import policies.defaultDiscountPolicy;
-import policies.defaultPurchasePolicy;
-import policies.discountPolicy;
-import policies.purchasePolicy;
+import policies.DefaultDiscountPolicy;
+import policies.DefaultPurchasePolicy;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import spellChecker.Spelling;
 import user.Basket;
 
@@ -22,8 +22,8 @@ public class Store {
     private String discountType;     // TODO: should check how to implement
     //private String purchasePolicy;     // TODO: should check how to implement
    // private String discountPolicy;     // TODO: should check how to implement
-    private discountPolicy discountPolicy;
-    private purchasePolicy purchasePolicy;
+    private DiscountPolicy discountPolicy;
+    private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
     private Inventory inventory = new Inventory();
@@ -39,7 +39,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description, purchasePolicy purchasePolicy, discountPolicy discountPolicy) throws ItemException {
+    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -55,11 +55,11 @@ public class Store {
         // this.founder = founder; // TODO: should check how to implement
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
-            this.purchasePolicy = new defaultPurchasePolicy();
+            this.purchasePolicy = new DefaultPurchasePolicy();
         else
             this.purchasePolicy = purchasePolicy;
         if(discountPolicy == null)
-            this.discountPolicy = new defaultDiscountPolicy(this.inventory.getItems().keySet());
+            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
@@ -309,11 +309,11 @@ public class Store {
         return discountType;
     }
 
-    public purchasePolicy getPurchasePolicy() {
+    public PurchasePolicy getPurchasePolicy() {
         return purchasePolicy;
     }
 
-    public discountPolicy getDiscountPolicy() {
+    public DiscountPolicy getDiscountPolicy() {
         return discountPolicy;
     }
 
@@ -324,9 +324,9 @@ public class Store {
     public void setPurchaseType() {
     }
 
-    public void setDiscountPolicy(discountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
 
-    public void setPurchasePolicy(purchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
+    public void setPurchasePolicy(PurchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 
 
     public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
@@ -338,7 +338,7 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, discountPolicy storeDiscountPolicy) throws ItemException, policyException { // TODO should get basket
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
         return inventory.calculate(basket, details, storeDiscountPolicy);
     }
 
