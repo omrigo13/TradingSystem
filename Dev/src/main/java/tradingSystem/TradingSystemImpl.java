@@ -314,10 +314,20 @@ public class TradingSystemImpl {
         subscriber.removeInventoryManagementPermission(target, store);
     }
 
-    public void allowManagerToEditPolicies(String connectionId, String storeId, String managerUserName) {
+    public void allowManagerToEditPolicies(String connectionId, String storeId, String managerUserName) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(managerUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.addEditPolicyPermission(target, store);
     }
 
-    public void disableManagerFromEditPolicies(String connectionId, String storeId, String managerUserName) {
+    public void disableManagerFromEditPolicies(String connectionId, String storeId, String managerUserName) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(managerUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.removeEditPolicyPermission(target, store);
     }
 
     public void allowManagerToGetHistory(String connectionId, String storeId, String targetUserName) throws InvalidActionException {

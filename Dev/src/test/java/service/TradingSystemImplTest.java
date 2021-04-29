@@ -296,12 +296,12 @@ class TradingSystemImplTest {
     }
 
     @Test
-    void allowManagerToEditPolicies() {
+    void allowManagerToEditPolicies() throws InvalidActionException {
         service.allowManagerToEditPolicies(connectionId,storeId,userName);
     }
 
     @Test
-    void disableManagerFromEditPolicies() {
+    void disableManagerFromEditPolicies() throws InvalidActionException {
         service.disableManagerFromEditPolicies(connectionId,storeId,userName);
     }
 

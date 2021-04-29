@@ -211,12 +211,12 @@ public class Subscriber extends User {
 
     public void addEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
 
-        addPermissionToManager(target, store, ManageInventoryPermission.getInstance(store));
+        addPermissionToManager(target, store, EditPolicyPermission.getInstance(store));
     }
 
     public void removeEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
 
-        removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
+        removePermissionFromManager(target, store, EditPolicyPermission.getInstance(store));
     }
 
     public void addGetHistoryPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {

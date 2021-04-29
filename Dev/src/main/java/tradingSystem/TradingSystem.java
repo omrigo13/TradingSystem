@@ -171,16 +171,20 @@ public class TradingSystem {
     }
 
     public void assignStorePurchasePolicy(int policy, Store store) throws PolicyException {
-        if(!purchasePolicies.contains(policy))
+        if(!purchasePolicies.containsKey(policy))
             throw new PolicyException();
         store.setPurchasePolicy(purchasePolicies.get(policy));
     }
 
     public void removePolicy(Store store, int policy) throws PolicyException {
-        if(!purchasePolicies.contains(policy))
+        if(!purchasePolicies.containsKey(policy))
             throw new PolicyException();
         if(purchasePolicies.get(policy).getPurchasePolicies().size() > 0)
             throw new RemovePurchasePolicyException();
+        for (PurchasePolicy purchasePolicy: purchasePolicies.values()) {
+            if(purchasePolicy.getPurchasePolicies().contains(purchasePolicies.get(policy)))
+                purchasePolicy.getPurchasePolicies().remove(purchasePolicies.get(policy));
+        }
         purchasePolicies.remove(policy);
         storesPurchasePolicies.get(store).remove(policy);
     }
@@ -216,7 +220,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> andPolicies = new ArrayList<>();
-        if(!purchasePolicies.contains(policy1) || !purchasePolicies.contains(policy2))
+        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         andPolicies.add(purchasePolicies.get(policy1));
         andPolicies.add(purchasePolicies.get(policy2));
@@ -231,7 +235,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> orPolicies = new ArrayList<>();
-        if(!purchasePolicies.contains(policy1) || !purchasePolicies.contains(policy2))
+        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         orPolicies.add(purchasePolicies.get(policy1));
         orPolicies.add(purchasePolicies.get(policy2));
@@ -246,7 +250,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> xorPolicies = new ArrayList<>();
-        if(!purchasePolicies.contains(policy1) || !purchasePolicies.contains(policy2))
+        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         xorPolicies.add(purchasePolicies.get(policy1));
         xorPolicies.add(purchasePolicies.get(policy2));
@@ -264,16 +268,20 @@ public class TradingSystem {
     }
 
     public void assignStoreDiscountPolicy(int discountId, Store store) throws PolicyException {
-        if(!discountPolicies.contains(discountId))
+        if(!discountPolicies.containsKey(discountId))
             throw new PolicyException();
         store.setDiscountPolicy(discountPolicies.get(discountId));
     }
 
     public void removeDiscount(Store store, int discountId) throws PolicyException {
-        if(!discountPolicies.contains(discountId))
+        if(!discountPolicies.containsKey(discountId))
             throw new PolicyException();
         if(discountPolicies.get(discountId).getDiscountPolicies().size() > 0)
             throw new RemoveDiscountPolicyException();
+        for (DiscountPolicy discountPolicy: discountPolicies.values()) {
+            if(discountPolicy.getDiscountPolicies().contains(discountPolicies.get(discountId)))
+                discountPolicy.getDiscountPolicies().remove(discountPolicies.get(discountId));
+        }
         discountPolicies.remove(discountId);
         storesDiscountPolicies.get(store).remove(discountId);
     }
@@ -282,7 +290,7 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = null;
-        if(policyId != null && !purchasePolicies.contains(policyId))
+        if(policyId != null && !purchasePolicies.containsKey(policyId))
             throw new PolicyException();
         if(policyId != null)
              purchasePolicy = purchasePolicies.get(policyId);
@@ -296,7 +304,7 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         Collection<DiscountPolicy> plusDiscountPolicies = new ArrayList<>();
-        if(!discountPolicies.contains(discountId1) || !discountPolicies.contains(discountId2))
+        if(!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         plusDiscountPolicies.add(discountPolicies.get(discountId1));
         plusDiscountPolicies.add(discountPolicies.get(discountId2));
@@ -310,7 +318,7 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         Collection<DiscountPolicy> maxDiscountPolicies = new ArrayList<>();
-        if(!discountPolicies.contains(discountId1) || !discountPolicies.contains(discountId2))
+        if(!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         maxDiscountPolicies.add(discountPolicies.get(discountId1));
         maxDiscountPolicies.add(discountPolicies.get(discountId2));
