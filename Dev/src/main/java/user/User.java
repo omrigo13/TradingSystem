@@ -72,7 +72,8 @@ public class User {
                 entry.getKey().rollBack(entry.getValue().getItems());
             throw e;
         }
-
+        if(totalPrice == 0)
+            return;
         // add each purchase details string to the store it was purchased from
         for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet())
             entry.getKey().addPurchase(entry.getValue());
