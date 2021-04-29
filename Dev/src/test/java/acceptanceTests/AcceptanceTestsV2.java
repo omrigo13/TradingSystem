@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AcceptanceTestsV2 {
     private static TradingSystemService service;
     private String storeId1, storeId2; //stores
-    private String productId1, productId2, productId3, productId4, tomato, corn; //products
-    private String admin1Id, founderStore1Id, founderStore2Id, store1Manager1Id, subs1Id, subs2Id, subs3Id, guest1Id; //users Id's
+    private String productId1, productId2, milk, baguette, tomato, corn; //products
+    private String admin1Id, founderStore1Id, founderStore2Id, store1Manager1Id, store2Manager1Id, subs1Id, subs2Id, subs3Id, guest1Id; //users Id's
     //users names:
     private String admin1UserName="Admin1", store1FounderUserName="store1FounderUserName", store2FounderUserName="store2FounderUserName",
-            store1Manager1UserName="Store1Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
+            store1Manager1UserName="Store1Manager1UserName", store2Manager1UserName="Store2Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
     @BeforeEach
     void setUp() throws InvalidActionException {
@@ -32,6 +32,7 @@ public class AcceptanceTestsV2 {
         founderStore1Id = service.connect();
         founderStore2Id = service.connect();
         store1Manager1Id = service.connect();
+        store2Manager1Id = service.connect();
         subs1Id = service.connect();
         subs2Id = service.connect();
         subs3Id = service.connect();
@@ -41,6 +42,7 @@ public class AcceptanceTestsV2 {
         service.register("store1FounderUserName", "1234");
         service.register("store2FounderUserName", "1234");
         service.register("Store1Manager1UserName", "1234");
+        service.register("Store2Manager1UserName", "1234");
         service.register("subs1UserName", "1234");
         service.register("subs2UserName", "1234");
         service.register("subs3UserName", "1234");
@@ -50,6 +52,7 @@ public class AcceptanceTestsV2 {
         service.login(founderStore1Id, "store1FounderUserName", "1234"); //storeId1 founder
         service.login(founderStore2Id, "store2FounderUserName", "1234"); //storeId2 founder
         service.login(store1Manager1Id, "Store1Manager1UserName", "1234");
+        service.login(store1Manager1Id, "Store2Manager1UserName", "1234");
         service.login(subs1Id, "subs1UserName", "1234");
         service.login(subs2Id, "subs2UserName", "1234");
         service.login(subs3Id, "subs3UserName", "1234");
@@ -57,18 +60,19 @@ public class AcceptanceTestsV2 {
 
         storeId1 = service.openNewStore(founderStore1Id, "store1");
 
-        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk", "DairyProducts", "sub1", 10, 6.5);
+        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk", "DairyProducts", "sub1", 15, 6.5);
 
         productId2 = service.addProductToStore(founderStore1Id, storeId1, "cheese", "DairyProducts", "sub1", 20, 3);
 
-        tomato = service.addProductToStore(founderStore1Id, storeId1, "tomato", "vegetables", "sub1", 20, 8.5);
-        corn = service.addProductToStore(founderStore1Id, storeId1, "corn", "vegetables", "sub1", 30, 12.0);
+        tomato = service.addProductToStore(founderStore1Id, storeId1, "tomato", "vegetables", "red", 20, 8.5);
+        corn = service.addProductToStore(founderStore1Id, storeId1, "corn", "vegetables", "yellow", 30, 12.0);
 
         storeId2 = service.openNewStore(founderStore2Id, "store2");
-        productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk", "DairyProducts", "sub2", 30, 6.5);
-        productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
+        milk = service.addProductToStore(founderStore2Id, storeId2, "milk", "DairyProducts", "sub2", 30, 6.5);
+        baguette = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
 
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
+        service.appointStoreManager(founderStore2Id, store2Manager1UserName, storeId2);
     }
 
     @Test
@@ -91,7 +95,7 @@ public class AcceptanceTestsV2 {
     @Test
     void purchaseTwoItemsFromDifferentTwoStores() throws InvalidActionException {
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
-        service.addItemToBasket(founderStore1Id, storeId2, productId4, 3);
+        service.addItemToBasket(founderStore1Id, storeId2, baguette, 3);
         assertEquals(2, service.showCart(founderStore1Id).size());
         assertDoesNotThrow(() -> service.purchaseCart(founderStore1Id));
         assertEquals(0, service.showCart(founderStore1Id).size());
@@ -388,7 +392,258 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void basketCanHave5KgTomatoesOrMoreOnlyIfThereIsAtLeast1CornPurchasePolicy() {
+    void basketCanHave5KgTomatoesOrMoreOnlyIfThereIsAtLeast1CornPurchasePolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        tomatoes.add(tomato);
 
+        Collection<String> corns = new ArrayList<>();
+        corns.add(corn);
+
+        int tomatoQuantityPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, tomatoes, 0, 5);
+        int cornQuantityPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, corns, 1, 0);
+        int tomatoAndCornPolicy = service.orPolicy(founderStore1Id, storeId1, tomatoQuantityPolicy, cornQuantityPolicy);
+
+        service.assignStorePurchasePolicy(tomatoAndCornPolicy, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
+        assertThrows(QuantityPolicyException.class, () -> service.purchaseCart(store1Manager1Id));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("63"));
+    }
+
+    @Test
+    void storeDiscountPolicyOf20Percent() throws InvalidActionException {
+        Collection<String> store1Items = new ArrayList<>();
+        store1Items.add(productId1);
+        store1Items.add(productId2);
+        store1Items.add(tomato);
+        store1Items.add(corn);
+
+        int quantityDiscount = service.makeQuantityDiscount(founderStore1Id, storeId1, 20, store1Items, null);
+        service.assignStoreDiscountPolicy(quantityDiscount, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 4);
+        service.addItemToBasket(store1Manager1Id, storeId2, milk, 2);
+        service.addItemToBasket(store1Manager1Id, storeId2, baguette, 3);
+        service.purchaseCart(store1Manager1Id);
+
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("40") &&
+                service.getPurchaseHistory(store1Manager1Id).toString().contains("79.2"));
+    }
+
+    @Test
+    void sub1CategoryDiscountOf50Percent() throws InvalidActionException {
+        Collection<String> sub1Items = new ArrayList<>();
+        sub1Items.add(productId1);
+        sub1Items.add(productId2);
+
+        int quantityDiscount = service.makeQuantityDiscount(founderStore1Id, storeId1, 50, sub1Items, null);
+        service.assignStoreDiscountPolicy(quantityDiscount, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 6);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId2, 4);
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 2);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 3);
+        service.purchaseCart(store1Manager1Id);
+
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("78.5"));
+    }
+
+    @Test
+    void purchaseValueOf50Gives10PercentOnTomatoesDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        tomatoes.add(tomato);
+
+        int basketPolicy = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
+        int quantityDiscount = service.makeQuantityDiscount(founderStore1Id, storeId1, 10, tomatoes, basketPolicy);
+        service.assignStoreDiscountPolicy(quantityDiscount, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("42.5"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("45.9"));
+    }
+
+    @Test
+    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesAnd2CornsDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        Collection<String> corns = new ArrayList<>();
+        Collection<String> sub1Items = new ArrayList<>();
+
+        tomatoes.add(tomato);
+        corns.add(corn);
+        sub1Items.add(productId1);
+        sub1Items.add(productId2);
+
+        int atLeast5TomatoesPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, tomatoes, 5, 0);
+        int atLeast2CornsPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, corns, 2, 0);
+        int atLeast5TomatoesAnd2CornsPolicy = service.andPolicy(founderStore1Id, storeId1, atLeast5TomatoesPolicy, atLeast2CornsPolicy);
+        int sub1DiscountPolicy = service.makeQuantityDiscount(founderStore1Id, storeId1, 5, sub1Items, atLeast5TomatoesAnd2CornsPolicy);
+        service.assignStoreDiscountPolicy(sub1DiscountPolicy, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("78.5"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 2);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("97.375"));
+    }
+
+    @Test
+    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesOr2CornsDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        Collection<String> corns = new ArrayList<>();
+        Collection<String> sub1Items = new ArrayList<>();
+
+        tomatoes.add(tomato);
+        corns.add(corn);
+        sub1Items.add(productId1);
+        sub1Items.add(productId2);
+
+        int atLeast5TomatoesPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, tomatoes, 5, 0);
+        int atLeast2CornsPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, corns, 2, 0);
+        int atLeast5TomatoesOr2CornsPolicy = service.orPolicy(founderStore1Id, storeId1, atLeast5TomatoesPolicy, atLeast2CornsPolicy);
+        int sub1DiscountPolicy = service.makeQuantityDiscount(founderStore1Id, storeId1, 5, sub1Items, atLeast5TomatoesOr2CornsPolicy);
+        service.assignStoreDiscountPolicy(sub1DiscountPolicy, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("78.5"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 2);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("88.875"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("85.375"));
+    }
+
+    @Test
+    void ifBasketValueMoreThen50AndContains3TomatoesSo5PercentOnSub1CategoryDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        Collection<String> sub1Items = new ArrayList<>();
+
+        tomatoes.add(tomato);
+        sub1Items.add(productId1);
+        sub1Items.add(productId2);
+
+        int basketPolicy = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
+        int atLeast3TomatoesPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, tomatoes, 3, 0);
+        int atLeast3TomatoesAndBasketValueOf50 = service.andPolicy(founderStore1Id, storeId1, basketPolicy, atLeast3TomatoesPolicy);
+        int quantityDiscount = service.makeQuantityDiscount(founderStore1Id, storeId1, 5, sub1Items, atLeast3TomatoesAndBasketValueOf50);
+        service.assignStoreDiscountPolicy(quantityDiscount, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 2);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 7);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("62.5"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 3);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("32"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 3);
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 7);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("68.725"));
+    }
+
+    @Test
+    void DiscountOf10PercentOnTomatoesOr5PercentOnCornsDependsOnBestForUserDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        Collection<String> corns = new ArrayList<>();
+
+        tomatoes.add(tomato);
+        corns.add(corn);
+
+        int discountOnTomatoes = service.makeQuantityDiscount(founderStore1Id, storeId1, 10, tomatoes, null);
+        int discountOnCorns = service.makeQuantityDiscount(founderStore1Id, storeId1, 5, corns, null);
+        int maxDiscountBetweenCornsAndTomatoes = service.makeMaxDiscount(founderStore1Id, storeId1, discountOnTomatoes, discountOnCorns);
+        service.assignStoreDiscountPolicy(maxDiscountBetweenCornsAndTomatoes, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 10);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("196.5"));
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 1);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("122.49"));
+    }
+
+    @Test
+    void DiscountOnVegetables5PercentAnd10PercentOnTomatoesDiscountPolicy() throws InvalidActionException {
+        Collection<String> tomatoes = new ArrayList<>();
+        Collection<String> vegetables = new ArrayList<>();
+
+        tomatoes.add(tomato);
+        vegetables.add(tomato);
+        vegetables.add(corn);
+
+        int discountOnTomatoes = service.makeQuantityDiscount(founderStore1Id, storeId1, 10, tomatoes, null);
+        int discountOnVegetables = service.makeQuantityDiscount(founderStore1Id, storeId1, 5, vegetables, null);
+        int plusDiscountBetweenTomatoesAndVegetables = service.makePlusDiscount(founderStore1Id, storeId1, discountOnTomatoes, discountOnVegetables);
+        service.assignStoreDiscountPolicy(plusDiscountBetweenTomatoesAndVegetables, founderStore1Id, storeId1);
+
+        service.addItemToBasket(store1Manager1Id, storeId1, tomato, 10);
+        service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
+        service.purchaseCart(store1Manager1Id);
+        assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("186.25"));
+    }
+
+    @Test
+    void validRemoveStoreOwnerByTheOwnerAssignor() throws InvalidActionException {
+        service.appointStoreOwner(founderStore1Id, store2FounderUserName, storeId1);
+        service.getSalesHistoryByStore(founderStore2Id, storeId1);
+        service.removeOwner(founderStore1Id,storeId1, store2FounderUserName);
+        assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(founderStore2Id, storeId1));
+    }
+
+    @Test
+    void removeStoreOwnerWithStoreOwnerWhoDidntAssignTheOwner() throws InvalidActionException {
+        service.appointStoreOwner(founderStore1Id, store2FounderUserName, storeId1);
+        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        service.appointStoreOwner(founderStore2Id, store1Manager1UserName, storeId1);
+        assertThrows(NoPermissionException.class, () -> service.removeOwner(founderStore1Id,storeId1, store1Manager1UserName));
+        assertDoesNotThrow(() -> service.removeOwner(founderStore2Id,storeId1, store1Manager1UserName));
+    }
+
+    @Test
+    void removeStoreOwnerByOwnerOfAnotherStore() throws InvalidActionException {
+        service.appointStoreOwner(founderStore1Id, store1Manager1UserName, storeId1);
+        assertThrows(NoPermissionException.class, () -> service.removeOwner(founderStore2Id, storeId1, store1Manager1UserName));
+    }
+
+    @Test
+    void removeStoreOwnerByManagerOfTheStore() throws InvalidActionException {
+        assertThrows(NoPermissionException.class, () -> service.removeOwner(store1Manager1Id, storeId1, store1FounderUserName));
+    }
+
+    @Test
+    void removeStoreOwnerRemovesAllTheManagersAndOwnersWithTheRemovedAssignee() throws InvalidActionException {
+        service.appointStoreOwner(founderStore1Id, store2FounderUserName, storeId1);
+        service.appointStoreOwner(founderStore2Id, store2Manager1UserName, storeId1);
+        service.appointStoreManager(founderStore2Id, store1Manager1UserName, storeId2);
+        service.removeOwner(founderStore1Id, storeId1, store2FounderUserName);
     }
 }
