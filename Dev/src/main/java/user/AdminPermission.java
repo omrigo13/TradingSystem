@@ -9,8 +9,7 @@ public class AdminPermission extends Permission
 
     public static AdminPermission getInstance() {
 
-        AdminPermission key = new AdminPermission();
-        return (AdminPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (AdminPermission)pool.computeIfAbsent(new AdminPermission(), WeakReference::new).get();
     }
 
     @Override

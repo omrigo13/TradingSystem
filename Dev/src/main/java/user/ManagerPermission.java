@@ -13,8 +13,7 @@ public class ManagerPermission extends StorePermission
 
     public static ManagerPermission getInstance(Store store) {
 
-        ManagerPermission key = new ManagerPermission(store);
-        return (ManagerPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (ManagerPermission)pool.computeIfAbsent(new ManagerPermission(store), WeakReference::new).get();
     }
 
     @Override
