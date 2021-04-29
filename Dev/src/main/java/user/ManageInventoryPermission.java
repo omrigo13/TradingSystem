@@ -13,8 +13,7 @@ public class ManageInventoryPermission extends StorePermission
 
     public static ManageInventoryPermission getInstance(Store store) {
 
-        ManageInventoryPermission key = new ManageInventoryPermission(store);
-        return (ManageInventoryPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (ManageInventoryPermission)pool.computeIfAbsent(new ManageInventoryPermission(store), WeakReference::new).get();
     }
 
     @Override
