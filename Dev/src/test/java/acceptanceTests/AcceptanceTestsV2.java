@@ -22,7 +22,7 @@ public class AcceptanceTestsV2 {
     private String admin1Id, founderStore1Id, founderStore2Id, store1Manager1Id, store2Manager1Id, subs1Id, subs2Id, subs3Id, guest1Id; //users Id's
     //users names:
     private String admin1UserName="Admin1", store1FounderUserName="store1FounderUserName", store2FounderUserName="store2FounderUserName",
-            store1Manager1UserName="Store1Manager1UserName", store2Manager1UserName="Store2Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
+            store1Manager1UserName="Store1Manager1UserName", store2Manager1UserName="store2Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
     @BeforeEach
     void setUp() throws InvalidActionException {
@@ -42,7 +42,7 @@ public class AcceptanceTestsV2 {
         service.register("store1FounderUserName", "1234");
         service.register("store2FounderUserName", "1234");
         service.register("Store1Manager1UserName", "1234");
-        service.register("Store2Manager1UserName", "1234");
+        service.register("store2Manager1UserName", "1234");
         service.register("subs1UserName", "1234");
         service.register("subs2UserName", "1234");
         service.register("subs3UserName", "1234");
@@ -52,7 +52,7 @@ public class AcceptanceTestsV2 {
         service.login(founderStore1Id, "store1FounderUserName", "1234"); //storeId1 founder
         service.login(founderStore2Id, "store2FounderUserName", "1234"); //storeId2 founder
         service.login(store1Manager1Id, "Store1Manager1UserName", "1234");
-        service.login(store1Manager1Id, "Store2Manager1UserName", "1234");
+        service.login(store2Manager1Id, "store2Manager1UserName", "1234");
         service.login(subs1Id, "subs1UserName", "1234");
         service.login(subs2Id, "subs2UserName", "1234");
         service.login(subs3Id, "subs3UserName", "1234");
