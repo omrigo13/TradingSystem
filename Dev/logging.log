@@ -4449,3 +4449,193 @@
 2021-04-29 10:00:15 INFO  - Get sales history by store
 2021-04-29 10:00:15 INFO  - Get sales history by store
 2021-04-29 10:00:15 INFO  - Get sales history by store
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - New connection request
+2021-04-29 22:18:26 INFO  - Register with userName: store1FounderUserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: store2FounderUserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: store2Manager1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: subs1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: subs2UserName, password: *********
+2021-04-29 22:18:26 INFO  - Register with userName: subs3UserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: Admin1, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: store1FounderUserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: store2FounderUserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: store2Manager1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: subs1UserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: subs2UserName, password: *********
+2021-04-29 22:18:26 INFO  - Login with userName: subs3UserName, password: *********
+2021-04-29 22:18:26 INFO  - User open new store named: store1
+2021-04-29 22:18:26 INFO  - Add product to store: 0, name- milk, category- DairyProducts, sub category- sub1, quantity- 15, price- 6.5
+2021-04-29 22:18:26 INFO  - Add product to store: 0, name- cheese, category- DairyProducts, sub category- sub1, quantity- 20, price- 3.0
+2021-04-29 22:18:26 INFO  - Add product to store: 0, name- tomato, category- vegetables, sub category- red, quantity- 20, price- 8.5
+2021-04-29 22:18:26 INFO  - Add product to store: 0, name- corn, category- vegetables, sub category- yellow, quantity- 30, price- 12.0
+2021-04-29 22:18:26 INFO  - User open new store named: store2
+2021-04-29 22:18:26 INFO  - Add product to store: 1, name- milk, category- DairyProducts, sub category- sub2, quantity- 30, price- 6.5
+2021-04-29 22:18:26 INFO  - Add product to store: 1, name- baguette, category- bread, sub category- , quantity- 20, price- 9.0
+2021-04-29 22:18:26 INFO  - User appoint Store1Manager1UserName for store: 0 manager
+2021-04-29 22:18:26 INFO  - User appoint store2Manager1UserName for store: 1 manager
+2021-04-29 22:18:26 INFO  - User appoint store2FounderUserName for store: 0 owner
+2021-04-29 22:18:26 INFO  - User appoint store2Manager1UserName for store: 0 owner
+2021-04-29 22:18:26 INFO  - User appoint Store1Manager1UserName for store: 1 manager
+2021-04-29 22:18:26 INFO  - User remove store2FounderUserName from store owner position for store id: 0
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - New connection request
+2021-04-29 22:24:13 INFO  - Register with userName: store1FounderUserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: store2FounderUserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: store2Manager1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: subs1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: subs2UserName, password: *********
+2021-04-29 22:24:13 INFO  - Register with userName: subs3UserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: Admin1, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: store1FounderUserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: store2FounderUserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: store2Manager1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: subs1UserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: subs2UserName, password: *********
+2021-04-29 22:24:13 INFO  - Login with userName: subs3UserName, password: *********
+2021-04-29 22:24:13 INFO  - User open new store named: store1
+2021-04-29 22:24:13 INFO  - Add product to store: 0, name- milk, category- DairyProducts, sub category- sub1, quantity- 15, price- 6.5
+2021-04-29 22:24:30 INFO  - Add product to store: 0, name- cheese, category- DairyProducts, sub category- sub1, quantity- 20, price- 3.0
+2021-04-29 22:24:30 INFO  - Add product to store: 0, name- tomato, category- vegetables, sub category- red, quantity- 20, price- 8.5
+2021-04-29 22:24:30 INFO  - Add product to store: 0, name- corn, category- vegetables, sub category- yellow, quantity- 30, price- 12.0
+2021-04-29 22:24:30 INFO  - User open new store named: store2
+2021-04-29 22:24:30 INFO  - Add product to store: 1, name- milk, category- DairyProducts, sub category- sub2, quantity- 30, price- 6.5
+2021-04-29 22:24:30 INFO  - Add product to store: 1, name- baguette, category- bread, sub category- , quantity- 20, price- 9.0
+2021-04-29 22:24:30 INFO  - User appoint Store1Manager1UserName for store: 0 manager
+2021-04-29 22:24:30 INFO  - User appoint store2Manager1UserName for store: 1 manager
+2021-04-29 22:24:30 INFO  - User appoint store2FounderUserName for store: 0 owner
+2021-04-29 22:24:30 INFO  - User appoint store2Manager1UserName for store: 0 owner
+2021-04-29 22:24:30 INFO  - User appoint Store1Manager1UserName for store: 1 manager
+2021-04-29 22:24:30 INFO  - User remove store2FounderUserName from store owner position for store id: 0
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - New connection request
+2021-04-29 22:34:00 INFO  - Register with userName: store1FounderUserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: store2FounderUserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: store2Manager1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: subs1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: subs2UserName, password: *********
+2021-04-29 22:34:00 INFO  - Register with userName: subs3UserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: Admin1, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: store1FounderUserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: store2FounderUserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: store2Manager1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: subs1UserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: subs2UserName, password: *********
+2021-04-29 22:34:00 INFO  - Login with userName: subs3UserName, password: *********
+2021-04-29 22:34:00 INFO  - User open new store named: store1
+2021-04-29 22:34:00 INFO  - Add product to store: 0, name- milk, category- DairyProducts, sub category- sub1, quantity- 15, price- 6.5
+2021-04-29 22:34:00 INFO  - Add product to store: 0, name- cheese, category- DairyProducts, sub category- sub1, quantity- 20, price- 3.0
+2021-04-29 22:34:00 INFO  - Add product to store: 0, name- tomato, category- vegetables, sub category- red, quantity- 20, price- 8.5
+2021-04-29 22:34:00 INFO  - Add product to store: 0, name- corn, category- vegetables, sub category- yellow, quantity- 30, price- 12.0
+2021-04-29 22:34:00 INFO  - User open new store named: store2
+2021-04-29 22:34:00 INFO  - Add product to store: 1, name- milk, category- DairyProducts, sub category- sub2, quantity- 30, price- 6.5
+2021-04-29 22:34:00 INFO  - Add product to store: 1, name- baguette, category- bread, sub category- , quantity- 20, price- 9.0
+2021-04-29 22:34:00 INFO  - User appoint Store1Manager1UserName for store: 0 manager
+2021-04-29 22:34:00 INFO  - User appoint store2Manager1UserName for store: 1 manager
+2021-04-29 22:34:00 INFO  - User appoint store2FounderUserName for store: 0 owner
+2021-04-29 22:34:00 INFO  - User appoint store2Manager1UserName for store: 0 owner
+2021-04-29 22:34:00 INFO  - User appoint Store1Manager1UserName for store: 1 manager
+2021-04-29 22:34:00 INFO  - User remove store2FounderUserName from store owner position for store id: 0
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - New connection request
+2021-04-29 22:34:22 INFO  - Register with userName: store1FounderUserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: store2FounderUserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: store2Manager1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: subs1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: subs2UserName, password: *********
+2021-04-29 22:34:22 INFO  - Register with userName: subs3UserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: Admin1, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: store1FounderUserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: store2FounderUserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: store2Manager1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: subs1UserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: subs2UserName, password: *********
+2021-04-29 22:34:22 INFO  - Login with userName: subs3UserName, password: *********
+2021-04-29 22:34:22 INFO  - User open new store named: store1
+2021-04-29 22:34:22 INFO  - Add product to store: 0, name- milk, category- DairyProducts, sub category- sub1, quantity- 15, price- 6.5
+2021-04-29 22:34:22 INFO  - Add product to store: 0, name- cheese, category- DairyProducts, sub category- sub1, quantity- 20, price- 3.0
+2021-04-29 22:34:22 INFO  - Add product to store: 0, name- tomato, category- vegetables, sub category- red, quantity- 20, price- 8.5
+2021-04-29 22:34:22 INFO  - Add product to store: 0, name- corn, category- vegetables, sub category- yellow, quantity- 30, price- 12.0
+2021-04-29 22:34:22 INFO  - User open new store named: store2
+2021-04-29 22:34:22 INFO  - Add product to store: 1, name- milk, category- DairyProducts, sub category- sub2, quantity- 30, price- 6.5
+2021-04-29 22:34:22 INFO  - Add product to store: 1, name- baguette, category- bread, sub category- , quantity- 20, price- 9.0
+2021-04-29 22:34:22 INFO  - User appoint Store1Manager1UserName for store: 0 manager
+2021-04-29 22:34:22 INFO  - User appoint store2Manager1UserName for store: 1 manager
+2021-04-29 22:34:22 INFO  - User appoint store2FounderUserName for store: 0 owner
+2021-04-29 22:34:22 INFO  - User appoint store2Manager1UserName for store: 0 owner
+2021-04-29 22:34:22 INFO  - User appoint Store1Manager1UserName for store: 1 manager
+2021-04-29 22:34:22 INFO  - User remove store2FounderUserName from store owner position for store id: 0
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - New connection request
+2021-04-29 22:52:39 INFO  - Register with userName: store1FounderUserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: store2FounderUserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: store2Manager1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: subs1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: subs2UserName, password: *********
+2021-04-29 22:52:39 INFO  - Register with userName: subs3UserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: Admin1, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: store1FounderUserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: store2FounderUserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: Store1Manager1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: store2Manager1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: subs1UserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: subs2UserName, password: *********
+2021-04-29 22:52:39 INFO  - Login with userName: subs3UserName, password: *********
+2021-04-29 22:52:39 INFO  - User open new store named: store1
+2021-04-29 22:52:39 INFO  - Add product to store: 0, name- milk, category- DairyProducts, sub category- sub1, quantity- 15, price- 6.5
+2021-04-29 22:52:39 INFO  - Add product to store: 0, name- cheese, category- DairyProducts, sub category- sub1, quantity- 20, price- 3.0
+2021-04-29 22:52:39 INFO  - Add product to store: 0, name- tomato, category- vegetables, sub category- red, quantity- 20, price- 8.5
+2021-04-29 22:52:39 INFO  - Add product to store: 0, name- corn, category- vegetables, sub category- yellow, quantity- 30, price- 12.0
+2021-04-29 22:52:39 INFO  - User open new store named: store2
+2021-04-29 22:52:39 INFO  - Add product to store: 1, name- milk, category- DairyProducts, sub category- sub2, quantity- 30, price- 6.5
+2021-04-29 22:52:39 INFO  - Add product to store: 1, name- baguette, category- bread, sub category- , quantity- 20, price- 9.0
+2021-04-29 22:52:39 INFO  - User appoint Store1Manager1UserName for store: 0 manager
+2021-04-29 22:52:39 INFO  - User appoint store2Manager1UserName for store: 1 manager
+2021-04-29 22:52:39 INFO  - User appoint store2FounderUserName for store: 0 owner
+2021-04-29 22:52:39 INFO  - User appoint store2Manager1UserName for store: 0 owner
+2021-04-29 22:52:39 INFO  - User appoint Store1Manager1UserName for store: 1 manager
+2021-04-29 22:52:39 INFO  - User remove store2FounderUserName from store owner position for store id: 0
