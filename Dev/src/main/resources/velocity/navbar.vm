@@ -32,6 +32,7 @@
                         <a href="/purchaseHistory">get purchase history</a>
                         <a href="/addItemToStore">add item to store</a>
                         <a href="/permissionsForManager">add/remove permissions</a>
+                        <a href="/appointRemoveManagerOrOwner">appoint/remove manager or owner</a>
                     </div>
                 </div>
             </div>

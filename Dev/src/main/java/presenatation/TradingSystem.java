@@ -332,4 +332,65 @@ public class TradingSystem {
         }
     };
 
+    public static Handler serveAppointRemoveManagerOrOwnerPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+    };
+
+    public static Handler handleAppointStoreOwnerPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.appointStoreOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }
+    };
+
+    public static Handler handleAppointStoreManagerPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.appointStoreManager(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }
+    };
+
+    public static Handler handleRemoveOwnerPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.removeOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }
+    };
+
+    public static Handler handleRemoveManagerPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.removeManager(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
+            model.put("succeeded", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }
+    };
+
 }

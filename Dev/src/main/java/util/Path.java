@@ -22,6 +22,11 @@ public class Path {
         public static final String DISABLEMANAGERFROMEDITPOLICIES = "/disableManagerFromEditPolicies";
         public static final String ALLOWMANAGERTOGETHISTORY = "/allowManagerToGetHistory";
         public static final String DISABLEMANAGERFROMGETHISTORY = "/disableManagerFromGetHistory";
+        public static final String APPOINTREMOVEMANAGEROROWNER = "/appointRemoveManagerOrOwner";
+        public static final String APPOINTSTOREMANAGER = "/appointStoreManager";
+        public static final String REMOVEMANAGER = "/removeManager";
+        public static final String APPOINTSTOREOWNER = "/appointStoreOwner";
+        public static final String REMOVEOWNER = "/removeOwner";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
         //public static final String BOOKS = "/books";
@@ -43,6 +48,7 @@ public class Path {
         public static final String OPENNEWSTORE = "velocity/store/openNewStore.vm";
         public static final String ADDITEMTOSTORE = "velocity/store/addItemToStore.vm";
         public static final String PERMISSIONSFORMANAGER = "velocity/store/permissionsForManager.vm";
+        public static final String APPOINTREMOVEMANAGEROROWNER = "velocity/store/appointRemoveManagerOrOwner.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
     }
 }

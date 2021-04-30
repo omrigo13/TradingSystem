@@ -58,6 +58,12 @@ public class Main {
             post(Path.Web.DISABLEMANAGERFROMGETHISTORY, tradingSystem.handleDisableManagerFromGetHistoryPost);
             get(Path.Web.PERMISSIONSFORMANAGER, tradingSystem.servePermissionsForManagerPage);
 
+            post(Path.Web.APPOINTSTOREOWNER, tradingSystem.handleAppointStoreOwnerPost);
+            post(Path.Web.APPOINTSTOREMANAGER, tradingSystem.handleAppointStoreManagerPost);
+            post(Path.Web.REMOVEOWNER, tradingSystem.handleRemoveOwnerPost);
+            post(Path.Web.REMOVEMANAGER, tradingSystem.handleRemoveManagerPost);
+            get(Path.Web.APPOINTREMOVEMANAGEROROWNER, tradingSystem.serveAppointRemoveManagerOrOwnerPage);
+
             post(Path.Web.ADDITEMTOSTORE, tradingSystem.handleAddItemToStorePost);
             post(Path.Web.LOGIN, tradingSystem.handleLoginPost);
             post(Path.Web.LOGOUT, tradingSystem.handleLogoutPost);
