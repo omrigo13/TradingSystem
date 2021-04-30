@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import store.Item;
 import store.Store;
@@ -13,7 +14,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +27,9 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Mock private Collection<String> purchasesDetails;
+    @Spy private final Collection<String> purchasesHistory = new LinkedList<>();
+    @Spy private Item item;
+    @Mock private Item item2;
 
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
@@ -36,6 +39,7 @@ class SubscriberTest {
     private final Permission ownerPermission = OwnerPermission.getInstance(store);
     private final Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
     private final Permission getHistoryPermission = GetHistoryPermission.getInstance(store);
+    private final Permission editPolicyPermission = EditPolicyPermission.getInstance(store);
     private final Permission appointerPermission = AppointerPermission.getInstance(target, store);
 
     private final double price = 500.0;
@@ -45,7 +49,7 @@ class SubscriberTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesDetails));
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
 
         reset(store);
         reset(target);
@@ -118,7 +122,9 @@ class SubscriberTest {
         verify(subscriber).addPermission(OwnerPermission.getInstance(store));
         verify(subscriber).addPermission(ManagerPermission.getInstance(store));
         verify(subscriber).addPermission(ManageInventoryPermission.getInstance(store));
-        verify(subscriber).addPermission(GetHistoryPermission.getInstance(store));    }
+        verify(subscriber).addPermission(GetHistoryPermission.getInstance(store));
+        verify(subscriber).addPermission(EditPolicyPermission.getInstance(store));
+    }
 
     @Test
     void addOwnerPermissions_toTarget() throws NoPermissionException, AlreadyOwnerException {
@@ -184,6 +190,7 @@ class SubscriberTest {
         verify(subscriber).removePermission(ownerPermission);
         verify(subscriber).removePermission(manageInventoryPermission);
         verify(subscriber).removePermission(getHistoryPermission);
+        verify(subscriber).removePermission(editPolicyPermission);
         verify(subscriber).removePermission(managerPermission);
     }
 
@@ -279,5 +286,64 @@ class SubscriberTest {
         when(target.havePermission(ownerPermission)).thenReturn(true);
         assertThrows(TargetIsOwnerException.class, () -> subscriber.removePermissionFromManager(target, store, permission));
         verify(target, never()).removePermission(permission);
+    }
+
+    @Test
+    void writeOpinionOnProductGoodDetails() throws ItemException, WrongReviewException {
+        Collection<Item> items = new LinkedList<>();
+        items.add(item);
+
+        when(itemsPurchased.get(store)).thenReturn(items);
+        when(store.searchItemById(0)).thenReturn(item);
+
+        assertEquals(0, item.getReviews().size());
+        subscriber.writeOpinionOnProduct(store, item.getId(), "good product");
+        assertEquals(1, item.getReviews().size());
+    }
+
+    @Test
+    void writeOpnionOnProductBadReviewDetails() {
+        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
+        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
+    }
+
+    @Test
+    void writeOpnionOnProductNotPurchasedItem() throws ItemException {
+        Collection<Item> items = new LinkedList<>();
+        items.add(item);
+        when(store.searchItemById(0)).thenReturn(item2);
+        when(itemsPurchased.get(store)).thenReturn(items);
+
+        assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getId(), "good product"));
+        assertEquals(0, item.getReviews().size());
+        assertEquals(0, item2.getReviews().size());
+    }
+
+    @Test
+    void getPurchaseHistory() {
+        assertEquals(0, subscriber.getPurchaseHistory().size());
+        purchasesHistory.add("milk");
+        purchasesHistory.add("cheese");
+        assertEquals(2, subscriber.getPurchaseHistory().size());
+        assertTrue(subscriber.getPurchaseHistory().contains("milk"));
+        assertTrue(subscriber.getPurchaseHistory().contains("cheese"));
+    }
+
+    @Test
+    void getSalesHistoryByStore() throws NoPermissionException {
+        purchasesHistory.add("milk");
+        purchasesHistory.add("cheese");
+        when(store.getPurchaseHistory()).thenReturn(purchasesHistory);
+        when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
+
+        assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
+        assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
+        assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
+    }
+
+    @Test
+    void getSalesHistoryByStoreNoPremission() {
+        when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
     }
 }

@@ -6,10 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
+import user.Basket;
 
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,21 +21,24 @@ public class StoreTest {
 
     @Mock private TradingSystem tradingSystem;
     private Store store;
+    private Basket basket;
 
     @BeforeEach
     void setUp() throws Exception {
-        store = new Store(tradingSystem, 1,"ebay","www.ebay.com online shopping");
+        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null);
+        ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
+        basket = new Basket(new Store(), items);
     }
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, null, "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, "   ", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store(tradingSystem, 1, "95ebay", "www.ebay.com online shopping"));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null));
     }
 
 //    @Test
@@ -304,24 +310,23 @@ public class StoreTest {
         int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
         int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
         store.searchItemById(carrotId).lock();
-        Map<Item, Integer> items = new HashMap<>();
-        items.put(store.searchItemById(tomatoId), 2);
-        items.put(store.searchItemById(cucumberID), 2);
-        items.put(store.searchItemById(carrotId), 2);
+        basket.addItem(store.searchItemById(0), 2);
+        basket.addItem(store.searchItemById(1), 2);
+        basket.addItem(store.searchItemById(2), 2);
         StringBuilder details = new StringBuilder();
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(items, details), 110);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110);
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
         store.searchItemById(carrotId).unlock();
-        items.clear();
-        items.put(store.searchItemById(tomatoId), 2);
-        items.put(store.searchItemById(cucumberID), 2);
-        items.put(store.searchItemById(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(items, details));
+        basket.getItems().clear();
+        basket.addItem(store.searchItemById(0), 2);
+        basket.addItem(store.searchItemById(1), 2);
+        basket.addItem(store.searchItemById(2), 8);
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())));
     }
 
     @Test

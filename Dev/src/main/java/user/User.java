@@ -2,11 +2,13 @@ package user;
 
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
+import exceptions.PolicyException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
-import store.Item;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import store.Store;
 
 import java.util.HashMap;
@@ -50,11 +52,21 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, PolicyException {
 
         double totalPrice = 0;
+        boolean validPolicy;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
-        totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
+        PurchasePolicy storePurchasePolicy;
+        DiscountPolicy storeDiscountPolicy = null;
+        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            storePurchasePolicy = storeBasketEntry.getKey().getPurchasePolicy();
+            storeDiscountPolicy = storeBasketEntry.getKey().getDiscountPolicy();
+            validPolicy = storePurchasePolicy.isValidPurchase(storeBasketEntry.getValue());
+            if(!validPolicy)
+                throw new PolicyException();
+        }
+        totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails, storeDiscountPolicy);
         PaymentData paymentData = null;
         boolean paymentDone = false;
         try {
@@ -76,14 +88,15 @@ public class User {
             entry.getKey().addPurchase(entry.getValue());
 
         addCartToPurchases(storePurchaseDetails);
+        baskets.clear();
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
-            Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
-            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails);
+            Basket basket = storeBasketEntry.getValue();
+            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy);
             totalPrice += price;
             purchaseDetails.append("Total basket price: ").append(price).append("\n");
             storePurchaseDetails.put(store, purchaseDetails.toString());

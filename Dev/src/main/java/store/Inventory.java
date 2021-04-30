@@ -5,14 +5,14 @@
 package store;
 
 import exceptions.*;
-import tradingSystem.TradingSystem;
+import policies.DiscountPolicy;
+import user.Basket;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inventory {
@@ -21,7 +21,7 @@ public class Inventory {
     private final Map<Item, Integer> items;
     private AtomicInteger id = new AtomicInteger(0);
 
-    public Inventory(TradingSystem tradingSystem) {
+    public Inventory() {
 //        this.tradingSystem = tradingSystem;
         this.items = Collections.synchronizedMap(new ConcurrentHashMap<>());
     }
@@ -206,10 +206,13 @@ public class Inventory {
      * @param itemId- id of the wanted item
      * @param amount - the new amount fo the item
      * @exception WrongAmountException when the amount is illegal*/
-    public synchronized void changeQuantity(int itemId, int amount) throws ItemException {
+    public void changeQuantity(int itemId, int amount) throws ItemException {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
-        items.replace(searchItem(itemId), amount);
+        synchronized (this.items)
+        {
+            items.replace(searchItem(itemId), amount);
+        }
     }
 
     /**
@@ -241,9 +244,12 @@ public class Inventory {
      *  This method removes an item
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
-    public synchronized Item removeItem(int itemID) throws ItemException {
-        Item item=searchItem(itemID);
-       items.remove(item);
+    public Item removeItem(int itemID) throws ItemException {
+       Item item=searchItem(itemID);
+       synchronized (this.items)
+       {
+           items.remove(item);
+       }
        return item;
 
     }
@@ -271,28 +277,29 @@ public class Inventory {
         return itemsDisplay;
     }
 
-    public synchronized void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
-        for ( Item item: items.keySet()) {
-            if(item.getId()==itemID)
-            {
-                if(newSubCategory != null && !newSubCategory.trim().isEmpty())
-                    item.setSubCategory(newSubCategory);
+    public void changeItemDetails(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
+        synchronized (this.items)
+        {
+            for ( Item item: items.keySet()) {
+                if(item.getId()==itemID)
+                {
+                    if(newSubCategory != null && !newSubCategory.trim().isEmpty())
+                        item.setSubCategory(newSubCategory);
 
-                if(newQuantity !=null)
-                    changeQuantity(itemID,newQuantity);
+                    if(newQuantity !=null)
+                        changeQuantity(itemID,newQuantity);
 
-                if(newPrice != null)
-                    item.setPrice(newPrice);
+                    if(newPrice != null)
+                        item.setPrice(newPrice);
 
-                return;
+                    return;
+                }
             }
+            throw new ItemNotFoundException("no item in inventory matching item id");
         }
-        throw new ItemNotFoundException("no item in inventory matching item id");
-
     }
 
-    public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
-        double paymentValue = 0;
+    public double calculate(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())
@@ -306,19 +313,22 @@ public class Inventory {
                 throw new Exception("a kind of wait should be here"); //TODO we have to check what to do with locked items
             }
         }*/
-
+        double totalValue;
         synchronized (this.items) {
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                if (checkAmount(entry.getKey().getId(), entry.getValue())) {
+            // check that every item has quantity in inventory
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
+                checkAmount(entry.getKey().getId(), entry.getValue());
+            }
+            // update inventory quantity and calculate basket price
+            totalValue = storeDiscountPolicy.cartTotalValue(basket);
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
-                    paymentValue += (item.getPrice() * quantity);
                     this.items.replace(item, this.items.get(item) - quantity);
                     details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                             .append(" Quantity: ").append(quantity).append("\n");
-                }
             }
         }
-        return paymentValue;
+        return totalValue;
     }
 }

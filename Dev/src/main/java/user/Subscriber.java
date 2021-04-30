@@ -54,7 +54,6 @@ public class Subscriber extends User {
             cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
         purchaseHistory.add(cartPurchase);
 
-        baskets.clear();
     }
 
     public void addPermission(Permission permission) {
@@ -130,6 +129,7 @@ public class Subscriber extends User {
 
             addPermission(OwnerPermission.getInstance(store));
             addPermission(ManagerPermission.getInstance(store));
+            addPermission(EditPolicyPermission.getInstance(store));
             addPermission(ManageInventoryPermission.getInstance(store));
             addPermission(GetHistoryPermission.getInstance(store));
         }
@@ -176,6 +176,7 @@ public class Subscriber extends User {
                 }
 
             removePermission(OwnerPermission.getInstance(store));
+            removePermission(EditPolicyPermission.getInstance(store));
             removePermission(ManageInventoryPermission.getInstance(store));
             removePermission(GetHistoryPermission.getInstance(store));
             removePermission(ManagerPermission.getInstance(store));
@@ -204,6 +205,16 @@ public class Subscriber extends User {
     }
 
     public void removeInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
+
+        removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
+    }
+
+    public void addEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
+
+        addPermissionToManager(target, store, ManageInventoryPermission.getInstance(store));
+    }
+
+    public void removeEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
 
         removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
     }
@@ -302,6 +313,8 @@ public class Subscriber extends User {
             Permission ownerPermission = OwnerPermission.getInstance(store);
             Permission managerPermission = ManagerPermission.getInstance(store);
             Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
+            Permission getHistoryPermission = GetHistoryPermission.getInstance(store);
+            Permission editPolicyPermission = EditPolicyPermission.getInstance(store);
 
             if (havePermission(ownerPermission))
                 result.append(ownerPermission.toString()).append(" ");
@@ -309,6 +322,10 @@ public class Subscriber extends User {
                 result.append(managerPermission.toString()).append(" ");
             if (havePermission(manageInventoryPermission))
                 result.append(manageInventoryPermission.toString()).append(" ");
+            if (havePermission(getHistoryPermission))
+                result.append(getHistoryPermission.toString()).append(" ");
+            if (havePermission(editPolicyPermission))
+                result.append(editPolicyPermission.toString()).append(" ");
 
             return result.toString();
         }

@@ -1,11 +1,14 @@
 package store;
 
 import exceptions.*;
-import tradingSystem.TradingSystem;
+import policies.DefaultDiscountPolicy;
+import policies.DefaultPurchasePolicy;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
+import spellChecker.Spelling;
+import user.Basket;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Store {
 
@@ -17,23 +20,26 @@ public class Store {
     private double rating;
     private String purchaseType;     // TODO: should check how to implement
     private String discountType;     // TODO: should check how to implement
-    private String purchasePolicy;     // TODO: should check how to implement
-    private String discountPolicy;     // TODO: should check how to implement
+    //private String purchasePolicy;     // TODO: should check how to implement
+   // private String discountPolicy;     // TODO: should check how to implement
+    private DiscountPolicy discountPolicy;
+    private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
-    private Inventory inventory;
+    private Inventory inventory = new Inventory();
     private Collection<String> purchases = new LinkedList<>();
+
+    public Store() {}
 
     /**
      * This method opens a new store and create its inventory
      *
-     * @param tradingSystem
      * @param name        - the name of the new store
      * @param description - the price of the new store
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(TradingSystem tradingSystem, int id, String name, String description) throws ItemException {
+    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -47,7 +53,15 @@ public class Store {
         this.description = description;
         this.rating = 0;
         // this.founder = founder; // TODO: should check how to implement
-        this.inventory = new Inventory(tradingSystem);
+//        this.inventory = new Inventory(tradingSystem);
+        if(purchasePolicy == null)
+            this.purchasePolicy = new DefaultPurchasePolicy();
+        else
+            this.purchasePolicy = purchasePolicy;
+        if(discountPolicy == null)
+            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
+        else
+            this.discountPolicy = discountPolicy;
         this.isActive = true;
     }
 
@@ -138,6 +152,10 @@ public class Store {
 
     public Collection<Item> searchAndFilter(String keyWord, String itemName, String category, Double ratingItem,
                                                        Double ratingStore, Double maxPrice, Double minPrice) {
+        Spelling spelling = new Spelling();
+        keyWord = spelling.correct(keyWord);
+        itemName = spelling.correct(itemName);
+        category = spelling.correct(category);
         Collection<Item> search = searchItems(keyWord, itemName, category);
         return filterItems(search, ratingItem, ratingStore, maxPrice, minPrice);
     }
@@ -291,11 +309,11 @@ public class Store {
         return discountType;
     }
 
-    public String getPurchasePolicy() {
+    public PurchasePolicy getPurchasePolicy() {
         return purchasePolicy;
     }
 
-    public String getDiscountPolicy() {
+    public DiscountPolicy getDiscountPolicy() {
         return discountPolicy;
     }
 
@@ -306,11 +324,9 @@ public class Store {
     public void setPurchaseType() {
     }
 
-    public void setDiscountPolicy() {
-    }
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
 
-    public void setPurchasePolicy() {
-    }
+    public void setPurchasePolicy(PurchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 
 
     public void changeItem(int itemID, String newSubCategory, Integer newQuantity, Double newPrice) throws ItemException {
@@ -322,8 +338,8 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Map<Item, Integer> items, StringBuilder details) throws ItemException { // TODO should get basket
-        return inventory.calculate(items, details);
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
+        return inventory.calculate(basket, details, storeDiscountPolicy);
     }
 
     //TODO make an exception for this
