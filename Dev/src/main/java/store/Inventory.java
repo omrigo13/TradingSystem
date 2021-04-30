@@ -19,7 +19,7 @@ public class Inventory {
 
 //    private final TradingSystem tradingSystem;
     private final Map<Item, Integer> items;
-    private AtomicInteger id = new AtomicInteger(0);
+    private final AtomicInteger id = new AtomicInteger(0);
 
     public Inventory() {
 //        this.tradingSystem = tradingSystem;
@@ -135,8 +135,8 @@ public class Inventory {
     public Item getItem(String name, String category, String subCategory) throws ItemException
     {
         for (Item item: items.keySet())
-            if(item.getName().toLowerCase().equals(name.toLowerCase()) && item.getCategory().toLowerCase().equals(category.toLowerCase())
-                    && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
+            if(item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category)
+                    && item.getSubCategory().equalsIgnoreCase(subCategory))
                 return item;
         throw new ItemNotFoundException("item not found");
     }

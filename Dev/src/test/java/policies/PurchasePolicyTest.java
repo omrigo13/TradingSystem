@@ -48,8 +48,6 @@ public class PurchasePolicyTest {
     }
 
     void updateDetails() {
-        user.getBasket(store).addItem(item1, 3);
-        user.getBasket(store).addItem(item2, 5);
         store.getItems().replace(item1, 5);
         store.getItems().replace(item2, 12);
     }

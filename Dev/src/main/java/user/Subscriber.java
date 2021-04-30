@@ -165,15 +165,18 @@ public class Subscriber extends User {
 
         synchronized (permissions) {
 
-            // look for any managers or owners that were appointed by this owner for this store
+            Collection<Permission> permissionsToRemove = new LinkedList<>();
+
+            // look for any managers or owners that were appointed by this owner for this store and remove their permission
             for (Permission permission : permissions)
                 if (permission.getClass() == AppointerPermission.class && ((AppointerPermission)permission).getStore() == store) {
                     Subscriber target = ((AppointerPermission)permission).getTarget();
                     target.removeOwnerPermission(store);
 
-                    // remove this user's permission to change the target's permissions
-                    removePermission(AppointerPermission.getInstance(target, store));
+                    permissionsToRemove.add(permission); // store this permission to remove it after the foreach loop
                 }
+
+            permissionsToRemove.forEach(permissions::remove);
 
             removePermission(OwnerPermission.getInstance(store));
             removePermission(EditPolicyPermission.getInstance(store));
@@ -211,12 +214,12 @@ public class Subscriber extends User {
 
     public void addEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
 
-        addPermissionToManager(target, store, ManageInventoryPermission.getInstance(store));
+        addPermissionToManager(target, store, EditPolicyPermission.getInstance(store));
     }
 
     public void removeEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
 
-        removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
+        removePermissionFromManager(target, store, EditPolicyPermission.getInstance(store));
     }
 
     public void addGetHistoryPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {

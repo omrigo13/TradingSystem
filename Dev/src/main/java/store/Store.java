@@ -18,16 +18,12 @@ public class Store {
     private String name;
     private String description;
     private double rating;
-    private String purchaseType;     // TODO: should check how to implement
-    private String discountType;     // TODO: should check how to implement
-    //private String purchasePolicy;     // TODO: should check how to implement
-   // private String discountPolicy;     // TODO: should check how to implement
     private DiscountPolicy discountPolicy;
     private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive;
-    private Inventory inventory = new Inventory();
-    private Collection<String> purchases = new LinkedList<>();
+    private final Inventory inventory = new Inventory();
+    private final Collection<String> purchases = new LinkedList<>();
 
     public Store() {}
 
@@ -300,28 +296,12 @@ public class Store {
         return inventory.toString();
     }
 
-    // TODO: should check how to implement
-    public String getPurchaseType() {
-        return purchaseType;
-    }
-
-    public String getDiscountType() {
-        return discountType;
-    }
-
     public PurchasePolicy getPurchasePolicy() {
         return purchasePolicy;
     }
 
     public DiscountPolicy getDiscountPolicy() {
         return discountPolicy;
-    }
-
-    // TODO: should check how to implement
-    public void setDiscountType() {
-    }
-
-    public void setPurchaseType() {
     }
 
     public void setDiscountPolicy(DiscountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }

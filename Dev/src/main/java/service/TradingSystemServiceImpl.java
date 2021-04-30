@@ -273,13 +273,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) {
+    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
         eventLog.writeToLogger("allow manager to edit policies");
         tradingSystemImpl.allowManagerToEditPolicies(userID, storeId, managerUserName);
     }
 
     @Override
-    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) {
+    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
         eventLog.writeToLogger("disable manager to edit policies");
         tradingSystemImpl.disableManagerFromEditPolicies(userID, storeId, managerUserName);
     }

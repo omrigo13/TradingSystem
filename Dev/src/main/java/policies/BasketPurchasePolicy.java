@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class BasketPurchasePolicy extends SimplePurchasePolicy {
 
-    private double cartValue;
+    private final double cartValue;
 
     public BasketPurchasePolicy(double cartValue) throws PolicyException {
         this.cartValue = cartValue;
@@ -24,8 +24,6 @@ public class BasketPurchasePolicy extends SimplePurchasePolicy {
             int quantity = itemsQuantity.getValue();
             value += (item.getPrice() * quantity);
         }
-        if(value <= cartValue)
-            return false;
-        return true;
+        return !(value <= cartValue);
     }
 }

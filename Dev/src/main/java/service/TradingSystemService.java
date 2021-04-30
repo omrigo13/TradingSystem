@@ -169,8 +169,6 @@ public interface TradingSystemService {
     //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
 
-    //TODO permissions for policies and discounts
-
     /* get all policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
     Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException;
@@ -206,8 +204,6 @@ public interface TradingSystemService {
     /* create xor policy between two policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
     int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
-
-    //TODO add all discount policies options here
 
     /* get all discount policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/

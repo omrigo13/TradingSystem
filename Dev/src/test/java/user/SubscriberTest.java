@@ -199,6 +199,10 @@ class SubscriberTest {
 
         Set<Permission> permissions = new HashSet<>();
         permissions.add(appointerPermission);
+        permissions.add(managerPermission);
+        permissions.add(getHistoryPermission);
+        permissions.add(editPolicyPermission);
+        permissions.add(manageInventoryPermission);
 
         Field privateField = subscriber.getClass().getDeclaredField("permissions");
         privateField.setAccessible(true);
