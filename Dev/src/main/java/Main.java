@@ -1,6 +1,10 @@
 import exceptions.InvalidActionException;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import presenatation.TradingSystem;
 import util.Filters;
 import util.HerokuUtil;
@@ -21,6 +25,15 @@ public class Main {
         tradingSystem = new TradingSystem();
 
         Javalin app = Javalin.create(config -> {
+            config.server(() -> {
+                Server server = new Server();
+                ServerConnector sslConnector = new ServerConnector(server, getSslContextFactory());
+                sslConnector.setPort(443);
+                ServerConnector connector = new ServerConnector(server);
+                connector.setPort(80);
+                server.setConnectors(new Connector[]{sslConnector, connector});
+                return server;
+            });
             config.addStaticFiles("/public");
             config.registerPlugin(new RouteOverviewPlugin("/routes"));
         }).start(HerokuUtil.getHerokuAssignedPort());
@@ -73,4 +86,11 @@ public class Main {
         app.error(404, ViewUtil.NotFound);
     }
 
+    private static SslContextFactory getSslContextFactory() {
+        SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStoreType("PKCS12");
+        sslContextFactory.setKeyStorePath(Main.class.getResource("/keystore/localhost.p12").toExternalForm());
+        sslContextFactory.setKeyStorePassword("password");
+        return sslContextFactory;
+    }
 }

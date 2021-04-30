@@ -3,8 +3,6 @@ package presenatation;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import exceptions.InvalidConnectionIdException;
-import externalServices.DeliverySystemBasicImpl;
-import externalServices.PaymentSystemBasicImpl;
 import io.javalin.http.Handler;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
@@ -13,24 +11,21 @@ import tradingSystem.TradingSystemImpl;
 import user.AdminPermission;
 import user.Subscriber;
 import util.Path;
-import util.ViewUtil;
 import util.RequestUtil;
+import util.ViewUtil;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
-    private static TradingSystemService tradingSystemService;
-    private static final String userName = "Admin";
-    private static final String password = "123";
+    private TradingSystemService tradingSystemService;
 
     public TradingSystem() throws InvalidActionException {
         // work around for the system initialization
         UserAuthentication userAuthentication = new UserAuthentication();
+        String userName = "Admin";
+        String password = "123";
         userAuthentication.register(userName, password);
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
@@ -43,43 +38,43 @@ public class TradingSystem {
         tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(build));
     }
 
-    public static Handler serveHomePage = ctx -> {
+    public Handler serveHomePage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.ROOT, model);
     };
 
-    public static Handler serveShowBasketPage = ctx -> {
+    public Handler serveShowBasketPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.SHOWBASKET, model);
     };
 
-    public static Handler serveUpdateProductAmountInBasket = ctx -> {
+    public Handler serveUpdateProductAmountInBasket = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
     };
 
-    public static Handler serveRootPage = ctx -> {
+    public Handler serveRootPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         //model.put("connectID", false);
         ctx.render(Path.Template.ROOT, model);
     };
 
-    public static Handler serveCartPage = ctx -> {
+    public Handler serveCartPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.Cart, model);
     };
 
-    public static Handler servePurchaseHistoryPage = ctx -> {
+    public Handler servePurchaseHistoryPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.PURCHASEHISTORY, model);
     };
 
-    public static Handler serveOpenNewStorePage = ctx -> {
+    public Handler serveOpenNewStorePage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.OPENNEWSTORE, model);
     };
 
-    public static Handler handleOpenNewStorePost = ctx -> {
+    public Handler handleOpenNewStorePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("storeID", tradingSystemService.openNewStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreName(ctx)));
@@ -92,12 +87,12 @@ public class TradingSystem {
         }
     };
 
-    public static Handler serveAddItemToStorePage = ctx -> {
+    public Handler serveAddItemToStorePage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.ADDITEMTOSTORE, model);
     };
 
-    public static Handler handleAddItemToStorePost = ctx -> {
+    public Handler handleAddItemToStorePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("itemID", tradingSystemService.addProductToStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProduceName(ctx), RequestUtil.getCategory(ctx), RequestUtil.getSubCategory(ctx), RequestUtil.getAmount(ctx), RequestUtil.getPrice(ctx)));
@@ -110,7 +105,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handlePurchasePost = ctx -> {
+    public Handler handlePurchasePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.purchaseCart(RequestUtil.getConnectionID(ctx));
@@ -121,7 +116,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleShowBasketPost = ctx -> {
+    public Handler handleShowBasketPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("basket", tradingSystemService.showBasket(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
@@ -134,7 +129,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleUpdateProductAmountInBasketPost = ctx -> {
+    public Handler handleUpdateProductAmountInBasketPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.updateProductAmountInBasket(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx), RequestUtil.getAmount(ctx));
@@ -148,7 +143,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleSearchPost = ctx -> {
+    public Handler handleSearchPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("search", tradingSystemService.getItems(RequestUtil.getSearchBox(ctx),null,null,null,null,null,null,null));
@@ -158,7 +153,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleCartPost = ctx -> {
+    public Handler handleCartPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("cart", tradingSystemService.showCart(RequestUtil.getConnectionID(ctx)));
@@ -168,7 +163,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handlePurchaseHistoryPost = ctx -> {
+    public Handler handlePurchaseHistoryPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             model.put("purchaseHistory", tradingSystemService.getPurchaseHistory(RequestUtil.getConnectionID(ctx)));
@@ -181,24 +176,24 @@ public class TradingSystem {
         }
     };
 
-    public static Handler serveRegisterPage = ctx -> {
+    public Handler serveRegisterPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.REGISTER, model);
     };
 
-    public static Handler handleNotFoundPost = ctx -> {
+    public Handler handleNotFoundPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         //model.put("connectID", tradingSystemService.connect());
         ctx.render(Path.Template.NotFound, model);
     };
 
-    public static Handler handleRootPost = ctx -> {
+    public Handler handleRootPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         model.put("connectID", tradingSystemService.connect());
         ctx.render(Path.Template.ROOT, model);
     };
 
-    public static Handler handleRegisterPost = ctx -> {
+    public Handler handleRegisterPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try {
             tradingSystemService.register(RequestUtil.getQueryUsername(ctx), RequestUtil.getQueryPassword(ctx));
@@ -213,13 +208,13 @@ public class TradingSystem {
         }
     };
 
-    public static Handler serveLoginPage = ctx -> {
+    public Handler serveLoginPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         model.put("loggedOut", RequestUtil.removeSessionAttrLoggedOut(ctx));
         ctx.render(Path.Template.LOGIN, model);
     };
 
-    public static Handler handleLoginPost = ctx -> {
+    public Handler handleLoginPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try {
             tradingSystemService.login(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getQueryPassword(ctx));
@@ -239,18 +234,18 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleLogoutPost = ctx -> {
+    public Handler handleLogoutPost = ctx -> {
         ctx.sessionAttribute("currentUser", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);
     };
 
-    public static Handler servePermissionsForManagerPage = ctx -> {
+    public Handler servePermissionsForManagerPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.PERMISSIONSFORMANAGER, model);
     };
 
-    public static Handler handleAllowManagerToUpdateProductsPost = ctx -> {
+    public Handler handleAllowManagerToUpdateProductsPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.allowManagerToUpdateProducts(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -264,7 +259,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleDisableManagerFromUpdateProductsPost = ctx -> {
+    public Handler handleDisableManagerFromUpdateProductsPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.disableManagerFromUpdateProducts(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -278,7 +273,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleAllowManagerToEditPoliciesPost = ctx -> {
+    public Handler handleAllowManagerToEditPoliciesPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.allowManagerToEditPolicies(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -292,7 +287,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleDisableManagerFromEditPoliciesPost = ctx -> {
+    public Handler handleDisableManagerFromEditPoliciesPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.disableManagerFromEditPolicies(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -306,7 +301,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleAllowManagerToGetHistoryPost = ctx -> {
+    public Handler handleAllowManagerToGetHistoryPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.allowManagerToGetHistory(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -320,7 +315,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleDisableManagerFromGetHistoryPost = ctx -> {
+    public Handler handleDisableManagerFromGetHistoryPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.disableManagerFromGetHistory(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getManagerUserName(ctx));
@@ -334,12 +329,12 @@ public class TradingSystem {
         }
     };
 
-    public static Handler serveAppointRemoveManagerOrOwnerPage = ctx -> {
+    public Handler serveAppointRemoveManagerOrOwnerPage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
     };
 
-    public static Handler handleAppointStoreOwnerPost = ctx -> {
+    public Handler handleAppointStoreOwnerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.appointStoreOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
@@ -353,7 +348,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleAppointStoreManagerPost = ctx -> {
+    public Handler handleAppointStoreManagerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.appointStoreManager(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
@@ -367,7 +362,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleRemoveOwnerPost = ctx -> {
+    public Handler handleRemoveOwnerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.removeOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
@@ -381,7 +376,7 @@ public class TradingSystem {
         }
     };
 
-    public static Handler handleRemoveManagerPost = ctx -> {
+    public Handler handleRemoveManagerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
             tradingSystemService.removeManager(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
