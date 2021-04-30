@@ -16,6 +16,9 @@ import util.Path;
 import util.ViewUtil;
 import util.RequestUtil;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,9 +30,8 @@ public class TradingSystem {
 
     public TradingSystem() throws InvalidActionException {
         // work around for the system initialization
-        ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
-        map.put(userName, password);
-        UserAuthentication userAuthentication = new UserAuthentication(map);
+        UserAuthentication userAuthentication = new UserAuthentication();
+        userAuthentication.register(userName, password);
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
         Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
