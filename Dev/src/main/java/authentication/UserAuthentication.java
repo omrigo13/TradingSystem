@@ -30,7 +30,7 @@ public class UserAuthentication {
         }
     }
 
-    UserAuthentication(ConcurrentHashMap<String, Record> records, MessageDigest digest, SecureRandom random) {
+    public UserAuthentication(ConcurrentHashMap<String, Record> records, MessageDigest digest, SecureRandom random) {
 
         this.records = records;
         this.digest = digest;

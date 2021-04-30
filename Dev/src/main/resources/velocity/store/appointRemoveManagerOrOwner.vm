@@ -1,0 +1,55 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="appointRemoveManagerOrOwnerForm" method="post">
+            <h1 id="appointRemoveManagerOrOwnerLabel">Appoint/Remove Manager or owner</h1>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="storeID">storeID</label>
+                </div>
+                <div class="col-75">
+                    <input name="storeID" placeholder="storeID" value="" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="userName">user name</label>
+                </div>
+                <div class="col-75">
+                    <input name="userName" placeholder="user name" value="" required>
+                </div>
+            </div>
+            <div class="row">
+                <input id="goodPermission" type="submit" formaction="/appointStoreManager" value="appoint store manager">
+                <input id="badPermission" type="submit" formaction="/removeManager" value="remove manager">
+            </div>
+            <div class="row">
+                <br><br>
+                <input id="goodPermission" type="submit" formaction="/appointStoreOwner" value="appoint store owner">
+                <input id="badPermission" type="submit" formaction="/removeOwner" value="remove owner">
+            </div>
+        </form>
+    </div>
+    #if($succeeded)
+        <p class="good notification">good action</p>
+    #elseif($failed)
+        <p class="bad notification">bad action</p>
+    #end
+</main>
+</body>
+</html>

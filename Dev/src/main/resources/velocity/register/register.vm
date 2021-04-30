@@ -1,0 +1,46 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="registerForm" method="post">
+            <h1 id="registerLabel">$msg.get("REGISTER_HEADING")</h1>
+            <p>$msg.get("REGISTER_INSTRUCTIONS")</p>
+            <div class="row">
+                <div class="col-25">
+                    <label for="firstName">$msg.get("REGISTER_LABEL_USERNAME")</label>
+                </div>
+                <div class="col-75">
+                    <input name="username" placeholder="$msg.get("REGISTER_LABEL_USERNAME")" value="" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="password">$msg.get("REGISTER_LABEL_PASSWORD")</label>
+                </div>
+                <div class="col-75">
+                    <input type="password" name="password" placeholder="$msg.get("REGISTER_LABEL_PASSWORD")" value="" required>
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="$msg.get("REGISTER_BUTTON_LOGIN")">
+            </div>
+            #if($authenticationFailed)
+                <p class="bad notification">$msg.get("REGISTER_AUTH_FAILED")</p>
+            #elseif($authenticationSucceeded)
+                <p class="good notification">$msg.get("REGISTER_AUTH_SUCCEEDED", $currentUser)</p>
+            #end
+        </form>
+    </div>
+</main>
+</body>
+</html>
+
