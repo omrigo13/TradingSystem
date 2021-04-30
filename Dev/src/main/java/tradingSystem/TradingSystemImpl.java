@@ -1,12 +1,10 @@
 package tradingSystem;
 
 import exceptions.InvalidActionException;
-import policies.DefaultPurchasePolicy;
 import store.Item;
 import store.Store;
 import user.*;
 
-import java.io.IOException;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -392,7 +390,7 @@ public class TradingSystemImpl {
         return subscriber.getSalesHistoryByStore(store);
     }
 
-    public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException, IOException {
+    public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException {
         return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }
 

@@ -17,7 +17,7 @@ public class Item {
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
-    private Collection<Review> reviews = new LinkedList<>();
+    private final Collection<Review> reviews = new LinkedList<>();
 
     public Item() {}
 

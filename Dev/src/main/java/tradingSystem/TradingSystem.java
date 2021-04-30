@@ -182,8 +182,7 @@ public class TradingSystem {
         if(purchasePolicies.get(policy).getPurchasePolicies().size() > 0)
             throw new RemovePurchasePolicyException();
         for (PurchasePolicy purchasePolicy: purchasePolicies.values()) {
-            if(purchasePolicy.getPurchasePolicies().contains(purchasePolicies.get(policy)))
-                purchasePolicy.getPurchasePolicies().remove(purchasePolicies.get(policy));
+            purchasePolicy.getPurchasePolicies().remove(purchasePolicies.get(policy));
         }
         purchasePolicies.remove(policy);
         storesPurchasePolicies.get(store).remove(policy);
@@ -279,8 +278,7 @@ public class TradingSystem {
         if(discountPolicies.get(discountId).getDiscountPolicies().size() > 0)
             throw new RemoveDiscountPolicyException();
         for (DiscountPolicy discountPolicy: discountPolicies.values()) {
-            if(discountPolicy.getDiscountPolicies().contains(discountPolicies.get(discountId)))
-                discountPolicy.getDiscountPolicies().remove(discountPolicies.get(discountId));
+            discountPolicy.getDiscountPolicies().remove(discountPolicies.get(discountId));
         }
         discountPolicies.remove(discountId);
         storesDiscountPolicies.get(store).remove(discountId);
