@@ -1,0 +1,34 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    #if($purchaseHistory)
+        <h1>Purchase History</h1>
+        <div class="row row-3">
+            #foreach($purchase in $purchaseHistory)
+                <div class="col">
+                    $purchase
+                </div>
+            #end
+        </div>
+        <p class="good notification">purchase History successfully approached</p>
+    #else
+    <form id="purchaseHistoryForm" method="post">
+        <input type="hidden" name="connectionID" id="connectionID" value="">
+        <script type="text/javascript">
+            document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            document.forms["purchaseHistoryForm"].submit();
+        </script>
+    </form>
+    #end
+</main>
+</body>
+</html>

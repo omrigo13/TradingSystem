@@ -7,6 +7,8 @@ import tradingSystem.TradingSystemImpl;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -67,12 +69,18 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("Show user cart");
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.showCart(userID);
     }
 
     @Override
     public Collection<String> showBasket(String userID, String storeId) throws InvalidActionException {
         eventLog.writeToLogger("Show user basket for store: " + storeId);
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.showBasket(userID, storeId);
     }
 
@@ -181,6 +189,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> getPurchaseHistory(String userID) throws InvalidActionException {
         eventLog.writeToLogger("User ask for his purchase history");
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.getPurchaseHistory(userID);
     }
 

@@ -1,0 +1,49 @@
+#macro(navbar)
+<header>
+    <ul class="nav navbar-nav">
+        <div class="navbar">
+            <div class="dropdown">
+                <button class="dropbtn">Dropdown
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+
+                    #if($currentUser)
+                        <form method="post" action="/logout">
+                            <button id="logout">$msg.get("COMMON_NAV_LOGOUT")</button>
+                        </form>
+                    #else
+                        <a href="/login">$msg.get("COMMON_NAV_LOGIN")</a>
+                    #end
+                    <a href="/register">$msg.get("COMMON_NAV_REGISTER")</a>
+                    <a href="/updateProductAmountInBasket">$msg.get("COMMON_NAV_UPDATE_PRODUCT_AMOUNT_IN_BASKET")</a>
+                    <a href="/showBasket">$msg.get("COMMON_NAV_SHOW_BASKET")</a>
+                </div>
+            </div>
+        </div>
+        #if($currentUser)
+            <div class="navbar">
+                <div class="dropdown">
+                    <button class="dropbtn">Dropdown Subscriber
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/openNewStore">open new store</a>
+                        <a href="/purchaseHistory">get purchase history</a>
+                        <a href="/addItemToStore">add item to store</a>
+                        <a href="/permissionsForManager">add/remove permissions</a>
+                        <a href="/appointRemoveManagerOrOwner">appoint/remove manager or owner</a>
+                    </div>
+                </div>
+            </div>
+        #else
+
+        #end
+        <li><a href="/">Home</a></li>
+        <li style="float:right"><a href="/cart" id="cartA"> <img id="cartPicture" src="/img/cart.jpg" alt="Cart"></a> </li>
+        <form class="searchBox" action="/search" method="post">
+            <li style="float:right"><input name="searchBox" id="searchBox" type="text" placeholder="Search..."></li>
+        </form>
+    </ul>
+</header>
+#end
