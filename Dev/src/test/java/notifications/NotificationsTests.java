@@ -38,6 +38,16 @@ public class NotificationsTests {
         Subscriber subscriber2 = new Subscriber(20, "subscriber2");
     }
 
+    @Test
+    void notificationAddedToPending(){
+        //todo: test notification Added To Pending when user not logged in
+    }
+
+    @Test
+    void notifyPostponed(){
+        //todo: test notify Postponed notifications
+    }
+
 }
 
 
