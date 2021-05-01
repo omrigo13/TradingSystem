@@ -359,16 +359,16 @@ public class Subscriber extends User {
 
     }
 
-    public void notifyObserverPurchase(PurchaseNotification notification) {
+    public PurchaseNotification notifyObserverPurchase(PurchaseNotification notification) {
         //todo: decide if to postpone the notification
     }
 
-    public void notifyObserverStoreStatus(StoreStatusNotification notification) {
+    public StoreStatusNotification notifyObserverStoreStatus(StoreStatusNotification notification) {
         //todo: decide if to postpone the notification
 
     }
 
-    public void notifyObserverItemReview(ItemReviewNotification notification) {
+    public ItemReviewNotification notifyObserverItemReview(ItemReviewNotification notification) {
         //todo: decide if to postpone the notification
 
     }
@@ -378,12 +378,12 @@ public class Subscriber extends User {
 
     }
 
-    public void notifyObserverMessage(MessageNotification notification){
+    public MessageNotification notifyObserverMessage(MessageNotification notification){
         //todo: implement
 
     }
 
-    public void notifyObserverSubscriberRemove(SubscriberRemoveNotification notification){
+    public SubscriberRemoveNotification notifyObserverSubscriberRemove(SubscriberRemoveNotification notification){
         //todo: implement
     }
 }

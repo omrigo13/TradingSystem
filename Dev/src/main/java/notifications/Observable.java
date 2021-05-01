@@ -66,4 +66,8 @@ public class Observable {
             s.notifyObserverMessage(notification);
         }
     }
+
+    public Collection<Subscriber> getObservers() {
+        return observers;
+    }
 }

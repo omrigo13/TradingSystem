@@ -358,6 +358,10 @@ public class Store {
         }
     }
 
+    public Observable getObservable() {
+        return observable;
+    }
+
     public void addPurchase(String purchaseDetails) {
         purchases.add(purchaseDetails);
     }
