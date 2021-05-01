@@ -51,8 +51,8 @@ public class AcceptanceTestsV2 {
     void setUpStore1() throws InvalidActionException {
         setUpStore1Founder();
         storeId1 = service.openNewStore(founderStore1Id, "store1");
-        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk", "DairyProducts", "sub1", 15, 6.5);
-        productId2 = service.addProductToStore(founderStore1Id, storeId1, "cheese", "DairyProducts", "sub1", 20, 3);
+        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk", "dairy", "sub1", 15, 6.5);
+        productId2 = service.addProductToStore(founderStore1Id, storeId1, "cheese", "dairy", "sub1", 20, 3);
         tomato = service.addProductToStore(founderStore1Id, storeId1, "tomato", "vegetables", "red", 20, 8.5);
         corn = service.addProductToStore(founderStore1Id, storeId1, "corn", "vegetables", "yellow", 30, 12.0);
         setUpStore1Manager();
@@ -699,6 +699,44 @@ public class AcceptanceTestsV2 {
         service.appointStoreOwner(founderStore2Id, store2Manager1UserName, storeId1);
         service.appointStoreManager(founderStore2Id, store1Manager1UserName, storeId2);
         service.removeOwner(founderStore1Id, storeId1, store2FounderUserName);
+    }
+
+    @Test
+    void getStoreItemsWithKeyWordMistakes() throws InvalidActionException {
+        setUpStore1();
+        Collection<String> items = service.getItems("yelloow", null, null, null, null, null, null, null);
+        items.addAll(service.getItems("rred", null, null, null, null, null, null, null));
+
+        assertEquals(2, items.size());
+        assertTrue(items.toString().contains("yellow") && items.toString().contains("corn"));
+        assertTrue(items.toString().contains("red") && items.toString().contains("tomato"));
+    }
+
+    @Test
+    void getStoreItemsWithItemNameMistakes() throws InvalidActionException {
+        setUpStore1();
+        Collection<String> items = service.getItems(null, "tomata", null, null, null, null, null, null);
+        items.addAll(service.getItems(null, "ccorn", null, null, null, null, null, null));
+
+        assertEquals(2, items.size());
+        assertTrue(items.toString().contains("yellow") && items.toString().contains("corn"));
+        assertTrue(items.toString().contains("red") && items.toString().contains("tomato"));
+    }
+
+    @Test
+    void getStoreItemsWithCategoryMistakes() throws InvalidActionException {
+        setUpStore1();
+        Collection<String> items;
+        items = service.getItems(null, null, "vegetebels", null, null, null, null, null);
+
+        assertEquals(2, items.size());
+        assertTrue(items.toString().contains("yellow") && items.toString().contains("corn"));
+        assertTrue(items.toString().contains("red") && items.toString().contains("tomato"));
+
+        items = service.getItems(null, null, "dayry", null, null, null, null, null);
+        assertEquals(2, items.size());
+        assertTrue(items.toString().contains("cheese"));
+        assertTrue(items.toString().contains("milk"));
     }
 
     @Test
