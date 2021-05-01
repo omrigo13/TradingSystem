@@ -3,13 +3,10 @@ package store;
 import exceptions.*;
 import notifications.Observable;
 import review.Review;
-import tradingSystem.TradingSystem;
 import user.Subscriber;
 import user.User;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Store {
 
@@ -380,6 +377,6 @@ public class Store {
     }
 
     public void notifyItemOpinion(Review review) {
-        observable.notifyItemOpinion(review);
+        observable.notifyItemReview(review);
     }
 }

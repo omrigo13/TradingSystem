@@ -1,6 +1,7 @@
 package user;
 
 import exceptions.*;
+import notifications.*;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -15,6 +16,7 @@ public class Subscriber extends User {
     private final Set<Permission> permissions; // synchronized manually
     private final ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     private final Collection<String> purchaseHistory; // synchronized in constructor
+    private Collection<Notification> pendingNotifications = new LinkedList<>();
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -342,7 +344,7 @@ public class Subscriber extends User {
         if (!itemsPurchased.get(store).contains(item))
             throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
 
-        Review review1 = new Review(this, store, item, review)
+        Review review1 = new Review(this, store, item, review);
         item.addReview(review1);
         store.notifyItemOpinion(review1);
 
@@ -357,16 +359,16 @@ public class Subscriber extends User {
 
     }
 
-    public void notifyObserverPurchase(User buyer, Map<Item, Integer> basket) {
+    public void notifyObserverPurchase(PurchaseNotification notification) {
         //todo: decide if to postpone the notification
     }
 
-    public void notifyObserverStoreStatus(boolean isActive) {
+    public void notifyObserverStoreStatus(StoreStatusNotification notification) {
         //todo: decide if to postpone the notification
 
     }
 
-    public void notifyObserverItemOpinion(Review review) {
+    public void notifyObserverItemReview(ItemReviewNotification notification) {
         //todo: decide if to postpone the notification
 
     }
@@ -376,8 +378,12 @@ public class Subscriber extends User {
 
     }
 
-    public void notifyObserverMessage(){
+    public void notifyObserverMessage(MessageNotification notification){
         //todo: implement
 
+    }
+
+    public void notifyObserverSubscriberRemove(SubscriberRemoveNotification notification){
+        //todo: implement
     }
 }
