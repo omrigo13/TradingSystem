@@ -36,6 +36,7 @@ public class NotificationsTests {
     void notifyPurchase() throws ItemException {
         openStoreAndAddItem();
         Subscriber subscriber2 = new Subscriber(20, "subscriber2");
+        //todo: addToBasket -> purchaseCart
     }
 
     @Test

@@ -17,4 +17,9 @@ public class ItemReviewNotification extends Notification{
     public void setReview(Review review) {
         this.review = review;
     }
+
+    @Override
+    public void notifyNotification() {
+
+    }
 }

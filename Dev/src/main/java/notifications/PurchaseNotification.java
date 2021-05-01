@@ -30,4 +30,9 @@ public class PurchaseNotification extends Notification{
     public void setBasket(Map<Item, Integer> basket) {
         this.basket = basket;
     }
+
+    @Override
+    public void notifyNotification() {
+
+    }
 }

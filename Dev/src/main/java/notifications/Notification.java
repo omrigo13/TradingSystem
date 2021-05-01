@@ -11,4 +11,6 @@ public abstract class Notification {
     public void setShown(boolean shown) {
         isShown = shown;
     }
+
+    public abstract void notifyNotification();
 }

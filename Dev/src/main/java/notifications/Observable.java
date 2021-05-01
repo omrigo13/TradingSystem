@@ -24,15 +24,15 @@ public class Observable {
     public void notifyPurchase(User buyer, Map<Item, Integer> basket){
         PurchaseNotification notification = new PurchaseNotification(buyer, basket);
         for (Subscriber s: observers) {
-            s.notifyObserverPurchase(notification);
+            s.notifyNotification(notification);
         }
     }
 
     //notifies store owner store status change (active/not active)
     public void notifyStoreStatus(boolean isActive){
-        StoreStatusNotification notification = new StoreStatusNotification(isActive)
+        StoreStatusNotification notification = new StoreStatusNotification(isActive);
         for (Subscriber s: observers) {
-            s.notifyObserverStoreStatus(notification);
+            s.notifyNotification(notification);
         }
     }
 
@@ -41,14 +41,14 @@ public class Observable {
         SubscriberRemoveNotification notification = new SubscriberRemoveNotification();
         //todo implement after requirement is fulfilled.
         for (Subscriber s: observers) {
-            s.notifyObserverSubscriberRemove(notification);
+            s.notifyNotification(notification);
         }
     }
 
     public void notifyItemReview(Review review) {
         ItemReviewNotification notification = new ItemReviewNotification(review);
         for (Subscriber s: observers) {
-            s.notifyObserverItemReview(notification);
+            s.notifyNotification(notification);
         }
     }
 
@@ -56,14 +56,14 @@ public class Observable {
         //todo: implement
         LotteryStatusNotification notification = new LotteryStatusNotification();
         for (Subscriber s: observers) {
-            s.notifyObserverLotteryStatus();
+            s.notifyNotification(notification);
         }
     }
 
     public void notifyMessage(User sender, String message){
         MessageNotification notification = new MessageNotification(sender, message);
         for (Subscriber s: observers) {
-            s.notifyObserverMessage(notification);
+            s.notifyNotification(notification);
         }
     }
 

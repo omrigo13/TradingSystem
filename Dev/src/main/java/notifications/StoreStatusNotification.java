@@ -15,4 +15,9 @@ public class StoreStatusNotification extends Notification{
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    @Override
+    public void notifyNotification() {
+
+    }
 }

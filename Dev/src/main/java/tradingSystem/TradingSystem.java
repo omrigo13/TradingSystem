@@ -99,6 +99,7 @@ public class TradingSystem {
         User subscriber = getSubscriberByUserName(userName);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
+        ((Subscriber)subscriber).checkPendingNotifications(); //todo: what to do with the pending notifications?
     }
 
     public void logout(String connectionId) throws InvalidActionException {
@@ -119,7 +120,8 @@ public class TradingSystem {
 
         subscriber.addOwnerPermission(store);
 
-        observables.put(store, new Observable());
+//        observables.put(store, new Observable());
+        store.subscribe(subscriber);
 
         return id;
     }

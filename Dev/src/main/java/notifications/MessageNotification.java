@@ -26,4 +26,9 @@ public class MessageNotification extends Notification{
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public void notifyNotification() {
+
+    }
 }
