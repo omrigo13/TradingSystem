@@ -2,10 +2,8 @@ package user;
 
 import exceptions.AlreadyOwnerException;
 import exceptions.NoPermissionException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 
@@ -16,10 +14,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.State.BLOCKED;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.testng.Assert.assertFalse;
 
-@ExtendWith(MockitoExtension.class)
-class SubscriberConcurrencyTest {
+public class SubscriberConcurrencyTest {
 
     @Mock private Set<Permission> permissions1;
     @Mock private Set<Permission> permissions2;

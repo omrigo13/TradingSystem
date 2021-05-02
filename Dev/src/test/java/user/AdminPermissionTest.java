@@ -1,12 +1,10 @@
 package user;
 
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
+import static org.testng.Assert.assertSame;
 
-class AdminPermissionTest {
+public class AdminPermissionTest {
 
     private final Permission permission = AdminPermission.getInstance();
     private final Permission samePermission = AdminPermission.getInstance();

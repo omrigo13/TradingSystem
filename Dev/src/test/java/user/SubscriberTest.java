@@ -1,13 +1,11 @@
 package user;
 
 import exceptions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 
@@ -15,11 +13,12 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
-class SubscriberTest {
+public class SubscriberTest {
 
     private Subscriber subscriber;
 
@@ -48,8 +47,9 @@ class SubscriberTest {
     private final int itemId = 37373;
     private final String subCategory = "Gaming Consoles";
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws NoSuchFieldException, IllegalAccessException {
+        MockitoAnnotations.openMocks(this);
         subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
 
         reset(store);
@@ -307,13 +307,13 @@ class SubscriberTest {
     }
 
     @Test
-    void writeOpnionOnProductBadReviewDetails() {
+    void writeOpinionOnProductBadReviewDetails() {
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
     }
 
     @Test
-    void writeOpnionOnProductNotPurchasedItem() throws ItemException {
+    void writeOpinionOnProductNotPurchasedItem() throws ItemException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
         when(store.searchItemById(0)).thenReturn(item2);
@@ -347,7 +347,7 @@ class SubscriberTest {
     }
 
     @Test
-    void getSalesHistoryByStoreNoPremission() {
+    void getSalesHistoryByStoreNoPermission() {
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
     }

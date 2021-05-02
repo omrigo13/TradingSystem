@@ -1,28 +1,30 @@
 package store;
 
 import exceptions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 public class InventoryTest {
 
     @Mock private TradingSystem tradingSystem;
     private Basket basket;
     private Inventory inventory;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         inventory = new Inventory();
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
         basket = new Basket(new Store(), items);
@@ -134,9 +136,9 @@ public class InventoryTest {
         assertThrows(WrongAmountException.class, () -> inventory.changeQuantity(tomatoId,-1));
 
         inventory.changeQuantity(tomatoId, 8);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 8);
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 8);
         inventory.changeQuantity(tomatoId, 2);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 2);
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 2);
     }
 
 //    @Test
@@ -196,7 +198,7 @@ public class InventoryTest {
         assertEquals(inventory.searchItem(tomatoId).getSubCategory(),"minPrice");
 
         inventory.changeItemDetails(cucumberID,null,7,null);
-        assertEquals(inventory.getItems().get(inventory.searchItem(cucumberID)),7);
+        assertEquals(inventory.getItems().get(inventory.searchItem(cucumberID)).intValue(),7);
 
         inventory.changeItemDetails(tomatoId,null,null,8.7);
         assertEquals(inventory.searchItem(tomatoId).getPrice(),8.7);
@@ -219,10 +221,10 @@ public class InventoryTest {
         basket.addItem(inventory.searchItem(carrotId), 2);
         StringBuilder details = new StringBuilder();
 //        assertThrows(Exception.class, () -> inventory.calculate(items, details));
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 5);
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 5);
         inventory.searchItem(carrotId).unlock();
         assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet())), 110);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 3);
+        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 3);
         inventory.searchItem(tomatoId).unlock();
         inventory.searchItem(cucumberID).unlock();
         inventory.searchItem(carrotId).unlock();

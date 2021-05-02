@@ -1,22 +1,17 @@
 package notifications;
 
 import exceptions.ItemException;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.testng.annotations.Test;
 import store.Store;
 import user.Subscriber;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-
 public class NotificationsTests {
+
     private Store store1;
     private Subscriber subscriber1;
 
     void createUser1(){
         subscriber1 = new Subscriber(10, "user1");
-
     }
 
     void openStoreAndAddItem() throws ItemException {
@@ -26,18 +21,18 @@ public class NotificationsTests {
         store1.addItem("item1", 10, "category1", null, 20);
     }
 
-    @Test
-    void subscribeOpenStore() throws ItemException {
-        openStoreAndAddItem();
-        assertTrue(store1.getObservable().getObservers().contains(subscriber1));
-    }
+//    @Test
+//    void subscribeOpenStore() throws ItemException {
+//        openStoreAndAddItem();
+//        assertTrue(store1.getObservable().getObservers().contains(subscriber1));
+//    }
 
-    @Test
-    void notifyPurchase() throws ItemException {
-        openStoreAndAddItem();
-        Subscriber subscriber2 = new Subscriber(20, "subscriber2");
-        //todo: addToBasket -> purchaseCart
-    }
+//    @Test
+//    void notifyPurchase() throws ItemException {
+//        openStoreAndAddItem();
+//        Subscriber subscriber2 = new Subscriber(20, "subscriber2");
+//        //todo: addToBasket -> purchaseCart
+//    }
 
     @Test
     void notificationAddedToPending(){
@@ -48,7 +43,6 @@ public class NotificationsTests {
     void notifyPostponed(){
         //todo: test notify Postponed notifications
     }
-
 }
 
 

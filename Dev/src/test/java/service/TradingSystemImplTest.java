@@ -1,11 +1,10 @@
 package service;
 
 import exceptions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -17,12 +16,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+import static org.testng.AssertJUnit.*;
 
-@ExtendWith(MockitoExtension.class)
-class TradingSystemImplTest {
+public class TradingSystemImplTest {
 
     private TradingSystemImpl service;
 
@@ -49,8 +47,9 @@ class TradingSystemImplTest {
     private final String subCategory = "subCategory";
     private final Double price = 450.6;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         service = new TradingSystemImpl(tradingSystem);
     }
 

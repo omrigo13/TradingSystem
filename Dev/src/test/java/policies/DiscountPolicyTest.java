@@ -1,17 +1,15 @@
 package policies;
 
 import exceptions.ItemException;
-import exceptions.PolicyException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 import user.User;
@@ -19,26 +17,24 @@ import user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testng.AssertJUnit.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
 public class DiscountPolicyTest {
 
     private User user;
     private final Collection<PurchasePolicy> policies = new ArrayList<>();
     private final Collection<DiscountPolicy> discountPolicies = new ArrayList<>();
-    private Collection<Item> items = new ArrayList<>();
+    private final Collection<Item> items = new ArrayList<>();
 
-    @Mock
-    private PaymentSystem paymentSystem;
+    @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
 
-    @Spy
-    private Store store;
+    @Spy private Store store;
     @Spy private Item item1, item2;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws ItemException {
+        MockitoAnnotations.openMocks(this);
         user = new User();
         user.makeCart(user);
         store.setObservable(new Observable());
@@ -52,7 +48,7 @@ public class DiscountPolicyTest {
         user.getBasket(store).addItem(item2, 5);
     }
 
-    @AfterEach
+    @AfterMethod
     void tearDown() throws ItemException {
         store.removeItem(0);
         store.removeItem(1);
@@ -61,8 +57,7 @@ public class DiscountPolicyTest {
         items.clear();
     }
 
-    @Test // 50% discount on cat1
-    void discountByCategory() throws Exception {
+    @Test void discountByCategory() throws Exception {
         Collection<Item> items = store.searchItems(null, null, "cat1");
         store.setDiscountPolicy(new QuantityDiscountPolicy(50, items, null));
         user.purchaseCart(paymentSystem, deliverySystem);

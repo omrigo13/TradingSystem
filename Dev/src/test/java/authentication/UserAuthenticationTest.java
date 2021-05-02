@@ -3,11 +3,10 @@ package authentication;
 import exceptions.SubscriberAlreadyExistsException;
 import exceptions.SubscriberDoesNotExistException;
 import exceptions.WrongPasswordException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -15,15 +14,17 @@ import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
-class UserAuthenticationTest {
+public class UserAuthenticationTest {
 
     private UserAuthentication auth;
 
-    private final MessageDigest digest;
+    private MessageDigest digest;
 
     @Spy private ConcurrentHashMap<String, UserAuthentication.Record> records;
 
@@ -31,14 +32,10 @@ class UserAuthenticationTest {
     private final String password = "jones12345";
     private final SecureRandom random = new SecureRandom();
 
-    UserAuthenticationTest() throws NoSuchAlgorithmException {
-
+    @BeforeMethod
+    void setUp() throws NoSuchAlgorithmException {
+        MockitoAnnotations.openMocks(this);
         digest = spy(MessageDigest.getInstance("SHA-256"));
-    }
-
-    @BeforeEach
-    void setUp() {
-
         auth = spy(new UserAuthentication(records, digest, random));
     }
 
@@ -91,5 +88,4 @@ class UserAuthenticationTest {
         when(records.get(userName)).thenReturn(record);
         when(digest.digest()).thenReturn("SomeOtherHash".getBytes());
         assertThrows(WrongPasswordException.class, () -> auth.authenticate(userName, password));
-    }
-}
+    }}

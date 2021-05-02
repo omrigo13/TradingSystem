@@ -1,14 +1,9 @@
 package externalServices;
 
 import exceptions.PaymentSystemException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 
-class PaymentSystemTest {
-
-    @BeforeEach
-    void setUp() {
-    }
+public class PaymentSystemTest {
 
     @Test
     void pay() throws PaymentSystemException {

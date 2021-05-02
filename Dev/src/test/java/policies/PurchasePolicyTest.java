@@ -3,13 +3,12 @@ package policies;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 import user.User;
@@ -18,9 +17,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertThrows;
 
-@ExtendWith(MockitoExtension.class)
 public class PurchasePolicyTest {
 
     private User user;
@@ -33,8 +31,9 @@ public class PurchasePolicyTest {
     @Spy private Store store;
     @Spy private Item item1, item2, item3;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws ItemException {
+        MockitoAnnotations.openMocks(this);
         user = new User();
         user.makeCart(user);
         store.setPurchasePolicy(new DefaultPurchasePolicy());
@@ -51,7 +50,7 @@ public class PurchasePolicyTest {
         store.getItems().replace(item1, 5);
         store.getItems().replace(item2, 12);
     }
-    @AfterEach
+    @AfterMethod
     void tearDown() throws ItemException {
         store.removeItem(0);
         store.removeItem(1);
@@ -75,7 +74,7 @@ public class PurchasePolicyTest {
 
     @Test
     // //should be here {1,1} {0,0}
-    void xorPolicyByItemBothPoliciesValidOrNotValid() throws ItemException, PolicyException {
+    void xorPolicyByItemBothPoliciesValidOrNotValid() throws PolicyException {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new XorPolicy(policies));
@@ -112,7 +111,7 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {0,0}
-    void orPolicyByCategoryBothPoliciesNotValid() throws ItemException, PolicyException {
+    void orPolicyByCategoryBothPoliciesNotValid() throws PolicyException {
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 3));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 4));
         store.setPurchasePolicy(new OrPolicy(policies));
@@ -128,7 +127,7 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {0,1} {1,0} {0,0}
-    void andPolicyByItemAtLeastOnePolicyNotValid() throws ItemException, PolicyException {
+    void andPolicyByItemAtLeastOnePolicyNotValid() throws PolicyException {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 4));
         store.setPurchasePolicy(new AndPolicy(policies));
@@ -150,7 +149,7 @@ public class PurchasePolicyTest {
     }
 
     @Test
-    void quantityPolicyMinMaxQuantityBelowZero() throws ItemException, PolicyException {
+    void quantityPolicyMinMaxQuantityBelowZero() {
         assertThrows(QuantityPolicyException.class, ()->policies.add(new QuantityPolicy(store.getItems().keySet(), -1, 0)));
         assertThrows(QuantityPolicyException.class, ()->policies.add(new QuantityPolicy(store.getItems().keySet(), 0, -1)));
     }
@@ -170,7 +169,7 @@ public class PurchasePolicyTest {
     }
 
     @Test
-    void quantityPolicyBasketWrongMinQauntityItem() throws PolicyException, ItemException {
+    void quantityPolicyBasketWrongMinQauntityItem() throws PolicyException {
         user.getBasket(store).setQuantity(item1, 1);
         store.setPurchasePolicy(new QuantityPolicy(store.getItems().keySet(), 2, 4));
         assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
