@@ -26,18 +26,18 @@ public class NotificationsTests {
         store1.addItem("item1", 10, "category1", null, 20);
     }
 
-    @Test
-    void subscribeOpenStore() throws ItemException {
-        openStoreAndAddItem();
-        assertTrue(store1.getObservable().getObservers().contains(subscriber1));
-    }
+//    @Test
+//    void subscribeOpenStore() throws ItemException {
+//        openStoreAndAddItem();
+//        assertTrue(store1.getObservable().getObservers().contains(subscriber1));
+//    }
 
-    @Test
-    void notifyPurchase() throws ItemException {
-        openStoreAndAddItem();
-        Subscriber subscriber2 = new Subscriber(20, "subscriber2");
-        //todo: addToBasket -> purchaseCart
-    }
+//    @Test
+//    void notifyPurchase() throws ItemException {
+//        openStoreAndAddItem();
+//        Subscriber subscriber2 = new Subscriber(20, "subscriber2");
+//        //todo: addToBasket -> purchaseCart
+//    }
 
     @Test
     void notificationAddedToPending(){
