@@ -1,0 +1,42 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="adminActionsForm" method="post">
+            <h1 id="adminActionsLabel">admin actions</h1>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
+            <div class="row">
+                <input id="goodPermissionMargin" type="submit" formaction="/getStoresInfo" value="get stores info">
+                <input id="goodPermissionMargin" type="submit" formaction="/getErrorLog" value="error log">
+                <input id="goodPermissionMargin" type="submit" formaction="/getEventLog" value="event log">
+            </div>
+        </form>
+    </div>
+    #if($info)
+        <p class="good notification">good info</p>
+        <h1>info</h1>
+        <div class="row row-3">
+            #foreach($detail in $info)
+                <div class="col" id="infoCol">
+                    $detail
+                </div>
+            #end
+        </div>
+    #elseif($failed)
+        <p class="bad notification">bad info</p>
+    #end
+</main>
+</body>
+</html>

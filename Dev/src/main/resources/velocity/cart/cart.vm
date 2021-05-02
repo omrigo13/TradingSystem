@@ -14,7 +14,7 @@
         <h1>$msg.get("ITEMS_HEADING_ALL")</h1>
         <div class="row row-3">
             #foreach($item in $cart)
-                <div class="col">
+                <div class="col" id="infoCol">
                     $item
                 </div>
             #end
