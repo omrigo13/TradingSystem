@@ -10,14 +10,21 @@
 
                     #if($currentUser)
                         <form method="post" action="/logout">
+                            <input type="hidden" name="connectionIDLogout" id="connectionIDLogout" value="">
+                            <script type="text/javascript">
+                                document.getElementById("connectionIDLogout").setAttribute('value',localStorage.getItem("connectID"));
+                            </script>
                             <button id="logout">$msg.get("COMMON_NAV_LOGOUT")</button>
                         </form>
                     #else
                         <a href="/login">$msg.get("COMMON_NAV_LOGIN")</a>
                     #end
+                    <a href="/adminActions">Admin actions</a>
                     <a href="/register">$msg.get("COMMON_NAV_REGISTER")</a>
                     <a href="/updateProductAmountInBasket">$msg.get("COMMON_NAV_UPDATE_PRODUCT_AMOUNT_IN_BASKET")</a>
                     <a href="/showBasket">$msg.get("COMMON_NAV_SHOW_BASKET")</a>
+                    <a href="/getItems">Search for items</a>
+                    <a href="/addItemToBasket">Add item to basket</a>
                 </div>
             </div>
         </div>
@@ -33,12 +40,34 @@
                         <a href="/addItemToStore">add item to store</a>
                         <a href="/permissionsForManager">add/remove permissions</a>
                         <a href="/appointRemoveManagerOrOwner">appoint/remove manager or owner</a>
+                        <a href="/writeOpinionOnProduct">write opinion on product</a>
+                        <a href="/getStoreDetails">get store details</a>
+                        <a href="/deleteProductFromStore">delete product from store</a>
+                        <a href="/updateProductDetails">update item details</a>
                     </div>
                 </div>
             </div>
         #else
 
         #end
+        #if($currentUser)
+            <div class="navbar">
+                <div class="dropdown">
+                    <button class="dropbtn">Policies
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/assignRemovePolicy">assign or remove policy</a>
+                        <a href="/complexPolicies">assign complex policy</a>
+                        <a href="/makeBasketPurchasePolicy">make basket purchase policy</a>
+                        <a href="/getStoreDiscounts">get store discounts</a>
+                    </div>
+                </div>
+            </div>
+        #else
+
+        #end
+
         <li><a href="/">Home</a></li>
         <li style="float:right"><a href="/cart" id="cartA"> <img id="cartPicture" src="/img/cart.jpg" alt="Cart"></a> </li>
         <form class="searchBox" action="/search" method="post">

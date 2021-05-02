@@ -9,16 +9,48 @@ public class RequestUtil {
         return ctx.queryParam("locale");
     }
 
-    public static String getParamIsbn(Context ctx) {
-        return ctx.pathParam("isbn");
-    }
-
     public static String getQueryUsername(Context ctx) {
         return ctx.formParam("username");
     }
 
+    public static String getKeyWord(Context ctx) {
+        return ctx.formParam("keyWord");
+    }
+
+    public static Double getRatingItem(Context ctx) {
+        String num = ctx.formParam("ratingItem");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("ratingItem"));
+        return null;
+    }
+
+    public static Double getRatingStore(Context ctx) {
+        String num = ctx.formParam("ratingStore");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("ratingStore"));
+        return null;
+    }
+
+    public static Double getMaxPrice(Context ctx) {
+        String num = ctx.formParam("maxPrice");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("maxPrice"));
+        return null;
+    }
+
+    public static Double getMinPrice(Context ctx) {
+        String num = ctx.formParam("minPrice");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("minPrice"));
+        return null;
+    }
+
     public static String getConnectionID(Context ctx) {
         return ctx.formParam("connectionID");
+    }
+
+    public static String getConnectionIDLogout(Context ctx) {
+        return ctx.formParam("connectionIDLogout");
     }
 
     public static String getQueryPassword(Context ctx) {
@@ -29,12 +61,16 @@ public class RequestUtil {
         return ctx.formParam("storeID");
     }
 
+    public static String getDesc(Context ctx) {
+        return ctx.formParam("desc");
+    }
+
     public static String getProductID(Context ctx) {
         return ctx.formParam("productID");
     }
 
     public static String getProduceName(Context ctx) {
-        return ctx.formParam("productName");
+            return ctx.formParam("productName");
     }
 
     public static String getCategory(Context ctx) {
@@ -59,6 +95,14 @@ public class RequestUtil {
 
     public static int getAmount(Context ctx) {
         return Integer.parseInt(ctx.formParam("amount"));
+    }
+
+    public static int getPolicyID(Context ctx) {
+        return Integer.parseInt(ctx.formParam("policyID"));
+    }
+
+    public static int getPolicyID2(Context ctx) {
+        return Integer.parseInt(ctx.formParam("policyID2"));
     }
 
     public static String getQueryLoginRedirect(Context ctx) {

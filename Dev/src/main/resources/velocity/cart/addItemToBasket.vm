@@ -10,20 +10,9 @@
     #@navbar()
     #end
 <main>
-    #if($basket)
-        <h1>Basket</h1>
-        <div class="row row-3">
-            #foreach($item in $basket)
-                <div class="col" id="infoCol">
-                    $item
-                </div>
-            #end
-        </div>
-        <p class="good notification">basket is shown successfully</p>
-    #elseif($showBasketFailed)
         <div class="container">
-            <form id="showBasketForm" method="post">
-                <h1 id="showBasketLabel">$msg.get("SHOW_BASKET_HEADING")</h1>
+            <form id="addItemToBasketForm" method="post">
+                <h1 id="addItemToBasketLabel">add item to basket</h1>
                 <input type="hidden" name="connectionID" id="connectionID" value="">
                 <script type="text/javascript">
                     document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
@@ -38,33 +27,32 @@
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Show Basket">
-                </div>
-            </form>
-        </div>
-        <p class="bad notification">store ID is wrong</p>
-    #else
-        <div class="container">
-            <form id="showBasketForm" method="post">
-                <h1 id="showBasketLabel">$msg.get("SHOW_BASKET_HEADING")</h1>
-                <input type="hidden" name="connectionID" id="connectionID" value="">
-                <script type="text/javascript">
-                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
-                </script>
-
-                <div class="row">
                     <div class="col-25">
-                        <label for="storeID">storeID</label>
+                        <label for="productID">productID</label>
                     </div>
                     <div class="col-75">
-                        <input name="storeID" placeholder="storeID" value="" required>
+                        <input name="productID" placeholder="productID" value="" required>
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Show Basket">
+                    <div class="col-25">
+                        <label for="amount">amount</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="amount" placeholder="amount" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="add">
                 </div>
             </form>
         </div>
+    #if($success)
+        <p class="good notification">add item to basket succeeded</p>
+    #elseif($InvalidStoreId)
+        <p class="bad notification">store ID was not found</p>
+    #elseif($ItemNotFound)
+        <p class="bad notification">product ID was not found</p>
     #end
 </main>
 </body>

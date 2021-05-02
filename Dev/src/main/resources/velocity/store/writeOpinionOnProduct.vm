@@ -10,20 +10,9 @@
     #@navbar()
     #end
 <main>
-    #if($basket)
-        <h1>Basket</h1>
-        <div class="row row-3">
-            #foreach($item in $basket)
-                <div class="col" id="infoCol">
-                    $item
-                </div>
-            #end
-        </div>
-        <p class="good notification">basket is shown successfully</p>
-    #elseif($showBasketFailed)
         <div class="container">
-            <form id="showBasketForm" method="post">
-                <h1 id="showBasketLabel">$msg.get("SHOW_BASKET_HEADING")</h1>
+            <form id="writeOpinionOnProductForm" method="post">
+                <h1 id="writeOpinionOnProductLabel">write opinion on product</h1>
                 <input type="hidden" name="connectionID" id="connectionID" value="">
                 <script type="text/javascript">
                     document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
@@ -38,33 +27,30 @@
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Show Basket">
-                </div>
-            </form>
-        </div>
-        <p class="bad notification">store ID is wrong</p>
-    #else
-        <div class="container">
-            <form id="showBasketForm" method="post">
-                <h1 id="showBasketLabel">$msg.get("SHOW_BASKET_HEADING")</h1>
-                <input type="hidden" name="connectionID" id="connectionID" value="">
-                <script type="text/javascript">
-                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
-                </script>
-
-                <div class="row">
                     <div class="col-25">
-                        <label for="storeID">storeID</label>
+                        <label for="productID">productID</label>
                     </div>
                     <div class="col-75">
-                        <input name="storeID" placeholder="storeID" value="" required>
+                        <input name="productID" placeholder="productID" value="" required>
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Show Basket">
+                    <div class="col-25">
+                        <label for="dec">description</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="desc" placeholder="description" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="write">
                 </div>
             </form>
         </div>
+    #if($success)
+        <p class="good notification">write opinion succeeded</p>
+    #elseif($Failed)
+        <p class="bad notification">write opinion failed</p>
     #end
 </main>
 </body>

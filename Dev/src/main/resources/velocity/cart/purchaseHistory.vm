@@ -14,7 +14,7 @@
         <h1>Purchase History</h1>
         <div class="row row-3">
             #foreach($purchase in $purchaseHistory)
-                <div class="col">
+                <div class="col" id="infoCol">
                     $purchase
                 </div>
             #end
