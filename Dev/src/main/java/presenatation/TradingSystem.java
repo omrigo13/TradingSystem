@@ -438,6 +438,7 @@ public class TradingSystem {
     };
 
     public Handler handleLogoutPost = ctx -> {
+        tradingSystemService.logout(RequestUtil.getConnectionIDLogout(ctx));
         ctx.sessionAttribute("currentUser", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);

@@ -110,11 +110,8 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
     }
 
-    public void logout(String connectionId) throws InvalidActionException {
-
-        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
+    public void logout(String connectionId) {
         User guest = new User();
-        guest.makeCart(subscriber);
         connections.put(connectionId, guest);
     }
 

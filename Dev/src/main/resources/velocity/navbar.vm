@@ -10,6 +10,10 @@
 
                     #if($currentUser)
                         <form method="post" action="/logout">
+                            <input type="hidden" name="connectionIDLogout" id="connectionIDLogout" value="">
+                            <script type="text/javascript">
+                                document.getElementById("connectionIDLogout").setAttribute('value',localStorage.getItem("connectID"));
+                            </script>
                             <button id="logout">$msg.get("COMMON_NAV_LOGOUT")</button>
                         </form>
                     #else

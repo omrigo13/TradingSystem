@@ -17,6 +17,7 @@
                 <input type="hidden" name="connectionID" id="connectionID" value="">
                 <script type="text/javascript">
                     document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                    alert(localStorage.getItem("connectID"));
                 </script>
 
                 <div class="row">
@@ -63,6 +64,7 @@
                 <input type="hidden" name="connectionID" id="connectionID" value="">
                 <script type="text/javascript">
                     document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                    alert(localStorage.getItem("connectID") + "regular");
                 </script>
 
                 <div class="row">
