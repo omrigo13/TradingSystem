@@ -71,6 +71,32 @@ public class Main {
             post(Path.Web.DISABLEMANAGERFROMGETHISTORY, tradingSystem.handleDisableManagerFromGetHistoryPost);
             get(Path.Web.PERMISSIONSFORMANAGER, tradingSystem.servePermissionsForManagerPage);
 
+            post(Path.Web.GETITEMS, tradingSystem.handleGetItemsPost);
+            get(Path.Web.GETITEMS, tradingSystem.serveGetItemsPage);
+
+            post(Path.Web.ADDITEMTOBASKET, tradingSystem.handleAddItemToBasketPost);
+            get(Path.Web.ADDITEMTOBASKET, tradingSystem.serveAddItemToBasketPage);
+
+            post(Path.Web.WRITEOPINIONONPRODUCT, tradingSystem.handleWriteOpinionOnProductPost);
+            get(Path.Web.WRITEOPINIONONPRODUCT, tradingSystem.serveWriteOpinionOnProductPage);
+
+            post(Path.Web.GETITEMSBYSTORE, tradingSystem.handleGetItemsBtStorePost);
+            post(Path.Web.SHOWSTAFFINFO, tradingSystem.handleShowStaffPost);
+            post(Path.Web.SALESHISTORY, tradingSystem.handleGetSalesHistoryPost);
+            post(Path.Web.STOREPOLICIES, tradingSystem.handleGetStorePoliciesPost);
+            get(Path.Web.GETSTOREDETAILS, tradingSystem.serveGetStoreDetailsPage);
+
+            post(Path.Web.GETSTORESINFO, tradingSystem.handleGetStoresInfoPost);
+            post(Path.Web.GETERRORLOG, tradingSystem.handleGetErrorLogPost);
+            post(Path.Web.GETEVENTLOG, tradingSystem.handleGetEventLogPost);
+            get(Path.Web.ADMINACTIONS, tradingSystem.serveAdminActionsPage);
+
+            post(Path.Web.DELETEPRODUCTFROMSTORE, tradingSystem.handleDeleteProductFromStorePost);
+            get(Path.Web.DELETEPRODUCTFROMSTORE, tradingSystem.serveDeleteProductFromStorePage);
+
+            post(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.handleUpdateProductDetailsPost);
+            get(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.serveUpdateProductDetailsPage);
+
             post(Path.Web.APPOINTSTOREOWNER, tradingSystem.handleAppointStoreOwnerPost);
             post(Path.Web.APPOINTSTOREMANAGER, tradingSystem.handleAppointStoreManagerPost);
             post(Path.Web.REMOVEOWNER, tradingSystem.handleRemoveOwnerPost);

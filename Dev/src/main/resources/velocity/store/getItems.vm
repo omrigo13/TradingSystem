@@ -1,0 +1,105 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="getItemsForm" method="post">
+            <h1 id="getItemsLabel">search for items</h1>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="keyWord">key word</label>
+                </div>
+                <div class="col-75">
+                    <input name="keyWord" placeholder="key word" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="productName">product name</label>
+                </div>
+                <div class="col-75">
+                    <input name="productName" placeholder="product name" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="category">category</label>
+                </div>
+                <div class="col-75">
+                    <input name="category" placeholder="category" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="subCategory">sub category</label>
+                </div>
+                <div class="col-75">
+                    <input name="subCategory" placeholder="subCategory" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="ratingItem">rating item</label>
+                </div>
+                <div class="col-75">
+                    <input name="ratingItem" placeholder="rating item" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="ratingStore">rating store</label>
+                </div>
+                <div class="col-75">
+                    <input name="ratingStore" placeholder="rating store" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="minPrice">min price</label>
+                </div>
+                <div class="col-75">
+                    <input name="minPrice" placeholder="min price" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="maxPrice">max price</label>
+                </div>
+                <div class="col-75">
+                    <input name="maxPrice" placeholder="max price" value="">
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="search">
+            </div>
+        </form>
+    </div>
+    #if($items)
+        <p class="good notification">good search for items</p>
+        <h1>Items</h1>
+        <div class="row row-3">
+            #foreach($item in $items)
+                <div class="col">
+                    $item
+                </div>
+            #end
+        </div>
+    #elseif($itemsFailed)
+        <p class="bad notification">bad search for items</p>
+    #end
+</main>
+</body>
+</html>

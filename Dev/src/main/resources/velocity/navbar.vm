@@ -18,6 +18,13 @@
                     <a href="/register">$msg.get("COMMON_NAV_REGISTER")</a>
                     <a href="/updateProductAmountInBasket">$msg.get("COMMON_NAV_UPDATE_PRODUCT_AMOUNT_IN_BASKET")</a>
                     <a href="/showBasket">$msg.get("COMMON_NAV_SHOW_BASKET")</a>
+                    <a href="/getItems">Search for items</a>
+                    <a href="/addItemToBasket">Add item to basket</a>
+                    #if($AdminPermission)
+                        <a href="/adminActions">Admin actions</a>
+                    #else
+
+                    #end
                 </div>
             </div>
         </div>
@@ -33,6 +40,10 @@
                         <a href="/addItemToStore">add item to store</a>
                         <a href="/permissionsForManager">add/remove permissions</a>
                         <a href="/appointRemoveManagerOrOwner">appoint/remove manager or owner</a>
+                        <a href="/writeOpinionOnProduct">write opinion on product</a>
+                        <a href="/getStoreDetails">get store details</a>
+                        <a href="/deleteProductFromStore">delete product from store</a>
+                        <a href="/updateProductDetails">update item details</a>
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ package presenatation;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import exceptions.InvalidConnectionIdException;
+import exceptions.NoPermissionException;
 import io.javalin.http.Handler;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
@@ -87,6 +88,62 @@ public class TradingSystem {
         }
     };
 
+    public Handler serveAddItemToBasketPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.ADDITEMTOBASKET, model);
+    };
+
+    public Handler handleAddItemToBasketPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.addItemToBasket(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx), RequestUtil.getAmount(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ADDITEMTOBASKET, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ADDITEMTOBASKET, model);
+        }
+    };
+
+    public Handler serveGetItemsPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETITEMS, model);
+    };
+
+    public Handler handleGetItemsPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItems(RequestUtil.getKeyWord(ctx), RequestUtil.getProduceName(ctx), RequestUtil.getCategory(ctx), RequestUtil.getSubCategory(ctx), RequestUtil.getRatingItem(ctx), RequestUtil.getRatingStore(ctx), RequestUtil.getMaxPrice(ctx),RequestUtil.getMinPrice(ctx)));
+            ctx.render(Path.Template.GETITEMS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("itemsFailed", true);
+            ctx.render(Path.Template.GETITEMS, model);
+        }
+    };
+
+    public Handler serveWriteOpinionOnProductPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.WRITEOPINIONONPRODUCT, model);
+    };
+
+    public Handler handleWriteOpinionOnProductPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.writeOpinionOnProduct(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx), RequestUtil.getDesc(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.WRITEOPINIONONPRODUCT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("Failed", true);
+            ctx.render(Path.Template.WRITEOPINIONONPRODUCT, model);
+        }
+    };
+
     public Handler serveAddItemToStorePage = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         ctx.render(Path.Template.ADDITEMTOSTORE, model);
@@ -102,6 +159,145 @@ public class TradingSystem {
         }catch (Exception e) {
             model.put("addItemToStoreFailed", true);
             ctx.render(Path.Template.ADDITEMTOSTORE, model);
+        }
+    };
+
+    public Handler serveGetStoreDetailsPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETSTOREDETAILS, model);
+    };
+
+    public Handler handleGetItemsBtStorePost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("details", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }
+    };
+
+    public Handler handleShowStaffPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("details", tradingSystemService.showStaffInfo(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }
+    };
+
+    public Handler handleGetSalesHistoryPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("details", tradingSystemService.getSalesHistoryByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }
+    };
+
+    public Handler handleGetStorePoliciesPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("details", tradingSystemService.getStorePolicies(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETSTOREDETAILS, model);
+        }
+    };
+
+    public Handler handleGetStoresInfoPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("info", tradingSystemService.getStoresInfo(RequestUtil.getConnectionID(ctx)));
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }
+    };
+
+    public Handler handleGetErrorLogPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("info", tradingSystemService.getErrorLog(RequestUtil.getConnectionID(ctx)));
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }
+    };
+
+    public Handler handleGetEventLogPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("info", tradingSystemService.getEventLog(RequestUtil.getConnectionID(ctx)));
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ADMINACTIONS, model);
+        }
+    };
+
+    public Handler serveAdminActionsPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.ADMINACTIONS, model);
+    };
+
+    public Handler serveDeleteProductFromStorePage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.DELETEPRODUCTFROMSTORE, model);
+    };
+
+    public Handler handleDeleteProductFromStorePost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.deleteProductFromStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.DELETEPRODUCTFROMSTORE, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.DELETEPRODUCTFROMSTORE, model);
+        }
+    };
+
+    public Handler serveUpdateProductDetailsPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.UPDATEPRODUCTDETAILS, model);
+    };
+
+    public Handler handleUpdateProductDetailsPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.updateProductDetails(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx), RequestUtil.getSubCategory(ctx), RequestUtil.getAmount(ctx), RequestUtil.getPrice(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.UPDATEPRODUCTDETAILS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.UPDATEPRODUCTDETAILS, model);
         }
     };
 
@@ -230,6 +426,13 @@ public class TradingSystem {
         }
             catch (Exception e) {
             model.put("authenticationFailed", true);
+            ctx.render(Path.Template.LOGIN, model);
+        }
+        try{
+            tradingSystemService.getStoresInfo(RequestUtil.getConnectionID(ctx));
+            model.put("AdminPermission", true);
+            ctx.render(Path.Template.LOGIN, model);
+        }catch (NoPermissionException ex){
             ctx.render(Path.Template.LOGIN, model);
         }
     };

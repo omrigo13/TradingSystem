@@ -9,12 +9,28 @@ public class RequestUtil {
         return ctx.queryParam("locale");
     }
 
-    public static String getParamIsbn(Context ctx) {
-        return ctx.pathParam("isbn");
-    }
-
     public static String getQueryUsername(Context ctx) {
         return ctx.formParam("username");
+    }
+
+    public static String getKeyWord(Context ctx) {
+        return ctx.formParam("keyWord");
+    }
+
+    public static Double getRatingItem(Context ctx) {
+        return Double.parseDouble(ctx.formParam("ratingItem"));
+    }
+
+    public static Double getRatingStore(Context ctx) {
+        return Double.parseDouble(ctx.formParam("ratingStore"));
+    }
+
+    public static Double getMaxPrice(Context ctx) {
+        return Double.parseDouble(ctx.formParam("maxPrice"));
+    }
+
+    public static Double getMinPrice(Context ctx) {
+        return Double.parseDouble(ctx.formParam("minPrice"));
     }
 
     public static String getConnectionID(Context ctx) {
@@ -27,6 +43,10 @@ public class RequestUtil {
 
     public static String getStoreID(Context ctx) {
         return ctx.formParam("storeID");
+    }
+
+    public static String getDesc(Context ctx) {
+        return ctx.formParam("desc");
     }
 
     public static String getProductID(Context ctx) {
