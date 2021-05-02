@@ -7,6 +7,10 @@ import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import spellChecker.Spelling;
 import user.Basket;
+import notifications.Observable;
+import review.Review;
+import user.Subscriber;
+import user.User;
 
 import java.util.*;
 
@@ -24,6 +28,7 @@ public class Store {
     private boolean isActive;
     private final Inventory inventory = new Inventory();
     private final Collection<String> purchases = new LinkedList<>();
+    private Observable observable;
 
     public Store() {}
 
@@ -35,7 +40,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy) throws ItemException {
+    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, Observable observable) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -59,6 +64,7 @@ public class Store {
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
+        this.observable = observable;
     }
 
     public int getId() {
@@ -317,6 +323,20 @@ public class Store {
         return isActive;
     }
 
+    public void setNotActive(){
+        if(isActive == false)
+            return;
+        this.isActive = false;
+        observable.notifyStoreStatus(isActive);
+    }
+
+    public void setActive(){
+        if(isActive == true)
+            return;
+        this.isActive = true;
+        observable.notifyStoreStatus(isActive);
+    }
+
     //TODO remember to deal with policies and types in a furure version
     public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
         return inventory.calculate(basket, details, storeDiscountPolicy);
@@ -336,9 +356,31 @@ public class Store {
         }
     }
 
+    public Observable getObservable() {
+        return observable;
+    }
+
     public void addPurchase(String purchaseDetails) {
         purchases.add(purchaseDetails);
     }
 
     public Collection<String> getPurchaseHistory() { return purchases; }
+
+    public void notifyPurchase(User buyer, Map<Item, Integer> basket) {
+        observable.notifyPurchase(buyer, basket);
+    }
+
+    public void subscribe(Subscriber subscriber) {
+        observable.subscribe(subscriber);
+    }
+
+    public void unsubscribe(Subscriber subscriber) {
+        observable.unsubscribe(subscriber);
+    }
+
+    public void notifyItemOpinion(Review review) {
+        observable.notifyItemReview(review);
+    }
+
+    public void setObservable(Observable observable) { this.observable = observable; }
 }

@@ -1,6 +1,7 @@
 package user;
 
 import exceptions.*;
+import notifications.*;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -15,6 +16,7 @@ public class Subscriber extends User {
     private final Set<Permission> permissions; // synchronized manually
     private final ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     private final Collection<String> purchaseHistory; // synchronized in constructor
+    private Collection<Notification> notifications = new LinkedList<>();
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -363,6 +365,65 @@ public class Subscriber extends User {
         if (!itemsPurchased.get(store).contains(item))
             throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
 
-        item.addReview(new Review(this, store, item, review));
+        Review review1 = new Review(this, store, item, review);
+        item.addReview(review1);
+        store.notifyItemOpinion(review1);
+
+    }
+
+    public void subscribe(Store store){
+        store.subscribe(this);
+    }
+
+    public void unsubscribe(Store store){
+        store.unsubscribe(this);
+
+    }
+
+    //todo: should we return notifications? hot to connect it to the GUI?
+//    public PurchaseNotification notifyObserverPurchase(PurchaseNotification notification) {
+//        //todo: decide if to postpone the notification
+//        return notification;
+//    }
+//
+//    public StoreStatusNotification notifyObserverStoreStatus(StoreStatusNotification notification) {
+//        //todo: decide if to postpone the notification
+//        return notification;
+//    }
+//
+//    public ItemReviewNotification notifyObserverItemReview(ItemReviewNotification notification) {
+//        //todo: decide if to postpone the notification
+//        return notification;
+//    }
+//
+//    public void notifyObserverLotteryStatus() {
+//        //todo: implement
+//
+//    }
+//
+//    public MessageNotification notifyObserverMessage(MessageNotification notification){
+//        //todo: implement
+//        return notification;
+//    }
+//
+//    public SubscriberRemoveNotification notifyObserverSubscriberRemove(SubscriberRemoveNotification notification){
+//        //todo: implement
+//        return notification;
+//    }
+
+    public Notification notifyNotification(Notification notification){
+        //todo: implement
+        return notification;
+    }
+
+    public Collection<Notification> checkPendingNotifications() {
+        Collection<Notification> collection = new LinkedList<>();
+        for (Notification n: this.notifications) {
+            if(n.isShown() == false){
+                collection.add(n);
+                n.setShown(true);
+            }
+        }
+        return collection;
     }
 }

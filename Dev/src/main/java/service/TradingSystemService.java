@@ -51,7 +51,7 @@ public interface TradingSystemService {
 
     /* make purchase for every product in all of the user's baskets */
     //each purchase matches to an item from a store with the appropriate quantity.
-    void purchaseCart(String userID) throws InvalidActionException;
+    void purchaseCart(String userID) throws Exception;
 
     /* get purchase history of a user by permissions: user himself / system manager.
     * every purchase represents buying of a cart.
@@ -111,65 +111,10 @@ public interface TradingSystemService {
      * pre-condition: assignee is not an owner in this store and is a subscriber (not guest) */
     void appointStoreOwner(String userID, String assigneeUserName, String storeId) throws InvalidActionException;
 
-    /*The next block of functions deals with store manager permissions. A new store manager has only the
-        basic permissions in the store. */
+
+    /*The next block of functions deals with store policies. */
     //******************************************************************************
-    
-    /* allows manager to add, delete amd update product in a specific store.
-     precondition: assignor is the assignor of the manager, assignee is a manager of the store
-     postcondition: the manager has permissions to add, delete amd update product in the store. */
-    void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws InvalidActionException;
-    
-    /* disables a manager from adding, deleting amd updating product in a specific store.
-     pre-condition: assignor is the assignor of the manager
-     postcondition: the manager DOESN'T have permissions to add, delete amd update product in the store. */
-    void disableManagerFromUpdateProducts(String userID, String storeId, String managerUserName) throws InvalidActionException ;
-    
-    /* allows manager to get info and edit purchase and discount policies in a specific store.
-     precondition: assignor is the assignor of the manager.
-     postcondition: the manager has permissions to get info and edit purchase and discount policies in the store. */
-    void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException;
-    
-    /* disables a manager from getting info and editing purchase and discount policies in a specific store.
-     pre-condition: assignor is the assignor of the manager
-     postcondition: the manager DOESN'T have permissions to get info and edit purchase and discount policies in the store. */
-    void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException;
-    
-    /* allows manager to get purchases history of the store.
-     precondition: assignor is the assignor of the manager. managerUserName is a subscriber and a manager of the store.
-     postcondition: the manager has permissions to get purchases history of the store. */
-    void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws InvalidActionException;
-    
-    /* disables a manager from getting purchases history of the store.
-     pre-condition: assignor is the assignor of the manager
-     postcondition: the manager DOESN'T have permissions to get purchases history of the store. */
-    void disableManagerFromGetHistory(String userID, String storeId, String managerUserName) throws InvalidActionException;
-    
-    //end of block dealing with store manager permissions
-    //******************************************************************************
-
-        
-    /* removes a user from a store manager role.
-     * pre-condition: the invoker is an owner of the store and is the assignor of the manager*/
-    //returns true if manager removed, else returns false.
-    boolean removeManager(String userID, String storeId, String managerUserName) throws InvalidActionException;
-
-    /* removes a user from a store owner role.
-     * pre-condition: the invoker is an owner of the store and is the assignor of the owner */
-    //returns true if manager removed, else returns false.
-    boolean removeOwner(String connId, String storeId, String targetUserName) throws InvalidActionException;
-
-    /* shows store staff information and their permissions in the store
-    precondition: invoker has the permissions to get the info. */
-    //every string element in the collection represents one staff member username and his permissions.
-    Collection<String> showStaffInfo(String userID, String storeId) throws InvalidActionException;
-
-    /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
-    precondition: invoker has the permissions to get the info. */
-    //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
-    Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
-
-    /* get all policies of a store.
+/* get all policies of a store.
     preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
     Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException;
 
@@ -229,6 +174,67 @@ public interface TradingSystemService {
     preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
     int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException;
 
+    //end of block dealing with store policies
+    //******************************************************************************
+
+
+    /*The next block of functions deals with store manager permissions. A new store manager has only the
+        basic permissions in the store. */
+    //******************************************************************************
+    
+    /* allows manager to add, delete amd update product in a specific store.
+     precondition: assignor is the assignor of the manager, assignee is a manager of the store
+     postcondition: the manager has permissions to add, delete amd update product in the store. */
+    void allowManagerToUpdateProducts(String userID, String storeId, String managerUserName) throws InvalidActionException;
+    
+    /* disables a manager from adding, deleting amd updating product in a specific store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to add, delete amd update product in the store. */
+    void disableManagerFromUpdateProducts(String userID, String storeId, String managerUserName) throws InvalidActionException ;
+    
+    /* allows manager to get info and edit purchase and discount policies in a specific store.
+     precondition: assignor is the assignor of the manager.
+     postcondition: the manager has permissions to get info and edit purchase and discount policies in the store. */
+    void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException;
+    
+    /* disables a manager from getting info and editing purchase and discount policies in a specific store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to get info and edit purchase and discount policies in the store. */
+    void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException;
+    
+    /* allows manager to get purchases history of the store.
+     precondition: assignor is the assignor of the manager. managerUserName is a subscriber and a manager of the store.
+     postcondition: the manager has permissions to get purchases history of the store. */
+    void allowManagerToGetHistory(String userID, String storeId, String managerUserName) throws InvalidActionException;
+    
+    /* disables a manager from getting purchases history of the store.
+     pre-condition: assignor is the assignor of the manager
+     postcondition: the manager DOESN'T have permissions to get purchases history of the store. */
+    void disableManagerFromGetHistory(String userID, String storeId, String managerUserName) throws InvalidActionException;
+    
+    //end of block dealing with store manager permissions
+    //******************************************************************************
+
+        
+    /* removes a user from a store manager role.
+     * pre-condition: the invoker is an owner of the store and is the assignor of the manager*/
+    //returns true if manager removed, else returns false.
+    boolean removeManager(String userID, String storeId, String managerUserName) throws InvalidActionException;
+
+    /* removes a user from a store owner role.
+     * pre-condition: the invoker is an owner of the store and is the assignor of the owner */
+    //returns true if manager removed, else returns false.
+    boolean removeOwner(String connId, String storeId, String targetUserName) throws InvalidActionException;
+
+    /* shows store staff information and their permissions in the store
+    precondition: invoker has the permissions to get the info. */
+    //every string element in the collection represents one staff member username and his permissions.
+    Collection<String> showStaffInfo(String userID, String storeId) throws InvalidActionException;
+
+    /* shows sales History of a specific store by permissions: system manager / store owner / store manager.
+    precondition: invoker has the permissions to get the info. */
+    //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
+    Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
 
     // ***********************************************************************
     // Topics: service level, external systems

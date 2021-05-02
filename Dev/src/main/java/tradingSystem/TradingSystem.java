@@ -4,6 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import notifications.Observable;
 import policies.*;
 import store.Item;
 import store.Store;
@@ -13,6 +14,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,6 +37,8 @@ public class TradingSystem {
     private final ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; // key: store, value: purchase policies
     private final ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; // key: store, value: discount policies
 
+
+    //private final Map<Store, Observable> observables;
 
     TradingSystem(String userName, String password, AtomicInteger subscriberIdCounter, PaymentSystem paymentSystem, DeliverySystem deliverySystem,
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
@@ -108,6 +112,7 @@ public class TradingSystem {
         User subscriber = getSubscriberByUserName(userName);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
+        ((Subscriber)subscriber).checkPendingNotifications(); //todo: what to do with the pending notifications?
     }
 
     public void logout(String connectionId) throws InvalidActionException {
@@ -124,7 +129,7 @@ public class TradingSystem {
 
         // create the new store
 
-        Store store = new Store(id, storeName, "description", null, null);
+        Store store = new Store(id, storeName, "description", null, null, new Observable());
 
         for (Store s: stores.values()) {
             if(storeName.equals(s.getName()))
@@ -134,6 +139,9 @@ public class TradingSystem {
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);
+
+//        observables.put(store, new Observable());
+        store.subscribe(subscriber);
 
         return id;
     }
@@ -325,7 +333,7 @@ public class TradingSystem {
         return id;
     }
 
-    public void purchaseCart(User user) throws InvalidActionException {
+    public void purchaseCart(User user) throws Exception {
 
         user.purchaseCart(paymentSystem, deliverySystem);
     }

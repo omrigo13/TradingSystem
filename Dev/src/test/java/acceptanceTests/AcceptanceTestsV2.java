@@ -122,7 +122,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void validAllowManagerToGetHistory() throws InvalidActionException {
+    void validAllowManagerToGetHistory() throws Exception {
         setUpStore1();
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         service.addItemToBasket(founderStore1Id, storeId1, productId2, 3);
@@ -137,7 +137,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void notValidAllowManagerToGetHistory() throws InvalidActionException {
+    void notValidAllowManagerToGetHistory() throws Exception {
         setUpStore2();
         setUpGuest();
         setUpSubscriber1();
@@ -342,7 +342,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void basketMustHaveLessThen5KgTomatoesPurchasePolicy() throws InvalidActionException {
+    void basketMustHaveLessThen5KgTomatoesPurchasePolicy() throws Exception {
         setUpStore1();
         setUpGuest();
 
@@ -373,7 +373,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void tomatoCanBePurchasedOnlyAfter10AMPurchasePolicy() throws InvalidActionException {
+    void tomatoCanBePurchasedOnlyAfter10AMPurchasePolicy() throws Exception {
         basketMustHaveLessThen5KgTomatoesPurchasePolicy();
 
         Collection<String> items = new ArrayList<>();
@@ -388,7 +388,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void basketMustHaveLessThen5KgTomatoesAndAtLeast2CornsPurchasePolicy() throws InvalidActionException {
+    void basketMustHaveLessThen5KgTomatoesAndAtLeast2CornsPurchasePolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -415,7 +415,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void basketCanHave5KgTomatoesOrMoreOnlyIfThereIsAtLeast1CornPurchasePolicy() throws InvalidActionException {
+    void basketCanHave5KgTomatoesOrMoreOnlyIfThereIsAtLeast1CornPurchasePolicy() throws Exception {
         basketMustHaveLessThen5KgTomatoesAndAtLeast2CornsPurchasePolicy();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -439,7 +439,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void storeDiscountPolicyOf20Percent() throws InvalidActionException {
+    void storeDiscountPolicyOf20Percent() throws Exception {
         setUpStore1();
         setUpStore2();
 
@@ -463,7 +463,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void sub1CategoryDiscountOf50Percent() throws InvalidActionException {
+    void sub1CategoryDiscountOf50Percent() throws Exception {
         storeDiscountPolicyOf20Percent();
 
         Collection<String> sub1Items = store1Items();
@@ -481,7 +481,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void purchaseValueOf50Gives10PercentOnTomatoesDiscountPolicy() throws InvalidActionException {
+    void purchaseValueOf50Gives10PercentOnTomatoesDiscountPolicy() throws Exception {
         storeDiscountPolicyOf20Percent();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -500,14 +500,14 @@ public class AcceptanceTestsV2 {
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("45.9"));
     }
 
-    void addItemsTobasket() throws InvalidActionException {
+    void addItemsTobasket() throws Exception {
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
         service.purchaseCart(store1Manager1Id);
     }
     @Test
-    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesAnd2CornsDiscountPolicy() throws InvalidActionException {
+    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesAnd2CornsDiscountPolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -536,7 +536,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesOr2CornsDiscountPolicy() throws InvalidActionException {
+    void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesOr2CornsDiscountPolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -571,7 +571,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void ifBasketValueMoreThen50AndContains3TomatoesSo5PercentOnSub1CategoryDiscountPolicy() throws InvalidActionException {
+    void ifBasketValueMoreThen50AndContains3TomatoesSo5PercentOnSub1CategoryDiscountPolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -604,7 +604,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void DiscountOf10PercentOnTomatoesOr5PercentOnCornsDependsOnBestForUserDiscountPolicy() throws InvalidActionException {
+    void DiscountOf10PercentOnTomatoesOr5PercentOnCornsDependsOnBestForUserDiscountPolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();
@@ -630,7 +630,7 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void DiscountOnVegetables5PercentAnd10PercentOnTomatoesDiscountPolicy() throws InvalidActionException {
+    void DiscountOnVegetables5PercentAnd10PercentOnTomatoesDiscountPolicy() throws Exception {
         setUpStore1();
 
         Collection<String> tomatoes = new ArrayList<>();

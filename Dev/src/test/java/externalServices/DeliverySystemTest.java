@@ -10,8 +10,8 @@ class DeliverySystemTest {
     }
 
     @Test
-    void deliver() {
-        DeliveryData deliveryData = new DeliveryData();
+    void deliver() throws Exception {
+        DeliveryData deliveryData = new DeliveryData(null, null);
         DeliverySystem deliverySystem = new DeliverySystemBasicImpl();
         deliverySystem.deliver(deliveryData);
     }
