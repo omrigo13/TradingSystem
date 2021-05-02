@@ -1,9 +1,7 @@
 package presenatation;
 
 import authentication.UserAuthentication;
-import exceptions.InvalidActionException;
-import exceptions.InvalidConnectionIdException;
-import exceptions.NoPermissionException;
+import exceptions.*;
 import io.javalin.http.Handler;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
@@ -424,15 +422,11 @@ public class TradingSystem {
         }catch (InvalidConnectionIdException ex) {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
         }
-            catch (Exception e) {
-            model.put("authenticationFailed", true);
+            catch (SubscriberDoesNotExistException e) {
+            model.put("SubscriberDoesNotExist", true);
             ctx.render(Path.Template.LOGIN, model);
-        }
-        try{
-            tradingSystemService.getStoresInfo(RequestUtil.getConnectionID(ctx));
-            model.put("AdminPermission", true);
-            ctx.render(Path.Template.LOGIN, model);
-        }catch (NoPermissionException ex){
+        }catch (WrongPasswordException e) {
+            model.put("WrongPassword", true);
             ctx.render(Path.Template.LOGIN, model);
         }
     };
@@ -590,6 +584,173 @@ public class TradingSystem {
         }catch (Exception e) {
             model.put("failed", true);
             ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
+        }
+    };
+
+    public Handler serveAssignRemovePolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+    };
+
+    public Handler handleAssignStorePurchasePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.assignStorePurchasePolicy(RequestUtil.getPolicyID(ctx),RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }
+    };
+
+    public Handler handleRemovePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.removePolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }
+    };
+
+    public Handler handleAssignStoreDiscountPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.assignStoreDiscountPolicy(RequestUtil.getPolicyID(ctx),RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }
+    };
+
+    public Handler handleRemoveDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.removeDiscount(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ASSIGNREMOVEPOLICY, model);
+        }
+    };
+
+    public Handler serveComplexPoliciesPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.COMPLEXPOLICIES, model);
+    };
+
+    public Handler handleAndPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.andPolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx), RequestUtil.getPolicyID2(ctx)));
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }
+    };
+
+    public Handler handleOrPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.orPolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx), RequestUtil.getPolicyID2(ctx)));
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }
+    };
+
+    public Handler handleXorPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.xorPolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx), RequestUtil.getPolicyID2(ctx)));
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }
+    };
+
+    public Handler handleMakePlusDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.makePlusDiscount(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx), RequestUtil.getPolicyID2(ctx)));
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }
+    };
+
+    public Handler handleMakeMaxDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.makeMaxDiscount(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getPolicyID(ctx), RequestUtil.getPolicyID2(ctx)));
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.COMPLEXPOLICIES, model);
+        }
+    };
+
+    public Handler serveMakeBasketPurchasePolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKEBASKETPURCHASEPOLICY, model);
+    };
+
+    public Handler handleMakeBasketPurchasePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("success", tradingSystemService.makeBasketPurchasePolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getAmount(ctx)));
+            ctx.render(Path.Template.MAKEBASKETPURCHASEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEBASKETPURCHASEPOLICY, model);
+        }
+    };
+
+    public Handler serveGetStoreDiscountsPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETSTOREDISCOUNTS, model);
+    };
+
+    public Handler handleGetStoreDiscountsPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("discounts", tradingSystemService.getStoreDiscounts(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            ctx.render(Path.Template.GETSTOREDISCOUNTS, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETSTOREDISCOUNTS, model);
         }
     };
 

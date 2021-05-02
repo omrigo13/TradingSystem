@@ -91,8 +91,27 @@ public class Main {
             post(Path.Web.GETEVENTLOG, tradingSystem.handleGetEventLogPost);
             get(Path.Web.ADMINACTIONS, tradingSystem.serveAdminActionsPage);
 
+            post(Path.Web.ASSIGNSTOREPURCHASEPOLICY, tradingSystem.handleAssignStorePurchasePolicyPost);
+            post(Path.Web.REMOVEPOLICY, tradingSystem.handleRemovePolicyPost);
+            post(Path.Web.ASSIGNSTOREDISCOUNTPOLICY, tradingSystem.handleAssignStoreDiscountPolicyPost);
+            post(Path.Web.REMOVEDISCOUNT, tradingSystem.handleRemoveDiscountPost);
+            get(Path.Web.ASSIGNREMOVEPOLICY, tradingSystem.serveAssignRemovePolicyPage);
+
+            post(Path.Web.ANDPOLICY, tradingSystem.handleAndPolicyPost);
+            post(Path.Web.ORPOLICY, tradingSystem.handleOrPolicyPost);
+            post(Path.Web.XORPOLICY, tradingSystem.handleXorPolicyPost);
+            post(Path.Web.MAKEPLUSDISCOUNT, tradingSystem.handleMakePlusDiscountPost);
+            post(Path.Web.MAKEMAXDISCOUNT, tradingSystem.handleMakeMaxDiscountPost);
+            get(Path.Web.COMPLEXPOLICIES, tradingSystem.serveComplexPoliciesPage);
+
             post(Path.Web.DELETEPRODUCTFROMSTORE, tradingSystem.handleDeleteProductFromStorePost);
             get(Path.Web.DELETEPRODUCTFROMSTORE, tradingSystem.serveDeleteProductFromStorePage);
+
+            post(Path.Web.MAKEBASKETPURCHASEPOLICY, tradingSystem.handleMakeBasketPurchasePolicyPost);
+            get(Path.Web.MAKEBASKETPURCHASEPOLICY, tradingSystem.serveMakeBasketPurchasePolicyPage);
+
+            post(Path.Web.GETSTOREDISCOUNTS, tradingSystem.handleGetStoreDiscountsPost);
+            get(Path.Web.GETSTOREDISCOUNTS, tradingSystem.serveGetStoreDiscountsPage);
 
             post(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.handleUpdateProductDetailsPost);
             get(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.serveUpdateProductDetailsPage);

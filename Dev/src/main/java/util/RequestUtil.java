@@ -18,19 +18,31 @@ public class RequestUtil {
     }
 
     public static Double getRatingItem(Context ctx) {
-        return Double.parseDouble(ctx.formParam("ratingItem"));
+        String num = ctx.formParam("ratingItem");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("ratingItem"));
+        return null;
     }
 
     public static Double getRatingStore(Context ctx) {
-        return Double.parseDouble(ctx.formParam("ratingStore"));
+        String num = ctx.formParam("ratingStore");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("ratingStore"));
+        return null;
     }
 
     public static Double getMaxPrice(Context ctx) {
-        return Double.parseDouble(ctx.formParam("maxPrice"));
+        String num = ctx.formParam("maxPrice");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("maxPrice"));
+        return null;
     }
 
     public static Double getMinPrice(Context ctx) {
-        return Double.parseDouble(ctx.formParam("minPrice"));
+        String num = ctx.formParam("minPrice");
+        if(!num.equals(""))
+            return Double.parseDouble(ctx.formParam("minPrice"));
+        return null;
     }
 
     public static String getConnectionID(Context ctx) {
@@ -54,7 +66,7 @@ public class RequestUtil {
     }
 
     public static String getProduceName(Context ctx) {
-        return ctx.formParam("productName");
+            return ctx.formParam("productName");
     }
 
     public static String getCategory(Context ctx) {
@@ -79,6 +91,14 @@ public class RequestUtil {
 
     public static int getAmount(Context ctx) {
         return Integer.parseInt(ctx.formParam("amount"));
+    }
+
+    public static int getPolicyID(Context ctx) {
+        return Integer.parseInt(ctx.formParam("policyID"));
+    }
+
+    public static int getPolicyID2(Context ctx) {
+        return Integer.parseInt(ctx.formParam("policyID2"));
     }
 
     public static String getQueryLoginRedirect(Context ctx) {

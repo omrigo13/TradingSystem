@@ -41,6 +41,19 @@ public class Path {
         public static final String SALESHISTORY = "/salesHistory";
         public static final String STOREPOLICIES = "/storePolicies";
         public static final String DELETEPRODUCTFROMSTORE = "/deleteProductFromStore";
+        public static final String ASSIGNREMOVEPOLICY = "/assignRemovePolicy";
+        public static final String ASSIGNSTOREPURCHASEPOLICY = "/assignStorePurchasePolicy";
+        public static final String REMOVEPOLICY = "/removePolicy";
+        public static final String ASSIGNSTOREDISCOUNTPOLICY = "/assignStoreDiscountPolicy";
+        public static final String REMOVEDISCOUNT = "/removeDiscount";
+        public static final String COMPLEXPOLICIES = "/complexPolicies";
+        public static final String ANDPOLICY = "/andPolicy";
+        public static final String ORPOLICY = "/orPolicy";
+        public static final String XORPOLICY = "/xorPolicy";
+        public static final String MAKEPLUSDISCOUNT = "/makePlusDiscount";
+        public static final String MAKEMAXDISCOUNT = "/makeMaxDiscount";
+        public static final String MAKEBASKETPURCHASEPOLICY = "/makeBasketPurchasePolicy";
+        public static final String GETSTOREDISCOUNTS = "/getStoreDiscounts";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
     }
@@ -65,6 +78,10 @@ public class Path {
         public static final String ADDITEMTOSTORE = "velocity/store/addItemToStore.vm";
         public static final String PERMISSIONSFORMANAGER = "velocity/store/permissionsForManager.vm";
         public static final String APPOINTREMOVEMANAGEROROWNER = "velocity/store/appointRemoveManagerOrOwner.vm";
+        public static final String ASSIGNREMOVEPOLICY = "/velocity/policies/assignRemovePolicy.vm";
+        public static final String COMPLEXPOLICIES = "/velocity/policies/complexPolicies.vm";
+        public static final String MAKEBASKETPURCHASEPOLICY = "/velocity/policies/makeBasketPurchasePolicy.vm";
+        public static final String GETSTOREDISCOUNTS = "/velocity/policies/getStoreDiscounts.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
     }
 }

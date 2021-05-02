@@ -11,8 +11,8 @@
     #end
 <main>
     <div class="container">
-        <form id="getStoreDetailsForm" method="post">
-            <h1 id="getStoreDetailsLabel">get store details</h1>
+        <form id="getStoreDiscountsForm" method="post">
+            <h1 id="getStoreDiscountsLabel">get store discounts</h1>
             <input type="hidden" name="connectionID" id="connectionID" value="">
             <script type="text/javascript">
                 document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
@@ -27,25 +27,22 @@
                 </div>
             </div>
             <div class="row">
-                <input id="goodPermissionMargin" type="submit" formaction="/getItemsByStore" value="get items">
-                <input id="goodPermissionMargin" type="submit" formaction="/showStaffInfo" value="staff info">
-                <input id="goodPermissionMargin" type="submit" formaction="/salesHistory" value="sales history">
-                <input id="goodPermissionMargin" type="submit" formaction="/storePolicies" value="store policies">
+                <input type="submit" value="store discounts">
             </div>
         </form>
     </div>
-    #if($details)
-        <p class="good notification">good get details</p>
+    #if($discounts)
+        <p class="good notification">good get discounts</p>
         <h1>details</h1>
         <div class="row row-3">
-            #foreach($detail in $details)
+            #foreach($discount in $discounts)
                 <div class="col" id="infoCol">
-                    $detail
+                    $discount
                 </div>
             #end
         </div>
     #elseif($failed)
-        <p class="bad notification">bad get details</p>
+        <p class="bad notification">bad get discounts</p>
     #end
 </main>
 </body>

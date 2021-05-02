@@ -14,6 +14,10 @@
         <form id="registerForm" method="post">
             <h1 id="registerLabel">$msg.get("REGISTER_HEADING")</h1>
             <p>$msg.get("REGISTER_INSTRUCTIONS")</p>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
             <div class="row">
                 <div class="col-25">
                     <label for="firstName">$msg.get("REGISTER_LABEL_USERNAME")</label>
