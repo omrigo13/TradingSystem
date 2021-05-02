@@ -38,7 +38,7 @@
                 <input type="submit" value="$msg.get("REGISTER_BUTTON_LOGIN")">
             </div>
             #if($authenticationFailed)
-                <p class="bad notification">$msg.get("REGISTER_AUTH_FAILED")</p>
+                <p class="bad notification">Subscriber already exists</p>
             #elseif($authenticationSucceeded)
                 <p class="good notification">$msg.get("REGISTER_AUTH_SUCCEEDED", $currentUser)</p>
             #end

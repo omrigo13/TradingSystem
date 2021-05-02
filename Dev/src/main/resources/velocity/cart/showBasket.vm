@@ -19,7 +19,7 @@
                 </div>
             #end
         </div>
-        <p class="good notification">good show Basket</p>
+        <p class="good notification">basket is shown successfully</p>
     #elseif($showBasketFailed)
         <div class="container">
             <form id="showBasketForm" method="post">
@@ -42,7 +42,7 @@
                 </div>
             </form>
         </div>
-        <p class="bad notification">bad show basket</p>
+        <p class="bad notification">store ID is wrong</p>
     #else
         <div class="container">
             <form id="showBasketForm" method="post">

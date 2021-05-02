@@ -48,9 +48,11 @@
             </form>
         </div>
     #if($success)
-        <p class="good notification">add item succeeded</p>
-    #elseif($failed)
-        <p class="bad notification">add items failed</p>
+        <p class="good notification">add item to basket succeeded</p>
+    #elseif($InvalidStoreId)
+        <p class="bad notification">store ID was not found</p>
+    #elseif($ItemNotFound)
+        <p class="bad notification">product ID was not found</p>
     #end
 </main>
 </body>

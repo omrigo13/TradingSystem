@@ -99,8 +99,11 @@ public class TradingSystem {
             ctx.render(Path.Template.ADDITEMTOBASKET, model);
         }catch (InvalidConnectionIdException ex) {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
-        }catch (Exception e) {
-            model.put("failed", true);
+        }catch (InvalidStoreIdException e) {
+            model.put("InvalidStoreId", true);
+            ctx.render(Path.Template.ADDITEMTOBASKET, model);
+        }catch (ItemNotFoundException e) {
+            model.put("ItemNotFound", true);
             ctx.render(Path.Template.ADDITEMTOBASKET, model);
         }
     };
@@ -317,7 +320,7 @@ public class TradingSystem {
             ctx.render(Path.Template.SHOWBASKET, model);
         }catch (InvalidConnectionIdException ex) {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
-        }catch (Exception e) {
+        }catch (InvalidStoreIdException e) {
             model.put("showBasketFailed", true);
             ctx.render(Path.Template.SHOWBASKET, model);
         }
@@ -331,9 +334,12 @@ public class TradingSystem {
             ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
         }catch (InvalidConnectionIdException ex) {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
-        }catch (Exception e) {
-            model.put("updateFailed", true);
+        }catch (ItemException e) {
+            model.put("ItemException", true);
             ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
+        }catch (InvalidStoreIdException e) {
+            model.put("InvalidStoreId", true);
+            ctx.render(Path.Template.SHOWBASKET, model);
         }
     };
 
