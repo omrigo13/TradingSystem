@@ -51,7 +51,7 @@ public interface TradingSystemService {
 
     /* make purchase for every product in all of the user's baskets */
     //each purchase matches to an item from a store with the appropriate quantity.
-    void purchaseCart(String userID) throws InvalidActionException;
+    void purchaseCart(String userID) throws Exception;
 
     /* get purchase history of a user by permissions: user himself / system manager.
     * every purchase represents buying of a cart.
@@ -114,38 +114,65 @@ public interface TradingSystemService {
 
     /*The next block of functions deals with store policies. */
     //******************************************************************************
+/* get all policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
+    Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException;
 
-    /**
-     * used to get discount and purchase policies of a store.
-     * @param userId - invoker
-     * @param storeId - store id
-     * @return discount and purchase policies
-     * @throws InvalidActionException
-     */
-    Collection<String> getStorePolicy(String userId, String storeId) throws InvalidActionException;
+    /* assign a policy to a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
+    void assignStorePurchasePolicy(int policyId, String userID, String storeId) throws InvalidActionException;
 
-    /**
-     * adds discount policy to a store.
-     * if param==null, it will not be counted.
-     * @param userId - invoker
-     * @param storeId - store id
-     * @param productId
-     * @param discountPercentage
-     * @throws InvalidActionException
-     */
-    void addStoreItemDiscountPolicy(String userId, String storeId, String productId, Double discountPercentage) throws InvalidActionException;
+    /* remove policy of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    void removePolicy(String userID, String storeId, int policyId) throws InvalidActionException;
 
-    void addStoreCategoryDiscountPolicy(String userId, String storeId, String category, Double discountPercentage) throws InvalidActionException;
+    /* create quantity policy of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException;
 
+    /* create minimum basket purchase value policy of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException;
 
-    /**
-     * sets minimum price for purchasing basket from the store
-     * @param userId
-     * @param storeId
-     * @param minCartPrice
-     */
-    void addBasketPriceLimit(String userId, String storeId, Double minCartPrice);
+    /* create time policy of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException;
 
+    /* create and policy between two policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
+
+    /* create or policy between two policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
+
+    /* create xor policy between two policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
+
+    /* get all discount policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
+    Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException;
+
+    /* assign a discount policy to a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
+    void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException;
+
+    /* remove discount policy of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException;
+
+    /* create quantity discount of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException;
+
+    /* create plus discount between two discount policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException;
+
+    /* create max discount policy between two discount policies of a store.
+    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
+    int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException;
 
     //end of block dealing with store policies
     //******************************************************************************
@@ -208,67 +235,6 @@ public interface TradingSystemService {
     precondition: invoker has the permissions to get the info. */
     //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
-
-    /* get all policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
-    Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException;
-
-    /* assign a policy to a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
-    void assignStorePurchasePolicy(int policyId, String userID, String storeId) throws InvalidActionException;
-
-    /* remove policy of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    void removePolicy(String userID, String storeId, int policyId) throws InvalidActionException;
-
-    /* create quantity policy of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException;
-
-    /* create minimum basket purchase value policy of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException;
-
-    /* create time policy of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException;
-
-    /* create and policy between two policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
-
-    /* create or policy between two policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
-
-    /* create xor policy between two policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException;
-
-    /* get all discount policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
-    Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException;
-
-    /* assign a discount policy to a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to create store policies.*/
-    void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException;
-
-    /* remove discount policy of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException;
-
-    /* create quantity discount of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException;
-
-    /* create plus discount between two discount policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException;
-
-    /* create max discount policy between two discount policies of a store.
-    preconditions: invoker is the store owner or is a manager of it, with permissions to remove store policies.*/
-    int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException;
-
 
     // ***********************************************************************
     // Topics: service level, external systems

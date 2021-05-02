@@ -5,6 +5,7 @@ import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
+import policies.*;
 import store.Item;
 import store.Store;
 import user.*;
@@ -332,7 +333,7 @@ public class TradingSystem {
         return id;
     }
 
-    public void purchaseCart(User user) throws InvalidActionException {
+    public void purchaseCart(User user) throws Exception {
 
         user.purchaseCart(paymentSystem, deliverySystem);
     }

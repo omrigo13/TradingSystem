@@ -28,8 +28,6 @@ public class Store {
     private boolean isActive;
     private final Inventory inventory = new Inventory();
     private final Collection<String> purchases = new LinkedList<>();
-    private Inventory inventory = new Inventory();
-    private Collection<String> purchases = new LinkedList<>();
     private Observable observable;
 
     public Store() {}
@@ -383,4 +381,6 @@ public class Store {
     public void notifyItemOpinion(Review review) {
         observable.notifyItemReview(review);
     }
+
+    public void setObservable(Observable observable) { this.observable = observable; }
 }

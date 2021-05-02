@@ -59,7 +59,7 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {1,0} {0,1}
-    void xorPolicyByItemGoodDetails() throws ItemException, PolicyException {
+    void xorPolicyByItemGoodDetails() throws Exception {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 6, 12));
         store.setPurchasePolicy(new XorPolicy(policies));
@@ -90,7 +90,7 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {1,1} {0,1} {1,0}
-    void orPolicyByCategoryGoodDetails() throws ItemException, PolicyException {
+    void orPolicyByCategoryGoodDetails() throws Exception {
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 6));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 6, 12));
         store.setPurchasePolicy(new OrPolicy(policies));
@@ -120,7 +120,7 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {1,1}
-    void andPolicyByItemGoodDetails() throws ItemException, PolicyException {
+    void andPolicyByItemGoodDetails() throws Exception {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new AndPolicy(policies));
@@ -185,7 +185,7 @@ public class PurchasePolicyTest {
     }
 
     @Test
-    void timePolicyGoodDetails() throws PolicyException, ItemException {
+    void timePolicyGoodDetails() throws Exception {
         user.getBasket(store).setQuantity(item1, 5);
         user.getBasket(store).setQuantity(item2, 4);
         store.setPurchasePolicy(new TimePolicy(store.getItems().keySet(), LocalTime.of(0,0)));
