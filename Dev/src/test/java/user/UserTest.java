@@ -6,6 +6,7 @@ import exceptions.WrongAmountException;
 import exceptions.PolicyException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import notifications.Observable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +41,7 @@ class UserTest {
     void setUp() throws ItemException {
         user = new User(baskets);
         basket = new Basket(store, items);
+        store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
         store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().keySet()));
     }
@@ -113,7 +115,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartCorrectValueCalculation() throws ItemException, PolicyException {
+    void purchaseCartCorrectValueCalculation() throws Exception {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
@@ -124,7 +126,7 @@ class UserTest {
     }
 
     @Test
-    void purchaseCartPurchaseHistoryUpdated() throws ItemException , PolicyException {
+    void purchaseCartPurchaseHistoryUpdated() throws Exception {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);

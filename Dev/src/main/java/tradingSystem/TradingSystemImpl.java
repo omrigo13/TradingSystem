@@ -211,7 +211,7 @@ public class TradingSystemImpl {
         return tradingSystem.makeMaxDiscount(store, discountId1, discountId2);
     }
 
-    public void purchaseCart(String connectionId) throws InvalidActionException {
+    public void purchaseCart(String connectionId) throws Exception {
 
         tradingSystem.purchaseCart(tradingSystem.getUserByConnectionId(connectionId));
     }
