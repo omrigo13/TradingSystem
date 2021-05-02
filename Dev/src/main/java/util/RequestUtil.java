@@ -49,6 +49,10 @@ public class RequestUtil {
         return ctx.formParam("connectionID");
     }
 
+    public static String getConnectionIDLogout(Context ctx) {
+        return ctx.formParam("connectionIDLogout");
+    }
+
     public static String getQueryPassword(Context ctx) {
         return ctx.formParam("password");
     }
