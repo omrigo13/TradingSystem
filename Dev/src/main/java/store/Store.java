@@ -155,9 +155,12 @@ public class Store {
     public Collection<Item> searchAndFilter(String keyWord, String itemName, String category, Double ratingItem,
                                                        Double ratingStore, Double maxPrice, Double minPrice) {
         Spelling spelling = new Spelling();
-        keyWord = spelling.correct(keyWord);
-        itemName = spelling.correct(itemName);
-        category = spelling.correct(category);
+        if(keyWord != null)
+            keyWord = spelling.correct(keyWord.toLowerCase());
+        if(itemName != null)
+            itemName = spelling.correct(itemName.toLowerCase());
+        if(category != null)
+            category = spelling.correct(category.toLowerCase());
         Collection<Item> search = searchItems(keyWord, itemName, category);
         return filterItems(search, ratingItem, ratingStore, maxPrice, minPrice);
     }
