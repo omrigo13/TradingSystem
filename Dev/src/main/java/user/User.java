@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.ExternalServicesException;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.PolicyException;
@@ -7,10 +8,13 @@ import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import notifications.Observable;
+import store.Item;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Store;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +56,7 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, PolicyException {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
@@ -60,10 +64,10 @@ public class User {
         PaymentData paymentData = null;
         boolean paymentDone = false;
         try {
-            paymentData = new PaymentData(totalPrice);
+            paymentData = new PaymentData(totalPrice, null);
             paymentSystem.pay(paymentData);
             paymentDone = true;
-            deliverySystem.deliver(new DeliveryData());
+            deliverySystem.deliver(new DeliveryData(null, null));
         } catch (Exception e) {
             if (paymentDone)
                 paymentSystem.payBack(paymentData);
@@ -78,7 +82,11 @@ public class User {
         for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet())
             entry.getKey().addPurchase(entry.getValue());
 
-        addCartToPurchases(storePurchaseDetails);
+        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+            Store store = storeBasketEntry.getKey();
+            Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
+            store.notifyPurchase(this, basket);
+        }        addCartToPurchases(storePurchaseDetails);
         baskets.clear();
     }
 
