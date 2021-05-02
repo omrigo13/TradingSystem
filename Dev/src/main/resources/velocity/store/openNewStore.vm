@@ -1,0 +1,84 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    #if($storeID)
+        <div class="container">
+            <form id="openStoreForm" method="post">
+                <h1 id="openStoreLabel">Open new store</h1>
+                <input type="hidden" name="connectionID" id="connectionID" value="">
+                <script type="text/javascript">
+                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                </script>
+
+                <div class="row">
+                    <div class="col-25">
+                        <label for="storeName">store name</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="storeName" placeholder="store name" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="open store">
+                </div>
+            </form>
+        </div>
+        <p class="good notification">your new store ID is $storeID</p>
+    #elseif($openStoreFailed)
+        <div class="container">
+            <form id="openStoreForm" method="post">
+                <h1 id="openStoreLabel">Open new store</h1>
+                <input type="hidden" name="connectionID" id="connectionID" value="">
+                <script type="text/javascript">
+                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                </script>
+
+                <div class="row">
+                    <div class="col-25">
+                        <label for="storeName">store name</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="storeName" placeholder="store name" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="open store">
+                </div>
+            </form>
+        </div>
+        <p class="bad notification">open store failed</p>
+    #else
+        <div class="container">
+            <form id="openStoreForm" method="post">
+                <h1 id="openStoreLabel">Open new store</h1>
+                <input type="hidden" name="connectionID" id="connectionID" value="">
+                <script type="text/javascript">
+                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                </script>
+
+                <div class="row">
+                    <div class="col-25">
+                        <label for="storeName">store name</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="storeName" placeholder="store name" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="open store">
+                </div>
+            </form>
+        </div>
+    #end
+</main>
+</body>
+</html>

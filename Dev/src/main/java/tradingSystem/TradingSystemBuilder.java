@@ -6,10 +6,13 @@ import externalServices.DeliverySystem;
 import externalServices.DeliverySystemBasicImpl;
 import externalServices.PaymentSystem;
 import externalServices.PaymentSystemBasicImpl;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import store.Store;
 import user.Subscriber;
 import user.User;
 
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,6 +27,10 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<Integer, Store> stores;
     private ConcurrentHashMap<String, User> connections;
     private AtomicInteger subscriberIdCounter;
+    private ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies;
+    private ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies;
+    private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies;
+    private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies;
 
     public TradingSystemBuilder setUserName(String userName) {
 
@@ -73,6 +80,30 @@ public class TradingSystemBuilder {
         return this;
     }
 
+    public TradingSystemBuilder setPurchasePolicies(ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies) {
+
+        this.purchasePolicies = purchasePolicies;
+        return this;
+    }
+
+    public TradingSystemBuilder setDiscountPolicies(ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies) {
+
+        this.discountPolicies = discountPolicies;
+        return this;
+    }
+
+    public TradingSystemBuilder setStoresPurchasePolicies(ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies) {
+
+        this.storesPurchasePolicies = storesPurchasePolicies;
+        return this;
+    }
+
+    public TradingSystemBuilder setStoresDiscountPolicies(ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies) {
+
+        this.storesDiscountPolicies = storesDiscountPolicies;
+        return this;
+    }
+
     public TradingSystemBuilder setSubscriberIdCounter(AtomicInteger subscriberIdCounter){
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -87,8 +118,13 @@ public class TradingSystemBuilder {
         subscribers = (subscribers == null) ? new ConcurrentHashMap<>() : subscribers;
         connections = (connections == null) ? new ConcurrentHashMap<>() : connections;
         stores = (stores == null) ? new ConcurrentHashMap<>() : stores;
+        purchasePolicies = (purchasePolicies == null) ? new ConcurrentHashMap<>() : purchasePolicies;
+        discountPolicies = (discountPolicies == null) ? new ConcurrentHashMap<>() : discountPolicies;
+        storesPurchasePolicies = (storesPurchasePolicies == null) ? new ConcurrentHashMap<>(): storesPurchasePolicies;
+        storesDiscountPolicies = (storesDiscountPolicies == null) ? new ConcurrentHashMap<>(): storesDiscountPolicies;
         subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
 
-        return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores);
+        return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores, purchasePolicies,
+                discountPolicies, storesPurchasePolicies, storesDiscountPolicies);
     }
 }

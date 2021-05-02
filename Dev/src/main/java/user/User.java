@@ -2,12 +2,15 @@ package user;
 
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
+import exceptions.PolicyException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import store.Item;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import store.Store;
 
 import java.util.Collection;
@@ -52,7 +55,7 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws ItemException, PolicyException {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
@@ -60,10 +63,10 @@ public class User {
         PaymentData paymentData = null;
         boolean paymentDone = false;
         try {
-            paymentData = new PaymentData(totalPrice); //TODO there is no username for a user only for subscriber
+            paymentData = new PaymentData(totalPrice);
             paymentSystem.pay(paymentData);
             paymentDone = true;
-            deliverySystem.deliver(new DeliveryData()); //TODO there is no address for user and subscriber right now
+            deliverySystem.deliver(new DeliveryData());
         } catch (Exception e) {
             if (paymentDone)
                 paymentSystem.payBack(paymentData);
@@ -72,32 +75,40 @@ public class User {
                 entry.getKey().rollBack(entry.getValue().getItems());
             throw e;
         }
-
+        if(totalPrice == 0)
+            return;
         // add each purchase details string to the store it was purchased from
-        for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet())
-            entry.getKey().addPurchase(entry.getValue());
-
-        addCartToPurchases(storePurchaseDetails);
-        for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+        for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet()) {
             Store store = storeBasketEntry.getKey();
             Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
+            store.addPurchase(entry.getValue());
             store.notifyPurchase(this, basket);
         }
+
+        addCartToPurchases(storePurchaseDetails);
         baskets.clear();
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException {
+        boolean validPolicy;
+        PurchasePolicy storePurchasePolicy;
+        DiscountPolicy storeDiscountPolicy;
         for (Map.Entry<Store, Basket> storeBasketEntry : baskets.entrySet()) {
+
+            storePurchasePolicy = storeBasketEntry.getKey().getPurchasePolicy();
+            storeDiscountPolicy = storeBasketEntry.getKey().getDiscountPolicy();
+            validPolicy = storePurchasePolicy.isValidPurchase(storeBasketEntry.getValue());
+            if(!validPolicy)
+                throw new PolicyException();
+
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
-            Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
-            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails);
+            Basket basket = storeBasketEntry.getValue();
+            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy);
             totalPrice += price;
             purchaseDetails.append("Total basket price: ").append(price).append("\n");
             storePurchaseDetails.put(store, purchaseDetails.toString());
         }
         return totalPrice;
     }
-
-
 }

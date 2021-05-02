@@ -6,24 +6,26 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
+import user.Basket;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class InventoryTest {
 
     @Mock private TradingSystem tradingSystem;
-
+    private Basket basket;
     private Inventory inventory;
 
     @BeforeEach
     void setUp() {
         inventory = new Inventory();
+        ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
+        basket = new Basket(new Store(), items);
     }
 
 //    @Test
@@ -212,24 +214,23 @@ public class InventoryTest {
         int cucumberID= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
         int carrotId= inventory.addItem("carrot", 20, "vegetables", "orange", 8);
         inventory.searchItem(carrotId).lock();
-        Map<Item, Integer> items = new HashMap<>();
-        items.put(inventory.searchItem(tomatoId), 2);
-        items.put(inventory.searchItem(cucumberID), 2);
-        items.put(inventory.searchItem(carrotId), 2);
+        basket.addItem(inventory.searchItem(tomatoId), 2);
+        basket.addItem(inventory.searchItem(cucumberID), 2);
+        basket.addItem(inventory.searchItem(carrotId), 2);
         StringBuilder details = new StringBuilder();
 //        assertThrows(Exception.class, () -> inventory.calculate(items, details));
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 5);
         inventory.searchItem(carrotId).unlock();
-        assertEquals(inventory.calculate(items, details), 110);
+        assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet())), 110);
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)), 3);
         inventory.searchItem(tomatoId).unlock();
         inventory.searchItem(cucumberID).unlock();
         inventory.searchItem(carrotId).unlock();
-        items.clear();
-        items.put(inventory.searchItem(tomatoId), 2);
-        items.put(inventory.searchItem(cucumberID), 2);
-        items.put(inventory.searchItem(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> inventory.calculate(items, details));
+        basket.getItems().clear();
+        basket.addItem(inventory.searchItem(tomatoId), 2);
+        basket.addItem(inventory.searchItem(cucumberID), 2);
+        basket.addItem(inventory.searchItem(carrotId), 8);
+        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet())));
     }
 //
 //    @Test

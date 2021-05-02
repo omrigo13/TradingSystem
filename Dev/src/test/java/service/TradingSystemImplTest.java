@@ -296,13 +296,27 @@ class TradingSystemImplTest {
     }
 
     @Test
-    void allowManagerToEditPolicies() {
-        service.allowManagerToEditPolicies(connectionId,storeId,userName);
+    void allowManagerToEditPolicies() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
+        service.allowManagerToEditPolicies(connectionId, storeId, userName);
+        verify(subscriber).addEditPolicyPermission(subscriber1, store);
     }
 
     @Test
-    void disableManagerFromEditPolicies() {
+    void disableManagerFromEditPolicies() throws InvalidActionException {
+
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+
+        when(tradingSystem.getSubscriberByUserName(userName)).thenReturn(subscriber1);
+        when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         service.disableManagerFromEditPolicies(connectionId,storeId,userName);
+        verify(subscriber).removeEditPolicyPermission(subscriber1, store);
     }
 
     @Test

@@ -5,21 +5,21 @@
 package store;
 
 import exceptions.*;
-import tradingSystem.TradingSystem;
+import policies.DiscountPolicy;
+import user.Basket;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Inventory {
 
 //    private final TradingSystem tradingSystem;
     private final Map<Item, Integer> items;
-    private AtomicInteger id = new AtomicInteger(0);
+    private final AtomicInteger id = new AtomicInteger(0);
 
     public Inventory() {
 //        this.tradingSystem = tradingSystem;
@@ -77,8 +77,8 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equals(name) && item.getCategory().equals(category) && item.getSubCategory().equals(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
-                throw new WrongCategoryException("item category cannot start with a number");
+//            if (category.charAt(0) >= '0' && category.charAt(0) <= '9')// add check to category need to add tests
+//                throw new WrongCategoryException("item category cannot start with a number");
             //int itemId = tradingSystem.getNextItemId();
             items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
             return id.getAndIncrement();
@@ -135,8 +135,8 @@ public class Inventory {
     public Item getItem(String name, String category, String subCategory) throws ItemException
     {
         for (Item item: items.keySet())
-            if(item.getName().toLowerCase().equals(name.toLowerCase()) && item.getCategory().toLowerCase().equals(category.toLowerCase())
-                    && item.getSubCategory().toLowerCase().equals(subCategory.toLowerCase()))
+            if(item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category)
+                    && item.getSubCategory().equalsIgnoreCase(subCategory))
                 return item;
         throw new ItemNotFoundException("item not found");
     }
@@ -299,8 +299,7 @@ public class Inventory {
         }
     }
 
-    public double calculate(Map<Item, Integer> items, StringBuilder details) throws ItemException {
-        double paymentValue = 0;
+    public double calculate(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
         /*
         for (Map.Entry<Item, Integer> entry: items.entrySet()) {
             if (!entry.getKey().isLocked())
@@ -314,22 +313,22 @@ public class Inventory {
                 throw new Exception("a kind of wait should be here"); //TODO we have to check what to do with locked items
             }
         }*/
-
+        double totalValue;
         synchronized (this.items) {
             // check that every item has quantity in inventory
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                 checkAmount(entry.getKey().getId(), entry.getValue());
             }
             // update inventory quantity and calculate basket price
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+            totalValue = storeDiscountPolicy.cartTotalValue(basket);
+            for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
-                    paymentValue += (item.getPrice() * quantity);
                     this.items.replace(item, this.items.get(item) - quantity);
                     details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                             .append(" Quantity: ").append(quantity).append("\n");
             }
         }
-        return paymentValue;
+        return totalValue;
     }
 }

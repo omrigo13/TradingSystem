@@ -131,6 +131,7 @@ public class Subscriber extends User {
 
             addPermission(OwnerPermission.getInstance(store));
             addPermission(ManagerPermission.getInstance(store));
+            addPermission(EditPolicyPermission.getInstance(store));
             addPermission(ManageInventoryPermission.getInstance(store));
             addPermission(GetHistoryPermission.getInstance(store));
         }
@@ -166,17 +167,21 @@ public class Subscriber extends User {
 
         synchronized (permissions) {
 
-            // look for any managers or owners that were appointed by this owner for this store
+            Collection<Permission> permissionsToRemove = new LinkedList<>();
+
+            // look for any managers or owners that were appointed by this owner for this store and remove their permission
             for (Permission permission : permissions)
                 if (permission.getClass() == AppointerPermission.class && ((AppointerPermission)permission).getStore() == store) {
                     Subscriber target = ((AppointerPermission)permission).getTarget();
                     target.removeOwnerPermission(store);
 
-                    // remove this user's permission to change the target's permissions
-                    removePermission(AppointerPermission.getInstance(target, store));
+                    permissionsToRemove.add(permission); // store this permission to remove it after the foreach loop
                 }
 
+            permissionsToRemove.forEach(permissions::remove);
+
             removePermission(OwnerPermission.getInstance(store));
+            removePermission(EditPolicyPermission.getInstance(store));
             removePermission(ManageInventoryPermission.getInstance(store));
             removePermission(GetHistoryPermission.getInstance(store));
             removePermission(ManagerPermission.getInstance(store));
@@ -207,6 +212,16 @@ public class Subscriber extends User {
     public void removeInventoryManagementPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
 
         removePermissionFromManager(target, store, ManageInventoryPermission.getInstance(store));
+    }
+
+    public void addEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
+
+        addPermissionToManager(target, store, EditPolicyPermission.getInstance(store));
+    }
+
+    public void removeEditPolicyPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsOwnerException {
+
+        removePermissionFromManager(target, store, EditPolicyPermission.getInstance(store));
     }
 
     public void addGetHistoryPermission(Subscriber target, Store store) throws NoPermissionException, TargetIsNotManagerException {
@@ -303,6 +318,8 @@ public class Subscriber extends User {
             Permission ownerPermission = OwnerPermission.getInstance(store);
             Permission managerPermission = ManagerPermission.getInstance(store);
             Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
+            Permission getHistoryPermission = GetHistoryPermission.getInstance(store);
+            Permission editPolicyPermission = EditPolicyPermission.getInstance(store);
 
             if (havePermission(ownerPermission))
                 result.append(ownerPermission.toString()).append(" ");
@@ -310,6 +327,10 @@ public class Subscriber extends User {
                 result.append(managerPermission.toString()).append(" ");
             if (havePermission(manageInventoryPermission))
                 result.append(manageInventoryPermission.toString()).append(" ");
+            if (havePermission(getHistoryPermission))
+                result.append(getHistoryPermission.toString()).append(" ");
+            if (havePermission(editPolicyPermission))
+                result.append(editPolicyPermission.toString()).append(" ");
 
             return result.toString();
         }

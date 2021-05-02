@@ -1,0 +1,5 @@
+<script>
+    localStorage.removeItem("connectID");
+</script>
+invalid connection id
+<a href="/">Click to root</a>

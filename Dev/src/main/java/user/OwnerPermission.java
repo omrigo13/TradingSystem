@@ -13,8 +13,7 @@ public class OwnerPermission extends StorePermission
 
     public static OwnerPermission getInstance(Store store) {
 
-        OwnerPermission key = new OwnerPermission(store);
-        return (OwnerPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (OwnerPermission)pool.computeIfAbsent(new OwnerPermission(store), WeakReference::new).get();
     }
 
     @Override

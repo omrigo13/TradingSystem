@@ -5,7 +5,7 @@ import store.Item;
 import store.Store;
 import user.*;
 
-import java.io.IOException;
+import java.time.LocalTime;
 import java.util.*;
 
 public class TradingSystemImpl {
@@ -90,6 +90,125 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).setQuantity(item, quantity);
+    }
+
+    public Collection<Integer> getStorePolicies(String connectionId, String storeId) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.getStorePolicies(store);
+    }
+
+    public void assignStorePurchasePolicy(int policy, String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        tradingSystem.assignStorePurchasePolicy(policy, store);
+    }
+
+    public void removePolicy(String connectionId, String storeId, int policy) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        tradingSystem.removePolicy(store, policy);
+    }
+
+    public int makeQuantityPolicy(String connectionId, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Collection<Item> policyItems = new ArrayList<>();
+        for (String item: items) {
+            policyItems.add(store.searchItemById(Integer.parseInt(item)));
+        }
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makeQuantityPolicy(store, policyItems, minQuantity, maxQuantity);
+    }
+
+    public int makeBasketPurchasePolicy(String connectionId, String storeId, int minBasketValue) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makeBasketPurchasePolicy(store, minBasketValue);
+    }
+
+    public int makeTimePolicy(String connectionId, String storeId, Collection<String> items, String time) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Collection<Item> policyItems = new ArrayList<>();
+        for (String item: items) {
+            policyItems.add(store.searchItemById(Integer.parseInt(item)));
+        }
+        LocalTime policyTime = LocalTime.parse(time);
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makeTimePolicy(store, policyItems, policyTime);
+    }
+
+    public int andPolicy(String connectionId, String storeId, int policy1, int policy2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.andPolicy(store, policy1, policy2);
+    }
+
+    public int orPolicy(String connectionId, String storeId, int policy1, int policy2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.orPolicy(store, policy1, policy2);
+    }
+
+    public int xorPolicy(String connectionId, String storeId, int policy1, int policy2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.xorPolicy(store, policy1, policy2);
+    }
+
+    public Collection<Integer> getStoreDiscounts(String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.getStoreDiscounts(store);
+    }
+
+    public void assignStoreDiscountPolicy(int discountId, String connectionId, String storeId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        tradingSystem.assignStoreDiscountPolicy(discountId, store);
+    }
+
+    public void removeDiscount(String connectionId, String storeId, int discountId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        tradingSystem.removeDiscount(store, discountId);
+    }
+
+    public int makeQuantityDiscount(String connectionId, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Collection<Item> discountItems = new ArrayList<>();
+        for (String item: items) {
+            discountItems.add(store.searchItemById(Integer.parseInt(item)));
+        }
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makeQuantityDiscount(store, discount, discountItems, policyId);
+    }
+
+    public int makePlusDiscount(String connectionId, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makePlusDiscount(store, discountId1, discountId2);
+    }
+
+    public int makeMaxDiscount(String connectionId, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), EditPolicyPermission.getInstance(store));
+        return tradingSystem.makeMaxDiscount(store, discountId1, discountId2);
     }
 
     public void purchaseCart(String connectionId) throws InvalidActionException {
@@ -193,10 +312,20 @@ public class TradingSystemImpl {
         subscriber.removeInventoryManagementPermission(target, store);
     }
 
-    public void allowManagerToEditPolicies(String connectionId, String storeId, String managerUserName) {
+    public void allowManagerToEditPolicies(String connectionId, String storeId, String managerUserName) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(managerUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.addEditPolicyPermission(target, store);
     }
 
-    public void disableManagerFromEditPolicies(String connectionId, String storeId, String managerUserName) {
+    public void disableManagerFromEditPolicies(String connectionId, String storeId, String managerUserName) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Subscriber target = tradingSystem.getSubscriberByUserName(managerUserName);
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.removeEditPolicyPermission(target, store);
     }
 
     public void allowManagerToGetHistory(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
@@ -261,7 +390,7 @@ public class TradingSystemImpl {
         return subscriber.getSalesHistoryByStore(store);
     }
 
-    public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException, IOException {
+    public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException {
         return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }
 

@@ -20,8 +20,7 @@ public class AppointerPermission extends StorePermission
 
     public static AppointerPermission getInstance(Subscriber target, Store store) {
 
-        AppointerPermission key = new AppointerPermission(target, store);
-        return (AppointerPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (AppointerPermission)pool.computeIfAbsent(new AppointerPermission(target, store), WeakReference::new).get();
     }
 
     @Override

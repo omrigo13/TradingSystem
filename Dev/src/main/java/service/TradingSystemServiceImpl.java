@@ -7,6 +7,8 @@ import tradingSystem.TradingSystemImpl;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -67,12 +69,18 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("Show user cart");
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.showCart(userID);
     }
 
     @Override
     public Collection<String> showBasket(String userID, String storeId) throws InvalidActionException {
         eventLog.writeToLogger("Show user basket for store: " + storeId);
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.showBasket(userID, storeId);
     }
 
@@ -80,6 +88,96 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public void updateProductAmountInBasket(String userID, String storeId, String productId, int newAmount) throws InvalidActionException {
         eventLog.writeToLogger("User update the amount of product-" + productId + " of the store-" + storeId + " with the new quantity-" + newAmount);
         tradingSystemImpl.updateProductAmountInBasket(userID, storeId, productId, newAmount);
+    }
+
+    @Override
+    public Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException {
+        eventLog.writeToLogger("User get purchase policies of a store-" + storeId);
+        return tradingSystemImpl.getStorePolicies(userID, storeId);
+    }
+
+    @Override
+    public void assignStorePurchasePolicy(int policyId, String userID, String storeId) throws InvalidActionException {
+        eventLog.writeToLogger("User assign a purchase policy to a store-" + storeId);
+        tradingSystemImpl.assignStorePurchasePolicy(policyId, userID, storeId);
+    }
+
+    @Override
+    public void removePolicy(String userID, String storeId, int policyId) throws InvalidActionException {
+        eventLog.writeToLogger("User remove a purchase policy of the store-" + storeId);
+        tradingSystemImpl.removePolicy(userID, storeId, policyId);
+    }
+
+    @Override
+    public int makeQuantityPolicy(String userID, String storeId, Collection<String> items, int minQuantity, int maxQuantity) throws InvalidActionException {
+        eventLog.writeToLogger("User make quantity policy of the store-" + storeId);
+        return tradingSystemImpl.makeQuantityPolicy(userID, storeId, items, minQuantity, maxQuantity);
+    }
+
+    @Override
+    public int makeBasketPurchasePolicy(String userID, String storeId, int minBasketValue) throws InvalidActionException {
+        eventLog.writeToLogger("User make basket policy of the store-" + storeId);
+        return tradingSystemImpl.makeBasketPurchasePolicy(userID, storeId, minBasketValue);
+    }
+
+    @Override
+    public int makeTimePolicy(String userID, String storeId, Collection<String> items, String time) throws InvalidActionException {
+        eventLog.writeToLogger("User make time policy of the store-" + storeId);
+        return tradingSystemImpl.makeTimePolicy(userID, storeId, items, time);
+    }
+
+    @Override
+    public int andPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make and policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.andPolicy(userID, storeId, policy1, policy2);
+    }
+
+    @Override
+    public int orPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make or policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.orPolicy(userID, storeId, policy1, policy2);
+    }
+
+    @Override
+    public int xorPolicy(String userID, String storeId, int policy1, int policy2) throws InvalidActionException {
+        eventLog.writeToLogger("User make xor policy of the store-" + storeId + "between policy: " + policy1 + " and policy: " + policy2);
+        return tradingSystemImpl.xorPolicy(userID, storeId, policy1, policy2);
+    }
+
+    @Override
+    public Collection<Integer> getStoreDiscounts(String userID, String storeId) throws InvalidActionException {
+        eventLog.writeToLogger("User get discounts policies of a store-" + storeId);
+        return tradingSystemImpl.getStoreDiscounts(userID, storeId);
+    }
+
+    @Override
+    public void assignStoreDiscountPolicy(int discountId, String userID, String storeId) throws InvalidActionException {
+        eventLog.writeToLogger("User assign a discount policy to a store-" + storeId);
+        tradingSystemImpl.assignStoreDiscountPolicy(discountId, userID, storeId);
+    }
+
+    @Override
+    public void removeDiscount(String userID, String storeId, int discountId) throws InvalidActionException {
+        eventLog.writeToLogger("User remove a discount policy of the store-" + storeId);
+        tradingSystemImpl.removeDiscount(userID, storeId, discountId);
+    }
+
+    @Override
+    public int makeQuantityDiscount(String userID, String storeId, int discount, Collection<String> items, Integer policyId) throws InvalidActionException {
+        eventLog.writeToLogger("User make quantity discount policy of the store-" + storeId);
+        return tradingSystemImpl.makeQuantityDiscount(userID, storeId, discount, items, policyId);
+    }
+
+    @Override
+    public int makePlusDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        eventLog.writeToLogger("User make plus discount policy of the store-" + storeId + "between discount policy: " + discountId1 + " and discount policy: " + discountId2);
+        return tradingSystemImpl.makePlusDiscount(userID, storeId, discountId1, discountId2);
+    }
+
+    @Override
+    public int makeMaxDiscount(String userID, String storeId, int discountId1, int discountId2) throws InvalidActionException {
+        eventLog.writeToLogger("User make max discount policy of the store-" + storeId + "between discount policy: " + discountId1 + " and discount policy: " + discountId2);
+        return tradingSystemImpl.makeMaxDiscount(userID, storeId, discountId1, discountId2);
     }
 
     @Override
@@ -91,6 +189,9 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> getPurchaseHistory(String userID) throws InvalidActionException {
         eventLog.writeToLogger("User ask for his purchase history");
+//        LinkedList<String> l = new LinkedList<>();
+//        l.add("Barak");
+//        return l;
         return tradingSystemImpl.getPurchaseHistory(userID);
     }
 
@@ -172,13 +273,13 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) {
+    public void allowManagerToEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
         eventLog.writeToLogger("allow manager to edit policies");
         tradingSystemImpl.allowManagerToEditPolicies(userID, storeId, managerUserName);
     }
 
     @Override
-    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) {
+    public void disableManagerFromEditPolicies(String userID, String storeId, String managerUserName) throws InvalidActionException {
         eventLog.writeToLogger("disable manager to edit policies");
         tradingSystemImpl.disableManagerFromEditPolicies(userID, storeId, managerUserName);
     }

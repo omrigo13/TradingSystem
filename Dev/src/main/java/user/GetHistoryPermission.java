@@ -12,8 +12,7 @@ public class GetHistoryPermission extends StorePermission
 
     public static GetHistoryPermission getInstance(Store store) {
 
-        GetHistoryPermission key = new GetHistoryPermission(store);
-        return (GetHistoryPermission)pool.computeIfAbsent(key, WeakReference::new).get();
+        return (GetHistoryPermission)pool.computeIfAbsent(new GetHistoryPermission(store), WeakReference::new).get();
     }
 
     @Override

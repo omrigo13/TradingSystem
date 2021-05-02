@@ -40,6 +40,7 @@ class SubscriberTest {
     private final Permission ownerPermission = OwnerPermission.getInstance(store);
     private final Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
     private final Permission getHistoryPermission = GetHistoryPermission.getInstance(store);
+    private final Permission editPolicyPermission = EditPolicyPermission.getInstance(store);
     private final Permission appointerPermission = AppointerPermission.getInstance(target, store);
 
     private final double price = 500.0;
@@ -122,7 +123,9 @@ class SubscriberTest {
         verify(subscriber).addPermission(OwnerPermission.getInstance(store));
         verify(subscriber).addPermission(ManagerPermission.getInstance(store));
         verify(subscriber).addPermission(ManageInventoryPermission.getInstance(store));
-        verify(subscriber).addPermission(GetHistoryPermission.getInstance(store));    }
+        verify(subscriber).addPermission(GetHistoryPermission.getInstance(store));
+        verify(subscriber).addPermission(EditPolicyPermission.getInstance(store));
+    }
 
     @Test
     void addOwnerPermissions_toTarget() throws NoPermissionException, AlreadyOwnerException {
@@ -188,6 +191,7 @@ class SubscriberTest {
         verify(subscriber).removePermission(ownerPermission);
         verify(subscriber).removePermission(manageInventoryPermission);
         verify(subscriber).removePermission(getHistoryPermission);
+        verify(subscriber).removePermission(editPolicyPermission);
         verify(subscriber).removePermission(managerPermission);
     }
 
@@ -196,6 +200,10 @@ class SubscriberTest {
 
         Set<Permission> permissions = new HashSet<>();
         permissions.add(appointerPermission);
+        permissions.add(managerPermission);
+        permissions.add(getHistoryPermission);
+        permissions.add(editPolicyPermission);
+        permissions.add(manageInventoryPermission);
 
         Field privateField = subscriber.getClass().getDeclaredField("permissions");
         privateField.setAccessible(true);
