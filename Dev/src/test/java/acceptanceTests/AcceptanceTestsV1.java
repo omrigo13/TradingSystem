@@ -327,8 +327,6 @@ public class AcceptanceTestsV1 {
         assertFalse(deliverySystem.getDeliveries().keySet().contains(subs3UserName));
     }
 
-
-
     @Test
     void getPurchaseHistory() throws Exception{
         addToBasketUseCase();
