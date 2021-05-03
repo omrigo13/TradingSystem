@@ -124,7 +124,7 @@ public class Store {
      * @param category    - the category of the new item
      * @param subCategory - the sub category of the new item
      * @param amount      the amount in the store for the new item
-     * @throws WrongNameException,WrongPriceException,WrongAmountException,WrongCategoryException,ItemAlreadyExistsException
+     * @throws ItemException
      */
     public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         return this.inventory.addItem(name, price, category, subCategory, amount);

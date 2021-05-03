@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.mockito.Mockito.spy;
 import static org.testng.Assert.assertThrows;
 
 public class PurchasePolicyTest {
@@ -28,12 +29,15 @@ public class PurchasePolicyTest {
     @Mock private DeliverySystem deliverySystem;
     @Mock private DiscountPolicy discountPolicy;
 
-    @Spy private Store store;
-    @Spy private Item item1, item2, item3;
+    private Store store;
+    private Item item1, item2;
 
     @BeforeMethod
     void setUp() throws ItemException {
         MockitoAnnotations.openMocks(this);
+        store = spy(new Store());
+        item1 = spy(new Item());
+        item2 = spy(new Item());
         user = new User();
         user.makeCart(user);
         store.setPurchasePolicy(new DefaultPurchasePolicy());
@@ -162,7 +166,7 @@ public class PurchasePolicyTest {
     @Test
     void quantityPolicyForItemDoesntExist() throws ItemException, PolicyException {
         store.addItem("banana", 9.5, "cat2", "sub2", 7);
-        item3 = store.searchItemById(2);
+        Item item3 = store.searchItemById(2);
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new AndPolicy(policies));
         assertThrows(QuantityPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));

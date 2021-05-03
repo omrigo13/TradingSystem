@@ -7,7 +7,7 @@ import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
-import org.mockito.Spy;
+import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
@@ -25,20 +25,24 @@ public class UserTest {
 
     private User user;
 
-    private final ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
-
-    @Spy private Store store;
-    @Spy private Item item;
-    @Spy private Basket basket = new Basket(store, items);
-    @Spy private ConcurrentHashMap<Store, Basket> baskets;
-
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
 
+    private ConcurrentHashMap<Store, Basket> baskets;
+    private Basket basket;
+    private Store store;
+    private ConcurrentHashMap<Item, Integer> items;
+    private Item item;
+
     @BeforeMethod
     void setUp() {
+        MockitoAnnotations.openMocks(this);
+        items = new ConcurrentHashMap<>();
+        store = new Store(); // TODO
+        item = new Item(); // TODO
+        baskets = spy(new ConcurrentHashMap<>());
+        basket = new Basket(store, items); // do not make this a spy (Mockito doesn't handle records properly)
         user = new User(baskets);
-        basket = new Basket(store, items);
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
         store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().keySet()));

@@ -27,8 +27,6 @@ public class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Spy private final Collection<String> purchasesHistory = new LinkedList<>();
-    @Spy private Item item;
     @Mock private Item item2;
 
     private final Store store = mock(Store.class);
@@ -47,10 +45,16 @@ public class SubscriberTest {
     private final int itemId = 37373;
     private final String subCategory = "Gaming Consoles";
 
+    private LinkedList<String> purchaseHistory;
+    private Item item;
+
+
     @BeforeMethod
     void setUp() throws NoSuchFieldException, IllegalAccessException {
         MockitoAnnotations.openMocks(this);
-        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
+        purchaseHistory = spy(new LinkedList<>());
+        item = spy(new Item());
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchaseHistory));
 
         reset(store);
         reset(target);
@@ -326,9 +330,8 @@ public class SubscriberTest {
 
     @Test
     void getPurchaseHistory() {
-        assertEquals(0, subscriber.getPurchaseHistory().size());
-        purchasesHistory.add("milk");
-        purchasesHistory.add("cheese");
+        purchaseHistory.add("milk");
+        purchaseHistory.add("cheese");
         assertEquals(2, subscriber.getPurchaseHistory().size());
         assertTrue(subscriber.getPurchaseHistory().contains("milk"));
         assertTrue(subscriber.getPurchaseHistory().contains("cheese"));
@@ -336,12 +339,14 @@ public class SubscriberTest {
 
     @Test
     void getSalesHistoryByStore() throws NoPermissionException {
-        purchasesHistory.add("milk");
-        purchasesHistory.add("cheese");
-        when(store.getPurchaseHistory()).thenReturn(purchasesHistory);
+        purchaseHistory.add("milk");
+        purchaseHistory.add("cheese");
+        when(store.getPurchaseHistory()).thenReturn(purchaseHistory);
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
 
-        assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
+        Collection<String> salesHistoryByStore = subscriber.getSalesHistoryByStore(store);
+        System.out.println(salesHistoryByStore);
+        assertEquals(2, salesHistoryByStore.size());
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
     }

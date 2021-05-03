@@ -12,7 +12,7 @@ import static org.testng.Assert.expectThrows;
 import static org.testng.AssertJUnit.*;
 
 public class AcceptanceTestsV1 {
-    private static TradingSystemService service;
+    private TradingSystemService service;
     private String storeId1, storeId2; //stores
     private String productId1, productId2, productId3, productId4; //products
     private String admin1Id, founderStore1Id, founderStore2Id, store1Manager1Id, subs1Id, subs2Id, subs3Id, guest1Id; //users Id's

@@ -17,6 +17,7 @@ import user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.mockito.Mockito.spy;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class DiscountPolicyTest {
@@ -29,12 +30,15 @@ public class DiscountPolicyTest {
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
 
-    @Spy private Store store;
-    @Spy private Item item1, item2;
+    private Store store;
+    private Item item1, item2;
 
     @BeforeMethod
     void setUp() throws ItemException {
         MockitoAnnotations.openMocks(this);
+        store = spy(new Store());
+        item1 = spy(new Item());
+        item2 = spy(new Item());
         user = new User();
         user.makeCart(user);
         store.setObservable(new Observable());

@@ -320,7 +320,7 @@ public class StoreTest {
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110.0);
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();

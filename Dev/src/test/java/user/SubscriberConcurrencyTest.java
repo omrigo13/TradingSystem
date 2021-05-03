@@ -3,6 +3,8 @@ package user;
 import exceptions.AlreadyOwnerException;
 import exceptions.NoPermissionException;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
@@ -23,6 +25,11 @@ public class SubscriberConcurrencyTest {
     @Mock private Store store;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     @Mock private Collection<String> purchaseHistory;
+
+    @BeforeMethod
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     void testPermissionsLocks() throws InterruptedException {
