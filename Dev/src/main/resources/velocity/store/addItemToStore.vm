@@ -72,7 +72,7 @@
         </form>
     </div>
     #if($itemID)
-        <p class="good notification">good add item</p>
+        <p class="good notification">item added successfully with id $itemID</p>
     #elseif($addItemToStoreFailed)
         <p class="bad notification">bad add item</p>
     #end

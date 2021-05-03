@@ -245,7 +245,7 @@ public class TradingSystemImpl {
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         for (Item item : subscriber.getStoreItems(store))
-            itemList.add(item.getName());
+            itemList.add("store: " + storeId + ", " + item.toString());
 
         return itemList;
     }

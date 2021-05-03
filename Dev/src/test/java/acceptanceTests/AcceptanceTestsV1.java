@@ -163,13 +163,13 @@ public class AcceptanceTestsV1 {
 
     @Test
     void userNotExistLogout() throws Exception{
-        assertThrows(InvalidConnectionIdException.class, () -> service.logout("user999"));
+        assertDoesNotThrow(() -> service.logout("user999"));
     }
 
     @Test
     void alreadyLoggedOut() throws Exception{
         service.logout(subs3Id);
-        assertThrows(NotLoggedInException.class, () -> service.logout(subs3Id));
+        assertDoesNotThrow(() -> service.logout(subs3Id));
     }
 
     @Test
