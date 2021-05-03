@@ -113,19 +113,15 @@ class TradingSystemTest {
     }
 
     @Test
-    void logoutSubscriber() throws InvalidActionException {
-        when(connections.get(connectionId)).thenReturn(user);
-        when(user.getSubscriber()).thenReturn(subscriber);
+    void logoutSubscriber() {
         tradingSystem.logout(connectionId);
         verify(connections).put(keyCaptor.capture(), any(User.class));
         assertSame(connectionId, keyCaptor.getValue());
     }
 
     @Test
-    void logoutGuest() throws NotLoggedInException {
-        when(connections.get(connectionId)).thenReturn(user);
-        doThrow(new NotLoggedInException()).when(user).getSubscriber();
-        assertThrows(NotLoggedInException.class, () -> tradingSystem.logout(connectionId));
+    void logoutGuest() {
+        assertDoesNotThrow(() -> tradingSystem.logout(connectionId));
     }
 
     @Test
