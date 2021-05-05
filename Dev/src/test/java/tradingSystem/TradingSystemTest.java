@@ -113,16 +113,14 @@ public class TradingSystemTest {
     }
 
     @Test
-    void logoutSubscriber() {
+    void logoutSubscriber() throws InvalidActionException {
         tradingSystem.logout(connectionId);
         verify(connections).put(keyCaptor.capture(), any(User.class));
         assertSame(connectionId, keyCaptor.getValue());
     }
 
     @Test
-    void logoutGuest() {
-        assertDoesNotThrow(() -> tradingSystem.logout(connectionId));
-    }
+    void logoutGuest() throws InvalidActionException { tradingSystem.logout(connectionId); }
 
     @Test
     void newStore() throws InvalidActionException {
