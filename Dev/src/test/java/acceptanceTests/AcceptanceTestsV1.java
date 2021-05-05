@@ -1,20 +1,18 @@
 package acceptanceTests;
 
 import exceptions.*;
-import externalServices.DeliverySystem;
-import externalServices.PaymentSystem;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import service.TradingSystemService;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.Assert.expectThrows;
+import static org.testng.AssertJUnit.*;
 
-class AcceptanceTestsV1 {
-    private static TradingSystemService service;
+public class AcceptanceTestsV1 {
+    private TradingSystemService service;
     private String storeId1, storeId2; //stores
     private String productId1, productId2, productId3, productId4; //products
     private String admin1Id, founderStore1Id, founderStore2Id, store1Manager1Id, subs1Id, subs2Id, subs3Id, guest1Id; //users Id's
@@ -25,7 +23,7 @@ class AcceptanceTestsV1 {
     private PaymentSystemMock paymentSystem = (PaymentSystemMock) Driver.getPaymentSystem();
     private DeliverySystemMock deliverySystem = (DeliverySystemMock) Driver.getDeliverySystem();
 
-    @BeforeEach
+    @BeforeMethod
     public void setUp() throws Exception {
 
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
@@ -323,12 +321,11 @@ class AcceptanceTestsV1 {
         addToBasketUseCase(); //run use case
         service.purchaseCart(subs1Id);
         service.addItemToBasket(subs3Id, storeId1, productId1, 1);
-        Exception e = assertThrows(WrongAmountException.class, () -> service.purchaseCart(subs3Id)); //amount in store is currently 0, thus cannot make purchase
+        WrongAmountException e = expectThrows(WrongAmountException.class, () -> service.purchaseCart(subs3Id)); //amount in store is currently 0, thus cannot make purchase
+        assertEquals("there is not enough from the item", e.getMessage());
         assertFalse(paymentSystem.getPayments().keySet().contains(subs3UserName));
         assertFalse(deliverySystem.getDeliveries().keySet().contains(subs3UserName));
     }
-
-
 
     @Test
     void getPurchaseHistory() throws Exception{
@@ -357,9 +354,9 @@ class AcceptanceTestsV1 {
     void validWriteOpinionOnProduct() throws Exception{
         purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
-        assertDoesNotThrow(() -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "desc example1"));
-        assertDoesNotThrow(() -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "desc example2"));
-        assertDoesNotThrow(() -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId3, "desc example3"));
+        service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "desc example1");
+        service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "desc example2");
+        service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId3, "desc example3");
 
     }
 
@@ -590,7 +587,7 @@ class AcceptanceTestsV1 {
     @Test
     void disableManagerFromUpdateProducts() throws Exception{
         service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
-        assertDoesNotThrow(() -> service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null));
+        service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null);
         service.disableManagerFromUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
         assertThrows(Exception.class, () -> service.updateProductDetails(store1Manager1Id, storeId1, productId1, null, 10, null));
 
@@ -598,9 +595,9 @@ class AcceptanceTestsV1 {
 
     @Test
     void disableManagerFromUpdateProductsWithoutPermissionsInStore() throws Exception{
-        assertDoesNotThrow(() -> service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName));
+        service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
         assertThrows(NoPermissionException.class, () ->service.disableManagerFromUpdateProducts(founderStore2Id, storeId1, store1Manager1UserName));
-        assertDoesNotThrow(() -> service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null));
+        service.updateProductDetails(store1Manager1Id, storeId1, productId1, "newSubCateg", 2, null);
 
         //try to disable user that is not a manager in the store:
         assertThrows(SubscriberDoesNotExistException.class, () -> service.disableManagerFromUpdateProducts(founderStore1Id, storeId1, guest1UserName)); //guest1UserName in not a manager
@@ -835,6 +832,8 @@ class AcceptanceTestsV1 {
 //        assertThrows(NoPermissionException.class, () -> service.getErrorLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
     }
 
+    //TODO test spell checking
+
     @Test
     void spellCheckByKeyWordByName() throws Exception{
         //keyword by name
@@ -843,6 +842,9 @@ class AcceptanceTestsV1 {
 
         assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).size() == 2);
         assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).toString().contains("milk"));
+
+        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).size() == 1);
+        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).toString().contains("cheese"));
 
         assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).size() == 2);
         assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).toString().contains("milk"));

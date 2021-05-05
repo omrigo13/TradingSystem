@@ -3,44 +3,46 @@ package user;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.WrongAmountException;
-import exceptions.PolicyException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
-import policies.*;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+import policies.DefaultDiscountPolicy;
+import policies.DefaultPurchasePolicy;
 import store.Item;
 import store.Store;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.*;
 
-@ExtendWith(MockitoExtension.class)
-class UserTest {
+public class UserTest {
 
     private User user;
-
-    private ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
-
-    @Spy private Store store;
-    @Spy private Item item;
-    @Spy private Basket basket = new Basket(store, items);
-    @Spy private ConcurrentHashMap<Store, Basket> baskets;
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
 
-    @BeforeEach
-    void setUp() throws ItemException {
+    private ConcurrentHashMap<Store, Basket> baskets;
+    private Basket basket;
+    private Store store;
+    private ConcurrentHashMap<Item, Integer> items;
+    private Item item;
+
+    @BeforeMethod
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        items = new ConcurrentHashMap<>();
+        store = new Store(); // TODO
+        item = new Item(); // TODO
+        baskets = spy(new ConcurrentHashMap<>());
+        basket = new Basket(store, items); // do not make this a spy (Mockito doesn't handle records properly)
         user = new User(baskets);
-        basket = new Basket(store, items);
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
         store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().keySet()));
@@ -88,10 +90,10 @@ class UserTest {
 
         items.put(item, 3);
         assertEquals(1, user.getCart().size());
-        assertEquals(5, store.getItems().get(item));
+        assertEquals(5, store.getItems().get(item).intValue());
         user.purchaseCart(paymentSystem, deliverySystem);
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
-        assertEquals(2, store.getItems().get(item)); // checks that the inventory quantity updated
+        assertEquals(2, store.getItems().get(item).intValue()); // checks that the inventory quantity updated
     }
 
     @Test

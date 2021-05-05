@@ -8,21 +8,22 @@ import store.Store;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Subscriber extends User {
 
     private final int id;
     private final String userName;
     private final Set<Permission> permissions; // synchronized manually
-    private final ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
     private final Collection<String> purchaseHistory; // synchronized in constructor
-    private Collection<Notification> notifications = new LinkedList<>();
+    private final Collection<Notification> notifications = new LinkedList<>();
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
     }
 
-    Subscriber(int id, String userName, Set<Permission> permissions, ConcurrentHashMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
+    Subscriber(int id, String userName, Set<Permission> permissions, ConcurrentMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
         this.id = id;
         this.userName = userName;
         this.permissions = permissions;

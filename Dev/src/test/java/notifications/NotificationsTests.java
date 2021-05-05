@@ -1,22 +1,17 @@
 package notifications;
 
 import exceptions.ItemException;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.testng.annotations.Test;
 import store.Store;
 import user.Subscriber;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-
 public class NotificationsTests {
+
     private Store store1;
     private Subscriber subscriber1;
 
     void createUser1(){
         subscriber1 = new Subscriber(10, "user1");
-
     }
 
     void openStoreAndAddItem() throws ItemException {
@@ -48,7 +43,6 @@ public class NotificationsTests {
     void notifyPostponed(){
         //todo: test notify Postponed notifications
     }
-
 }
 
 

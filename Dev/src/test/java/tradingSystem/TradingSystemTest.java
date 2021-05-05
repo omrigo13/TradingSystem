@@ -5,13 +5,12 @@ import exceptions.InvalidActionException;
 import exceptions.InvalidConnectionIdException;
 import exceptions.InvalidStoreIdException;
 import exceptions.NotLoggedInException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 import user.*;
@@ -22,13 +21,13 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.*;
 
-@ExtendWith(MockitoExtension.class)
-class TradingSystemTest {
+public class TradingSystemTest {
 
     private TradingSystem tradingSystem;
 
@@ -50,8 +49,9 @@ class TradingSystemTest {
     private final String password = "Cash";
     private final int storeId = 984585;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws InvalidActionException {
+        MockitoAnnotations.openMocks(this);
 
         when(subscribers.get(userName)).thenReturn(subscriber);
         tradingSystem = new TradingSystemBuilder()

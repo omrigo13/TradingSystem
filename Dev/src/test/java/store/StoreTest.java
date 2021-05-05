@@ -2,11 +2,10 @@ package store;
 
 import exceptions.*;
 import notifications.Observable;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
@@ -15,21 +14,24 @@ import user.Basket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertNotEquals;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.*;
 
-@ExtendWith(MockitoExtension.class)
 public class StoreTest {
 
     @Mock private TradingSystem tradingSystem;
     private Store store;
     private Basket basket;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
         store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null, new Observable());
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
         basket = new Basket(new Store(), items);
     }
+
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
@@ -289,7 +291,7 @@ public class StoreTest {
 
         assertThrows(WrongAmountException.class,() -> store.changeItem(cucumberId,null,-5,10.0));
         store.changeItem(cucumberId," ",30,null);
-        assertEquals(store.getItems().get(store.searchItemById(cucumberId)),30);
+        assertEquals(store.getItems().get(store.searchItemById(cucumberId)).intValue(),30);
 
         assertThrows(WrongPriceException.class,()-> store.changeItem(tomato2Id,"hi",null,-4.0));
         assertNotEquals(store.searchItemById(tomatoId).getSubCategory(),"hi");
@@ -298,7 +300,7 @@ public class StoreTest {
 
         store.changeItem(tomatoId," ",10,13.0);
         assertEquals(store.searchItemById(tomatoId).getPrice(),13.0);
-        assertEquals(store.getItems().get(store.searchItemById(tomatoId)),10);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(),10);
 
         store.changeItem(cucumberId,"oldItem",null,8.9);
         assertEquals(store.searchItemById(cucumberId).getPrice(),8.9);
@@ -316,10 +318,10 @@ public class StoreTest {
         basket.addItem(store.searchItemById(2), 2);
         StringBuilder details = new StringBuilder();
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
-        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 5);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110);
-        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 3);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110.0);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
         store.searchItemById(carrotId).unlock();
@@ -360,8 +362,8 @@ public class StoreTest {
         items.put(store.searchItemById(cucumberID), 2);
         items.put(store.searchItemById(carrotId), 8);
         store.rollBack(items);
-        assertEquals(store.getItems().get(store.searchItemById(tomatoId)), 7);
-        assertEquals(store.getItems().get(store.searchItemById(carrotId)), 16);
+        assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 7);
+        assertEquals(store.getItems().get(store.searchItemById(carrotId)).intValue(), 16);
         assertFalse(store.searchItemById(cucumberID).isLocked());
         assertFalse(store.searchItemById(carrotId).isLocked());
     }

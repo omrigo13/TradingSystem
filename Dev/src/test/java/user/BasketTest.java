@@ -1,19 +1,18 @@
 package user;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.testng.AssertJUnit.assertEquals;
 
-@ExtendWith(MockitoExtension.class)
-class BasketTest {
+
+public class BasketTest {
 
     private Basket basket;
 
@@ -25,8 +24,9 @@ class BasketTest {
     private final int quantity = 3;
     private final int differentQuantity = 5;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() {
+        MockitoAnnotations.openMocks(this);
         items.clear();
         items.put(item, quantity);
         basket = new Basket(store, items);
@@ -36,13 +36,13 @@ class BasketTest {
     void addItem_notInBasket() {
         items.clear();
         basket.addItem(item, quantity);
-        assertEquals(quantity, items.get(item));
+        assertEquals(quantity, items.get(item).intValue());
     }
 
     @Test
     void addItem_alreadyInBasket() {
         basket.addItem(item, differentQuantity);
-        assertEquals(quantity + differentQuantity, items.get(item));
+        assertEquals(quantity + differentQuantity, items.get(item).intValue());
     }
 
     @Test
@@ -54,13 +54,13 @@ class BasketTest {
     void setQuantity_notInBasket() {
         items.clear();
         basket.setQuantity(item, differentQuantity);
-        assertEquals(differentQuantity, items.get(item));
+        assertEquals(differentQuantity, items.get(item).intValue());
     }
 
     @Test
     void setQuantity_alreadyInBasket() {
         basket.setQuantity(item, differentQuantity);
-        assertEquals(differentQuantity, items.get(item));
+        assertEquals(differentQuantity, items.get(item).intValue());
     }
 
     @Test

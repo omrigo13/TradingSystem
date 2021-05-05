@@ -1,13 +1,14 @@
 package acceptanceTests;
 
 import exceptions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import service.TradingSystemService;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.*;
 
 public class AcceptanceTestsV2 {
     private static TradingSystemService service;
@@ -18,7 +19,7 @@ public class AcceptanceTestsV2 {
     private String store1Manager1UserName = "Store1Manager1UserName", store2Manager1UserName = "Store2Manager1UserName", store1FounderUserName = "store1FounderUserName", store2FounderUserName = "store2FounderUserName", subs1UserName = "subs1UserName";
     private int quantityPolicy, basketPolicy, timePolicy, andPolicy, quantityDiscount1, quantityDiscount2, plusDiscount, maxDiscount;
 
-    @BeforeEach
+    @BeforeMethod
     void setUp() throws InvalidActionException {
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
         admin1Id = service.connect();
@@ -88,33 +89,33 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void purchaseEmptyCart() throws InvalidActionException {
+    void purchaseEmptyCart() throws Exception {
         setUpStore1Founder();
         assertEquals(0, service.showCart(founderStore1Id).size());
-        assertDoesNotThrow(() -> service.purchaseCart(founderStore1Id));
+        service.purchaseCart(founderStore1Id);
         assertEquals(0, service.getPurchaseHistory(founderStore1Id).size());
     }
 
 
     @Test
-    void purchaseOneItemFromOneStore() throws InvalidActionException {
+    void purchaseOneItemFromOneStore() throws Exception {
         setUpStore1();
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         assertEquals(1, service.showCart(founderStore1Id).size());
-        assertDoesNotThrow(() -> service.purchaseCart(founderStore1Id));
+        service.purchaseCart(founderStore1Id);
         assertEquals(0, service.showCart(founderStore1Id).size());
         assertEquals(1, service.getPurchaseHistory(founderStore1Id).size());
         assertTrue(service.getPurchaseHistory(founderStore1Id).toString().contains("13"));
     }
 
     @Test
-    void purchaseTwoItemsFromDifferentTwoStores() throws InvalidActionException {
+    void purchaseTwoItemsFromDifferentTwoStores() throws Exception {
         setUpStore1();
         setUpStore2();
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         service.addItemToBasket(founderStore1Id, storeId2, baguette, 3);
         assertEquals(2, service.showCart(founderStore1Id).size());
-        assertDoesNotThrow(() -> service.purchaseCart(founderStore1Id));
+        service.purchaseCart(founderStore1Id);
         assertEquals(0, service.showCart(founderStore1Id).size());
         assertEquals(1, service.getPurchaseHistory(founderStore1Id).size());
         assertTrue(service.getPurchaseHistory(founderStore1Id).toString().contains("13") &&
@@ -129,8 +130,8 @@ public class AcceptanceTestsV2 {
         service.purchaseCart(founderStore1Id);
 
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
-        assertDoesNotThrow(() -> service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName));
-        assertDoesNotThrow(() -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        service.getSalesHistoryByStore(store1Manager1Id, storeId1);
         assertEquals(1, service.getSalesHistoryByStore(store1Manager1Id, storeId1).size());
         assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).toString().contains("milk"));
         assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).toString().contains("cheese"));
@@ -155,8 +156,8 @@ public class AcceptanceTestsV2 {
         setUpStore1();
         setUpStore2();
 
-        assertDoesNotThrow(() -> service.getStorePolicies(admin1Id, storeId1));
-        assertDoesNotThrow(() -> service.getStorePolicies(admin1Id, storeId2));
+        service.getStorePolicies(admin1Id, storeId1);
+        service.getStorePolicies(admin1Id, storeId2);
 
         Collection<String> store1Items = store1Items();
 
@@ -168,19 +169,19 @@ public class AcceptanceTestsV2 {
         service.orPolicy(admin1Id, storeId1, quantityPolicy, timePolicy);
         service.xorPolicy(admin1Id, storeId1, basketPolicy, timePolicy);
 
-        assertDoesNotThrow(() -> service.assignStorePurchasePolicy(andPolicy, admin1Id, storeId1));
+        service.assignStorePurchasePolicy(andPolicy, admin1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removePolicy(admin1Id, storeId1, quantityPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(admin1Id, storeId1, basketPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(admin1Id, storeId1, andPolicy));
+        service.removePolicy(admin1Id, storeId1, quantityPolicy);
+        service.removePolicy(admin1Id, storeId1, basketPolicy);
+        service.removePolicy(admin1Id, storeId1, andPolicy);
     }
 
     @Test
     void validAllowToEditDiscountPoliciesByAdmin() throws InvalidActionException {
         validAllowToEditPurchasesPoliciesByAdmin();
 
-        assertDoesNotThrow(() -> service.getStoreDiscounts(admin1Id, storeId1));
-        assertDoesNotThrow(() -> service.getStoreDiscounts(admin1Id, storeId2));
+        service.getStoreDiscounts(admin1Id, storeId1);
+        service.getStoreDiscounts(admin1Id, storeId2);
 
         Collection<String> store1Items = store1Items();
 
@@ -190,19 +191,19 @@ public class AcceptanceTestsV2 {
         maxDiscount = service.makeMaxDiscount(admin1Id, storeId1, quantityDiscount1, quantityDiscount2);
         plusDiscount = service.makePlusDiscount(admin1Id, storeId1, quantityDiscount1, maxDiscount);
 
-        assertDoesNotThrow(() -> service.assignStoreDiscountPolicy(plusDiscount, admin1Id, storeId1));
+        service.assignStoreDiscountPolicy(plusDiscount, admin1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removeDiscount(admin1Id, storeId1, quantityDiscount1));
-        assertDoesNotThrow(() -> service.removeDiscount(admin1Id, storeId1, quantityDiscount2));
-        assertDoesNotThrow(() -> service.removeDiscount(admin1Id, storeId1, maxDiscount));
-        assertDoesNotThrow(() -> service.removeDiscount(admin1Id, storeId1, plusDiscount));
+        service.removeDiscount(admin1Id, storeId1, quantityDiscount1);
+        service.removeDiscount(admin1Id, storeId1, quantityDiscount2);
+        service.removeDiscount(admin1Id, storeId1, maxDiscount);
+        service.removeDiscount(admin1Id, storeId1, plusDiscount);
     }
 
     @Test
     void validAllowToEditPurchasePoliciesByStoreOwner() throws InvalidActionException {
         setUpStore1();
 
-        assertDoesNotThrow(() -> service.getStorePolicies(founderStore1Id, storeId1));
+        service.getStorePolicies(founderStore1Id, storeId1);
 
         Collection<String> store1Items = store1Items();
 
@@ -214,18 +215,18 @@ public class AcceptanceTestsV2 {
         service.orPolicy(founderStore1Id, storeId1, quantityPolicy, timePolicy);
         service.xorPolicy(founderStore1Id, storeId1, basketPolicy, timePolicy);
 
-        assertDoesNotThrow(() -> service.assignStorePurchasePolicy(andPolicy, founderStore1Id, storeId1));
+        service.assignStorePurchasePolicy(andPolicy, founderStore1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removePolicy(founderStore1Id, storeId1, quantityPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(founderStore1Id, storeId1, basketPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(founderStore1Id, storeId1, andPolicy));
+        service.removePolicy(founderStore1Id, storeId1, quantityPolicy);
+        service.removePolicy(founderStore1Id, storeId1, basketPolicy);
+        service.removePolicy(founderStore1Id, storeId1, andPolicy);
     }
 
     @Test
     void validAllowToEditDiscountPoliciesByStoreOwner() throws InvalidActionException {
         validAllowToEditPurchasePoliciesByStoreOwner();
 
-        assertDoesNotThrow(() -> service.getStoreDiscounts(founderStore1Id, storeId1));
+        service.getStoreDiscounts(founderStore1Id, storeId1);
 
         Collection<String> store1Items = store1Items();
 
@@ -235,12 +236,12 @@ public class AcceptanceTestsV2 {
         maxDiscount = service.makeMaxDiscount(founderStore1Id, storeId1, quantityDiscount1, quantityDiscount2);
         plusDiscount = service.makePlusDiscount(founderStore1Id, storeId1, quantityDiscount1, maxDiscount);
 
-        assertDoesNotThrow(() -> service.assignStoreDiscountPolicy(plusDiscount, founderStore1Id, storeId1));
+        service.assignStoreDiscountPolicy(plusDiscount, founderStore1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removeDiscount(founderStore1Id, storeId1, quantityDiscount1));
-        assertDoesNotThrow(() -> service.removeDiscount(founderStore1Id, storeId1, quantityDiscount2));
-        assertDoesNotThrow(() -> service.removeDiscount(founderStore1Id, storeId1, maxDiscount));
-        assertDoesNotThrow(() -> service.removeDiscount(founderStore1Id, storeId1, plusDiscount));
+        service.removeDiscount(founderStore1Id, storeId1, quantityDiscount1);
+        service.removeDiscount(founderStore1Id, storeId1, quantityDiscount2);
+        service.removeDiscount(founderStore1Id, storeId1, maxDiscount);
+        service.removeDiscount(founderStore1Id, storeId1, plusDiscount);
     }
 
     @Test
@@ -248,7 +249,7 @@ public class AcceptanceTestsV2 {
         validAllowToEditDiscountPoliciesByStoreOwner();
 
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
-        assertDoesNotThrow(() -> service.getStorePolicies(store1Manager1Id, storeId1));
+        service.getStorePolicies(store1Manager1Id, storeId1);
 
         Collection<String> store1Items = store1Items();
 
@@ -260,11 +261,11 @@ public class AcceptanceTestsV2 {
         service.orPolicy(store1Manager1Id, storeId1, quantityPolicy, timePolicy);
         service.xorPolicy(store1Manager1Id, storeId1, basketPolicy, timePolicy);
 
-        assertDoesNotThrow(() -> service.assignStorePurchasePolicy(andPolicy, store1Manager1Id, storeId1));
+        service.assignStorePurchasePolicy(andPolicy, store1Manager1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removePolicy(store1Manager1Id, storeId1, quantityPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(store1Manager1Id, storeId1, basketPolicy));
-        assertDoesNotThrow(() -> service.removePolicy(store1Manager1Id, storeId1, andPolicy));
+        service.removePolicy(store1Manager1Id, storeId1, quantityPolicy);
+        service.removePolicy(store1Manager1Id, storeId1, basketPolicy);
+        service.removePolicy(store1Manager1Id, storeId1, andPolicy);
     }
 
     @Test
@@ -272,7 +273,7 @@ public class AcceptanceTestsV2 {
         validAllowToEditDiscountPoliciesByStoreOwner();
 
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
-        assertDoesNotThrow(() -> service.getStoreDiscounts(store1Manager1Id, storeId1));
+        service.getStoreDiscounts(store1Manager1Id, storeId1);
 
         Collection<String> store1Items = store1Items();
 
@@ -282,12 +283,12 @@ public class AcceptanceTestsV2 {
         maxDiscount = service.makeMaxDiscount(store1Manager1Id, storeId1, quantityDiscount1, quantityDiscount2);
         plusDiscount = service.makePlusDiscount(store1Manager1Id, storeId1, quantityDiscount1, maxDiscount);
 
-        assertDoesNotThrow(() -> service.assignStoreDiscountPolicy(plusDiscount, store1Manager1Id, storeId1));
+        service.assignStoreDiscountPolicy(plusDiscount, store1Manager1Id, storeId1);
 
-        assertDoesNotThrow(() -> service.removeDiscount(store1Manager1Id, storeId1, quantityDiscount1));
-        assertDoesNotThrow(() -> service.removeDiscount(store1Manager1Id, storeId1, quantityDiscount2));
-        assertDoesNotThrow(() -> service.removeDiscount(store1Manager1Id, storeId1, maxDiscount));
-        assertDoesNotThrow(() -> service.removeDiscount(store1Manager1Id, storeId1, plusDiscount));
+        service.removeDiscount(store1Manager1Id, storeId1, quantityDiscount1);
+        service.removeDiscount(store1Manager1Id, storeId1, quantityDiscount2);
+        service.removeDiscount(store1Manager1Id, storeId1, maxDiscount);
+        service.removeDiscount(store1Manager1Id, storeId1, plusDiscount);
     }
 
     @Test
@@ -671,7 +672,7 @@ public class AcceptanceTestsV2 {
         service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
         service.appointStoreOwner(founderStore2Id, store1Manager1UserName, storeId1);
         assertThrows(NoPermissionException.class, () -> service.removeOwner(founderStore1Id,storeId1, store1Manager1UserName));
-        assertDoesNotThrow(() -> service.removeOwner(founderStore2Id,storeId1, store1Manager1UserName));
+        service.removeOwner(founderStore2Id,storeId1, store1Manager1UserName);
     }
 
     @Test

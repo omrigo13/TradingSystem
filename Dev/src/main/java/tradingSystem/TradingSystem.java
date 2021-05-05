@@ -109,13 +109,15 @@ public class TradingSystem {
 
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
-        User subscriber = getSubscriberByUserName(userName);
+        Subscriber subscriber = getSubscriberByUserName(userName);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
-        ((Subscriber)subscriber).checkPendingNotifications(); //todo: what to do with the pending notifications?
+        subscriber.checkPendingNotifications(); //todo: what to do with the pending notifications?
     }
 
-    public void logout(String connectionId) {
+    public void logout(String connectionId) throws InvalidActionException {
+
+        getUserByConnectionId(connectionId).getSubscriber(); // this is here in order to throw exceptions
         User guest = new User();
         connections.put(connectionId, guest);
     }

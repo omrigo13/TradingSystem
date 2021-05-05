@@ -1,12 +1,12 @@
 package user;
 
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.Test;
 import store.Store;
 
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.Mockito.mock;
+import static org.testng.AssertJUnit.assertNotSame;
 
-class PermissionTest {
+public class PermissionTest {
 
     private final Store store = mock(Store.class);
     private final StorePermission permission = ManagerPermission.getInstance(store);

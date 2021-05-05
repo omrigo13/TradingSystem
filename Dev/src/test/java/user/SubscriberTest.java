@@ -1,13 +1,11 @@
 package user;
 
 import exceptions.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 
@@ -15,11 +13,12 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertThrows;
+import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.assertTrue;
 
-@ExtendWith(MockitoExtension.class)
-class SubscriberTest {
+public class SubscriberTest {
 
     private Subscriber subscriber;
 
@@ -28,8 +27,6 @@ class SubscriberTest {
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
-    @Spy private final Collection<String> purchasesHistory = new LinkedList<>();
-    @Spy private Item item;
     @Mock private Item item2;
 
     private final Store store = mock(Store.class);
@@ -48,9 +45,16 @@ class SubscriberTest {
     private final int itemId = 37373;
     private final String subCategory = "Gaming Consoles";
 
-    @BeforeEach
+    private LinkedList<String> purchaseHistory;
+    private Item item;
+
+
+    @BeforeMethod
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchasesHistory));
+        MockitoAnnotations.openMocks(this);
+        purchaseHistory = spy(new LinkedList<>());
+        item = spy(new Item());
+        subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchaseHistory));
 
         reset(store);
         reset(target);
@@ -307,13 +311,13 @@ class SubscriberTest {
     }
 
     @Test
-    void writeOpnionOnProductBadReviewDetails() {
+    void writeOpinionOnProductBadReviewDetails() {
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
         assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
     }
 
     @Test
-    void writeOpnionOnProductNotPurchasedItem() throws ItemException {
+    void writeOpinionOnProductNotPurchasedItem() throws ItemException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
         when(store.searchItemById(0)).thenReturn(item2);
@@ -326,9 +330,8 @@ class SubscriberTest {
 
     @Test
     void getPurchaseHistory() {
-        assertEquals(0, subscriber.getPurchaseHistory().size());
-        purchasesHistory.add("milk");
-        purchasesHistory.add("cheese");
+        purchaseHistory.add("milk");
+        purchaseHistory.add("cheese");
         assertEquals(2, subscriber.getPurchaseHistory().size());
         assertTrue(subscriber.getPurchaseHistory().contains("milk"));
         assertTrue(subscriber.getPurchaseHistory().contains("cheese"));
@@ -336,18 +339,20 @@ class SubscriberTest {
 
     @Test
     void getSalesHistoryByStore() throws NoPermissionException {
-        purchasesHistory.add("milk");
-        purchasesHistory.add("cheese");
-        when(store.getPurchaseHistory()).thenReturn(purchasesHistory);
+        purchaseHistory.add("milk");
+        purchaseHistory.add("cheese");
+        when(store.getPurchaseHistory()).thenReturn(purchaseHistory);
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
 
-        assertEquals(2, subscriber.getSalesHistoryByStore(store).size());
+        Collection<String> salesHistoryByStore = subscriber.getSalesHistoryByStore(store);
+        System.out.println(salesHistoryByStore);
+        assertEquals(2, salesHistoryByStore.size());
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
     }
 
     @Test
-    void getSalesHistoryByStoreNoPremission() {
+    void getSalesHistoryByStoreNoPermission() {
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
     }
