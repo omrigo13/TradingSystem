@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.mockito.Mockito.*;
 import static org.testng.AssertJUnit.assertEquals;
 
-public class StressTests {
+public class CreateManyStoresWithTheSameNameStressTest {
 
     private TradingSystem tradingSystem;
 
@@ -56,7 +56,7 @@ public class StressTests {
     }
 
     @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 1000)
-    public void createTwoStoresWithTheSameName() throws InvalidActionException {
+    public void test() throws InvalidActionException {
 
         // create the store
         try {
