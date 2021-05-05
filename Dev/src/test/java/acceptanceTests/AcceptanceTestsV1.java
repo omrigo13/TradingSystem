@@ -837,16 +837,16 @@ public class AcceptanceTestsV1 {
     @Test
     void spellCheckByKeyWordByName() throws Exception{
         //keyword by name
-        assertTrue(service.getItems("milkk", null, null, null, null, null, null, null).size() == 2);
+        assertEquals(2, service.getItems("milkk", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("milkk", null, null, null, null, null, null, null).toString().contains("milk"));
 
-        assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).size() == 2);
+        assertEquals(2, service.getItems("mikl", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).toString().contains("milk"));
 
-        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).size() == 1);
+        assertEquals(1, service.getItems("chease", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("chease", null, null, null, null, null, null, null).toString().contains("cheese"));
 
-        assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).size() == 2);
+        assertEquals(2, service.getItems("Milk", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).toString().contains("milk"));
 
     }
@@ -854,10 +854,10 @@ public class AcceptanceTestsV1 {
     @Test
     void spellCheckByKeyWordByCategory() throws Exception{
         //keyword by name
-        assertTrue(service.getItems("DairyProduct", null, null, null, null, null, null, null).size() == 3);
+        assertEquals(3, service.getItems("DairyProduct", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("dairyproduct", null, null, null, null, null, null, null).toString().contains("milk"));
 
-        assertTrue(service.getItems("braed", null, null, null, null, null, null, null).size() == 1);
+        assertEquals(1, service.getItems("braed", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("braed", null, null, null, null, null, null, null).toString().contains("baguette"));
     }
 

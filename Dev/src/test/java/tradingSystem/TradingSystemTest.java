@@ -41,7 +41,6 @@ public class TradingSystemTest {
     @Mock private Store store;
     @Mock private Item item;
 
-    @Captor ArgumentCaptor<String> keyCaptor;
     @Captor ArgumentCaptor<Store> storeCaptor;
 
     private final String connectionId = "9034580392580932458093248590324850932485";
@@ -54,14 +53,14 @@ public class TradingSystemTest {
         MockitoAnnotations.openMocks(this);
 
         when(subscribers.get(userName)).thenReturn(subscriber);
-        tradingSystem = new TradingSystemBuilder()
+        tradingSystem = spy(new TradingSystemBuilder()
                 .setUserName(userName)
                 .setPassword(password)
                 .setSubscribers(subscribers)
                 .setConnections(connections)
                 .setStores(stores)
                 .setAuth(auth)
-                .build();
+                .build());
         reset(subscribers);
     }
 
@@ -114,13 +113,18 @@ public class TradingSystemTest {
 
     @Test
     void logoutSubscriber() throws InvalidActionException {
+        doReturn(user).when(tradingSystem).getUserByConnectionId(connectionId);
+        doReturn(subscriber).when(user).getSubscriber();
         tradingSystem.logout(connectionId);
-        verify(connections).put(keyCaptor.capture(), any(User.class));
-        assertSame(connectionId, keyCaptor.getValue());
+        verify(connections).put(eq(connectionId), any(User.class));
     }
 
     @Test
-    void logoutGuest() throws InvalidActionException { tradingSystem.logout(connectionId); }
+    void logoutGuest() throws InvalidActionException {
+        doReturn(user).when(tradingSystem).getUserByConnectionId(connectionId);
+        doThrow(NotLoggedInException.class).when(user).getSubscriber();
+        assertThrows(NotLoggedInException.class, () -> tradingSystem.logout(connectionId));
+    }
 
     @Test
     void newStore() throws InvalidActionException {

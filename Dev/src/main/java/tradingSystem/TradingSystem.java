@@ -122,19 +122,15 @@ public class TradingSystem {
         connections.put(connectionId, guest);
     }
 
-    public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
+    synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
 
-        int id = storeIdCounter.getAndIncrement();
-
-        // create the new store
-
-        Store store = new Store(id, storeName, "description", null, null, new Observable());
-
-        for (Store s: stores.values()) {
+        for (Store s: stores.values())
             if(storeName.equals(s.getName()))
                 throw new StoreAlreadyExistsException();
-        }
 
+        // create the new store
+        int id = storeIdCounter.getAndIncrement();
+        Store store = new Store(id, storeName, "description", null, null, new Observable());
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);
