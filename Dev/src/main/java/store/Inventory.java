@@ -23,7 +23,7 @@ public class Inventory {
 
     public Inventory() {
 //        this.tradingSystem = tradingSystem;
-        this.items = Collections.synchronizedMap(new ConcurrentHashMap<>());
+        this.items = new ConcurrentHashMap<>();
     }
 //    /**
 //     * this adds a new item and it's amount to the inventory os a store

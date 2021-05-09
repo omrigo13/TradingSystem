@@ -2,60 +2,61 @@ package user;
 
 import exceptions.AlreadyManagerException;
 import exceptions.NoPermissionException;
-import exceptions.WrongAmountException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import store.Item;
 import store.Store;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Mockito.*;
-import static org.testng.AssertJUnit.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.testng.AssertJUnit.assertFalse;
 
 public class GiveManagerPermissionByOtherOwners {
 
-    private Subscriber source, target;
+    private Subscriber source1, source2, target;
 
-    @Mock private Store store;
+    private final Store store = mock(Store.class);
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
-    private final AtomicInteger permissionSuccessful = new AtomicInteger();
+    private final AtomicInteger trialNumber = new AtomicInteger();
 
-    @Mock private Set<Permission> permissions;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     @Mock private LinkedList<String> purchaseHistory;
 
     @BeforeClass
     void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        source = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchaseHistory));
-        target = spy(new Subscriber(2, "Johnny2", permissions, itemsPurchased, purchaseHistory));
-        when(source.havePermission(ownerPermission)).thenReturn(true);
-        source.addOwnerPermission(store);
+        Set<Permission> targetPermissions = new HashSet<>();
+        Set<Permission> source1Permissions = new HashSet<>();
+        Set<Permission> source2Permissions = new HashSet<>();
+        source1Permissions.add(ownerPermission);
+        source2Permissions.add(ownerPermission);
+        source1 = spy(new Subscriber(1, "Johnny", source1Permissions, itemsPurchased, purchaseHistory));
+        source2 = spy(new Subscriber(2, "Johnny2", source2Permissions, itemsPurchased, purchaseHistory));
+        target = spy(new Subscriber(3, "Johnny3", targetPermissions, itemsPurchased, purchaseHistory));
     }
 
-    @AfterClass
-    public void tearDown() {
-        // the number of successfully add manager permission should be exactly 1 for each 4 trials
-        assertEquals(25, (permissionSuccessful.get() / 4));
-    }
-
-    @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 1000)
+    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 10000)
     public void test() throws NoPermissionException {
         try {
-            source.addManagerPermission(target, store);
-            if(permissionSuccessful.get() % 4 == 0)
-                source.removeManagerPermission(target, store);
-            permissionSuccessful.getAndIncrement();
+            if(trialNumber.getAndIncrement() % 2 == 0) {
+                source1.addManagerPermission(target, store);
+                assertFalse(source2.havePermission(AppointerPermission.getInstance(target, store)));
+                source1.removeManagerPermission(target, store);
+            }
+            else {
+                source2.addManagerPermission(target, store);
+                assertFalse(source1.havePermission(AppointerPermission.getInstance(target, store)));
+                source2.removeManagerPermission(target, store);
+            }
         }
         catch (AlreadyManagerException e) {
             // trying to give manager permission together to the same target subscriber
