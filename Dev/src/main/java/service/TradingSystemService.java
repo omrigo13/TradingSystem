@@ -1,6 +1,7 @@
 package service;
 
 import exceptions.InvalidActionException;
+import exceptions.InvalidStoreIdException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -249,4 +250,10 @@ public interface TradingSystemService {
        every string element represents an error.
        precondition: invoker has the permissions to get the info - only system manager. */
     Collection<String> getErrorLog(String userID) throws InvalidActionException;
+
+    /*
+    returns true if set successfully. else, returns false.
+     */
+    void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException;
+
 }

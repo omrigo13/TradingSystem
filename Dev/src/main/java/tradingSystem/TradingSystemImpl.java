@@ -1,6 +1,7 @@
 package tradingSystem;
 
 import exceptions.InvalidActionException;
+import exceptions.InvalidStoreIdException;
 import store.Item;
 import store.Store;
 import user.*;
@@ -398,4 +399,11 @@ public class TradingSystemImpl {
         return null;
     }
 
+    public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        if(status == true)
+            store.setActive();
+        else
+            store.setNotActive();
+    }
 }

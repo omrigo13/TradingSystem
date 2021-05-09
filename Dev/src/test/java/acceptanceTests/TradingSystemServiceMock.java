@@ -1,5 +1,6 @@
 package acceptanceTests;
 
+import exceptions.InvalidStoreIdException;
 import service.TradingSystemService;
 
 import java.util.Collection;
@@ -238,5 +239,10 @@ public class TradingSystemServiceMock implements TradingSystemService {
     @Override
     public Collection<String> getErrorLog(String userID) {
         return null;
+    }
+
+    @Override
+    public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
+
     }
 }

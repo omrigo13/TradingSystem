@@ -2,6 +2,7 @@ package service;
 
 import Logger.EventLog;
 import exceptions.InvalidActionException;
+import exceptions.InvalidStoreIdException;
 import org.apache.log4j.PropertyConfigurator;
 import tradingSystem.TradingSystemImpl;
 
@@ -332,5 +333,11 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getErrorLog(String userID) {
         eventLog.writeToLogger("Get error log");
         return tradingSystemImpl.getErrorLog(userID);
+    }
+
+    @Override
+    public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
+        eventLog.writeToLogger("Set store with id "+storeId+" status: "+status);
+        tradingSystemImpl.setStoreStatus(storeId, status);
     }
 }

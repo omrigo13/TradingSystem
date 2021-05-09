@@ -18,6 +18,7 @@ public class Subscriber extends User {
     private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
     private final Collection<String> purchaseHistory; // synchronized in constructor
     private final Collection<Notification> notifications = new LinkedList<>();
+    private boolean isLoggedIn = false;
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -413,7 +414,10 @@ public class Subscriber extends User {
 //    }
 
     public Notification notifyNotification(Notification notification){
-        //todo: implement
+        this.notifications.add(notification);
+        if(isLoggedIn == true){ //todo how to present the notification?
+            notification.setShown(true);
+        }
         return notification;
     }
 
@@ -426,5 +430,17 @@ public class Subscriber extends User {
             }
         }
         return collection;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean loggedIn) {
+        isLoggedIn = loggedIn;
+    }
+
+    public Collection<Notification> getNotifications() {
+        return notifications;
     }
 }

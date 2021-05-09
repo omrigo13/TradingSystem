@@ -2,6 +2,8 @@ package notifications;
 
 import review.Review;
 import store.Item;
+import store.Store;
+import user.Basket;
 import user.Subscriber;
 import user.User;
 
@@ -21,16 +23,21 @@ public class Observable {
     }
 
     //notifies store owner upon purchase
-    public void notifyPurchase(User buyer, Map<Item, Integer> basket){
-        PurchaseNotification notification = new PurchaseNotification(buyer, basket);
+    public void notifyPurchase(Store store, User buyer, Map<Item, Integer> basket){
+        Map<Item, Integer> newMap = new HashMap<>();
+        for (Item i:basket.keySet()) {
+            newMap.put(i, basket.get(i));
+        }
+
+        PurchaseNotification notification = new PurchaseNotification(store, buyer, newMap);
         for (Subscriber s: observers) {
             s.notifyNotification(notification);
         }
     }
 
     //notifies store owner store status change (active/not active)
-    public void notifyStoreStatus(boolean isActive){
-        StoreStatusNotification notification = new StoreStatusNotification(isActive);
+    public void notifyStoreStatus(String storeId, boolean isActive){
+        StoreStatusNotification notification = new StoreStatusNotification(storeId, isActive);
         for (Subscriber s: observers) {
             s.notifyNotification(notification);
         }
