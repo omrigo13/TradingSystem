@@ -31,4 +31,12 @@ public class MessageNotification extends Notification{
     public void notifyNotification() {
 
     }
+
+    @Override
+    public String toString() {
+        return "MessageNotification{" +
+                "sender=" + sender +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -13,4 +13,11 @@ public abstract class Notification {
     }
 
     public abstract void notifyNotification();
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "isShown=" + isShown +
+                '}';
+    }
 }

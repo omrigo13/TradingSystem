@@ -112,12 +112,13 @@ public class TradingSystem {
         Subscriber subscriber = getSubscriberByUserName(userName);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
+        subscriber.setLoggedIn(true);
         subscriber.checkPendingNotifications(); //todo: what to do with the pending notifications?
     }
 
     public void logout(String connectionId) throws InvalidActionException {
 
-        getUserByConnectionId(connectionId).getSubscriber(); // this is here in order to throw exceptions
+        getUserByConnectionId(connectionId).getSubscriber().setLoggedIn(false); // this is here in order to throw exceptions
         User guest = new User();
         connections.put(connectionId, guest);
     }

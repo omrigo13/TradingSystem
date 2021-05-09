@@ -1,6 +1,7 @@
 package acceptanceTests;
 
 import exceptions.InvalidActionException;
+import exceptions.InvalidStoreIdException;
 import service.TradingSystemService;
 
 import java.io.IOException;
@@ -319,5 +320,10 @@ public class ServiceProxy implements TradingSystemService {
         if(real != null)
             return real.getErrorLog(userID);
         return null;
+    }
+
+    @Override
+    public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
+
     }
 }
