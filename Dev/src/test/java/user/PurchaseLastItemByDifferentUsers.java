@@ -1,19 +1,27 @@
 package user;
 
-import exceptions.*;
+import exceptions.ItemException;
+import exceptions.PolicyException;
+import exceptions.WrongAmountException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
-import org.mockito.*;
-import org.testng.annotations.*;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
-import store.*;
+import store.Item;
+import store.Store;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
 
@@ -21,10 +29,10 @@ public class PurchaseLastItemByDifferentUsers {
 
     private final ConcurrentHashMap<Store, Basket> baskets = new ConcurrentHashMap<>();
     private final User user1 = new User(baskets), user2 = new User(baskets);
-    private final ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Item, Integer> basketItems = new ConcurrentHashMap<>();
     private final AtomicInteger trialNumber = new AtomicInteger();
     private final AtomicInteger itemsBoughtFromStore = new AtomicInteger();
-    private final AtomicInteger itemsAddedToStore = new AtomicInteger(1);
+    private final AtomicInteger itemsAddedToStore = new AtomicInteger();
 
     int itemID;
     Item item;
@@ -35,7 +43,8 @@ public class PurchaseLastItemByDifferentUsers {
     private final Observable observable = mock(Observable.class);
 
     private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
-    private final Basket basket = new Basket(store, items);
+    private final Map<Item, Integer> storeItems = store.getItems();
+    private final Basket basket = new Basket(store, basketItems);
 
     public PurchaseLastItemByDifferentUsers() throws ItemException {
     }
@@ -43,9 +52,9 @@ public class PurchaseLastItemByDifferentUsers {
     @BeforeClass
     void setUp() throws PolicyException, ItemException {
         MockitoAnnotations.openMocks(this);
-        itemID = store.addItem("a", 5.0, "cat", "sub", 1);
+        itemID = store.addItem("a", 5.0, "cat", "sub", 0);
         item = store.searchItemById(itemID);
-        items.put(store.searchItemById(itemID), 1);
+        basketItems.put(store.searchItemById(itemID), 1);
         baskets.put(store, basket);
 
         when(purchasePolicy.isValidPurchase(basket)).thenReturn(true);
@@ -53,23 +62,27 @@ public class PurchaseLastItemByDifferentUsers {
 
     @AfterClass
     public void tearDown() {
-        assertEquals(itemsBoughtFromStore.get(), itemsAddedToStore.get() - 1);
+        System.out.println("Successful purchases: " + itemsBoughtFromStore.get());
+        assertEquals(itemsAddedToStore.get(), itemsBoughtFromStore.get());
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 1000)
-    public void test() throws Exception{
+    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 10000)
+    public void test() throws Exception {
         try {
-            User user = trialNumber.getAndIncrement() % 2 == 0 ? user1 : user2;
-            store.changeItem(itemID, null, 1, null);
+            int trialNumber = this.trialNumber.getAndIncrement();
+            User user = trialNumber % 2 == 0 ? user1 : user2;
+            if (trialNumber % 2 == 0) {
+                //noinspection ConstantConditions
+                int currentQuantity = storeItems.compute(item, (k, v) -> v + 1);
+                itemsAddedToStore.getAndIncrement();
+                assertTrue(currentQuantity > 0);
+            }
+
             user.purchaseCart(paymentSystem, deliverySystem);
             itemsBoughtFromStore.getAndIncrement();
-            int currentQuantity = store.getItems().get(item);
-            itemsAddedToStore.addAndGet(1 - currentQuantity);
-            System.out.println("Trial " + trialNumber.get() + " succeeded to purchase");
         }
         catch (WrongAmountException e) {
-            // trying to purchase together the same item, no amount exception
-            System.out.println("Trial " + trialNumber.get() + " failed to purchase");
+            // tried to purchase item but there are not enough in inventory
         }
     }
 }
