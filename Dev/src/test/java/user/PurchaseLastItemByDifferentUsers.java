@@ -62,7 +62,6 @@ public class PurchaseLastItemByDifferentUsers {
 
     @AfterClass
     public void tearDown() {
-        System.out.println("Successful purchases: " + itemsBoughtFromStore.get());
         assertEquals(itemsAddedToStore.get(), itemsBoughtFromStore.get());
     }
 

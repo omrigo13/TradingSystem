@@ -64,30 +64,20 @@ public class PurchaseRemovedItemFromStore {
 
     @AfterClass
     public void tearDown() {
-        System.out.println("Successful purchases: " + itemsBoughtFromStore.get());
         assertTrue(itemsBoughtFromStore.get() <= itemsAddedToStore.get());
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 10000)
+    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 12000)
     public void test() throws Exception{
         try {
-            int currentQuantity;
             if(trialNumber.getAndIncrement() % 2 == 0) {
-                synchronized (this) {
-//                    storeItems.putIfAbsent(item, 0);
-                    //noinspection ConstantConditions
-                    currentQuantity = storeItems.compute(item, (k, v) -> v + 1);
-                }
+                storeItems.compute(item, (k, v) -> v == null ? 1 : v + 1);
                 itemsAddedToStore.getAndIncrement();
-                assertTrue(currentQuantity > 0);
                 user.purchaseCart(paymentSystem, deliverySystem);
                 itemsBoughtFromStore.getAndIncrement();
             }
             else {
-                synchronized (this) {
-                    owner.removeStoreItem(store, itemID);
-                    storeItems.putIfAbsent(item, 0);
-                }
+                owner.removeStoreItem(store, itemID);
             }
         }
         catch (ItemNotFoundException | ItemAlreadyExistsException | WrongAmountException e) {

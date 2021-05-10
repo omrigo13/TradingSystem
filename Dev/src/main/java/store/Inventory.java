@@ -106,11 +106,12 @@ public class Inventory {
     }
 
     public Item searchItem(int itemId) throws ItemException {
-        for (Item item: items.keySet())
-            if(item.getId()==itemId)
-                return item;
+        synchronized (this.items) {
+            for (Item item : items.keySet())
+                if (item.getId() == itemId)
+                    return item;
+        }
         throw new ItemNotFoundException("item not found");
-
     }
 
     /**
