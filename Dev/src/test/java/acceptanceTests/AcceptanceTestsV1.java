@@ -843,8 +843,8 @@ public class AcceptanceTestsV1 {
         assertEquals(2, service.getItems("mikl", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("mikl", null, null, null, null, null, null, null).toString().contains("milk"));
 
-        assertEquals(1, service.getItems("chease", null, null, null, null, null, null, null).size());
-        assertTrue(service.getItems("chease", null, null, null, null, null, null, null).toString().contains("cheese"));
+        assertEquals(1, service.getItems("cheesae", null, null, null, null, null, null, null).size());
+        assertTrue(service.getItems("cheesae", null, null, null, null, null, null, null).toString().contains("cheese"));
 
         assertEquals(2, service.getItems("Milk", null, null, null, null, null, null, null).size());
         assertTrue(service.getItems("Milk", null, null, null, null, null, null, null).toString().contains("milk"));

@@ -126,7 +126,7 @@ public class TradingSystem {
     synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
 
         for (Store s: stores.values())
-            if(storeName.equals(s.getName()))
+            if(storeName != null && storeName.equals(s.getName()))
                 throw new StoreAlreadyExistsException();
 
         // create the new store
