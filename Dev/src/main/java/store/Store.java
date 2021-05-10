@@ -26,12 +26,14 @@ public class Store {
     private DiscountPolicy discountPolicy;
     private PurchasePolicy purchasePolicy;
     //private String founder;
-    private boolean isActive;
+    private boolean isActive = true;
     private final Inventory inventory = new Inventory();
     private final Collection<String> purchases = new LinkedList<>();
     private Observable observable;
 
-    public Store() {}
+    public Store() {
+        this.observable = new Observable();
+    }
 
     /**
      * This method opens a new store and create its inventory
@@ -65,7 +67,8 @@ public class Store {
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
-        this.observable = observable;
+//        this.observable = observable;
+        this.observable = new Observable();
     }
 
     public int getId() {
@@ -323,7 +326,7 @@ public class Store {
         inventory.changeItemDetails(itemID, newSubCategory, newQuantity, newPrice);
     }
 
-    public boolean ifActive() {
+    public boolean isActive() {
         return isActive;
     }
 
@@ -331,14 +334,14 @@ public class Store {
         if(isActive == false)
             return;
         this.isActive = false;
-        observable.notifyStoreStatus(isActive);
+        observable.notifyStoreStatus(String.valueOf(id), isActive);
     }
 
     public void setActive(){
         if(isActive == true)
             return;
         this.isActive = true;
-        observable.notifyStoreStatus(isActive);
+        observable.notifyStoreStatus(String.valueOf(id), isActive);
     }
 
     //TODO remember to deal with policies and types in a furure version
@@ -370,8 +373,8 @@ public class Store {
 
     public Collection<String> getPurchaseHistory() { return purchases; }
 
-    public void notifyPurchase(User buyer, Map<Item, Integer> basket) {
-        observable.notifyPurchase(buyer, basket);
+    public void notifyPurchase( User buyer, Map<Item, Integer> basket) {
+        observable.notifyPurchase(this, buyer, basket);
     }
 
     public void subscribe(Subscriber subscriber) {

@@ -22,4 +22,11 @@ public class ItemReviewNotification extends Notification{
     public void notifyNotification() {
 
     }
+
+    @Override
+    public String toString() {
+        return "ItemReviewNotification{" +
+                "review=" + review +
+                '}';
+    }
 }

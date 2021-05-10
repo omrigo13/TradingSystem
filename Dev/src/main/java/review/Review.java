@@ -21,4 +21,14 @@ public class Review {
     public String getReview() {return review; }
 
     public void editReview(String review) {this.review = review; }
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "user=" + user +
+                ", store=" + store +
+                ", item=" + item +
+                ", review='" + review + '\'' +
+                '}';
+    }
 }

@@ -5,4 +5,6 @@ public class LotteryStatusNotification extends Notification{
     public void notifyNotification() {
 
     }
+
+
 }
