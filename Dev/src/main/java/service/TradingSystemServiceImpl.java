@@ -323,6 +323,16 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
+    public String getTotalIncomeByStorePerDay(String userID, String storeId, String date) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException {
+        return null;
+    }
+
+    @Override
     public Collection<String> getEventLog(String userID) throws InvalidActionException, IOException {
         eventLog.writeToLogger("Get event log");
         Collection<String> eventLog = this.eventLog.getLog();
