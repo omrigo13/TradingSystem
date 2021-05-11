@@ -65,7 +65,7 @@ public class PurchaseLastItemByDifferentUsers {
         assertEquals(itemsAddedToStore.get(), itemsBoughtFromStore.get());
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 10000)
+    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 12000)
     public void test() throws Exception {
         try {
             int trialNumber = this.trialNumber.getAndIncrement();

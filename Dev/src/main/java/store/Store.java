@@ -30,6 +30,7 @@ public class Store {
     private final Inventory inventory = new Inventory();
     private final Collection<String> purchases = new LinkedList<>();
     private Observable observable;
+    private final Map<String, Double> totalValuePerDay = new HashMap<>();
 
     public Store() {
         this.observable = new Observable();
@@ -370,6 +371,16 @@ public class Store {
     public void addPurchase(String purchaseDetails) {
         purchases.add(purchaseDetails);
     }
+
+    public void addTotalValuePerDay(String date, double value) {
+        totalValuePerDay.put(date, value);
+    }
+
+    public void updateTotalValuePerDay(String date, double value) {
+        totalValuePerDay.replace(date, value);
+    }
+
+    public Map<String, Double> getTotalValuePerDay() { return this.totalValuePerDay; }
 
     public Collection<String> getPurchaseHistory() { return purchases; }
 

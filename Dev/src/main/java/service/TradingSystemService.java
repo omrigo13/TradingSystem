@@ -237,6 +237,16 @@ public interface TradingSystemService {
     //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
 
+    /* shows total income of a specific store for a specific date by permissions: store owner.
+    precondition: invoker has the permissions to get the info. */
+    //string contains store total income value, store name, date.
+    String getTotalIncomeByStorePerDay(String userID, String storeId, String date) throws InvalidActionException;
+
+    /* shows total income of all stores for a specific date by permissions: system admin.
+    precondition: invoker has the permissions to get the info. */
+    //every string element contains store total income value, store name, date. and there is a total for all the stores
+    Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException;
+
     // ***********************************************************************
     // Topics: service level, external systems
     // ***********************************************************************

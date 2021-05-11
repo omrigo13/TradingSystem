@@ -67,7 +67,7 @@ public class PurchaseRemovedItemFromStore {
         assertTrue(itemsBoughtFromStore.get() <= itemsAddedToStore.get());
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 12000)
+    @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 15000)
     public void test() throws Exception{
         try {
             if(trialNumber.getAndIncrement() % 2 == 0) {

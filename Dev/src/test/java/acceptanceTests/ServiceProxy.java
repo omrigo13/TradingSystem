@@ -208,6 +208,20 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
+    public String getTotalIncomeByStorePerDay(String userID, String storeId, String date) throws InvalidActionException {
+        if(real != null)
+            return real.getTotalIncomeByStorePerDay(userID, storeId, date);
+        return null;
+    }
+
+    @Override
+    public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException {
+        if(real != null)
+            return real.getTotalIncomeByAdminPerDay(userID, date);
+        return null;
+    }
+
+    @Override
     public Collection<Integer> getStorePolicies(String userID, String storeId) throws InvalidActionException {
         if(real != null)
             return real.getStorePolicies(userID, storeId);

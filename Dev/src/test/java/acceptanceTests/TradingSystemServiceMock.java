@@ -1,5 +1,6 @@
 package acceptanceTests;
 
+import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
 import service.TradingSystemService;
 
@@ -154,6 +155,16 @@ public class TradingSystemServiceMock implements TradingSystemService {
 
     @Override
     public Collection<String> getSalesHistoryByStore(String userID, String storeId) {
+        return null;
+    }
+
+    @Override
+    public String getTotalIncomeByStorePerDay(String userID, String storeId, String date) {
+        return null;
+    }
+
+    @Override
+    public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) {
         return null;
     }
 
