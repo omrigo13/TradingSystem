@@ -1,5 +1,10 @@
 package externalServices;
 
+import exceptions.DeliverySystemException;
+
 public interface DeliverySystem {
-    boolean deliver(DeliveryData data) throws Exception;
+
+    boolean connect() throws DeliverySystemException;
+
+    boolean deliver(DeliveryData data) throws DeliverySystemException;
 }

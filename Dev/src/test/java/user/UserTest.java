@@ -3,7 +3,9 @@ package user;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.WrongAmountException;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
@@ -27,6 +29,8 @@ public class UserTest {
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
 
     private ConcurrentHashMap<Store, Basket> baskets;
     private Basket basket;
@@ -91,7 +95,7 @@ public class UserTest {
         items.put(item, 3);
         assertEquals(1, user.getCart().size());
         assertEquals(5, store.getItems().get(item).intValue());
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
         assertEquals(2, store.getItems().get(item).intValue()); // checks that the inventory quantity updated
     }
@@ -103,7 +107,7 @@ public class UserTest {
         baskets.put(store, basket);
         items.put(item, -2);
 
-        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
@@ -113,7 +117,7 @@ public class UserTest {
         baskets.put(store, basket);
         items.put(item, 10);
 
-        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(WrongAmountException.class, () -> user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
@@ -123,7 +127,7 @@ public class UserTest {
         item = store.searchItemById(0);
         items.put(item, 3);
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("21.0")); // checks that the purchase value correct
     }
 
@@ -134,7 +138,7 @@ public class UserTest {
         item = store.searchItemById(0);
         items.put(item, 3);
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("cheese")); // checks that the purchase added to store history
     }
 }

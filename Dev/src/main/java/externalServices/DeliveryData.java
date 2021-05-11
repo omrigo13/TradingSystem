@@ -2,19 +2,31 @@ package externalServices;
 
 public class DeliveryData {
 
-    private String username;
-    private String address;
+    private final String name;
+    private final String address;
+    private final String city;
+    private final String country;
+    private final int zip;
 
-    public String getUsername() {
-        return username;
+    public String getName() {
+        return name;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public DeliveryData(String username, String address) {
-        this.username = username;
+    public String getCity() { return city; }
+
+    public String getCountry() { return country; }
+
+    public int getZip() { return zip; }
+
+    public DeliveryData(String name, String address, String city, String country, int zip) {
+        this.name = name;
         this.address = address;
+        this.city = city;
+        this.country = country;
+        this.zip = zip;
     }
 }

@@ -22,6 +22,9 @@ public class User {
 
     protected final ConcurrentHashMap<Store, Basket> baskets;
 
+//    private final PaymentData paymentData;
+//    private final DeliveryData deliveryData;
+
     public User() {
         this(new ConcurrentHashMap<>());
     }
@@ -55,21 +58,21 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem, PaymentData paymentData, DeliveryData deliveryData) throws Exception {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
-        PaymentData paymentData = null;
+//        PaymentData paymentData = null;
         boolean paymentDone = false;
         try {
-            paymentData = new PaymentData(totalPrice, null);
+            paymentData = paymentData;
             paymentSystem.pay(paymentData);
             paymentDone = true;
-            deliverySystem.deliver(new DeliveryData(null, null));
+            deliverySystem.deliver(deliveryData);
         } catch (Exception e) {
             if (paymentDone)
-                paymentSystem.payBack(paymentData);
+                paymentSystem.cancel(paymentData);
             // for each store, rollback the basket (return items to inventory)
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());

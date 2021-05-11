@@ -8,7 +8,7 @@ public class DeliverySystemTest {
 
     @Test
     public void testDeliver() throws Exception {
-        DeliveryData deliveryData = new DeliveryData(null, null);
+        DeliveryData deliveryData = new DeliveryData("name", "address", "city" , "country", 12345);
         DeliverySystem deliverySystem = new DeliverySystemBasicImpl();
         deliverySystem.deliver(deliveryData);
     }

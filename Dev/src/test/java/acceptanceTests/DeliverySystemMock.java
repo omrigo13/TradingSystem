@@ -1,5 +1,6 @@
 package acceptanceTests;
 
+import exceptions.DeliverySystemException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 
@@ -20,11 +21,16 @@ public class DeliverySystemMock implements DeliverySystem {
     }
 
     @Override
-    public boolean deliver(DeliveryData data) throws Exception{
+    public boolean connect() throws DeliverySystemException {
+        return false;
+    }
 
-        if(!deliveries.keySet().contains(data.getUsername()))
-            deliveries.put(data.getUsername(), new LinkedList<>());
-        deliveries.get(data.getUsername()).add(data.getAddress());
+    @Override
+    public boolean deliver(DeliveryData data) throws DeliverySystemException {
+
+        if(!deliveries.containsKey(data.getName()))
+            deliveries.put(data.getName(), new LinkedList<>());
+        deliveries.get(data.getName()).add(data.getAddress());
         return true;
     }
 }

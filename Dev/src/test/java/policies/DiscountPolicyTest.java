@@ -1,7 +1,9 @@
 package policies;
 
 import exceptions.ItemException;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
@@ -29,6 +31,8 @@ public class DiscountPolicyTest {
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
 
     private Store store;
     private Item item1, item2;
@@ -64,7 +68,7 @@ public class DiscountPolicyTest {
     @Test void discountByCategory() throws Exception {
         Collection<Item> items = store.searchItems(null, null, "cat1");
         store.setDiscountPolicy(new QuantityDiscountPolicy(50, items, null));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("33.0")); // checks that the purchase value correct
     }
 
@@ -72,7 +76,7 @@ public class DiscountPolicyTest {
     void discountByStore() throws Exception {
         Collection<Item> items = store.getItems().keySet();
         store.setDiscountPolicy(new QuantityDiscountPolicy(20, items, null));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("34.8")); // checks that the purchase value correct
     }
 
@@ -83,7 +87,7 @@ public class DiscountPolicyTest {
         store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
 
         user.getBasket(store).addItem(item2, 2);
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("50.4")); // checks that the purchase value correct
     }
 
@@ -93,7 +97,7 @@ public class DiscountPolicyTest {
         policies.add(new BasketPurchasePolicy(50));
         store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 10% discount
     }
 
@@ -108,7 +112,7 @@ public class DiscountPolicyTest {
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
 
         user.getBasket(store).addItem(item1, 2);
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("54.625")); // checks that the purchase value correct
     }
 
@@ -122,7 +126,7 @@ public class DiscountPolicyTest {
         policies.add(new QuantityPolicy(tomato, 2, 0));
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 5% discount
     }
 
@@ -136,7 +140,7 @@ public class DiscountPolicyTest {
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new OrPolicy(policies))); //policy for 5% on cheese
 
         user.getBasket(store).addItem(item1, 2);
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("55.75")); // checks that the purchase value correct
     }
 
@@ -149,7 +153,7 @@ public class DiscountPolicyTest {
         policies.add(new QuantityPolicy(tomato, 7, 0));
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new OrPolicy(policies))); //policy for 5% on cheese
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 5% discount
     }
 
@@ -162,7 +166,7 @@ public class DiscountPolicyTest {
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
 
         user.getBasket(store).addItem(item1, 2);
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("56.375")); // checks that the purchase value correct
     }
 
@@ -174,7 +178,7 @@ public class DiscountPolicyTest {
         policies.add(new BasketPurchasePolicy(50));
         store.setDiscountPolicy(new QuantityDiscountPolicy(5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value correct
     }
 
@@ -186,7 +190,7 @@ public class DiscountPolicyTest {
         discountPolicies.add(new QuantityDiscountPolicy(10, tomato, null));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("41.25")); // checks that the purchase value correct
     }
 
@@ -198,7 +202,7 @@ public class DiscountPolicyTest {
         discountPolicies.add(new QuantityDiscountPolicy(5, tomato, null));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("41.4")); // checks that the purchase value correct
     }
 
@@ -210,7 +214,7 @@ public class DiscountPolicyTest {
         discountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null));
         store.setDiscountPolicy(new PlusDiscountPolicy(discountPolicies)); //policy for 25% on tomato and 20% on cheese
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("33.675")); // checks that the purchase value correct
     }
 
@@ -226,7 +230,7 @@ public class DiscountPolicyTest {
         discountPolicies.add(new MaxDiscountPolicy(maxDiscountPolicies));
         store.setDiscountPolicy(new PlusDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese plus 20% on store
         //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("32.55")); // checks that the purchase value correct
     }
 
@@ -242,7 +246,7 @@ public class DiscountPolicyTest {
         discountPolicies.add(new PlusDiscountPolicy(plusDiscountPolicies));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato and 20% store or 50% cheese
         //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("28.8")); // checks that the purchase value correct
     }
 }

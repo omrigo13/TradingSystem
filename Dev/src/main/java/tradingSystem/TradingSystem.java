@@ -331,7 +331,7 @@ public class TradingSystem {
 
     public void purchaseCart(User user) throws Exception {
 
-        user.purchaseCart(paymentSystem, deliverySystem);
+//        user.purchaseCart(paymentSystem, deliverySystem, );
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
