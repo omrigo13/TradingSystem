@@ -444,7 +444,9 @@ public class Subscriber extends User {
         return notifications;
     }
 
-    public String getTotalIncomeByStorePerDay(Store store, String date) {
+    public String getTotalIncomeByStorePerDay(Store store, String date) throws NoPermissionException {
+
+        validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
 
         double totalValue = store.getTotalValuePerDay().get(date);
         return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;

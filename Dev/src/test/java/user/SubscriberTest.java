@@ -10,6 +10,7 @@ import store.Item;
 import store.Store;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -358,12 +359,18 @@ public class SubscriberTest {
     }
 
     @Test
-    void getTotalIncomeByStorePerDay() {
-
+    void getTotalIncomeByStorePerDay() throws NoPermissionException {
+        HashMap<String, Double> storeIncome = new HashMap<>();
+        storeIncome.put("11/05/2021", 200.0);
+        when(subscriber.havePermission(ownerPermission)).thenReturn(true);
+        when(store.getTotalValuePerDay()).thenReturn(storeIncome);
+        String s = subscriber.getTotalIncomeByStorePerDay(store, "11/05/2021");
+        assertTrue(s.contains("200"));
     }
 
     @Test
-    void getTotalIncomeByAdminPerDay() {
-
+    void getTotalIncomeByStorePerDayNoPermission() {
+        when(subscriber.havePermission(ownerPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, ()-> subscriber.getTotalIncomeByStorePerDay(store, "11/05/2021"));
     }
 }

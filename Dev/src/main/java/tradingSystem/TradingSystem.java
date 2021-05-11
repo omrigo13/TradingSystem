@@ -334,7 +334,9 @@ public class TradingSystem {
         user.purchaseCart(paymentSystem, deliverySystem);
     }
 
-    public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) {
+    public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
+
+        admin.validatePermission(AdminPermission.getInstance());
 
         Collection<String> storesValuesPerDay = new LinkedList<>();
         for (Store store: stores.values()) {
