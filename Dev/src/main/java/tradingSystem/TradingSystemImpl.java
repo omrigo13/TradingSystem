@@ -395,15 +395,15 @@ public class TradingSystemImpl {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-
-        return tradingSystem.getTotalIncomeByStorePerDay(subscriber, store, date);
+        subscriber.validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
+        return subscriber.getTotalIncomeByStorePerDay(store, date);
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(String connectionId, String date) throws InvalidActionException {
 
-        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
-
-        return tradingSystem.getTotalIncomeByAdminPerDay(subscriber, date);
+        Subscriber admin = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        admin.validatePermission(AdminPermission.getInstance());
+        return tradingSystem.getTotalIncomeByAdminPerDay(admin, date);
     }
 
     public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException {

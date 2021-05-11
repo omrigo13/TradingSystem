@@ -356,4 +356,14 @@ public class SubscriberTest {
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
     }
+
+    @Test
+    void getTotalIncomeByStorePerDay() {
+
+    }
+
+    @Test
+    void getTotalIncomeByAdminPerDay() {
+
+    }
 }

@@ -334,19 +334,11 @@ public class TradingSystem {
         user.purchaseCart(paymentSystem, deliverySystem);
     }
 
-    public String getTotalIncomeByStorePerDay(Subscriber owner, Store store, String date) throws NoPermissionException {
+    public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) {
 
-        owner.validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
-        double totalValue = store.getTotalValuePerDay().get(date);
-        return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
-    }
-
-    public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
-
-        admin.validatePermission(AdminPermission.getInstance());
         Collection<String> storesValuesPerDay = new LinkedList<>();
         for (Store store: stores.values()) {
-            storesValuesPerDay.add(getTotalIncomeByStorePerDay(admin, store, date));
+            storesValuesPerDay.add(admin.getTotalIncomeByStorePerDay(store, date));
         }
         return storesValuesPerDay;
     }

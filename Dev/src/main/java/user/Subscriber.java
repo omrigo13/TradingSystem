@@ -443,4 +443,10 @@ public class Subscriber extends User {
     public Collection<Notification> getNotifications() {
         return notifications;
     }
+
+    public String getTotalIncomeByStorePerDay(Store store, String date) {
+
+        double totalValue = store.getTotalValuePerDay().get(date);
+        return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
+    }
 }
