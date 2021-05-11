@@ -27,23 +27,19 @@ public class PaymentSystemMock implements PaymentSystem {
 
 
     @Override
-    public boolean connect() throws PaymentSystemException {
-        return false;
+    public void connect() throws PaymentSystemException {
     }
 
     @Override
-    public boolean pay(PaymentData data) throws PaymentSystemException {
+    public void pay(PaymentData data) throws PaymentSystemException {
 //        if(!isSucceed)
 //            throw  new PaymentSystemException();
         if(!payments.keySet().contains(data.getId()))
             payments.put(data.getId(), new LinkedList<>());
         payments.get(data.getId()).add(data.getPaymentValue());
-
-        return true;
     }
 
     @Override
-    public boolean cancel(PaymentData data) throws PaymentSystemException {
-        return false;
+    public void cancel(PaymentData data) throws PaymentSystemException {
     }
 }

@@ -21,16 +21,14 @@ public class DeliverySystemMock implements DeliverySystem {
     }
 
     @Override
-    public boolean connect() throws DeliverySystemException {
-        return false;
+    public void connect() throws DeliverySystemException {
     }
 
     @Override
-    public boolean deliver(DeliveryData data) throws DeliverySystemException {
+    public void deliver(DeliveryData data) throws DeliverySystemException {
 
         if(!deliveries.containsKey(data.getName()))
             deliveries.put(data.getName(), new LinkedList<>());
         deliveries.get(data.getName()).add(data.getAddress());
-        return true;
     }
 }

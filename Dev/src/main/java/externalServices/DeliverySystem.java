@@ -4,7 +4,7 @@ import exceptions.DeliverySystemException;
 
 public interface DeliverySystem {
 
-    boolean connect() throws DeliverySystemException;
+    void connect() throws DeliverySystemException;
 
-    boolean deliver(DeliveryData data) throws DeliverySystemException;
+    void deliver(DeliveryData data) throws DeliverySystemException;
 }

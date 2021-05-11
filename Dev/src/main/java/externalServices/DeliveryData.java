@@ -7,6 +7,15 @@ public class DeliveryData {
     private final String city;
     private final String country;
     private final int zip;
+    private int transactionId;
+
+    public DeliveryData(String name, String address, String city, String country, int zip) {
+        this.name = name;
+        this.address = address;
+        this.city = city;
+        this.country = country;
+        this.zip = zip;
+    }
 
     public String getName() {
         return name;
@@ -22,11 +31,7 @@ public class DeliveryData {
 
     public int getZip() { return zip; }
 
-    public DeliveryData(String name, String address, String city, String country, int zip) {
-        this.name = name;
-        this.address = address;
-        this.city = city;
-        this.country = country;
-        this.zip = zip;
-    }
+    public void setTransactionId(int transactionId) { this.transactionId = transactionId; }
+
+    public int getTransactionId() { return transactionId; }
 }

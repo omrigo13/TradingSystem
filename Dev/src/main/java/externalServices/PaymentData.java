@@ -10,6 +10,7 @@ public class PaymentData {
     private final String ccv;
     private final String id;
     private double paymentValue;
+    private int transactionId;
 
     public PaymentData(String card_number, int month, int year, String holder, String ccv, String id) {
         this.card_number = card_number;
@@ -50,4 +51,8 @@ public class PaymentData {
     }
 
     public void setPaymentValue(int paymentValue) { this.paymentValue = paymentValue; }
+
+    public void setTransactionId(int transactionId) { this.transactionId = transactionId; }
+
+    public int getTransactionId() { return transactionId; }
 }
