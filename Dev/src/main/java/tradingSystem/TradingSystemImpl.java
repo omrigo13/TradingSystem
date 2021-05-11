@@ -391,6 +391,21 @@ public class TradingSystemImpl {
         return subscriber.getSalesHistoryByStore(store);
     }
 
+    public String getTotalIncomeByStorePerDay(String connectionId, String storeId, String date) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+
+        return tradingSystem.getTotalIncomeByStorePerDay(subscriber, store, date);
+    }
+
+    public Collection<String> getTotalIncomeByAdminPerDay(String connectionId, String date) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+
+        return tradingSystem.getTotalIncomeByAdminPerDay(subscriber, date);
+    }
+
     public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException {
         return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }

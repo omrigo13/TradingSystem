@@ -12,6 +12,8 @@ import policies.PurchasePolicy;
 import store.Item;
 import store.Store;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,6 +106,12 @@ public class User {
             Basket basket = storeBasketEntry.getValue();
             double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy);
             totalPrice += price;
+            String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+            if(store.getTotalValuePerDay().containsKey(date))
+                store.updateTotalValuePerDay(date, store.getTotalValuePerDay().get(date) + price);
+            else
+                store.addTotalValuePerDay(date, price);
+            purchaseDetails.append("purchase date is: ").append(date).append("\n");
             purchaseDetails.append("Total basket price: ").append(price).append("\n");
             storePurchaseDetails.put(store, purchaseDetails.toString());
         }

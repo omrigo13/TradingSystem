@@ -125,8 +125,8 @@ public class TradingSystem {
 
     synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
 
-        for (Store s: stores.values())
-            if(storeName != null && storeName.equals(s.getName()))
+        for (Store s : stores.values())
+            if (storeName != null && storeName.equals(s.getName()))
                 throw new StoreAlreadyExistsException();
 
         // create the new store
@@ -168,23 +168,23 @@ public class TradingSystem {
     }
 
     public Collection<Integer> getStorePolicies(Store store) {
-        if(storesPurchasePolicies.get(store) == null)
+        if (storesPurchasePolicies.get(store) == null)
             return new LinkedList<>();
         return new LinkedList<>(storesPurchasePolicies.get(store));
     }
 
     public void assignStorePurchasePolicy(int policy, Store store) throws PolicyException {
-        if(!purchasePolicies.containsKey(policy))
+        if (!purchasePolicies.containsKey(policy))
             throw new PolicyException();
         store.setPurchasePolicy(purchasePolicies.get(policy));
     }
 
     public void removePolicy(Store store, int policy) throws PolicyException {
-        if(!purchasePolicies.containsKey(policy))
+        if (!purchasePolicies.containsKey(policy))
             throw new PolicyException();
-        if(purchasePolicies.get(policy).getPurchasePolicies().size() > 0)
+        if (purchasePolicies.get(policy).getPurchasePolicies().size() > 0)
             throw new RemovePurchasePolicyException();
-        for (PurchasePolicy purchasePolicy: purchasePolicies.values()) {
+        for (PurchasePolicy purchasePolicy : purchasePolicies.values()) {
             purchasePolicy.getPurchasePolicies().remove(purchasePolicies.get(policy));
         }
         purchasePolicies.remove(policy);
@@ -200,7 +200,7 @@ public class TradingSystem {
         return id;
     }
 
-    public int makeBasketPurchasePolicy(Store store, int minBasketValue) throws PolicyException{
+    public int makeBasketPurchasePolicy(Store store, int minBasketValue) throws PolicyException {
         int id = policyIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = new BasketPurchasePolicy(minBasketValue);
         purchasePolicies.put(id, purchasePolicy);
@@ -222,7 +222,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> andPolicies = new ArrayList<>();
-        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
+        if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         andPolicies.add(purchasePolicies.get(policy1));
         andPolicies.add(purchasePolicies.get(policy2));
@@ -237,7 +237,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> orPolicies = new ArrayList<>();
-        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
+        if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         orPolicies.add(purchasePolicies.get(policy1));
         orPolicies.add(purchasePolicies.get(policy2));
@@ -252,7 +252,7 @@ public class TradingSystem {
 
         int id = policyIdCounter.getAndIncrement();
         Collection<PurchasePolicy> xorPolicies = new ArrayList<>();
-        if(!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
+        if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         xorPolicies.add(purchasePolicies.get(policy1));
         xorPolicies.add(purchasePolicies.get(policy2));
@@ -264,23 +264,23 @@ public class TradingSystem {
     }
 
     public Collection<Integer> getStoreDiscounts(Store store) {
-        if(storesDiscountPolicies.get(store) == null)
+        if (storesDiscountPolicies.get(store) == null)
             return new LinkedList<>();
         return new LinkedList<>(storesDiscountPolicies.get(store));
     }
 
     public void assignStoreDiscountPolicy(int discountId, Store store) throws PolicyException {
-        if(!discountPolicies.containsKey(discountId))
+        if (!discountPolicies.containsKey(discountId))
             throw new PolicyException();
         store.setDiscountPolicy(discountPolicies.get(discountId));
     }
 
     public void removeDiscount(Store store, int discountId) throws PolicyException {
-        if(!discountPolicies.containsKey(discountId))
+        if (!discountPolicies.containsKey(discountId))
             throw new PolicyException();
-        if(discountPolicies.get(discountId).getDiscountPolicies().size() > 0)
+        if (discountPolicies.get(discountId).getDiscountPolicies().size() > 0)
             throw new RemoveDiscountPolicyException();
-        for (DiscountPolicy discountPolicy: discountPolicies.values()) {
+        for (DiscountPolicy discountPolicy : discountPolicies.values()) {
             discountPolicy.getDiscountPolicies().remove(discountPolicies.get(discountId));
         }
         discountPolicies.remove(discountId);
@@ -291,10 +291,10 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         PurchasePolicy purchasePolicy = null;
-        if(policyId != null && !purchasePolicies.containsKey(policyId))
+        if (policyId != null && !purchasePolicies.containsKey(policyId))
             throw new PolicyException();
-        if(policyId != null)
-             purchasePolicy = purchasePolicies.get(policyId);
+        if (policyId != null)
+            purchasePolicy = purchasePolicies.get(policyId);
         discountPolicies.put(id, new QuantityDiscountPolicy(discount, items, purchasePolicy));
         storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesDiscountPolicies.get(store).add(id);
@@ -305,7 +305,7 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         Collection<DiscountPolicy> plusDiscountPolicies = new ArrayList<>();
-        if(!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
+        if (!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         plusDiscountPolicies.add(discountPolicies.get(discountId1));
         plusDiscountPolicies.add(discountPolicies.get(discountId2));
@@ -319,7 +319,7 @@ public class TradingSystem {
 
         int id = discountIdCounter.getAndIncrement();
         Collection<DiscountPolicy> maxDiscountPolicies = new ArrayList<>();
-        if(!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
+        if (!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         maxDiscountPolicies.add(discountPolicies.get(discountId1));
         maxDiscountPolicies.add(discountPolicies.get(discountId2));
@@ -332,5 +332,22 @@ public class TradingSystem {
     public void purchaseCart(User user) throws Exception {
 
         user.purchaseCart(paymentSystem, deliverySystem);
+    }
+
+    public String getTotalIncomeByStorePerDay(Subscriber owner, Store store, String date) throws NoPermissionException {
+
+        owner.validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
+        double totalValue = store.getTotalValuePerDay().get(date);
+        return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
+    }
+
+    public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
+
+        admin.validatePermission(AdminPermission.getInstance());
+        Collection<String> storesValuesPerDay = new LinkedList<>();
+        for (Store store: stores.values()) {
+            storesValuesPerDay.add(getTotalIncomeByStorePerDay(admin, store, date));
+        }
+        return storesValuesPerDay;
     }
 }
