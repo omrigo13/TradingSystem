@@ -1,8 +1,6 @@
 package user;
 
-import exceptions.ItemException;
-import exceptions.NotLoggedInException;
-import exceptions.PolicyException;
+import exceptions.*;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
@@ -58,28 +56,29 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem, PaymentData paymentData, DeliveryData deliveryData) throws Exception {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem, PaymentData paymentData, DeliveryData deliveryData) throws ItemException, PolicyException, ExternalServicesException {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
-//        PaymentData paymentData = null;
-        boolean paymentDone = false;
+        if(totalPrice == 0)
+            return;
+        paymentData.setPaymentValue(totalPrice);
         try {
-            paymentData = paymentData;
             paymentSystem.pay(paymentData);
-            paymentDone = true;
             deliverySystem.deliver(deliveryData);
-        } catch (Exception e) {
-            if (paymentDone)
-                paymentSystem.cancel(paymentData);
+        }
+        catch (PaymentSystemException pe) {
+            paymentSystem.cancel(paymentData);
             // for each store, rollback the basket (return items to inventory)
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());
-            throw e;
         }
-        if(totalPrice == 0)
-            return;
+        catch (DeliverySystemException de) {
+            for (Map.Entry<Store, Basket> entry : baskets.entrySet())
+                entry.getKey().rollBack(entry.getValue().getItems());
+        }
+
         // add each purchase details string to the store it was purchased from
         for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet())
             entry.getKey().addPurchase(entry.getValue());
@@ -88,7 +87,9 @@ public class User {
             Store store = storeBasketEntry.getKey();
             Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
             store.notifyPurchase(this, basket);
-        }        addCartToPurchases(storePurchaseDetails);
+        }
+
+        addCartToPurchases(storePurchaseDetails);
         baskets.clear();
     }
 

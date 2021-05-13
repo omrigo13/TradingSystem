@@ -287,7 +287,7 @@ public class AcceptanceTestsV1 {
         assertTrue(str.toString().contains("baguette"));
     }
 
-    void addToBasketUseCase() throws Exception {
+    void addToBasketUseCase() throws InvalidActionException {
         service.addItemToBasket(subs1Id, storeId1, productId1, 10);
         service.addItemToBasket(subs1Id, storeId2, productId4, 4);
         service.addItemToBasket(subs2Id, storeId1, productId2, 2);
@@ -296,7 +296,7 @@ public class AcceptanceTestsV1 {
     }
 
     @Test
-    void validPurchaseCart() throws Exception{
+    void validPurchaseCart() throws InvalidActionException {
         //todo: fix Payment and Delivery system mocks and parameters
         addToBasketUseCase(); //run use case
         assertFalse(paymentSystem.getPayments().keySet().contains(subs1UserName));
@@ -316,7 +316,7 @@ public class AcceptanceTestsV1 {
     }
 
     @Test
-    void purchaseCartWrongAmount() throws Exception{
+    void purchaseCartWrongAmount() throws InvalidActionException {
 //        paymentSystemMock.setSucceed(false); //invalid purchase
         addToBasketUseCase(); //run use case
         service.purchaseCart(subs1Id);
@@ -344,14 +344,14 @@ public class AcceptanceTestsV1 {
 
     }
 
-    void purchaseUserCase2() throws Exception {
+    void purchaseUserCase2() throws InvalidActionException {
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 1);
         service.addItemToBasket(store1Manager1Id, storeId2, productId3, 1);
     }
 
     @Test
-    void validWriteOpinionOnProduct() throws Exception{
+    void validWriteOpinionOnProduct() throws InvalidActionException {
         purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "desc example1");
@@ -361,14 +361,14 @@ public class AcceptanceTestsV1 {
     }
 
     @Test
-    void writeOpinionOnProductNotPurchased() throws Exception {
+    void writeOpinionOnProductNotPurchased() throws InvalidActionException {
         purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
     }
 
     @Test
-    void writeOpinionOnProductNotExist() throws Exception {
+    void writeOpinionOnProductNotExist() throws InvalidActionException {
         purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
         assertThrows(ItemNotFoundException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
@@ -376,7 +376,7 @@ public class AcceptanceTestsV1 {
     }
 
     @Test
-    void writeOpinionOnProductWrongDesc() throws Exception {
+    void writeOpinionOnProductWrongDesc() throws InvalidActionException {
         purchaseUserCase2();
         service.purchaseCart(store1Manager1Id);
 
@@ -627,7 +627,7 @@ public class AcceptanceTestsV1 {
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
-    void addItemToBasketUseCase3() throws Exception {
+    void addItemToBasketUseCase3() throws InvalidActionException {
         //2 purchases from store1:
         service.addItemToBasket(subs1Id, storeId1, productId1, 1);
         service.addItemToBasket(subs1Id, storeId1, productId2, 1);
@@ -636,7 +636,7 @@ public class AcceptanceTestsV1 {
     }
 
     @Test
-    void validAllowManagerToGetHistory() throws Exception{
+    void validAllowManagerToGetHistory() throws InvalidActionException{
         addItemToBasketUseCase3();
         service.purchaseCart(subs1Id);
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
@@ -649,7 +649,7 @@ public class AcceptanceTestsV1 {
 
 
     @Test
-    void wrongAllowManagerToGetHistory() throws Exception{
+    void wrongAllowManagerToGetHistory() throws InvalidActionException{
         addItemToBasketUseCase3();
 
         //make the purchases: 2 from store1 and 1 from store2.

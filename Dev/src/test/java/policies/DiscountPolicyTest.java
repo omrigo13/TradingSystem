@@ -1,5 +1,6 @@
 package policies;
 
+import exceptions.InvalidActionException;
 import exceptions.ItemException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
@@ -65,7 +66,7 @@ public class DiscountPolicyTest {
         items.clear();
     }
 
-    @Test void discountByCategory() throws Exception {
+    @Test void discountByCategory() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, null, "cat1");
         store.setDiscountPolicy(new QuantityDiscountPolicy(50, items, null));
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -73,7 +74,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // 20% discount on all store
-    void discountByStore() throws Exception {
+    void discountByStore() throws InvalidActionException {
         Collection<Item> items = store.getItems().keySet();
         store.setDiscountPolicy(new QuantityDiscountPolicy(20, items, null));
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -81,7 +82,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // 10% on cheese when basket value is more then 50
-    void discountByBasketValueForItemWithGoodBasketValue() throws Exception {
+    void discountByBasketValueForItemWithGoodBasketValue() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, "cheese", null);
         policies.add(new BasketPurchasePolicy(50));
         store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
@@ -92,7 +93,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // 10% on cheese when basket value is more then 50
-    void discountByBasketValueForItemWithLowerBasketValue() throws Exception {
+    void discountByBasketValueForItemWithLowerBasketValue() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, "cheese", null);
         policies.add(new BasketPurchasePolicy(50));
         store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
@@ -102,7 +103,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // and discount 5% on cheese and tomato if the basket contains at least 5 cheese and 2 tomatoes
-    void andDiscountByBasketCondition() throws Exception {
+    void andDiscountByBasketCondition() throws InvalidActionException {
         items.add(item1);
         items.add(item2);
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
@@ -117,7 +118,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // and discount 5% on cheese and tomato if the basket contains at least 5 cheese and 2 tomatoes
-    void andDiscountByBasketConditionNotMet() throws Exception {
+    void andDiscountByBasketConditionNotMet() throws InvalidActionException {
         items.add(item1);
         items.add(item2);
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
@@ -131,7 +132,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // or discount 5% on cheese if the basket contains at least 5 cheese or 7 tomatoes
-    void orDiscountByBasketCondition() throws Exception {
+    void orDiscountByBasketCondition() throws InvalidActionException {
         items.add(item1);
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
@@ -145,7 +146,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // or discount 5% on cheese if the basket contains at least 5 cheese or 7 tomatoes
-    void orDiscountByBasketConditionNotMet() throws Exception {
+    void orDiscountByBasketConditionNotMet() throws InvalidActionException {
         items.add(item1);
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
@@ -158,7 +159,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // basket value > 50 and 5 cheese on basket so 5% on tomatoes
-    void basketCompundCalculationDiscount() throws Exception {
+    void basketCompundCalculationDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
@@ -171,7 +172,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // basket value > 50 and 5 cheese on basket so 5% on tomatoes
-    void basketCompundCalculationDiscountCondiionNotMet() throws Exception {
+    void basketCompundCalculationDiscountCondiionNotMet() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
@@ -183,7 +184,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // discount on tomatoes in basket or cheese depends on best price basket for user
-    void maxbasketDiscount() throws Exception {
+    void maxbasketDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         discountPolicies.add(new QuantityDiscountPolicy(5, cheese, null));
@@ -195,7 +196,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // discount on tomatoes in basket or cheese depends on best price basket for user
-    void maxbasketDiscountOtherOption() throws Exception {
+    void maxbasketDiscountOtherOption() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         discountPolicies.add(new QuantityDiscountPolicy(10, cheese, null));
@@ -207,7 +208,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // 5% discount on tomatoes and 20% discount on store (tomatoes discount = 25% and cheese discount = 20%)
-    void plusbasketDiscount() throws Exception {
+    void plusbasketDiscount() throws InvalidActionException {
         Collection<Item> storeItems = store.getItems().keySet();
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         discountPolicies.add(new QuantityDiscountPolicy(5, tomato, null));
@@ -219,7 +220,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // discount on tomatoes in basket or cheese depends on best price basket for user plus discount 20% on store
-    void compoundPlusAndMaxDiscount() throws Exception {
+    void compoundPlusAndMaxDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         Collection<Item> storeItems = store.getItems().keySet();
@@ -235,7 +236,7 @@ public class DiscountPolicyTest {
     }
 
     @Test // discount on tomatoes in basket plus discount on store and max with discount on cheese
-    void compoundMaxAndPlusDiscount() throws Exception {
+    void compoundMaxAndPlusDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         Collection<Item> storeItems = store.getItems().keySet();

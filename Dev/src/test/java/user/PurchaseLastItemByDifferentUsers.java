@@ -1,5 +1,6 @@
 package user;
 
+import exceptions.InvalidActionException;
 import exceptions.ItemException;
 import exceptions.PolicyException;
 import exceptions.WrongAmountException;
@@ -70,7 +71,7 @@ public class PurchaseLastItemByDifferentUsers {
     }
 
     @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 12000)
-    public void test() throws Exception {
+    public void test() throws  InvalidActionException{
         try {
             int trialNumber = this.trialNumber.getAndIncrement();
             User user = trialNumber % 2 == 0 ? user1 : user2;

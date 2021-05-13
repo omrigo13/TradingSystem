@@ -182,9 +182,10 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) throws Exception {
+    public void purchaseCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("User purchase cart");
         tradingSystemImpl.purchaseCart(userID);
+        // TODO deal with payment data and delivery data
     }
 
     @Override

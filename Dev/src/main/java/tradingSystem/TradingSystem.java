@@ -329,7 +329,7 @@ public class TradingSystem {
         return id;
     }
 
-    public void purchaseCart(User user) throws Exception {
+    public void purchaseCart(User user) throws InvalidActionException {
 
 //        user.purchaseCart(paymentSystem, deliverySystem, );
     }

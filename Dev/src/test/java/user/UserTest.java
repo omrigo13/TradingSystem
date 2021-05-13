@@ -1,8 +1,6 @@
 package user;
 
-import exceptions.ItemException;
-import exceptions.NotLoggedInException;
-import exceptions.WrongAmountException;
+import exceptions.*;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
@@ -87,7 +85,7 @@ public class UserTest {
     }
 
     @Test
-    void purchaseCart() throws Exception {
+    void purchaseCart() throws InvalidActionException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         item = store.searchItemById(0);
         baskets.put(store, basket);
@@ -121,7 +119,7 @@ public class UserTest {
     }
 
     @Test
-    void purchaseCartCorrectValueCalculation() throws Exception {
+    void purchaseCartCorrectValueCalculation() throws ItemException, PolicyException, ExternalServicesException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
@@ -132,7 +130,7 @@ public class UserTest {
     }
 
     @Test
-    void purchaseCartPurchaseHistoryUpdated() throws Exception {
+    void purchaseCartPurchaseHistoryUpdated() throws ItemException, PolicyException, ExternalServicesException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);

@@ -136,7 +136,7 @@ public class TradingSystemImplTest {
     }
 
     @Test
-    void purchaseCart() throws Exception {
+    void purchaseCart() throws InvalidActionException {
 
         service.purchaseCart(connectionId);
     }

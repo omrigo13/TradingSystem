@@ -50,7 +50,7 @@ public class PaymentData {
         return id;
     }
 
-    public void setPaymentValue(int paymentValue) { this.paymentValue = paymentValue; }
+    public void setPaymentValue(double paymentValue) { this.paymentValue = paymentValue; }
 
     public void setTransactionId(int transactionId) { this.transactionId = transactionId; }
 
