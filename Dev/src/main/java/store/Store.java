@@ -1,5 +1,6 @@
 package store;
 
+import Offer.Offer;
 import exceptions.*;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
@@ -14,6 +15,7 @@ import user.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Store {
 
@@ -31,6 +33,9 @@ public class Store {
     private final Collection<String> purchases = new LinkedList<>();
     private Observable observable;
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
+    private final Map<Integer, Offer> storeOffers = new HashMap<>();
+    private final AtomicInteger offerIdCounter = new AtomicInteger();
+
 
     public Store() {
         this.observable = new Observable();
@@ -401,4 +406,18 @@ public class Store {
     }
 
     public void setObservable(Observable observable) { this.observable = observable; }
+
+    public void addOffer(Subscriber subscriber, Item item, int quantity, double price) {
+        this.storeOffers.put(offerIdCounter.getAndIncrement(), new Offer(subscriber, item, quantity, price));
+    }
+
+    public Collection<String> getOffers() {
+        Collection<String> offers = new LinkedList<>();
+        for (Map.Entry<Integer, Offer> offer: storeOffers.entrySet()) {
+            offers.add("offer id: " + offer.getKey() + offer.getValue().toString());
+        }
+        return offers;
+    }
+
+    public Offer getOfferById(int offerId) { return storeOffers.get(offerId); }
 }

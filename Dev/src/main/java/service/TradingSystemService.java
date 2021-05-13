@@ -40,6 +40,9 @@ public interface TradingSystemService {
     /* Save product in basket of a store. */
     void addItemToBasket(String userID, String storeId, String productId, int amount) throws InvalidActionException;
 
+    /* offer purchase product of a store. */
+    void addItemToBasketByOffer(String userID, String storeId, String productId, int amount, double price) throws InvalidActionException;
+
     /* get cart's products. */
     Collection<String> showCart(String userID) throws InvalidActionException;
 
@@ -236,6 +239,15 @@ public interface TradingSystemService {
     precondition: invoker has the permissions to get the info. */
     //every string element in the collection represents a purchase of a basket, with the quantity that was sale to a specific user.
     Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException;
+
+    /* shows offers for product purchases by users of a specific store by permissions: system manager / store owner / store manager.
+    precondition: invoker has the permissions to get the info. */
+    //every string element in the collection represents the user who wants to purchase, the item with the quantity and the offered price.
+    Collection<String> getOffersByStore(String userID, String storeId) throws InvalidActionException;
+
+    /* approve offer for product purchase by user by permissions: system manager / store owner / store manager.
+    precondition: invoker has the permissions to approve the offer. */
+    void approveOffer(String userID, String storeId, int offerID, Double price) throws InvalidActionException;
 
     /* shows total income of a specific store for a specific date by permissions: store owner.
     precondition: invoker has the permissions to get the info. */

@@ -1,5 +1,6 @@
 package user;
 
+import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import review.Review;
@@ -351,6 +352,34 @@ public class Subscriber extends User {
         validateAtLeastOnePermission(AdminPermission.getInstance(), GetHistoryPermission.getInstance(store));
 
         return store.getPurchaseHistory();
+    }
+
+    public Collection<String> getOffersByStore(Store store) throws NoPermissionException {
+
+        validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
+
+        return store.getOffers();
+    }
+
+    public void approveOffer(Store store, int offerId, double price) throws NoPermissionException {
+
+        //TODO should make copy constructor for item or deal with item price somehow without change original price
+        validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
+
+        Offer offer = store.getOfferById(offerId);
+        int itemId = offer.getItem().getId();
+        String name = offer.getItem().getName();
+        String category = offer.getItem().getCategory();
+        String subCategory = offer.getItem().getSubCategory();
+        double rating = offer.getItem().getRating();
+        Item item;
+
+        if(price == 0)
+            item = new Item(itemId, name, offer.getPrice(), category, subCategory, rating);
+        else
+            item = new Item(itemId, name, price, category, subCategory, rating);
+
+        offer.getSubscriber().getBasket(store).addItem(item, offer.getQuantity());
     }
 
     public Collection<String> getPurchaseHistory() {
