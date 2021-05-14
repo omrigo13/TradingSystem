@@ -1,5 +1,6 @@
 package user;
 
+import Offer.Offer;
 import exceptions.ItemException;
 import exceptions.NotLoggedInException;
 import exceptions.PolicyException;
@@ -13,9 +14,7 @@ import store.Item;
 import store.Store;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
@@ -89,7 +88,7 @@ public class User {
         baskets.clear();
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException, NotLoggedInException {
         boolean validPolicy;
         PurchasePolicy storePurchasePolicy;
         DiscountPolicy storeDiscountPolicy;
@@ -104,7 +103,19 @@ public class User {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
             Basket basket = storeBasketEntry.getValue();
-            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy);
+            Collection<Offer> userOffers = new LinkedList<>();
+            for (Offer offer: store.getStoreOffers().values()) {
+                if(this.getSubscriber().equals(offer.getSubscriber()))
+                    userOffers.add(offer);
+            }
+
+            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy, userOffers);
+
+            for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
+                if(userOffers.contains(offer.getValue()))
+                    store.getStoreOffers().remove(offer.getKey());
+            }
+
             totalPrice += price;
             String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
             if(store.getTotalValuePerDay().containsKey(date))

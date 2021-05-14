@@ -351,8 +351,8 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
-        return inventory.calculate(basket, details, storeDiscountPolicy);
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException { // TODO should get basket
+        return inventory.calculate(basket, details, storeDiscountPolicy, userOffers);
     }
 
     //TODO make an exception for this
@@ -420,4 +420,6 @@ public class Store {
     }
 
     public Offer getOfferById(int offerId) { return storeOffers.get(offerId); }
+
+    public Map<Integer, Offer> getStoreOffers() { return storeOffers; }
 }

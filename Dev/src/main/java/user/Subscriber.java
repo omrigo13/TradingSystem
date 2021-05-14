@@ -367,19 +367,9 @@ public class Subscriber extends User {
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
 
         Offer offer = store.getOfferById(offerId);
-        int itemId = offer.getItem().getId();
-        String name = offer.getItem().getName();
-        String category = offer.getItem().getCategory();
-        String subCategory = offer.getItem().getSubCategory();
-        double rating = offer.getItem().getRating();
-        Item item;
-
-        if(price == 0)
-            item = new Item(itemId, name, offer.getPrice(), category, subCategory, rating);
-        else
-            item = new Item(itemId, name, price, category, subCategory, rating);
-
-        offer.getSubscriber().getBasket(store).addItem(item, offer.getQuantity());
+        if(price != 0)
+            offer.setPrice(price);
+        offer.getSubscriber().getBasket(store).addItem(offer.getItem(), offer.getQuantity());
     }
 
     public Collection<String> getPurchaseHistory() {

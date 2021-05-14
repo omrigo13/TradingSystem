@@ -8,7 +8,7 @@ public class Offer {
     private final Subscriber subscriber;
     private final Item item;
     private final int quantity;
-    private final double price;
+    private double price;
 
     public Offer(Subscriber subscriber, Item item, int quantity, double price) {
         this.subscriber = subscriber;
@@ -24,6 +24,8 @@ public class Offer {
     public int getQuantity() { return quantity; }
 
     public double getPrice() { return price; }
+
+    public void setPrice(double price) { this.price = price; }
 
     public String toString() {
         return "user: " + subscriber.getUserName() + ", item: " + item.getName() + ", quantity: " + quantity + ", price: " + price;

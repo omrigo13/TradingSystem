@@ -4,6 +4,7 @@
 
 package store;
 
+import Offer.Offer;
 import exceptions.*;
 import policies.DiscountPolicy;
 import user.Basket;
@@ -233,16 +234,31 @@ public class Inventory {
         }
     }
 
-    public double calculate(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
+    public double calculate(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException {
 
-        double totalValue;
+        double totalValue = 0.0;
         synchronized (this.items) {
             // check that every item has quantity in inventory
             for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                 checkAmount(entry.getKey().getId(), entry.getValue());
             }
+
+            if(userOffers != null) {
+                for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
+                    Item item = entry.getKey();
+                    int quantity = entry.getValue();
+                    for (Offer offer : userOffers) {
+                        if (offer.getItem().equals(item)) {
+                            totalValue += quantity * offer.getPrice();
+                            basket.removeItem(item);
+                            //noinspection ConstantConditions
+                            this.items.compute(item, (k, v) -> v - quantity);
+                        }
+                    }
+                }
+            }
             // update inventory quantity and calculate basket price
-            totalValue = storeDiscountPolicy.cartTotalValue(basket);
+            totalValue += storeDiscountPolicy.cartTotalValue(basket);
             for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                 Item item = entry.getKey();
                 int quantity = entry.getValue();
