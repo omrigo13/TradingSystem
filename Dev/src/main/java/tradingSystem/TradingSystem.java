@@ -2,7 +2,9 @@ package tradingSystem;
 
 import authentication.UserAuthentication;
 import exceptions.*;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import policies.*;
@@ -331,7 +333,8 @@ public class TradingSystem {
 
     public void purchaseCart(User user) throws InvalidActionException {
 
-//        user.purchaseCart(paymentSystem, deliverySystem, );
+        //TODO deal with payment data and delivery data for purchase cart
+        user.purchaseCart(paymentSystem, deliverySystem, new PaymentData(), new DeliveryData());
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {

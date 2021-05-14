@@ -9,6 +9,14 @@ public class DeliveryData {
     private final int zip;
     private int transactionId;
 
+    public DeliveryData() { //TODO should be removed after fix purchase cart
+        name = "";
+        address = "";
+        city = "";
+        country = "";
+        zip = 0;
+    }
+
     public DeliveryData(String name, String address, String city, String country, int zip) {
         this.name = name;
         this.address = address;
