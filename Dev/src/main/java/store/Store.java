@@ -57,7 +57,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        // this.founder = founder; // TODO: should check how to implement
+        // this.founder = founder;
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
             this.purchasePolicy = new DefaultPurchasePolicy();
@@ -345,8 +345,7 @@ public class Store {
         observable.notifyStoreStatus(String.valueOf(id), isActive);
     }
 
-    //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException {
         return inventory.calculate(basket, details, storeDiscountPolicy);
     }
 

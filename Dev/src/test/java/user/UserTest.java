@@ -40,8 +40,8 @@ public class UserTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         items = new ConcurrentHashMap<>();
-        store = new Store(); // TODO
-        item = new Item(); // TODO
+        store = new Store();
+        item = new Item();
         baskets = spy(new ConcurrentHashMap<>());
         basket = new Basket(store, items); // do not make this a spy (Mockito doesn't handle records properly)
         user = new User(baskets);
