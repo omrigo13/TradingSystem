@@ -248,11 +248,13 @@ public class Inventory {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
                     for (Offer offer : userOffers) {
-                        if (offer.getItem().equals(item)) {
+                        if (offer.getItem().equals(item) && offer.isApproved()) {
                             totalValue += quantity * offer.getPrice();
                             basket.removeItem(item);
                             //noinspection ConstantConditions
                             this.items.compute(item, (k, v) -> v - quantity);
+                            details.append("\tItem: ").append(item.getName()).append(" Price: ").append(offer.getPrice())
+                                    .append(" Quantity: ").append(quantity).append("\n");
                         }
                     }
                 }

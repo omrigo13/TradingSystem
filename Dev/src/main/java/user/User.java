@@ -112,7 +112,7 @@ public class User {
             double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy, userOffers);
 
             for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
-                if(userOffers.contains(offer.getValue()))
+                if(userOffers.contains(offer.getValue()) && offer.getValue().isApproved())
                     store.getStoreOffers().remove(offer.getKey());
             }
 

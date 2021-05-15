@@ -367,9 +367,10 @@ public class Subscriber extends User {
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
 
         Offer offer = store.getOfferById(offerId);
+        offer.approve();
         if(price != 0)
             offer.setPrice(price);
-        offer.getSubscriber().getBasket(store).addItem(offer.getItem(), offer.getQuantity());
+        offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
     }
 
     public Collection<String> getPurchaseHistory() {
