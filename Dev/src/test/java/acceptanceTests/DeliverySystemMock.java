@@ -31,4 +31,9 @@ public class DeliverySystemMock implements DeliverySystem {
             deliveries.put(data.getName(), new LinkedList<>());
         deliveries.get(data.getName()).add(data.getAddress());
     }
+
+    @Override
+    public void cancel(DeliveryData date) throws DeliverySystemException {
+
+    }
 }

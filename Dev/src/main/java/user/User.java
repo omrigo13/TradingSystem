@@ -75,6 +75,8 @@ public class User {
                 entry.getKey().rollBack(entry.getValue().getItems());
         }
         catch (DeliverySystemException de) {
+            paymentSystem.cancel(paymentData);
+            deliverySystem.cancel(deliveryData);
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());
         }

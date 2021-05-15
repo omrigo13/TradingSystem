@@ -52,4 +52,22 @@ public class DeliverySystemBasicImpl implements DeliverySystem {
             throw new DeliverySystemException();
         }
     }
+
+    @Override
+    public void cancel(DeliveryData data) throws DeliverySystemException {
+        params = "action_type=cancel_supply";
+        params += "&transaction_id=" + data.getTransactionId();
+        msg = "";
+        httpConnection = new HttpConnection();
+
+        try {
+            result = httpConnection.send(url,method,params,msg);
+            transactionId = Integer.parseInt(result);
+            if(transactionId == -1)
+                throw new DeliverySystemException();
+        }
+        catch (IOException e){
+            throw new DeliverySystemException();
+        }
+    }
 }
