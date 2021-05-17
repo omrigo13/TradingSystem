@@ -54,6 +54,11 @@ public class User {
         // overridden in subclass
     }
 
+    public Collection<Offer> getOffers(Store store) {
+        // overridden in subclass
+        return new LinkedList<Offer>();
+    }
+
     public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception {
 
         double totalPrice = 0;
@@ -88,7 +93,7 @@ public class User {
         baskets.clear();
     }
 
-    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException, NotLoggedInException {
+    private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException {
         boolean validPolicy;
         PurchasePolicy storePurchasePolicy;
         DiscountPolicy storeDiscountPolicy;
@@ -103,11 +108,7 @@ public class User {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
             Basket basket = storeBasketEntry.getValue();
-            Collection<Offer> userOffers = new LinkedList<>();
-            for (Offer offer: store.getStoreOffers().values()) {
-                if(this.getSubscriber().equals(offer.getSubscriber()))
-                    userOffers.add(offer);
-            }
+            Collection<Offer> userOffers = this.getOffers(store);
 
             double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy, userOffers);
 

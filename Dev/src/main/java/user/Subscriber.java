@@ -61,6 +61,15 @@ public class Subscriber extends User {
 
     }
 
+    @Override
+    public Collection<Offer> getOffers(Store store) {
+        Collection<Offer> userOffers = new LinkedList<>();
+        for (Offer offer : store.getStoreOffers().values())
+            if (this.getSubscriber().equals(offer.getSubscriber()))
+                userOffers.add(offer);
+        return userOffers;
+    }
+
     public void addPermission(Permission permission) {
 
         synchronized (permissions) {
