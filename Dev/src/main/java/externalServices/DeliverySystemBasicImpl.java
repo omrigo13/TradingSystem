@@ -47,6 +47,7 @@ public class DeliverySystemBasicImpl implements DeliverySystem {
             if(transactionId == -1)
                 throw new DeliverySystemException();
             data.setTransactionId(transactionId);
+            data.setDelivered();
         }
         catch (IOException e){
             throw new DeliverySystemException();
@@ -65,6 +66,7 @@ public class DeliverySystemBasicImpl implements DeliverySystem {
             transactionId = Integer.parseInt(result);
             if(transactionId == -1)
                 throw new DeliverySystemException();
+            data.setNotDelivered();
         }
         catch (IOException e){
             throw new DeliverySystemException();

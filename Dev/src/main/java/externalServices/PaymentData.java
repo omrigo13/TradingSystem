@@ -11,6 +11,7 @@ public class PaymentData {
     private final String id;
     private double paymentValue;
     private int transactionId;
+    private boolean paid;
 
     public PaymentData() { //TODO should be removed after fix purchase cart
         card_number = "";
@@ -29,6 +30,7 @@ public class PaymentData {
         this.ccv = ccv;
         this.id = id;
         this.paymentValue = 0;
+        this.paid = false;
     }
 
     public double getPaymentValue() {
@@ -64,4 +66,10 @@ public class PaymentData {
     public void setTransactionId(int transactionId) { this.transactionId = transactionId; }
 
     public int getTransactionId() { return transactionId; }
+
+    public void setPaid() {this.paid = true; }
+
+    public void setNotPaid() {this.paid = false; }
+
+    public boolean isPaid() { return this.paid; }
 }

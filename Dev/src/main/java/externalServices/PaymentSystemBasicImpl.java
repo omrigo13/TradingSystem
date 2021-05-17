@@ -50,6 +50,7 @@ public class PaymentSystemBasicImpl implements PaymentSystem {
             if(transactionId == -1)
                 throw new PaymentSystemException();
             data.setTransactionId(transactionId);
+            data.setPaid();
         } catch (IOException e) {
             throw new PaymentSystemException();
         }
@@ -67,6 +68,7 @@ public class PaymentSystemBasicImpl implements PaymentSystem {
             transactionId = Integer.parseInt(result);
             if(transactionId == -1)
                 throw new PaymentSystemException();
+            data.setNotPaid();
         }
         catch (IOException e){
             throw new PaymentSystemException();

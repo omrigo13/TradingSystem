@@ -8,6 +8,7 @@ public class DeliveryData {
     private final String country;
     private final int zip;
     private int transactionId;
+    private boolean delivered;
 
     public DeliveryData() { //TODO should be removed after fix purchase cart
         name = "";
@@ -23,6 +24,7 @@ public class DeliveryData {
         this.city = city;
         this.country = country;
         this.zip = zip;
+        this.delivered = false;
     }
 
     public String getName() {
@@ -42,4 +44,10 @@ public class DeliveryData {
     public void setTransactionId(int transactionId) { this.transactionId = transactionId; }
 
     public int getTransactionId() { return transactionId; }
+
+    public void setDelivered() {this.delivered = true; }
+
+    public void setNotDelivered() {this.delivered = false; }
+
+    public boolean isDelivered() { return this.delivered; }
 }
