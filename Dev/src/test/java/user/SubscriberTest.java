@@ -1,5 +1,6 @@
 package user;
 
+import Offer.Offer;
 import exceptions.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -15,6 +16,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.mockito.Mockito.*;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertThrows;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertTrue;
@@ -346,7 +348,6 @@ public class SubscriberTest {
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(true);
 
         Collection<String> salesHistoryByStore = subscriber.getSalesHistoryByStore(store);
-        System.out.println(salesHistoryByStore);
         assertEquals(2, salesHistoryByStore.size());
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("milk"));
         assertTrue(subscriber.getSalesHistoryByStore(store).contains("cheese"));
@@ -356,6 +357,41 @@ public class SubscriberTest {
     void getSalesHistoryByStoreNoPermission() {
         when(subscriber.havePermission(getHistoryPermission)).thenReturn(false);
         assertThrows(NoPermissionException.class, ()-> subscriber.getSalesHistoryByStore(store));
+    }
+
+    @Test
+    void getOffersByStore() throws NoPermissionException {
+        Collection<String> storeOffers = new LinkedList<>();
+        storeOffers.add("offer test");
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
+
+        when(subscriber.getOffersByStore(store)).thenReturn(storeOffers);
+        assertEquals(1, subscriber.getOffersByStore(store).size());
+        assertTrue(subscriber.getOffersByStore(store).contains("offer test"));
+    }
+
+    @Test
+    void getOffersByStoreNoPermission() {
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, ()-> subscriber.getOffersByStore(store));
+    }
+
+    @Test
+    void approveOffer() throws NoPermissionException {
+        Offer offer = new Offer(subscriber, item, 5, 3.0);
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
+        when(store.getOfferById(0)).thenReturn(offer);
+
+        assertFalse(store.getOfferById(0).isApproved());
+        subscriber.approveOffer(store, 0 , 0.0);
+        assertTrue(store.getOfferById(0).isApproved());
+        assertEquals(5, subscriber.getBasket(store).getItems().get(item).intValue());
+    }
+
+    @Test
+    void approveOfferNoPermission() {
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(false);
+        assertThrows(NoPermissionException.class, ()-> subscriber.approveOffer(store, 0, 0.0));
     }
 
     @Test

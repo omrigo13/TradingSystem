@@ -9,11 +9,13 @@ import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
+import user.Subscriber;
 
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertThrows;
 import static org.testng.AssertJUnit.*;
@@ -366,5 +368,25 @@ public class StoreTest {
         assertEquals(store.getItems().get(store.searchItemById(carrotId)).intValue(), 16);
         assertFalse(store.searchItemById(cucumberID).isLocked());
         assertFalse(store.searchItemById(carrotId).isLocked());
+    }
+
+    @Test
+    void addOffer() {
+        Subscriber subscriber = mock(Subscriber.class);
+        Item item = mock(Item.class);
+        store.addOffer(subscriber, item, 5, 3.0);
+        assertEquals(1, store.getStoreOffers().values().size());
+        assertEquals(subscriber, store.getStoreOffers().get(0).getSubscriber());
+        assertEquals(item, store.getStoreOffers().get(0).getItem());
+    }
+
+    @Test
+    void getOffers() {
+        Subscriber subscriber = mock(Subscriber.class);
+        Item item = mock(Item.class);
+        store.addOffer(subscriber, item, 5, 3.0);
+        assertEquals(1, store.getOffers().size());
+        assertTrue(store.getOffers().toString().contains("5"));
+        assertTrue(store.getOffers().toString().contains("3.0"));
     }
 }
