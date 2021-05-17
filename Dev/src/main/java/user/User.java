@@ -65,7 +65,9 @@ public class User {
             return;
         paymentData.setPaymentValue(totalPrice);
         try {
+            paymentSystem.connect();
             paymentSystem.pay(paymentData);
+            deliverySystem.connect();
             deliverySystem.deliver(deliveryData);
         }
         catch (PaymentSystemException pe) {
