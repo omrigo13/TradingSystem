@@ -5,6 +5,7 @@ import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
+import persistenceTests.Repo;
 import policies.*;
 import store.Item;
 import store.Store;
@@ -14,11 +15,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
+    private Repo repo = new Repo();
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
     private final AtomicInteger subscriberIdCounter;
@@ -80,15 +81,29 @@ public class TradingSystem {
     }
 
     public Collection<Store> getStores() {
-        return stores.values();
+        try {
+            return repo.getStoreDAO().getAll();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+//        return stores.values();
+        return null;
     }
 
     public Store getStore(int storeId) throws InvalidStoreIdException {
 
-        Store store = stores.get(storeId);
-        if (store == null)
-            throw new InvalidStoreIdException(storeId);
-        return store;
+        try {
+            Store store = repo.getStoreDAO().getById(storeId);
+            return store;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+//        Store store = stores.get(storeId);
+//        if (store == null)
+//            throw new InvalidStoreIdException(storeId);
+//        return store;
+        return null;
     }
 
     public void register(String userName, String password) throws InvalidActionException {
@@ -124,7 +139,6 @@ public class TradingSystem {
     }
 
     synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
-
         for (Store s : stores.values())
             if (storeName != null && storeName.equals(s.getName()))
                 throw new StoreAlreadyExistsException();
@@ -134,10 +148,16 @@ public class TradingSystem {
         Store store = new Store(id, storeName, "description", null, null, new Observable());
         stores.put(id, store);
 
+
         subscriber.addOwnerPermission(store);
 
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
+        try {
+            repo.getStoreDAO().add(store);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return id;
     }

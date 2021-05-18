@@ -7,9 +7,15 @@ import review.Review;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
 
+@Entity
+@Table(name = "Item")
 public class Item {
 
+    @Id
+    @GeneratedValue
     private int id;
     private String name;
     private double price;
@@ -17,7 +23,11 @@ public class Item {
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
     private final Collection<Review> reviews = new LinkedList<>();
+
+//    @ManyToOne
+//    private Inventory inventory;
 
     public Item() {}
 
@@ -28,6 +38,7 @@ public class Item {
         this.category = category;
         this.subCategory = subCategory;
         this.rating = rating;
+//        this.inventory = inventory;
     }
 
     public int getId() {
@@ -84,6 +95,30 @@ public class Item {
     public void addReview(Review review) {reviews.add(review); }
 
     public Collection<Review> getReviews() {return reviews; }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
+//    public Inventory getInventory() {
+//        return inventory;
+//    }
+//
+//    public void setInventory(Inventory inventory) {
+//        this.inventory = inventory;
+//    }
 }
 
 

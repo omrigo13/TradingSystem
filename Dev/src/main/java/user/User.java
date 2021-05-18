@@ -9,18 +9,32 @@ import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
+import review.Review;
 import store.Item;
 import store.Store;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "User")
 public class User {
 
+    @Id
+    @GeneratedValue
+    private int id;
+
+    @Transient
     protected final ConcurrentHashMap<Store, Basket> baskets;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Review> reviews;
 
     public User() {
         this(new ConcurrentHashMap<>());
@@ -116,5 +130,25 @@ public class User {
             storePurchaseDetails.put(store, purchaseDetails.toString());
         }
         return totalPrice;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public ConcurrentHashMap<Store, Basket> getBaskets() {
+        return baskets;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

@@ -5,8 +5,10 @@ import store.Item;
 import user.Basket;
 
 import java.util.Collection;
+import javax.persistence.*;
 
 public interface DiscountPolicy {
+
 
     double cartTotalValue(Basket purchaseBasket) throws PolicyException;
 

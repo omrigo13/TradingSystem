@@ -9,15 +9,23 @@ import store.Store;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Subscriber")
 public class Subscriber extends User {
 
-    private final int id;
-    private final String userName;
-    private final Set<Permission> permissions; // synchronized manually
-    private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
-    private final Collection<String> purchaseHistory; // synchronized in constructor
-    private final Collection<Notification> notifications = new LinkedList<>();
+    @Id
+    private int id;
+    private String userName;
+    @Transient
+    private Set<Permission> permissions; // synchronized manually
+    @Transient
+    private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
+    @Transient
+    private Collection<String> purchaseHistory; // synchronized in constructor
+    @Transient
+    private Collection<Notification> notifications = new LinkedList<>();
     private boolean isLoggedIn = false;
 
     public Subscriber(int id, String userName) {
@@ -31,6 +39,11 @@ public class Subscriber extends User {
         this.itemsPurchased = itemsPurchased;
         this.purchaseHistory = Collections.synchronizedCollection(purchaseHistory);
     }
+
+    public Subscriber() {
+
+    }
+
 
     public String getUserName() {
         return userName;
@@ -83,10 +96,10 @@ public class Subscriber extends User {
 
     public void validatePermission(Permission permission) throws NoPermissionException {
 
-        synchronized (permissions) {
-            if (!havePermission(permission))
-                throw new NoPermissionException(permission.toString());
-        }
+//        synchronized (permissions) {
+//            if (!havePermission(permission))
+//                throw new NoPermissionException(permission.toString());
+//        }
     }
 
     public void validateAtLeastOnePermission(Permission... permissions) throws NoPermissionException {
@@ -269,7 +282,7 @@ public class Subscriber extends User {
         }
     }
 
-    public int addStoreItem(Store store, String itemName, String category, String subCategory, int quantity, double price)
+    public Item addStoreItem(Store store, String itemName, String category, String subCategory, int quantity, double price)
             throws NoPermissionException, ItemException {
 
         // check this user has the permission to perform this action
@@ -450,5 +463,13 @@ public class Subscriber extends User {
 
         double totalValue = store.getTotalValuePerDay().get(date);
         return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public ConcurrentMap<Store, Collection<Item>> getItemsPurchased() {
+        return itemsPurchased;
     }
 }

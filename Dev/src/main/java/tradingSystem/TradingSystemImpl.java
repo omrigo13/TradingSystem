@@ -2,6 +2,7 @@ package tradingSystem;
 
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
+import persistenceTests.Repo;
 import store.Item;
 import store.Store;
 import user.*;
@@ -10,6 +11,8 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class TradingSystemImpl {
+
+    private Repo repo = new Repo();
 
     TradingSystem tradingSystem;
 
@@ -271,7 +274,17 @@ public class TradingSystemImpl {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+//        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        Item newItem = subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        try {
+            this.repo.getItemDAO().add(newItem);
+            this.repo.getInventoryDAO().addItem(store.getInventory().getId(), newItem, quantity);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "" + store.getId();
+
     }
 
     public void deleteProductFromStore(String connectionId, String storeId, String itemId) throws InvalidActionException {

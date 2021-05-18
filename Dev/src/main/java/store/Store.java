@@ -11,25 +11,38 @@ import notifications.Observable;
 import review.Review;
 import user.Subscriber;
 import user.User;
+import javax.persistence.*;
+
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
+@Entity
+@Table(name = "Store")
 public class Store {
 
 
-
+    @Id
     private int id;
     private String name;
     private String description;
     private double rating;
+    @Transient
     private DiscountPolicy discountPolicy;
+    @Transient
     private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive = true;
-    private final Inventory inventory = new Inventory();
+//    @OneToOne(cascade = CascadeType.ALL)
+//    private Inventory inventory = new Inventory(this.id);
+    @OneToOne(cascade = CascadeType.ALL)
+    private Inventory inventory;
+
+    @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
+    @Transient
     private Observable observable;
+    @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
 
     public Store() {
@@ -63,6 +76,9 @@ public class Store {
             this.purchasePolicy = new DefaultPurchasePolicy();
         else
             this.purchasePolicy = purchasePolicy;
+        this.inventory = new Inventory();
+        this.inventory.setId(this.id);
+        this.inventory.setStore(this);
         if(discountPolicy == null)
             this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
         else
@@ -70,6 +86,7 @@ public class Store {
         this.isActive = true;
 //        this.observable = observable;
         this.observable = new Observable();
+
     }
 
     public int getId() {
@@ -131,7 +148,7 @@ public class Store {
      * @param amount      the amount in the store for the new item
      * @throws ItemException
      */
-    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
+    public Item addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         return this.inventory.addItem(name, price, category, subCategory, amount);
     }
 
@@ -401,4 +418,25 @@ public class Store {
     }
 
     public void setObservable(Observable observable) { this.observable = observable; }
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Collection<String> getPurchases() {
+        return purchases;
+    }
 }

@@ -3,10 +3,14 @@ package user;
 import store.Item;
 import store.Store;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.persistence.*;
 
 public record Basket(Store store, ConcurrentHashMap<Item, Integer> items) {
+
 
     public Store getStore() {
         return store;

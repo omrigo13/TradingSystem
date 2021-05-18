@@ -85,9 +85,9 @@ public class StoreTest {
 
     @Test
     void searchItemById() throws ItemException{
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5).getId();
         assertThrows(ItemNotFoundException.class, () -> store.searchItemById(6));
         assertEquals(store.searchItemById(tomato2Id).getId(), 2);
     }
@@ -104,9 +104,9 @@ public class StoreTest {
     @Test
     void filterWithItemsByPrice() throws ItemException{
         Collection<Item> list=new LinkedList<>();
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
         list.add(store.searchItemById(tomatoId));
-        int cucmberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int cucmberId= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
         list.add(store.searchItemById(cucmberId));
         Collection<Item> filteredItems=store.filterByPrice(list,15,30);
         assertFalse(filteredItems.isEmpty());
@@ -118,10 +118,10 @@ public class StoreTest {
 
     @Test
     void filterWithoutItemsByRating() throws ItemException{
-        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5).getId();
         Item tomato = store.searchItemById(tomatoId);
         tomato.setRating(2);
-        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
         Item cucumber = store.searchItemById(cucumberid);
         cucumber.setRating(3);
 
@@ -131,11 +131,11 @@ public class StoreTest {
     @Test
     void filterWithItemsByRating() throws ItemException{
         Collection<Item> list=new LinkedList<>();
-        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5);
+        int tomatoId=store.addItem("tomato", 20, "vegetables", "red", 5).getId();
         Item tomato = store.searchItemById(tomatoId);
         tomato.setRating(2);
         list.add(tomato);
-        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10);
+        int cucumberid=store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
         Item cucumber = store.searchItemById(cucumberid);
         cucumber.setRating(3);
         list.add(cucumber);
@@ -178,7 +178,7 @@ public class StoreTest {
     @Test
     void removeItem() throws ItemException{
         store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 0).getId();
         assertEquals(store.getItems().size(), 2);
 
         //checks that only an existing item can be removed
@@ -222,9 +222,9 @@ public class StoreTest {
     void filterItems() throws ItemException {
         Collection<Item> list=new LinkedList<>();
 
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70).getId();
         Item carrot=store.searchItemById(carrotId);
         carrot.setRating(3);
         list.add(carrot);
@@ -247,9 +247,9 @@ public class StoreTest {
     void searchAndFilter() throws ItemException {
         Collection<Item> list = new LinkedList<>(){};
 
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem("onion",8.9,"vegetables","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int onionId= store.addItem("onion",8.9,"vegetables","white",70).getId();
         Item carrot=store.searchItemById(carrotId);
         carrot.setRating(3);
         list.add(carrot);
@@ -268,9 +268,9 @@ public class StoreTest {
 
     @Test
     void checkAmount() throws ItemException {
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
-        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int onionId= store.addItem("onion",8.9,"vegetable","white",70);
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
+        int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int onionId= store.addItem("onion",8.9,"vegetable","white",70).getId();
 
         assertThrows(WrongAmountException.class, ()->store.checkAmount(carrotId,10));
         assertThrows(WrongAmountException.class,()-> store.checkAmount(cucumberId,-3));
@@ -279,9 +279,9 @@ public class StoreTest {
 
     @Test
     void changeItem() throws ItemException {
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int tomato2Id=store.addItem("tomato", 20, "vegetables", "blue", 5);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
+        int cucumberId=store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int tomato2Id=store.addItem("tomato", 20, "vegetables", "blue", 5).getId();
 
         assertThrows(ItemNotFoundException.class, () -> store.changeItem(5,"hello",null,30.0));
         assertNotEquals(store.searchItemById(tomatoId).getSubCategory(),"hello");
@@ -309,9 +309,9 @@ public class StoreTest {
 
     @Test
     void calculate() throws ItemException, Exception {
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
         store.searchItemById(carrotId).lock();
         basket.addItem(store.searchItemById(0), 2);
         basket.addItem(store.searchItemById(1), 2);
@@ -334,9 +334,9 @@ public class StoreTest {
 
     @Test
     void unlockItems() throws ItemException{
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
         store.searchItemById(carrotId).lock();
         store.searchItemById(tomatoId).lock();
         store.searchItemById(cucumberID).lock();
@@ -351,9 +351,9 @@ public class StoreTest {
 
     @Test
     void rollBack() throws ItemException{
-        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5);
-        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10);
-        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8);
+        int tomatoId= store.addItem("tomato", 20, "vegetables", "red", 5).getId();
+        int cucumberID= store.addItem("cucumber", 15, "vegetables", "green", 10).getId();
+        int carrotId= store.addItem("carrot", 20, "vegetables", "orange", 8).getId();
         store.searchItemById(carrotId).lock();
         store.searchItemById(tomatoId).lock();
         store.searchItemById(cucumberID).lock();

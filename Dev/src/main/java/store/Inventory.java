@@ -9,17 +9,36 @@ import policies.DiscountPolicy;
 import user.Basket;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "Inventory")
 public class Inventory {
 
-    private final Map<Item, Integer> items;
-    private final AtomicInteger id = new AtomicInteger(0);
+    @Id
+//    @GeneratedValue
+    private int id;
+
+    @OneToOne
+    private Store store;
+
+    //    @OneToMany
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Map<Item, Integer> items;
+    @Transient
+    private final AtomicInteger itemsCounter = new AtomicInteger(0);
+
+    private int itemsCounterValue;
+
+    public Inventory(int id) { //receives store's id, which will be equal to inventory's id
+        this.items = Collections.synchronizedMap(new HashMap<>());
+        this.id = id;
+    }
 
     public Inventory() {
         this.items = Collections.synchronizedMap(new HashMap<>());
+
     }
 
     /**
@@ -29,8 +48,9 @@ public class Inventory {
      * @param category - the category of the new item
      * @param subCategory - the sub category of the new item
      * @param amount the amount in the store for the new item
-     * @exception ItemException  */
-    public int addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
+     * @exception ItemException
+     * @return  */
+    public Item addItem(String name, double price, String category, String subCategory, int amount) throws ItemException {
         if(name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("item name is null or contains only white spaces");
         if(name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -44,8 +64,11 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category) && item.getSubCategory().equalsIgnoreCase(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
-            return id.getAndIncrement();
+            Item newItem = new Item(itemsCounter.get(), name, price, category, subCategory, 0);
+            items.putIfAbsent(newItem, amount);
+            this.itemsCounterValue = this.itemsCounter.get() + 1;
+            itemsCounter.getAndIncrement();
+            return newItem;
         }
     }
 
@@ -253,5 +276,37 @@ public class Inventory {
             }
         }
         return totalValue;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public AtomicInteger getItemsCounter() {
+        return itemsCounter;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public void setItems(Map<Item, Integer> items) {
+        this.items = items;
+    }
+
+    public int getItemsCounterValue() {
+        return itemsCounterValue;
+    }
+
+    public void setItemsCounterValue(int itemsCounterValue) {
+        this.itemsCounterValue = itemsCounterValue;
     }
 }

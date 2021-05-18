@@ -6,6 +6,9 @@ import user.Basket;
 
 import java.util.Collection;
 import java.util.Map;
+import javax.persistence.*;
+
+import javax.persistence.*;
 
 public class MaxDiscountPolicy extends CompoundDiscountPolicy {
 

@@ -2,17 +2,24 @@ package user;
 
 import store.Store;
 
+import javax.persistence.*;
+import javax.persistence.OneToOne;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
-
+@Entity
 public abstract class StorePermission extends Permission {
 
-    protected final Store store;
+    @ManyToOne
+    protected Store store = null;
 
     protected StorePermission(Store store) {
         this.store = store;
+    }
+
+    public StorePermission() {
+
     }
 
     public Store getStore() {

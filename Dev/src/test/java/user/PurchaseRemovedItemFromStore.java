@@ -49,7 +49,7 @@ public class PurchaseRemovedItemFromStore {
     @BeforeClass
     void setUp() throws ItemException, PolicyException {
         MockitoAnnotations.openMocks(this);
-        itemID = store.addItem("a", 5.0, "cat", "sub", 0);
+        itemID = store.addItem("a", 5.0, "cat", "sub", 0).getId();
         item = store.searchItemById(itemID);
         basketItems.put(store.searchItemById(itemID), 1);
         baskets.put(store, basket);

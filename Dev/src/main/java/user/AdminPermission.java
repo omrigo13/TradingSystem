@@ -1,10 +1,12 @@
 package user;
 
+import javax.persistence.*;
 import java.lang.ref.WeakReference;
 
+@Entity
 public class AdminPermission extends Permission
 {
-    private AdminPermission() {
+    public AdminPermission() {
     }
 
     public static AdminPermission getInstance() {
