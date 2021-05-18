@@ -857,4 +857,40 @@ public class TradingSystem {
         ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
     };
 
+    public Handler handleGetTotalIncomeByStorePerDayPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("income", tradingSystemService.getTotalIncomeByStorePerDay(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getDate(ctx)));
+            ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+        }
+    };
+
+    public Handler serveGetTotalIncomeByStorePerDayPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+    };
+
+    public Handler handleGetTotalIncomeByAdminPerDayPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("income", tradingSystemService.getTotalIncomeByAdminPerDay(RequestUtil.getConnectionID(ctx), RequestUtil.getDate(ctx)));
+            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+        }
+    };
+
+    public Handler serveGetTotalIncomeByAdminPerDayPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+    };
+
 }

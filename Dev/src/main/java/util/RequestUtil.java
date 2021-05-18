@@ -20,6 +20,12 @@ public class RequestUtil {
         return ctx.formParam("keyWord");
     }
 
+    public static String getDate(Context ctx) {
+        String [] date = ctx.formParam("date").split("-");
+        String result = date[2] + "/" + date[1] + "/" + date[0];
+        return result;
+    }
+
     public static Double getRatingItem(Context ctx) {
         String num = ctx.formParam("ratingItem");
         if(!num.equals(""))

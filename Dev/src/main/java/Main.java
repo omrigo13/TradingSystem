@@ -113,6 +113,12 @@ public class Main {
             post(Path.Web.GETSTOREDISCOUNTS, tradingSystem.handleGetStoreDiscountsPost);
             get(Path.Web.GETSTOREDISCOUNTS, tradingSystem.serveGetStoreDiscountsPage);
 
+            post(Path.Web.GETTOTALINCOMEBYSTOREPERDAY, tradingSystem.handleGetTotalIncomeByStorePerDayPost);
+            get(Path.Web.GETTOTALINCOMEBYSTOREPERDAY, tradingSystem.serveGetTotalIncomeByStorePerDayPage);
+
+            post(Path.Web.GETTOTALINCOMEBYADMINPERDAY, tradingSystem.handleGetTotalIncomeByAdminPerDayPost);
+            get(Path.Web.GETTOTALINCOMEBYADMINPERDAY, tradingSystem.serveGetTotalIncomeByAdminPerDayPage);
+
             post(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.handleUpdateProductDetailsPost);
             get(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.serveUpdateProductDetailsPage);
 
