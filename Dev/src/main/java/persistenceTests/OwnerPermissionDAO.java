@@ -2,23 +2,23 @@ package persistenceTests;
 
 import store.Inventory;
 import store.Item;
-import user.Subscriber;
+import user.OwnerPermission;
 
 import javax.persistence.*;
 import java.util.List;
 
-public class SubscriberDAO {
+public class OwnerPermissionDAO {
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
 
-    public Subscriber getById(String username) throws Exception {
+    public OwnerPermission getById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        String query = "select c from Subscriber c where c.username = :username";
-        TypedQuery<Subscriber> tq = em.createQuery(query, Subscriber.class);
-        tq.setParameter("username", username);
-        Subscriber subscriber = null;
+        String query = "select c from OwnerPermission c where c.id = :id";
+        TypedQuery<OwnerPermission> tq = em.createQuery(query, OwnerPermission.class);
+        tq.setParameter("id", id);
+        OwnerPermission ownerPermission = null;
         try{
-            subscriber = tq.getSingleResult();
-            return subscriber;
+            ownerPermission = tq.getSingleResult();
+            return ownerPermission;
         }
         catch (NoResultException e){
             e.printStackTrace();
@@ -29,13 +29,13 @@ public class SubscriberDAO {
         return null;
     }
 
-    public void add(Subscriber subscriber) throws Exception {
+    public void add(OwnerPermission ownerPermission) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
             et = em.getTransaction();
             et.begin();
-            em.persist(subscriber);
+            em.persist(ownerPermission);
             et.commit();
         }
         catch (Exception e){
@@ -49,11 +49,11 @@ public class SubscriberDAO {
         }
     }
 
-    public List<Subscriber> getAll() throws Exception {
+    public List<OwnerPermission> getAll() throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-        String query = "select c from Subscriber c where c.id is not null";
-        TypedQuery<Subscriber> tq = em.createQuery(query, Subscriber.class);
-        List<Subscriber> list;
+        String query = "select c from OwnerPermission c where c.id is not null";
+        TypedQuery<OwnerPermission> tq = em.createQuery(query, OwnerPermission.class);
+        List<OwnerPermission> list;
         try{
             list = tq.getResultList();
             return list;
@@ -67,20 +67,19 @@ public class SubscriberDAO {
         return null;
     }
 
-    public void setLoginStatus(String username, boolean isLoggedIn){
+    public void deleteById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
-        Subscriber subscriber = null;
+        OwnerPermission ownerPermission = null;
         try{
             et = em.getTransaction();
             et.begin();
-            subscriber = em.find(Subscriber.class, username);
-            subscriber.setLoggedIn(isLoggedIn);
-            em.persist(subscriber);
+            ownerPermission = em.find(OwnerPermission.class, id);
+            em.remove(ownerPermission);
             et.commit();
         }
         catch (Exception e){
-            if(et != null){
+            if(et!=null){
                 et.rollback();
             }
             e.printStackTrace();

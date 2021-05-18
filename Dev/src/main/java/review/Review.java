@@ -5,19 +5,19 @@ import store.Store;
 import user.User;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "review")
+//@Entity
+//@Table(name = "review")
 public class Review {
 
-    @Id
-    @GeneratedValue
+//    @Id
+//    @GeneratedValue
     private long id;
 
-    @ManyToOne
+//    @ManyToOne
     private User user;
-    @ManyToOne
+//    @ManyToOne
     private Store store;
-    @ManyToOne
+//    @ManyToOne
     private Item item;
 
     private String review;

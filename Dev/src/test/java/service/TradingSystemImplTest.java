@@ -363,8 +363,8 @@ public class TradingSystemImplTest {
         subscribers.add(subscriber1);
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
-        when(subscriber.getUserName()).thenReturn("Barak");
-        when(subscriber1.getUserName()).thenReturn("Lidor");
+        when(subscriber.getUsername()).thenReturn("Barak");
+        when(subscriber1.getUsername()).thenReturn("Lidor");
 
         when(tradingSystem.getStore(Integer.parseInt(storeId))).thenReturn(store);
         when(tradingSystem.getStoreStaff(eq(subscriber), eq(store), any())).thenReturn(subscribers);

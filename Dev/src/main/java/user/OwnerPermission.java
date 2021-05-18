@@ -4,11 +4,16 @@ import store.Store;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
-
+import javax.persistence.*;
+@Entity
 public class OwnerPermission extends StorePermission
 {
     private OwnerPermission(Store store) {
         super(store);
+    }
+
+    public OwnerPermission() {
+
     }
 
     public static OwnerPermission getInstance(Store store) {

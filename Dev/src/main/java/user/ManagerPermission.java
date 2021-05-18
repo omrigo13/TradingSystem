@@ -4,11 +4,16 @@ import store.Store;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
-
+import javax.persistence.*;
+@Entity
 public class ManagerPermission extends StorePermission
 {
     private ManagerPermission(Store store) {
         super(store);
+    }
+
+    public ManagerPermission() {
+
     }
 
     public static ManagerPermission getInstance(Store store) {

@@ -2,6 +2,7 @@ package user;
 
 import exceptions.*;
 import notifications.*;
+import persistenceTests.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -14,11 +15,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "Subscriber")
 public class Subscriber extends User {
-
-    @Id
-    private int id;
-    private String userName;
     @Transient
+    private Repo repo = new Repo();
+    private int id;
+    @Id
+    private String username;
+    @OneToMany
     private Set<Permission> permissions; // synchronized manually
     @Transient
     private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
@@ -28,13 +30,13 @@ public class Subscriber extends User {
     private Collection<Notification> notifications = new LinkedList<>();
     private boolean isLoggedIn = false;
 
-    public Subscriber(int id, String userName) {
-        this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
+    public Subscriber(int id, String username) {
+        this(id, username, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
     }
 
-    Subscriber(int id, String userName, Set<Permission> permissions, ConcurrentMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
+    Subscriber(int id, String username, Set<Permission> permissions, ConcurrentMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
         this.id = id;
-        this.userName = userName;
+        this.username = username;
         this.permissions = permissions;
         this.itemsPurchased = itemsPurchased;
         this.purchaseHistory = Collections.synchronizedCollection(purchaseHistory);
@@ -45,8 +47,8 @@ public class Subscriber extends User {
     }
 
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
     @Override
@@ -124,7 +126,7 @@ public class Subscriber extends User {
                 // check if the target is already a manager at this store
                 Permission managerPermission = ManagerPermission.getInstance(store);
                 if (target.havePermission(managerPermission))
-                    throw new AlreadyManagerException(userName);
+                    throw new AlreadyManagerException(username);
 
                 // add manager permission to the target
                 target.addPermission(managerPermission);
@@ -140,7 +142,7 @@ public class Subscriber extends User {
         removeOwnerPermission(target, store); // removes all store permissions
     }
 
-    public void addOwnerPermission(Store store) {
+    public Set<Permission> addOwnerPermission(Store store) {
 
         synchronized (permissions) {
 
@@ -149,6 +151,7 @@ public class Subscriber extends User {
             addPermission(EditPolicyPermission.getInstance(store));
             addPermission(ManageInventoryPermission.getInstance(store));
             addPermission(GetHistoryPermission.getInstance(store));
+            return permissions;
         }
     }
 
@@ -163,7 +166,7 @@ public class Subscriber extends User {
 
                 // check if the target is already an owner at this store
                 if (target.havePermission(ownerPermission))
-                    throw new AlreadyOwnerException(userName);
+                    throw new AlreadyOwnerException(username);
 
                 // check if the target is a manager that was appointed by someone else
                 ManagerPermission managerPermission = ManagerPermission.getInstance(store);
@@ -258,7 +261,7 @@ public class Subscriber extends User {
                 validatePermission(AppointerPermission.getInstance(target, store));
 
                 if (!target.havePermission(ManagerPermission.getInstance(store)))
-                    throw new TargetIsNotManagerException(target.getUserName(), store.getName());
+                    throw new TargetIsNotManagerException(target.getUsername(), store.getName());
 
                 // add the permission to the target (if he doesn't already have it)
                 target.addPermission(permission);
@@ -275,7 +278,7 @@ public class Subscriber extends User {
                 validatePermission(AppointerPermission.getInstance(target, store));
 
                 if (target.havePermission(OwnerPermission.getInstance(store)))
-                    throw new TargetIsOwnerException(target.getUserName(), store.getName());
+                    throw new TargetIsOwnerException(target.getUsername(), store.getName());
 
                 target.removePermission(permission);
             }

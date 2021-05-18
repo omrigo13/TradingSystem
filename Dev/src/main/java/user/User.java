@@ -23,17 +23,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "User")
+//@Entity
+//@Table(name = "User")
 public class User {
 
-    @Id
-    @GeneratedValue
-    private int id;
+//    @Id
+//    @GeneratedValue
+//    private int id;
 
-    @Transient
+//    @Transient
     protected final ConcurrentHashMap<Store, Basket> baskets;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
     public User() {
@@ -132,13 +132,13 @@ public class User {
         return totalPrice;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+//    public long getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public ConcurrentHashMap<Store, Basket> getBaskets() {
         return baskets;

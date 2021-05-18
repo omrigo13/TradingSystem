@@ -4,11 +4,17 @@ import store.Store;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
+import javax.persistence.*;
 
+@Entity
 public class ManageInventoryPermission extends StorePermission
 {
     private ManageInventoryPermission(Store store) {
         super(store);
+    }
+
+    public ManageInventoryPermission() {
+
     }
 
     public static ManageInventoryPermission getInstance(Store store) {

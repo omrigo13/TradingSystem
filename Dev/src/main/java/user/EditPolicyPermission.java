@@ -3,11 +3,17 @@ package user;
 import store.Store;
 
 import java.lang.ref.WeakReference;
+import javax.persistence.*;
 
+@Entity
 public class EditPolicyPermission extends StorePermission
 {
     private EditPolicyPermission(Store store) {
         super(store);
+    }
+
+    public EditPolicyPermission() {
+
     }
 
     public static EditPolicyPermission getInstance(Store store) {

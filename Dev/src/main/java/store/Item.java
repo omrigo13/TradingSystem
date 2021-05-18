@@ -23,7 +23,8 @@ public class Item {
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
-    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    @Transient
     private final Collection<Review> reviews = new LinkedList<>();
 
 //    @ManyToOne

@@ -56,7 +56,7 @@ public class PersistenceTests {
         service.login(subs2Id, "subs2UserName", "1234");
         service.login(subs3Id, "subs3UserName", "1234");
 
-
+        service.logout(subs3Id);
         storeId1 = service.openNewStore(founderStore1Id, "store1");
         storeId2 = service.openNewStore(founderStore2Id, "store2");
 
@@ -72,8 +72,9 @@ public class PersistenceTests {
     }
     @Test
     void test1() throws InvalidActionException {
-        System.out.println(service.getStoresInfo(admin1Id).toString());
+        System.out.println(service.getStoresInfo(founderStore1Id).toString());
     }
 
     //todo: persist users, subscribers, notifications, carts, permissions
+    //todo: check why Admin1 is not a Subscriber in TradingSystem.connections
 }

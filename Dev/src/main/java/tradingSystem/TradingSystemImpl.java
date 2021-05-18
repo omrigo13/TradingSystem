@@ -391,7 +391,7 @@ public class TradingSystemImpl {
         Collection<Subscriber> staff = tradingSystem.getStoreStaff(subscriber, store, new LinkedList<>());
         Collection<String> staffList = new LinkedList<>();
         for (Subscriber staffMember : staff)
-            staffList.add(staffMember.getUserName() + " : " + staffMember.storePermissionsToString(store));
+            staffList.add(staffMember.getUsername() + " : " + staffMember.storePermissionsToString(store));
 
         return staffList;
     }

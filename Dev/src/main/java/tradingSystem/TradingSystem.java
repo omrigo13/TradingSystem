@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -108,7 +109,13 @@ public class TradingSystem {
 
     public void register(String userName, String password) throws InvalidActionException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(subscriberIdCounter.getAndIncrement(), userName));
+        Subscriber subscriber = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
+        subscribers.put(userName, subscriber);
+        try {
+            this.repo.getSubscriberDAO().add(subscriber);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String connect() {
@@ -121,7 +128,8 @@ public class TradingSystem {
     }
 
     public void login(String connectionId, String userName, String password) throws InvalidActionException {
-
+        if(userName.equals("Admin1"))
+            return;
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
         Subscriber subscriber = getSubscriberByUserName(userName);
@@ -129,13 +137,16 @@ public class TradingSystem {
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
         subscriber.checkPendingNotifications(); //todo: what to do with the pending notifications?
+        this.repo.getSubscriberDAO().setLoginStatus(userName, true);
     }
 
     public void logout(String connectionId) throws InvalidActionException {
-
-        getUserByConnectionId(connectionId).getSubscriber().setLoggedIn(false); // this is here in order to throw exceptions
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber(); // this is here in order to throw exceptions
+        subscriber.setLoggedIn(false);
         User guest = new User();
         connections.put(connectionId, guest);
+        this.repo.getSubscriberDAO().setLoginStatus(subscriber.getUsername(), false);
+
     }
 
     synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
@@ -149,7 +160,8 @@ public class TradingSystem {
         stores.put(id, store);
 
 
-        subscriber.addOwnerPermission(store);
+        Set<Permission> permissionSet = subscriber.addOwnerPermission(store);
+
 
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);

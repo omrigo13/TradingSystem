@@ -7,8 +7,10 @@ public class Repo {
     private StoreDAO storeDAO;
     private SubscriberDAO subscriberDAO;
     private UserDAO userDAO;
+    private OwnerPermissionDAO ownerPermissionDAO;
 
     public Repo() {
+        this.ownerPermissionDAO = new OwnerPermissionDAO();
         this.basketDAO = new BasketDAO();
         this.inventoryDAO = new InventoryDAO();
         this.itemDAO = new ItemDAO();
@@ -39,5 +41,9 @@ public class Repo {
 
     public UserDAO getUserDAO() {
         return userDAO;
+    }
+
+    public OwnerPermissionDAO getOwnerPermissionDAO() {
+        return ownerPermissionDAO;
     }
 }

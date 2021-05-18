@@ -4,14 +4,20 @@ import store.Store;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
-
+import javax.persistence.*;
+@Entity
 public class AppointerPermission extends StorePermission
 {
-    private final Subscriber target;
+    @ManyToOne
+    private Subscriber target = null;
 
     private AppointerPermission(Subscriber target, Store store) {
         super(store);
         this.target = target;
+    }
+
+    public AppointerPermission() {
+
     }
 
     public Subscriber getTarget() {
@@ -40,7 +46,7 @@ public class AppointerPermission extends StorePermission
     public String toString() {
         return "AppointerPermission{" +
                 "store=" + (store == null ? null : store.getName()) +
-                " target=" + (target == null ? null : target.getUserName()) +
+                " target=" + (target == null ? null : target.getUsername()) +
                 '}';
     }
 }

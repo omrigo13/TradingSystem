@@ -1,7 +1,6 @@
 package user;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.persistence.MappedSuperclass;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -9,7 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
 
-@MappedSuperclass
+//@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Permission {
     @Id
     @GeneratedValue
@@ -25,5 +26,17 @@ public abstract class Permission {
     @Override
     public int hashCode() {
         return Objects.hash(getClass());
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public static Map<Permission, WeakReference<Permission>> getPool() {
+        return pool;
     }
 }
