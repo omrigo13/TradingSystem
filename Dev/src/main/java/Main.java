@@ -116,6 +116,18 @@ public class Main {
             post(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.handleUpdateProductDetailsPost);
             get(Path.Web.UPDATEPRODUCTDETAILS, tradingSystem.serveUpdateProductDetailsPage);
 
+            post(Path.Web.MAKEQUANTITYPOLICY, tradingSystem.handleMakeQuantityPolicyPost);
+            post(Path.Web.DOQUANTITYPOLICY, tradingSystem.handleDoQuantityPolicyPost);
+            get(Path.Web.MAKEQUANTITYPOLICY, tradingSystem.serveMakeQuantityPolicyPage);
+
+            post(Path.Web.MAKETIMEPOLICY, tradingSystem.handleMakeTimePolicyPost);
+            post(Path.Web.DOTIMEPOLICY, tradingSystem.handleDoTimePolicyPost);
+            get(Path.Web.MAKETIMEPOLICY, tradingSystem.serveMakeTimePolicyPage);
+
+            post(Path.Web.MAKEQUANTITYDISCOUNT, tradingSystem.handleMakeQuantityDiscountPost);
+            post(Path.Web.DOQUANTITYDISCOUNT, tradingSystem.handleDoQuantityDiscountPost);
+            get(Path.Web.MAKEQUANTITYDISCOUNT, tradingSystem.serveMakeQuantityDiscountPage);
+
             post(Path.Web.APPOINTSTOREOWNER, tradingSystem.handleAppointStoreOwnerPost);
             post(Path.Web.APPOINTSTOREMANAGER, tradingSystem.handleAppointStoreManagerPost);
             post(Path.Web.REMOVEOWNER, tradingSystem.handleRemoveOwnerPost);

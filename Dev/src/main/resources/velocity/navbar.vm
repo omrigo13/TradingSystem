@@ -57,6 +57,9 @@
                         <i class="fa fa-caret-down"></i>
                     </button>
                     <div class="dropdown-content">
+                        <a href="/makeQuantityPolicy">make quantity policy</a>
+                        <a href="/makeTimePolicy">make time policy</a>
+                        <a href="/makeQuantityDiscount">make quantity discount</a>
                         <a href="/assignRemovePolicy">assign or remove policy</a>
                         <a href="/complexPolicies">assign complex policy</a>
                         <a href="/makeBasketPurchasePolicy">make basket purchase policy</a>

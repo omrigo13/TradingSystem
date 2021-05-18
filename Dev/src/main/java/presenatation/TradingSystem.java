@@ -761,4 +761,100 @@ public class TradingSystem {
         }
     };
 
+    public Handler handleMakeQuantityPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }
+    };
+
+    public Handler handleDoQuantityPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("policy", tradingSystemService.makeQuantityPolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getItems(ctx), RequestUtil.getMinQuantity(ctx), RequestUtil.getMaxQuantity(ctx)));
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }
+    };
+
+    public Handler serveMakeQuantityPolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+    };
+
+    public Handler handleMakeTimePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }
+    };
+
+    public Handler handleDoTimePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("policy", tradingSystemService.makeTimePolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getItems(ctx), RequestUtil.getTime(ctx)));
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }
+    };
+
+    public Handler serveMakeTimePolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKETIMEPOLICY, model);
+    };
+
+    public Handler handleMakeQuantityDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }
+    };
+
+    public Handler handleDoQuantityDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("discount", tradingSystemService.makeQuantityDiscount(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getDiscount(ctx),  RequestUtil.getItems(ctx), RequestUtil.getPolicyID(ctx)));
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }
+    };
+
+    public Handler serveMakeQuantityDiscountPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+    };
+
 }

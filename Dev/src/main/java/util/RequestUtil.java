@@ -3,6 +3,9 @@ package util;
 
 import io.javalin.http.Context;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 public class RequestUtil {
 
     public static String getQueryLocale(Context ctx) {
@@ -31,11 +34,32 @@ public class RequestUtil {
         return null;
     }
 
+    public static int getMinQuantity(Context ctx) {
+        return Integer.parseInt(ctx.formParam("minQuantity"));
+    }
+
+    public static int getMaxQuantity(Context ctx) {
+        return Integer.parseInt(ctx.formParam("maxQuantity"));
+    }
+
+    public static Collection<String> getItems(Context ctx) {
+        Collection<String> items = ctx.formParams("items").subList(0, ctx.formParams("items").size());
+        Collection<String> result = new LinkedList<>();
+        for (String item: items) {
+            result.add(item.split("id:")[1].split(" ")[0]);
+        }
+        return result;
+    }
+
     public static Double getMaxPrice(Context ctx) {
         String num = ctx.formParam("maxPrice");
         if(!num.equals(""))
             return Double.parseDouble(ctx.formParam("maxPrice"));
         return null;
+    }
+
+    public static String getTime(Context ctx) {
+        return ctx.formParam("time");
     }
 
     public static Double getMinPrice(Context ctx) {
@@ -63,6 +87,10 @@ public class RequestUtil {
 
     public static String getDesc(Context ctx) {
         return ctx.formParam("desc");
+    }
+
+    public static int getDiscount(Context ctx) {
+        return Integer.parseInt(ctx.formParam("discount"));
     }
 
     public static String getProductID(Context ctx) {

@@ -54,6 +54,12 @@ public class Path {
         public static final String MAKEMAXDISCOUNT = "/makeMaxDiscount";
         public static final String MAKEBASKETPURCHASEPOLICY = "/makeBasketPurchasePolicy";
         public static final String GETSTOREDISCOUNTS = "/getStoreDiscounts";
+        public static final String MAKEQUANTITYPOLICY = "/makeQuantityPolicy";
+        public static final String DOQUANTITYPOLICY = "/doQuantityPolicy";
+        public static final String MAKEQUANTITYDISCOUNT = "/makeQuantityDiscount";
+        public static final String DOQUANTITYDISCOUNT = "/doQuantityDiscount";
+        public static final String MAKETIMEPOLICY = "/makeTimePolicy";
+        public static final String DOTIMEPOLICY = "/doTimePolicy";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
     }
@@ -82,6 +88,9 @@ public class Path {
         public static final String COMPLEXPOLICIES = "/velocity/policies/complexPolicies.vm";
         public static final String MAKEBASKETPURCHASEPOLICY = "/velocity/policies/makeBasketPurchasePolicy.vm";
         public static final String GETSTOREDISCOUNTS = "/velocity/policies/getStoreDiscounts.vm";
+        public static final String MAKEQUANTITYPOLICY = "/velocity/policies/makeQuantityPolicy.vm";
+        public static final String MAKEQUANTITYDISCOUNT = "/velocity/policies/makeQuantityDiscount.vm";
+        public static final String MAKETIMEPOLICY = "/velocity/policies/makeTimePolicy.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
     }
 }

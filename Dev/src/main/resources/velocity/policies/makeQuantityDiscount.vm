@@ -1,0 +1,71 @@
+#parse("/velocity/navbar.vm")
+#parse("/velocity/makeQuantityDiscount.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+        #if($storeID)
+            <div class="container">
+                <form id="doQuantityDiscountForm" method="post">
+                    <h1 id="doQuantityDiscountLabel">make quantity discount</h1>
+                    <input type="hidden" name="connectionID" id="connectionID" value="">
+                    <script type="text/javascript">
+                        document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                    </script>
+                    <input type="hidden" name="storeID" id="storeID" value=$storeID>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="items">items</label>
+                        </div>
+                        <div class="col-75">
+                            <label for="items">Choose an item:</label>
+                            <select name="items" id="items" multiple>
+                                #foreach($item in $items)
+                                    <option>$item</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="discount">discount</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="number" name="discount" placeholder="discount" value="" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="policyID">policyID</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="number" name="policyID" placeholder="policyID" value="" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="submit" formaction="/doQuantityDiscount" value="do quantity discount">
+                    </div>
+                </form>
+            </div>
+        #elseif($failed)
+            #@quantityDiscount()
+            #end
+            <p class="bad notification">discount failed</p>
+        #elseif($discount)
+            #@quantityDiscount()
+            #end
+            <p class="good notification">discount succeeded with id: $discount</p>
+        #else
+            #@quantityDiscount()
+            #end
+    #end
+</main>
+</body>
+</html>

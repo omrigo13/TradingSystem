@@ -1,0 +1,63 @@
+#parse("/velocity/navbar.vm")
+#parse("/velocity/makeTimePolicy.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+        #if($storeID)
+            <div class="container">
+                <form id="doTimePolicyForm" method="post">
+                    <h1 id="doTimePolicyLabel">make quantity policy</h1>
+                    <input type="hidden" name="connectionID" id="connectionID" value="">
+                    <script type="text/javascript">
+                        document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                    </script>
+                    <input type="hidden" name="storeID" id="storeID" value=$storeID>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="items">items</label>
+                        </div>
+                        <div class="col-75">
+                            <label for="items">Choose an item:</label>
+                            <select name="items" id="items" multiple>
+                                #foreach($item in $items)
+                                    <option>$item</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="time">time</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="time" name="time" placeholder="time" value="" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="submit" formaction="/doTimePolicy" value="do time policy">
+                    </div>
+                </form>
+            </div>
+        #elseif($failed)
+            #@timePolicy()
+            #end
+            <p class="bad notification">policy failed</p>
+        #elseif($policy)
+            #@timePolicy()
+            #end
+            <p class="good notification">policy succeeded with id: $policy</p>
+        #else
+            #@timePolicy()
+            #end
+    #end
+</main>
+</body>
+</html>
