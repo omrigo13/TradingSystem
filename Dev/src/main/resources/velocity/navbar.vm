@@ -19,8 +19,6 @@
                     #else
                         <a href="/login">$msg.get("COMMON_NAV_LOGIN")</a>
                     #end
-                    <a href="/adminActions">Admin actions</a>
-                    <a href="/getTotalIncomeByAdminPerDay">income for admin</a>
                     <a href="/register">$msg.get("COMMON_NAV_REGISTER")</a>
                     <a href="/updateProductAmountInBasket">$msg.get("COMMON_NAV_UPDATE_PRODUCT_AMOUNT_IN_BASKET")</a>
                     <a href="/showBasket">$msg.get("COMMON_NAV_SHOW_BASKET")</a>
@@ -66,6 +64,22 @@
                         <a href="/complexPolicies">assign complex policy</a>
                         <a href="/makeBasketPurchasePolicy">make basket purchase policy</a>
                         <a href="/getStoreDiscounts">get store discounts</a>
+                    </div>
+                </div>
+            </div>
+        #else
+
+        #end
+
+        #if($admin)
+            <div class="navbar">
+                <div class="dropdown">
+                    <button class="dropbtn">Admin
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/adminActions">Admin actions</a>
+                        <a href="/getTotalIncomeByAdminPerDay">income for admin</a>
                     </div>
                 </div>
             </div>

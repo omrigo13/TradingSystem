@@ -339,7 +339,7 @@ public class TradingSystem {
             ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
         }catch (InvalidStoreIdException e) {
             model.put("InvalidStoreId", true);
-            ctx.render(Path.Template.SHOWBASKET, model);
+            ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
         }
     };
 
@@ -419,8 +419,13 @@ public class TradingSystem {
         try {
             tradingSystemService.login(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getQueryPassword(ctx));
             ctx.sessionAttribute("currentUser", RequestUtil.getQueryUsername(ctx));
+            if(tradingSystemService.isAdmin(RequestUtil.getConnectionID(ctx)))
+            {
+                ctx.sessionAttribute("admin", "true");
+            }
             model.put("authenticationSucceeded", true);
             model.put("currentUser", RequestUtil.getQueryUsername(ctx));
+            model.put("admin", tradingSystemService.isAdmin(RequestUtil.getConnectionID(ctx)));
             if (RequestUtil.getQueryLoginRedirect(ctx) != null) {
                 ctx.redirect(RequestUtil.getQueryLoginRedirect(ctx));
             }
@@ -440,6 +445,7 @@ public class TradingSystem {
     public Handler handleLogoutPost = ctx -> {
         tradingSystemService.logout(RequestUtil.getConnectionIDLogout(ctx));
         ctx.sessionAttribute("currentUser", null);
+        ctx.sessionAttribute("admin", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);
     };

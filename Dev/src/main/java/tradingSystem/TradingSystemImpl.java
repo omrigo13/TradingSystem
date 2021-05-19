@@ -2,6 +2,7 @@ package tradingSystem;
 
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
+import exceptions.NoPermissionException;
 import store.Item;
 import store.Store;
 import user.*;
@@ -418,5 +419,15 @@ public class TradingSystemImpl {
             store.setActive();
         else
             store.setNotActive();
+    }
+
+    public boolean isAdmin(String connectionId) throws InvalidActionException {
+        Subscriber admin = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        try{
+            admin.validatePermission(AdminPermission.getInstance());
+            return true;
+        }catch (NoPermissionException e){
+            return false;
+        }
     }
 }

@@ -352,4 +352,10 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         eventLog.writeToLogger("Set store with id "+storeId+" status: "+status);
         tradingSystemImpl.setStoreStatus(storeId, status);
     }
+
+    @Override
+    public boolean isAdmin(String connectionId) throws InvalidActionException {
+        eventLog.writeToLogger("check if it is an admin with connection: " + connectionId);
+        return tradingSystemImpl.isAdmin(connectionId);
+    }
 }
