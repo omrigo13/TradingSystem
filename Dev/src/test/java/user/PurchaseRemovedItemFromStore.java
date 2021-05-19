@@ -30,6 +30,8 @@ public class PurchaseRemovedItemFromStore {
     @Mock private LinkedList<String> purchaseHistory;
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
     private final Observable observable = mock(Observable.class);
@@ -73,7 +75,7 @@ public class PurchaseRemovedItemFromStore {
             if(trialNumber.getAndIncrement() % 2 == 0) {
                 storeItems.compute(item, (k, v) -> v == null ? 1 : v + 1);
                 itemsAddedToStore.getAndIncrement();
-                user.purchaseCart(paymentSystem, deliverySystem);
+                user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
                 itemsBoughtFromStore.getAndIncrement();
             }
             else {

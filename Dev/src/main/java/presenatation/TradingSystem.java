@@ -305,13 +305,13 @@ public class TradingSystem {
 
     public Handler handlePurchasePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
-        try{
-            tradingSystemService.purchaseCart(RequestUtil.getConnectionID(ctx));
+//        try{
+//            tradingSystemService.purchaseCart(RequestUtil.getConnectionID(ctx));
             model.put("purchase", true);
             ctx.render(Path.Template.ROOT, model);
-        }catch (InvalidConnectionIdException ex) {
-            ctx.render(Path.Template.INVALID_CONNECTION, model);
-        }
+//        }catch (InvalidConnectionIdException ex) {
+//            ctx.render(Path.Template.INVALID_CONNECTION, model);
+//        }
     };
 
     public Handler handleShowBasketPost = ctx -> {

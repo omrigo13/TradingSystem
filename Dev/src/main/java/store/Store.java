@@ -1,5 +1,6 @@
 package store;
 
+import Offer.Offer;
 import exceptions.*;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
@@ -14,6 +15,7 @@ import user.User;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Store {
 
@@ -31,6 +33,9 @@ public class Store {
     private final Collection<String> purchases = new LinkedList<>();
     private Observable observable;
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
+    private final Map<Integer, Offer> storeOffers = new HashMap<>();
+    private final AtomicInteger offerIdCounter = new AtomicInteger();
+
 
     public Store() {
         this.observable = new Observable();
@@ -57,7 +62,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        // this.founder = founder; // TODO: should check how to implement
+        // this.founder = founder;
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
             this.purchasePolicy = new DefaultPurchasePolicy();
@@ -346,8 +351,8 @@ public class Store {
     }
 
     //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy) throws ItemException, PolicyException { // TODO should get basket
-        return inventory.calculate(basket, details, storeDiscountPolicy);
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException { // TODO should get basket
+        return inventory.calculate(basket, details, storeDiscountPolicy, userOffers);
     }
 
     //TODO make an exception for this
@@ -401,4 +406,20 @@ public class Store {
     }
 
     public void setObservable(Observable observable) { this.observable = observable; }
+
+    public void addOffer(Subscriber subscriber, Item item, int quantity, double price) {
+        this.storeOffers.put(offerIdCounter.getAndIncrement(), new Offer(subscriber, item, quantity, price));
+    }
+
+    public Collection<String> getOffers() {
+        Collection<String> offers = new LinkedList<>();
+        for (Map.Entry<Integer, Offer> offer: storeOffers.entrySet()) {
+            offers.add("offer id: " + offer.getKey() + offer.getValue().toString());
+        }
+        return offers;
+    }
+
+    public Offer getOfferById(int offerId) { return storeOffers.get(offerId); }
+
+    public Map<Integer, Offer> getStoreOffers() { return storeOffers; }
 }

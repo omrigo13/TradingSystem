@@ -4,6 +4,8 @@ import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
 import exceptions.NoPermissionException;
 import notifications.Notification;
+import externalServices.DeliveryData;
+import externalServices.PaymentData;
 import store.Item;
 import store.Store;
 import user.*;
@@ -50,6 +52,15 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
+    }
+
+    public void addItemToBasketByOffer(String connectionId, String storeId, String productId, int quantity, double price) throws InvalidActionException {
+
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Item item = store.searchItemById(Integer.parseInt(productId));
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        store.addOffer(subscriber, item, quantity, price);
+        //TODO notify all store owners and managers with manageInventory permission using notifications system
     }
 
     public Collection<String> showCart(String connectionId) throws InvalidActionException {
@@ -214,9 +225,12 @@ public class TradingSystemImpl {
         return tradingSystem.makeMaxDiscount(store, discountId1, discountId2);
     }
 
-    public void purchaseCart(String connectionId) throws Exception {
-
-        tradingSystem.purchaseCart(tradingSystem.getUserByConnectionId(connectionId));
+    public void purchaseCart(String connectionId, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) throws InvalidActionException {
+        User user = tradingSystem.getUserByConnectionId(connectionId);
+        PaymentData paymentData = new PaymentData(card_number, month, year, holder, ccv, id);
+        DeliveryData deliveryData = new DeliveryData(name, address, city, country, zip);
+        tradingSystem.purchaseCart(user, paymentData, deliveryData);
     }
 
     public Collection<String> getPurchaseHistory(String connectionId) throws InvalidActionException {
@@ -391,6 +405,21 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
 
         return subscriber.getSalesHistoryByStore(store);
+    }
+
+    public Collection<String> getOffersByStore(String connectionId, String storeId) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+
+        return subscriber.getOffersByStore(store);
+    }
+
+    public void approveOffer(String connectionId, String storeId, int offerId, double price) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.approveOffer(store, offerId, price);
     }
 
     public String getTotalIncomeByStorePerDay(String connectionId, String storeId, String date) throws InvalidActionException {

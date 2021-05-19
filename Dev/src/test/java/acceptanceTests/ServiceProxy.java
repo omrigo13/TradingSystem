@@ -53,6 +53,12 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
+    public void addItemToBasketByOffer(String userID, String storeId, String productId, int amount, double price) throws InvalidActionException {
+        if(real != null)
+            real.addItemToBasketByOffer(userID, storeId, productId, amount, price);
+    }
+
+    @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         if(real != null)
             return real.showCart(userID);
@@ -73,9 +79,10 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) throws Exception {
+    public void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) throws InvalidActionException {
         if(real != null)
-            real.purchaseCart(userID);
+            real.purchaseCart(userID, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
 
     @Override
@@ -205,6 +212,19 @@ public class ServiceProxy implements TradingSystemService {
         if(real != null)
             return real.getSalesHistoryByStore(userID, storeId);
         return null;
+    }
+
+    @Override
+    public Collection<String> getOffersByStore(String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            return real.getOffersByStore(userID, storeId);
+        return null;
+    }
+
+    @Override
+    public void approveOffer(String userID, String storeId, int offerID, Double price) throws InvalidActionException {
+        if(real != null)
+            real.approveOffer(userID, storeId, offerID, price);
     }
 
     @Override

@@ -39,6 +39,11 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
+    public void addItemToBasketByOffer(String userID, String storeId, String productId, int amount, double price) throws InvalidActionException {
+
+    }
+
+    @Override
     public Collection<String> showCart(String userID) {
         return null;
     }
@@ -54,7 +59,8 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) {
+    public void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) {
 
     }
 
@@ -156,6 +162,16 @@ public class TradingSystemServiceMock implements TradingSystemService {
     @Override
     public Collection<String> getSalesHistoryByStore(String userID, String storeId) {
         return null;
+    }
+
+    @Override
+    public Collection<String> getOffersByStore(String userID, String storeId) {
+        return null;
+    }
+
+    @Override
+    public void approveOffer(String userID, String storeId, int offerID, Double price) {
+
     }
 
     @Override

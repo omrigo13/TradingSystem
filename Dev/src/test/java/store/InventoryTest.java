@@ -223,7 +223,7 @@ public class InventoryTest {
 //        assertThrows(Exception.class, () -> inventory.calculate(items, details));
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 5);
         inventory.searchItem(carrotId).unlock();
-        assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet())), 110.0);
+        assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet()), null), 110.0);
         assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 3);
         inventory.searchItem(tomatoId).unlock();
         inventory.searchItem(cucumberID).unlock();
@@ -232,7 +232,7 @@ public class InventoryTest {
         basket.addItem(inventory.searchItem(tomatoId), 2);
         basket.addItem(inventory.searchItem(cucumberID), 2);
         basket.addItem(inventory.searchItem(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet())));
+        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet()), null));
     }
 //
 //    @Test

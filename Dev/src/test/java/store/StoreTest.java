@@ -9,11 +9,13 @@ import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
+import user.Subscriber;
 
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.mockito.Mockito.mock;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertThrows;
 import static org.testng.AssertJUnit.*;
@@ -320,7 +322,7 @@ public class StoreTest {
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())), 110.0);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet()), null), 110.0);
         assertEquals(store.getItems().get(store.searchItemById(tomatoId)).intValue(), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
@@ -329,7 +331,7 @@ public class StoreTest {
         basket.addItem(store.searchItemById(0), 2);
         basket.addItem(store.searchItemById(1), 2);
         basket.addItem(store.searchItemById(2), 8);
-        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet())));
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().keySet()), null));
     }
 
     @Test
@@ -366,5 +368,25 @@ public class StoreTest {
         assertEquals(store.getItems().get(store.searchItemById(carrotId)).intValue(), 16);
         assertFalse(store.searchItemById(cucumberID).isLocked());
         assertFalse(store.searchItemById(carrotId).isLocked());
+    }
+
+    @Test
+    void addOffer() {
+        Subscriber subscriber = mock(Subscriber.class);
+        Item item = mock(Item.class);
+        store.addOffer(subscriber, item, 5, 3.0);
+        assertEquals(1, store.getStoreOffers().values().size());
+        assertEquals(subscriber, store.getStoreOffers().get(0).getSubscriber());
+        assertEquals(item, store.getStoreOffers().get(0).getItem());
+    }
+
+    @Test
+    void getOffers() {
+        Subscriber subscriber = mock(Subscriber.class);
+        Item item = mock(Item.class);
+        store.addOffer(subscriber, item, 5, 3.0);
+        assertEquals(1, store.getOffers().size());
+        assertTrue(store.getOffers().toString().contains("5"));
+        assertTrue(store.getOffers().toString().contains("3.0"));
     }
 }

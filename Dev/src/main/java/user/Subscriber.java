@@ -1,5 +1,6 @@
 package user;
 
+import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import review.Review;
@@ -58,6 +59,15 @@ public class Subscriber extends User {
             cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
         purchaseHistory.add(cartPurchase);
 
+    }
+
+    @Override
+    public Collection<Offer> getOffers(Store store) {
+        Collection<Offer> userOffers = new LinkedList<>();
+        for (Offer offer : store.getStoreOffers().values())
+            if (this.getSubscriber().equals(offer.getSubscriber()))
+                userOffers.add(offer);
+        return userOffers;
     }
 
     public void addPermission(Permission permission) {
@@ -351,6 +361,25 @@ public class Subscriber extends User {
         validateAtLeastOnePermission(AdminPermission.getInstance(), GetHistoryPermission.getInstance(store));
 
         return store.getPurchaseHistory();
+    }
+
+    public Collection<String> getOffersByStore(Store store) throws NoPermissionException {
+
+        validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
+
+        return store.getOffers();
+    }
+
+    public void approveOffer(Store store, int offerId, double price) throws NoPermissionException {
+
+        //TODO should make copy constructor for item or deal with item price somehow without change original price
+        validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
+
+        Offer offer = store.getOfferById(offerId);
+        offer.approve();
+        if(price != 0)
+            offer.setPrice(price);
+        offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
     }
 
     public Collection<String> getPurchaseHistory() {
