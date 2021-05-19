@@ -1,0 +1,23 @@
+#macro(quantityPolicy)
+<div class="container">
+    <form id="makeQuantityPolicyForm" method="post">
+        <h1 id="makeQuantityPolicyLabel">make quantity policy</h1>
+        <input type="hidden" name="connectionID" id="connectionID" value="">
+        <script type="text/javascript">
+            document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+        </script>
+
+        <div class="row">
+            <div class="col-25">
+                <label for="storeID">storeID</label>
+            </div>
+            <div class="col-75">
+                <input name="storeID" placeholder="storeID" value="" required>
+            </div>
+        </div>
+        <div class="row">
+            <input type="submit" formaction="/makeQuantityPolicy" value="make quantity policy">
+        </div>
+    </form>
+</div>
+#end

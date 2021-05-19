@@ -360,4 +360,18 @@ public class ServiceProxy implements TradingSystemService {
     public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
 
     }
+
+    @Override
+    public boolean isAdmin(String connectionId) throws InvalidActionException {
+        if(real != null)
+            return real.isAdmin(connectionId);
+        return false;
+    }
+
+    @Override
+    public Collection<String> getNotifications(String connectionID) throws InvalidActionException {
+        if(real != null)
+            return real.getNotifications(connectionID);
+        return null;
+    }
 }

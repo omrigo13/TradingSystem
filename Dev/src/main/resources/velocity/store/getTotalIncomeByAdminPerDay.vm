@@ -1,0 +1,41 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="getTotalIncomeByAdminPerDayForm" method="post">
+            <h1 id="getTotalIncomeByAdminPerDayLabel">total income for admin</h1>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="date">date</label>
+                </div>
+                <div class="col-75">
+                    <input type="date" name="date" placeholder="date" value="" required>
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="get income">
+            </div>
+        </form>
+    </div>
+    #if($income)
+        <p class="good notification">$income</p>
+    #elseif($failed)
+        <p class="bad notification">not allowed to see income</p>
+    #end
+</main>
+</body>
+</html>

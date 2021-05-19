@@ -272,4 +272,14 @@ public class TradingSystemServiceMock implements TradingSystemService {
     public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
 
     }
+
+    @Override
+    public boolean isAdmin(String userName) throws InvalidActionException {
+        return false;
+    }
+
+    @Override
+    public Collection<String> getNotifications(String connectionID) throws InvalidActionException {
+        return null;
+    }
 }

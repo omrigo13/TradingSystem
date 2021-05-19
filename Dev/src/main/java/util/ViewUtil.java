@@ -14,6 +14,8 @@ public class ViewUtil {
         Map<String, Object> model = new HashMap<>();
         model.put("msg", new MessageBundle(getSessionLocale(ctx)));
         model.put("currentUser", getSessionCurrentUser(ctx));
+        model.put("admin", getSessionAdmin(ctx));
+        model.put("notifications", getSessionNotifications(ctx));
         return model;
     }
 

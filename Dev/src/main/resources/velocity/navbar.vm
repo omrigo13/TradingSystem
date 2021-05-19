@@ -19,7 +19,6 @@
                     #else
                         <a href="/login">$msg.get("COMMON_NAV_LOGIN")</a>
                     #end
-                    <a href="/adminActions">Admin actions</a>
                     <a href="/register">$msg.get("COMMON_NAV_REGISTER")</a>
                     <a href="/updateProductAmountInBasket">$msg.get("COMMON_NAV_UPDATE_PRODUCT_AMOUNT_IN_BASKET")</a>
                     <a href="/showBasket">$msg.get("COMMON_NAV_SHOW_BASKET")</a>
@@ -44,6 +43,7 @@
                         <a href="/getStoreDetails">get store details</a>
                         <a href="/deleteProductFromStore">delete product from store</a>
                         <a href="/updateProductDetails">update item details</a>
+                        <a href="/getTotalIncomeByStorePerDay">total income of store</a>
                     </div>
                 </div>
             </div>
@@ -57,6 +57,9 @@
                         <i class="fa fa-caret-down"></i>
                     </button>
                     <div class="dropdown-content">
+                        <a href="/makeQuantityPolicy">make quantity policy</a>
+                        <a href="/makeTimePolicy">make time policy</a>
+                        <a href="/makeQuantityDiscount">make quantity discount</a>
                         <a href="/assignRemovePolicy">assign or remove policy</a>
                         <a href="/complexPolicies">assign complex policy</a>
                         <a href="/makeBasketPurchasePolicy">make basket purchase policy</a>
@@ -68,10 +71,40 @@
 
         #end
 
+        #if($admin)
+            <div class="navbar">
+                <div class="dropdown">
+                    <button class="dropbtn">Admin
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/adminActions">Admin actions</a>
+                        <a href="/getTotalIncomeByAdminPerDay">income for admin</a>
+                    </div>
+                </div>
+            </div>
+        #else
+
+        #end
+
         <li><a href="/">Home</a></li>
         <li style="float:right"><a href="/cart" id="cartA"> <img id="cartPicture" src="/img/cart.jpg" alt="Cart"></a> </li>
+        #if($currentUser)
+            <div class="navbar">
+                <div class="dropdown" id="notifyDrop">
+                    <button class="dropbtn" id="notify"><img id="notificationsPicture" src="/img/notifications.png" alt="notifications">
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        #foreach($notification in $notifications)
+                            <a href="/#">$notification</a>
+                        #end
+                    </div>
+                </div>
+            </div>
+        #end
         <form class="searchBox" action="/search" method="post">
-            <li style="float:right"><input name="searchBox" id="searchBox" type="text" placeholder="Search..."></li>
+        <li style="float:right"><input name="searchBox" id="searchBox" type="text" placeholder="Search..."></li>
         </form>
     </ul>
 </header>

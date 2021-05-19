@@ -34,6 +34,10 @@ form{
     margin-block-end: 0em;
 }
 
+#Notify{
+    padding: 0px;
+}
+
 footer{
     text-align: center;
     position: relative;
@@ -115,6 +119,11 @@ li a:hover {
 }
 
 #cartPicture{
+    width: 80px;
+    height: 45px;
+}
+
+#notificationsPicture{
     width: 80px;
     height: 45px;
 }

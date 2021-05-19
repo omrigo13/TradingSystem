@@ -13,6 +13,7 @@ import util.Path;
 import util.RequestUtil;
 import util.ViewUtil;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -339,7 +340,7 @@ public class TradingSystem {
             ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
         }catch (InvalidStoreIdException e) {
             model.put("InvalidStoreId", true);
-            ctx.render(Path.Template.SHOWBASKET, model);
+            ctx.render(Path.Template.UPDATEPRODUCTAMOUNTINBASKET, model);
         }
     };
 
@@ -419,8 +420,16 @@ public class TradingSystem {
         try {
             tradingSystemService.login(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getQueryPassword(ctx));
             ctx.sessionAttribute("currentUser", RequestUtil.getQueryUsername(ctx));
+            if(tradingSystemService.isAdmin(RequestUtil.getConnectionID(ctx)))
+            {
+                ctx.sessionAttribute("admin", "true");
+            }
+            Collection<String> notifications = tradingSystemService.getNotifications(RequestUtil.getConnectionID(ctx));
+            ctx.sessionAttribute("notifications", notifications);
+            model.put("notifications", notifications);
             model.put("authenticationSucceeded", true);
             model.put("currentUser", RequestUtil.getQueryUsername(ctx));
+            model.put("admin", tradingSystemService.isAdmin(RequestUtil.getConnectionID(ctx)));
             if (RequestUtil.getQueryLoginRedirect(ctx) != null) {
                 ctx.redirect(RequestUtil.getQueryLoginRedirect(ctx));
             }
@@ -440,6 +449,8 @@ public class TradingSystem {
     public Handler handleLogoutPost = ctx -> {
         tradingSystemService.logout(RequestUtil.getConnectionIDLogout(ctx));
         ctx.sessionAttribute("currentUser", null);
+        ctx.sessionAttribute("admin", null);
+        ctx.sessionAttribute("notifications", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);
     };
@@ -759,6 +770,138 @@ public class TradingSystem {
             model.put("failed", true);
             ctx.render(Path.Template.GETSTOREDISCOUNTS, model);
         }
+    };
+
+    public Handler handleMakeQuantityPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }
+    };
+
+    public Handler handleDoQuantityPolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("policy", tradingSystemService.makeQuantityPolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getItems(ctx), RequestUtil.getMinQuantity(ctx), RequestUtil.getMaxQuantity(ctx)));
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+        }
+    };
+
+    public Handler serveMakeQuantityPolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKEQUANTITYPOLICY, model);
+    };
+
+    public Handler handleMakeTimePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }
+    };
+
+    public Handler handleDoTimePolicyPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("policy", tradingSystemService.makeTimePolicy(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getItems(ctx), RequestUtil.getTime(ctx)));
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKETIMEPOLICY, model);
+        }
+    };
+
+    public Handler serveMakeTimePolicyPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKETIMEPOLICY, model);
+    };
+
+    public Handler handleMakeQuantityDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("items", tradingSystemService.getItemsByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("storeID", RequestUtil.getStoreID(ctx));
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }
+    };
+
+    public Handler handleDoQuantityDiscountPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("discount", tradingSystemService.makeQuantityDiscount(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getDiscount(ctx),  RequestUtil.getItems(ctx), RequestUtil.getPolicyID(ctx)));
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+        }
+    };
+
+    public Handler serveMakeQuantityDiscountPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.MAKEQUANTITYDISCOUNT, model);
+    };
+
+    public Handler handleGetTotalIncomeByStorePerDayPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("income", tradingSystemService.getTotalIncomeByStorePerDay(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getDate(ctx)));
+            ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+        }
+    };
+
+    public Handler serveGetTotalIncomeByStorePerDayPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETTOTALINCOMEBYSTOREPERDAY, model);
+    };
+
+    public Handler handleGetTotalIncomeByAdminPerDayPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("income", tradingSystemService.getTotalIncomeByAdminPerDay(RequestUtil.getConnectionID(ctx), RequestUtil.getDate(ctx)));
+            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+        }
+    };
+
+    public Handler serveGetTotalIncomeByAdminPerDayPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
     };
 
 }

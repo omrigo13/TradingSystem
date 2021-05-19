@@ -115,7 +115,6 @@ public class TradingSystem {
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
-        subscriber.checkPendingNotifications(); //todo: what to do with the pending notifications?
     }
 
     public void logout(String connectionId) throws InvalidActionException {

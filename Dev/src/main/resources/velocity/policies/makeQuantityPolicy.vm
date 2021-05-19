@@ -1,0 +1,71 @@
+#parse("/velocity/navbar.vm")
+#parse("/velocity/makeQuantityPolicy.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+        #if($storeID)
+            <div class="container">
+                <form id="doQuantityPolicyForm" method="post">
+                    <h1 id="doQuantityPolicyLabel">make quantity policy</h1>
+                    <input type="hidden" name="connectionID" id="connectionID" value="">
+                    <script type="text/javascript">
+                        document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                    </script>
+                    <input type="hidden" name="storeID" id="storeID" value=$storeID>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="items">items</label>
+                        </div>
+                        <div class="col-75">
+                            <label for="items">Choose an item:</label>
+                            <select name="items" id="items" multiple>
+                                #foreach($item in $items)
+                                    <option>$item</option>
+                                #end
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="minQuantity">minQuantity</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="number" name="minQuantity" placeholder="minQuantity" value="" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-25">
+                            <label for="maxQuantity">maxQuantity</label>
+                        </div>
+                        <div class="col-75">
+                            <input type="number" name="maxQuantity" placeholder="maxQuantity" value="" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <input type="submit" formaction="/doQuantityPolicy" value="do quantity policy">
+                    </div>
+                </form>
+            </div>
+        #elseif($failed)
+            #@quantityPolicy()
+            #end
+            <p class="bad notification">policy failed</p>
+        #elseif($policy)
+            #@quantityPolicy()
+            #end
+            <p class="good notification">policy succeeded with id: $policy</p>
+        #else
+            #@quantityPolicy()
+            #end
+    #end
+</main>
+</body>
+</html>
