@@ -118,6 +118,9 @@ public class RequestUtil {
     public static String getManagerUserName(Context ctx) {
         return ctx.formParam("managerUserName");
     }
+    public static int getOfferID(Context ctx) {
+        return Integer.parseInt(ctx.formParam("offerID"));
+    }
 
     public static Double getPrice(Context ctx) {
         return Double.parseDouble(ctx.formParam("price"));

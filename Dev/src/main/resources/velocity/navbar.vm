@@ -71,6 +71,23 @@
 
         #end
 
+        #if($currentUser)
+            <div class="navbar">
+                <div class="dropdown">
+                    <button class="dropbtn">Offers
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        <a href="/addItemToBasketByOffer">add item by offer</a>
+                        <a href="/getOffersByStore">offers by store</a>
+                        <a href="/approveOffer">approve offer</a>
+                    </div>
+                </div>
+            </div>
+        #else
+
+        #end
+
         #if($admin)
             <div class="navbar">
                 <div class="dropdown">

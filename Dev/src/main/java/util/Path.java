@@ -63,6 +63,9 @@ public class Path {
         public static final String GETTOTALINCOMEBYSTOREPERDAY = "/getTotalIncomeByStorePerDay";
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/getTotalIncomeByAdminPerDay";
         public static final String PURCHASECART = "/purchaseCart";
+        public static final String ADDITEMTOBASKETBYOFFER = "/addItemToBasketByOffer";
+        public static final String GETOFFERSBYSTORE = "/getOffersByStore";
+        public static final String APPROVEOFFER = "/approveOffer";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
     }
@@ -98,5 +101,8 @@ public class Path {
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/velocity/store/getTotalIncomeByAdminPerDay.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
         public static final String PURCHASECART = "/velocity/cart/purchase.vm";
+        public static final String ADDITEMTOBASKETBYOFFER = "/velocity/offers/addItemToBasketByOffer.vm";
+        public static final String GETOFFERSBYSTORE = "/velocity/offers/getOffersByStore.vm";
+        public static final String APPROVEOFFER = "/velocity/offers/approveOffer.vm";
     }
 }

@@ -917,4 +917,61 @@ public class TradingSystem {
         ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
     };
 
+    public Handler handleAddItemToBasketByOfferPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.addItemToBasketByOffer(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getProductID(ctx), RequestUtil.getAmount(ctx), RequestUtil.getPrice(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.ADDITEMTOBASKETBYOFFER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.ADDITEMTOBASKETBYOFFER, model);
+        }
+    };
+
+    public Handler serveAddItemToBasketByOfferPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.ADDITEMTOBASKETBYOFFER, model);
+    };
+
+    public Handler handleGetOffersByStorePost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("offers", tradingSystemService.getOffersByStore(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx)));
+            model.put("success", true);
+            ctx.render(Path.Template.GETOFFERSBYSTORE, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETOFFERSBYSTORE, model);
+        }
+    };
+
+    public Handler serveGetOffersByStorePage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETOFFERSBYSTORE, model);
+    };
+
+    public Handler handleApproveOfferPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.approveOffer(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getOfferID(ctx), RequestUtil.getPrice(ctx));
+            model.put("success", true);
+            ctx.render(Path.Template.APPROVEOFFER, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.APPROVEOFFER, model);
+        }
+    };
+
+    public Handler serveApproveOfferPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.APPROVEOFFER, model);
+    };
+
 }
