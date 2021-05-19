@@ -1,0 +1,57 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+    <div class="container">
+        <form id="approveOfferForm" method="post">
+            <h1 id="approveOfferLabel">approve offer</h1>
+            <input type="hidden" name="connectionID" id="connectionID" value="">
+            <script type="text/javascript">
+                document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+            </script>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="storeID">storeID</label>
+                </div>
+                <div class="col-75">
+                    <input name="storeID" placeholder="storeID" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="offerID">offerID</label>
+                </div>
+                <div class="col-75">
+                    <input type="number" name="offerID" placeholder="offerID" value="">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="price">price</label>
+                </div>
+                <div class="col-75">
+                    <input name="price" placeholder="price" value="">
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" value="approve">
+            </div>
+        </form>
+    </div>
+    #if($success)
+        <p class="good notification">good approval for offer</p>
+    #elseif($failed)
+        <p class="bad notification">bad approval for offer</p>
+    #end
+</main>
+</body>
+</html>

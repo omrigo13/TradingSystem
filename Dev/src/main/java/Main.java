@@ -113,6 +113,15 @@ public class Main {
             post(Path.Web.PURCHASECART, tradingSystem.handlePurchaseCartPost);
             get(Path.Web.PURCHASECART, tradingSystem.servePurchaseCartPage);
 
+            post(Path.Web.ADDITEMTOBASKETBYOFFER, tradingSystem.handleAddItemToBasketByOfferPost);
+            get(Path.Web.ADDITEMTOBASKETBYOFFER, tradingSystem.serveAddItemToBasketByOfferPage);
+
+            post(Path.Web.GETOFFERSBYSTORE, tradingSystem.handleGetOffersByStorePost);
+            get(Path.Web.GETOFFERSBYSTORE, tradingSystem.serveGetOffersByStorePage);
+
+            post(Path.Web.APPROVEOFFER, tradingSystem.handleApproveOfferPost);
+            get(Path.Web.APPROVEOFFER, tradingSystem.serveApproveOfferPage);
+
             post(Path.Web.GETSTOREDISCOUNTS, tradingSystem.handleGetStoreDiscountsPost);
             get(Path.Web.GETSTOREDISCOUNTS, tradingSystem.serveGetStoreDiscountsPage);
 
