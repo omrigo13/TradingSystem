@@ -46,6 +46,17 @@ public class TradingSystemImplTest {
     private final String category = "category";
     private final String subCategory = "subCategory";
     private final Double price = 450.6;
+    private final String card_number = "1234";
+    private final String holder = "a";
+    private final String ccv = "001";
+    private final String id = "000000018";
+    private final String name = "name";
+    private final String address = "address";
+    private final String city = "city";
+    private final String country = "country";
+    private final int month = 1;
+    private final int year = 2022;
+    private final int zip = 12345;
 
     @BeforeMethod
     void setUp() {
@@ -138,7 +149,7 @@ public class TradingSystemImplTest {
     @Test
     void purchaseCart() throws InvalidActionException {
 
-        service.purchaseCart(connectionId);
+        service.purchaseCart(connectionId, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
 
     @Test

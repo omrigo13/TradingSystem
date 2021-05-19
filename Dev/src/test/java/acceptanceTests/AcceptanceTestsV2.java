@@ -18,6 +18,8 @@ public class AcceptanceTestsV2 {
     private String productId1, productId2, tomato, corn, milk, baguette;
     private String store1Manager1UserName = "Store1Manager1UserName", store2Manager1UserName = "Store2Manager1UserName", store1FounderUserName = "store1FounderUserName", store2FounderUserName = "store2FounderUserName", subs1UserName = "subs1UserName";
     private int quantityPolicy, basketPolicy, timePolicy, andPolicy, quantityDiscount1, quantityDiscount2, plusDiscount, maxDiscount;
+    private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
+    private int month = 1, year = 2022, zip = 12345;
 
     @BeforeMethod
     void setUp() throws InvalidActionException {
@@ -92,7 +94,7 @@ public class AcceptanceTestsV2 {
     void purchaseEmptyCart() throws InvalidActionException {
         setUpStore1Founder();
         assertEquals(0, service.showCart(founderStore1Id).size());
-        service.purchaseCart(founderStore1Id);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertEquals(0, service.getPurchaseHistory(founderStore1Id).size());
     }
 
@@ -102,7 +104,7 @@ public class AcceptanceTestsV2 {
         setUpStore1();
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         assertEquals(1, service.showCart(founderStore1Id).size());
-        service.purchaseCart(founderStore1Id);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertEquals(0, service.showCart(founderStore1Id).size());
         assertEquals(1, service.getPurchaseHistory(founderStore1Id).size());
         assertTrue(service.getPurchaseHistory(founderStore1Id).toString().contains("13"));
@@ -115,7 +117,7 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         service.addItemToBasket(founderStore1Id, storeId2, baguette, 3);
         assertEquals(2, service.showCart(founderStore1Id).size());
-        service.purchaseCart(founderStore1Id);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertEquals(0, service.showCart(founderStore1Id).size());
         assertEquals(1, service.getPurchaseHistory(founderStore1Id).size());
         assertTrue(service.getPurchaseHistory(founderStore1Id).toString().contains("13") &&
@@ -127,7 +129,7 @@ public class AcceptanceTestsV2 {
         setUpStore1();
         service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
         service.addItemToBasket(founderStore1Id, storeId1, productId2, 3);
-        service.purchaseCart(founderStore1Id);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1));
         service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
@@ -354,21 +356,21 @@ public class AcceptanceTestsV2 {
         service.assignStorePurchasePolicy(quantityPolicy, founderStore1Id, storeId1);
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("34"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
-        assertThrows(PolicyException.class, () -> service.purchaseCart(store1Manager1Id));
+        assertThrows(PolicyException.class, () -> service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip));
         assertFalse(service.getPurchaseHistory(store1Manager1Id).toString().contains("51"));
 
         service.addItemToBasket(guest1Id, storeId1, tomato, 4);
-        service.purchaseCart(guest1Id);
+        service.purchaseCart(guest1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         String goodPurchase = service.getSalesHistoryByStore(founderStore1Id, storeId1).toString();
         assertTrue(goodPurchase.indexOf("34") != goodPurchase.lastIndexOf("34") && goodPurchase.contains("34"));
 
         service.addItemToBasket(guest1Id, storeId1, tomato, 6);
-        assertThrows(PolicyException.class, () -> service.purchaseCart(guest1Id));
+        assertThrows(PolicyException.class, () -> service.purchaseCart(guest1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip));
         assertFalse(service.getSalesHistoryByStore(founderStore1Id, storeId1).toString().contains("51"));
 
     }
@@ -384,7 +386,7 @@ public class AcceptanceTestsV2 {
         service.assignStorePurchasePolicy(timePolicy, founderStore1Id, storeId1);
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("34"));
     }
 
@@ -405,14 +407,14 @@ public class AcceptanceTestsV2 {
         service.assignStorePurchasePolicy(tomatoAndCornPolicy, founderStore1Id, storeId1);
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
-        assertThrows(QuantityPolicyException.class, () -> service.purchaseCart(store1Manager1Id));
+        assertThrows(QuantityPolicyException.class, () -> service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip));
 
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 2);
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 2);
-        assertThrows(AndPolicyException.class, () -> service.purchaseCart(store1Manager1Id));
+        assertThrows(AndPolicyException.class, () -> service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip));
 
         service.updateProductAmountInBasket(store1Manager1Id, storeId1, tomato, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
 
     @Test
@@ -432,10 +434,10 @@ public class AcceptanceTestsV2 {
         service.assignStorePurchasePolicy(tomatoAndCornPolicy, founderStore1Id, storeId1);
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
-        assertThrows(QuantityPolicyException.class, () -> service.purchaseCart(store1Manager1Id));
+        assertThrows(QuantityPolicyException.class, () -> service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip));
 
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("63"));
     }
 
@@ -457,7 +459,7 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 4);
         service.addItemToBasket(store1Manager1Id, storeId2, milk, 2);
         service.addItemToBasket(store1Manager1Id, storeId2, baguette, 3);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("40") &&
                 service.getPurchaseHistory(store1Manager1Id).toString().contains("79.2"));
@@ -476,7 +478,7 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(store1Manager1Id, storeId1, productId2, 4);
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 2);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 3);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("78.5"));
     }
@@ -493,11 +495,11 @@ public class AcceptanceTestsV2 {
         service.assignStoreDiscountPolicy(quantityDiscount, founderStore1Id, storeId1);
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("42.5"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 6);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("45.9"));
     }
 
@@ -505,7 +507,7 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
     @Test
     void sub1With5PercentDiscountIfBasketContainsAtLeast5TomatoesAnd2CornsDiscountPolicy() throws InvalidActionException {
@@ -532,7 +534,7 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 2);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("97.375"));
     }
 
@@ -561,13 +563,13 @@ public class AcceptanceTestsV2 {
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 4);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 2);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("88.875"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 5);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 5);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("85.375"));
     }
 
@@ -590,17 +592,17 @@ public class AcceptanceTestsV2 {
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 2);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 7);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("62.5"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 3);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 1);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("32"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 3);
         service.addItemToBasket(store1Manager1Id, storeId1, productId1, 7);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("68.725"));
     }
 
@@ -621,12 +623,12 @@ public class AcceptanceTestsV2 {
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 10);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("196.5"));
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 1);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("122.49"));
     }
 
@@ -648,7 +650,7 @@ public class AcceptanceTestsV2 {
 
         service.addItemToBasket(store1Manager1Id, storeId1, tomato, 10);
         service.addItemToBasket(store1Manager1Id, storeId1, corn, 10);
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(store1Manager1Id).toString().contains("186.25"));
     }
 

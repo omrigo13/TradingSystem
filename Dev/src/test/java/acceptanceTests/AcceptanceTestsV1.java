@@ -22,6 +22,8 @@ public class AcceptanceTestsV1 {
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
     private PaymentSystemMock paymentSystem = (PaymentSystemMock) Driver.getPaymentSystem();
     private DeliverySystemMock deliverySystem = (DeliverySystemMock) Driver.getDeliverySystem();
+    private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
+    private int month = 1, year = 2022, zip = 12345;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -297,18 +299,17 @@ public class AcceptanceTestsV1 {
 
     @Test
     void validPurchaseCart() throws InvalidActionException {
-        //todo: fix Payment and Delivery system mocks and parameters
         addToBasketUseCase(); //run use case
         assertFalse(paymentSystem.getPayments().keySet().contains(subs1UserName));
         assertFalse(deliverySystem.getDeliveries().keySet().contains(subs1UserName));
 
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, subs1UserName, subs1UserName, address, city, country, zip);
         assertTrue(paymentSystem.getPayments().keySet().contains(subs1UserName));
         assertTrue(paymentSystem.getPayments().get(subs1UserName).get(0) == 101);
         assertTrue(deliverySystem.getDeliveries().keySet().contains(subs1UserName));
 
         assertFalse(deliverySystem.getDeliveries().keySet().contains(subs2UserName));
-        service.purchaseCart(subs2Id);
+        service.purchaseCart(subs2Id, card_number, month, year, holder, ccv, subs2UserName, subs2UserName, address, city, country, zip);
         assertTrue(paymentSystem.getPayments().keySet().contains(subs2UserName));
         assertTrue(paymentSystem.getPayments().get(subs2UserName).get(0) == 6);
         assertTrue(deliverySystem.getDeliveries().keySet().contains(subs2UserName));
@@ -319,9 +320,9 @@ public class AcceptanceTestsV1 {
     void purchaseCartWrongAmount() throws InvalidActionException {
 //        paymentSystemMock.setSucceed(false); //invalid purchase
         addToBasketUseCase(); //run use case
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         service.addItemToBasket(subs3Id, storeId1, productId1, 1);
-        WrongAmountException e = expectThrows(WrongAmountException.class, () -> service.purchaseCart(subs3Id)); //amount in store is currently 0, thus cannot make purchase
+        WrongAmountException e = expectThrows(WrongAmountException.class, () -> service.purchaseCart(subs3Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip)); //amount in store is currently 0, thus cannot make purchase
         assertEquals("there is not enough from the item", e.getMessage());
         assertFalse(paymentSystem.getPayments().keySet().contains(subs3UserName));
         assertFalse(deliverySystem.getDeliveries().keySet().contains(subs3UserName));
@@ -333,11 +334,11 @@ public class AcceptanceTestsV1 {
 
         //user 1 bought p.1 (milk), p.4 (baguette)
         //user 2 bought p.2 (cheese)
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("milk"));
         assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("baguette"));
         service.addItemToBasket(subs1Id, storeId1, productId2, 1);
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         Collection<String> str = service.getPurchaseHistory(subs1Id);
         assertTrue(str.size() == 2);
         assertTrue(service.getPurchaseHistory(subs1Id).toString().contains("cheese"));
@@ -353,7 +354,7 @@ public class AcceptanceTestsV1 {
     @Test
     void validWriteOpinionOnProduct() throws InvalidActionException {
         purchaseUserCase2();
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "desc example1");
         service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "desc example2");
         service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId3, "desc example3");
@@ -363,14 +364,14 @@ public class AcceptanceTestsV1 {
     @Test
     void writeOpinionOnProductNotPurchased() throws InvalidActionException {
         purchaseUserCase2();
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertThrows(ItemNotPurchasedException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, productId4, "opinion1"));
     }
 
     @Test
     void writeOpinionOnProductNotExist() throws InvalidActionException {
         purchaseUserCase2();
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertThrows(ItemNotFoundException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId2, "30", "opinion1")); //no such productId in store inventory
         assertThrows(InvalidStoreIdException.class, () -> service.writeOpinionOnProduct(store1Manager1Id, "99", productId1, "opinion1")); //no such storeId "abc"
     }
@@ -378,7 +379,7 @@ public class AcceptanceTestsV1 {
     @Test
     void writeOpinionOnProductWrongDesc() throws InvalidActionException {
         purchaseUserCase2();
-        service.purchaseCart(store1Manager1Id);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, null)); //null opinion
         assertThrows(Exception.class, () -> service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId2, "")); //empty opinion
@@ -638,7 +639,7 @@ public class AcceptanceTestsV1 {
     @Test
     void validAllowManagerToGetHistory() throws InvalidActionException{
         addItemToBasketUseCase3();
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(store1Manager1Id, storeId1)); //store1Manager1Id doesn't have permissions yet
         service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
         assertTrue(service.getSalesHistoryByStore(store1Manager1Id, storeId1).size() == 1);
@@ -653,7 +654,7 @@ public class AcceptanceTestsV1 {
         addItemToBasketUseCase3();
 
         //make the purchases: 2 from store1 and 1 from store2.
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         //tests for assigning (allowing) managers without permissions:
         assertThrows(Exception.class, () -> service.allowManagerToGetHistory(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
@@ -750,7 +751,7 @@ public class AcceptanceTestsV1 {
         //1 item from store2:
         service.addItemToBasket(subs1Id, storeId2, productId3, 1);
         //make the purchases: 2 from store1 and 1 from store2.
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         /**user subs2Id purchases:*/
         //1 item from store1:
@@ -758,7 +759,7 @@ public class AcceptanceTestsV1 {
         //1 item from store2:
         service.addItemToBasket(subs2Id, storeId2, productId4, 3);
         //make the purchases: 1 from store1 and 1 from store2.
-        service.purchaseCart(subs2Id);
+        service.purchaseCart(subs2Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         /**test get sales history: */
         assertTrue(service.getSalesHistoryByStore(admin1Id, storeId1).size() == 2);
@@ -776,7 +777,7 @@ public class AcceptanceTestsV1 {
         //1 item from store2:
         service.addItemToBasket(subs1Id, storeId2, productId3, 1);
         //make the purchases: 2 from store1 and 1 from store2.
-        service.purchaseCart(subs1Id);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(founderStore1Id, storeId2)); //founderStore1Id is not an owner of store2
         assertThrows(NoPermissionException.class, () -> service.getSalesHistoryByStore(subs2Id, storeId1)); //subs2UserName doesn't have permissions

@@ -73,9 +73,10 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) throws InvalidActionException {
+    public void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) throws InvalidActionException {
         if(real != null)
-            real.purchaseCart(userID);
+            real.purchaseCart(userID, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
 
     @Override

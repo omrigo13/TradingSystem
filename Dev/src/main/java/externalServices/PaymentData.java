@@ -13,15 +13,6 @@ public class PaymentData {
     private int transactionId;
     private boolean paid;
 
-    public PaymentData() { //TODO should be removed after fix purchase cart
-        card_number = "";
-        month = 0;
-        year = 0;
-        holder = "";
-        ccv = "";
-        id = "";
-    }
-
     public PaymentData(String card_number, int month, int year, String holder, String ccv, String id) {
         this.card_number = card_number;
         this.month = month;

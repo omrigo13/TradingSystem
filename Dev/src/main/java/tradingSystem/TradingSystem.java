@@ -331,10 +331,9 @@ public class TradingSystem {
         return id;
     }
 
-    public void purchaseCart(User user) throws InvalidActionException {
+    public void purchaseCart(User user, PaymentData paymentData, DeliveryData deliveryData) throws InvalidActionException {
 
-        //TODO deal with payment data and delivery data for purchase cart
-        user.purchaseCart(paymentSystem, deliverySystem, new PaymentData(), new DeliveryData());
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
