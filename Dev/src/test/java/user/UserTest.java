@@ -119,7 +119,7 @@ public class UserTest {
     }
 
     @Test
-    void purchaseCartCorrectValueCalculation() throws ItemException, PolicyException, ExternalServicesException {
+    void purchaseCartCorrectValueCalculation() throws InvalidActionException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);
@@ -130,7 +130,7 @@ public class UserTest {
     }
 
     @Test
-    void purchaseCartPurchaseHistoryUpdated() throws ItemException, PolicyException, ExternalServicesException {
+    void purchaseCartPurchaseHistoryUpdated() throws InvalidActionException {
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         baskets.put(store, basket);
         item = store.searchItemById(0);

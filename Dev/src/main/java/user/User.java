@@ -1,9 +1,7 @@
 package user;
 
 import Offer.Offer;
-import exceptions.ItemException;
-import exceptions.NotLoggedInException;
-import exceptions.PolicyException;
+import exceptions.*;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
@@ -59,7 +57,7 @@ public class User {
         return new LinkedList<Offer>();
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception {
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem, PaymentData paymentData, DeliveryData deliveryData) throws InvalidActionException {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
