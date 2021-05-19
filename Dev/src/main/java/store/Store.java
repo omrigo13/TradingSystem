@@ -419,7 +419,11 @@ public class Store {
         return offers;
     }
 
-    public Offer getOfferById(int offerId) { return storeOffers.get(offerId); }
+    public Offer getOfferById(int offerId) throws OfferNotExistsException {
+        if(!storeOffers.containsKey(offerId))
+            throw new OfferNotExistsException();
+        return storeOffers.get(offerId);
+    }
 
     public Map<Integer, Offer> getStoreOffers() { return storeOffers; }
 }
