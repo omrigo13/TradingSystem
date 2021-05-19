@@ -54,7 +54,8 @@ public class TradingSystemServiceMock implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) {
+    public void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) {
 
     }
 

@@ -52,7 +52,8 @@ public interface TradingSystemService {
 
     /* make purchase for every product in all of the user's baskets */
     //each purchase matches to an item from a store with the appropriate quantity.
-    void purchaseCart(String userID) throws Exception;
+    void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                      String name, String address, String city, String country, int zip) throws InvalidActionException;
 
     /* get purchase history of a user by permissions: user himself / system manager.
     * every purchase represents buying of a cart.

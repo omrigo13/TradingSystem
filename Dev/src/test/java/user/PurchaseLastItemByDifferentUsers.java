@@ -1,9 +1,12 @@
 package user;
 
+import exceptions.InvalidActionException;
 import exceptions.ItemException;
 import exceptions.PolicyException;
 import exceptions.WrongAmountException;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
@@ -38,6 +41,8 @@ public class PurchaseLastItemByDifferentUsers {
     Item item;
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
     private final Observable observable = mock(Observable.class);
@@ -66,7 +71,7 @@ public class PurchaseLastItemByDifferentUsers {
     }
 
     @Test(threadPoolSize = 10, invocationCount = 10000, timeOut = 12000)
-    public void test() throws Exception {
+    public void test() throws  InvalidActionException{
         try {
             int trialNumber = this.trialNumber.getAndIncrement();
             User user = trialNumber % 2 == 0 ? user1 : user2;
@@ -77,7 +82,7 @@ public class PurchaseLastItemByDifferentUsers {
                 assertTrue(currentQuantity > 0);
             }
 
-            user.purchaseCart(paymentSystem, deliverySystem);
+            user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
             itemsBoughtFromStore.getAndIncrement();
         }
         catch (WrongAmountException e) {

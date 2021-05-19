@@ -2,6 +2,8 @@ package tradingSystem;
 
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
+import externalServices.DeliveryData;
+import externalServices.PaymentData;
 import store.Item;
 import store.Store;
 import user.*;
@@ -212,9 +214,12 @@ public class TradingSystemImpl {
         return tradingSystem.makeMaxDiscount(store, discountId1, discountId2);
     }
 
-    public void purchaseCart(String connectionId) throws Exception {
-
-        tradingSystem.purchaseCart(tradingSystem.getUserByConnectionId(connectionId));
+    public void purchaseCart(String connectionId, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) throws InvalidActionException {
+        User user = tradingSystem.getUserByConnectionId(connectionId);
+        PaymentData paymentData = new PaymentData(card_number, month, year, holder, ccv, id);
+        DeliveryData deliveryData = new DeliveryData(name, address, city, country, zip);
+        tradingSystem.purchaseCart(user, paymentData, deliveryData);
     }
 
     public Collection<String> getPurchaseHistory(String connectionId) throws InvalidActionException {
