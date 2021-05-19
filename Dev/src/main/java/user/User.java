@@ -64,23 +64,28 @@ public class User {
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
         totalPrice = processCartAndCalculatePrice(totalPrice, storePurchaseDetails);
-        PaymentData paymentData = null;
-        boolean paymentDone = false;
+        if(totalPrice == 0)
+            return;
+        paymentData.setPaymentValue(totalPrice);
         try {
-            paymentData = new PaymentData(totalPrice, null);
+            paymentSystem.connect();
             paymentSystem.pay(paymentData);
-            paymentDone = true;
-            deliverySystem.deliver(new DeliveryData(null, null));
-        } catch (Exception e) {
-            if (paymentDone)
-                paymentSystem.payBack(paymentData);
+            deliverySystem.connect();
+            deliverySystem.deliver(deliveryData);
+        }
+        catch (PaymentSystemException pe) {
+            paymentSystem.cancel(paymentData);
             // for each store, rollback the basket (return items to inventory)
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());
-            throw e;
         }
-        if(totalPrice == 0)
-            return;
+        catch (DeliverySystemException de) {
+            paymentSystem.cancel(paymentData);
+            deliverySystem.cancel(deliveryData);
+            for (Map.Entry<Store, Basket> entry : baskets.entrySet())
+                entry.getKey().rollBack(entry.getValue().getItems());
+        }
+
         // add each purchase details string to the store it was purchased from
         for (Map.Entry<Store, String> entry : storePurchaseDetails.entrySet())
             entry.getKey().addPurchase(entry.getValue());
@@ -89,7 +94,9 @@ public class User {
             Store store = storeBasketEntry.getKey();
             Map<Item, Integer> basket = storeBasketEntry.getValue().getItems();
             store.notifyPurchase(this, basket);
-        }        addCartToPurchases(storePurchaseDetails);
+        }
+
+        addCartToPurchases(storePurchaseDetails);
         baskets.clear();
     }
 

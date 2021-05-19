@@ -1,7 +1,9 @@
 package policies;
 
 import exceptions.*;
+import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
+import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,6 +29,8 @@ public class PurchasePolicyTest {
 
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;
+    @Mock private PaymentData paymentData;
+    @Mock private DeliveryData deliveryData;
     @Mock private DiscountPolicy discountPolicy;
 
     private Store store;
@@ -62,18 +66,18 @@ public class PurchasePolicyTest {
     }
 
     @Test //should be here {1,0} {0,1}
-    void xorPolicyByItemGoodDetails() throws Exception {
+    void xorPolicyByItemGoodDetails() throws InvalidActionException {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 6, 12));
         store.setPurchasePolicy(new XorPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.getItems().keySet(), 6, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new XorPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
     }
 
     @Test
@@ -82,36 +86,36 @@ public class PurchasePolicyTest {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new XorPolicy(policies));
-        assertThrows(XorPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(XorPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 3));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 4));
         store.setPurchasePolicy(new XorPolicy(policies));
-        assertThrows(XorPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(XorPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test //should be here {1,1} {0,1} {1,0}
-    void orPolicyByCategoryGoodDetails() throws Exception {
+    void orPolicyByCategoryGoodDetails() throws InvalidActionException {
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 6));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 6, 12));
         store.setPurchasePolicy(new OrPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 6, 12));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 6));
         store.setPurchasePolicy(new OrPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 8));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 4, 8));
         store.setPurchasePolicy(new OrPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
     }
 
     @Test //should be here {0,0}
@@ -119,15 +123,15 @@ public class PurchasePolicyTest {
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 3));
         policies.add(new QuantityPolicy(store.searchItems(null, null, "cat2"), 0, 4));
         store.setPurchasePolicy(new OrPolicy(policies));
-        assertThrows(OrPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(OrPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test //should be here {1,1}
-    void andPolicyByItemGoodDetails() throws Exception {
+    void andPolicyByItemGoodDetails() throws InvalidActionException {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new AndPolicy(policies));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
     }
 
     @Test //should be here {0,1} {1,0} {0,0}
@@ -135,21 +139,21 @@ public class PurchasePolicyTest {
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 4));
         store.setPurchasePolicy(new AndPolicy(policies));
-        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 3));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new AndPolicy(policies));
-        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
 
         updateDetails();
         policies.clear();
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 3));
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 4));
         store.setPurchasePolicy(new AndPolicy(policies));
-        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(AndPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
@@ -169,14 +173,14 @@ public class PurchasePolicyTest {
         Item item3 = store.searchItemById(2);
         policies.add(new QuantityPolicy(store.getItems().keySet(), 0, 12));
         store.setPurchasePolicy(new AndPolicy(policies));
-        assertThrows(QuantityPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(QuantityPolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
     void quantityPolicyBasketWrongMinQauntityItem() throws PolicyException {
         user.getBasket(store).setQuantity(item1, 1);
         store.setPurchasePolicy(new QuantityPolicy(store.getItems().keySet(), 2, 4));
-        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
@@ -184,15 +188,15 @@ public class PurchasePolicyTest {
         user.getBasket(store).setQuantity(item1, 5);
         user.getBasket(store).setQuantity(item2, 4);
         store.setPurchasePolicy(new QuantityPolicy(store.getItems().keySet(), 2, 4));
-        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 
     @Test
-    void timePolicyGoodDetails() throws Exception {
+    void timePolicyGoodDetails() throws InvalidActionException {
         user.getBasket(store).setQuantity(item1, 5);
         user.getBasket(store).setQuantity(item2, 4);
         store.setPurchasePolicy(new TimePolicy(store.getItems().keySet(), LocalTime.of(0,0)));
-        user.purchaseCart(paymentSystem, deliverySystem);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
     }
 
     @Test
@@ -200,6 +204,6 @@ public class PurchasePolicyTest {
         user.getBasket(store).setQuantity(item1, 5);
         user.getBasket(store).setQuantity(item2, 4);
         store.setPurchasePolicy(new TimePolicy(store.getItems().keySet(), LocalTime.of(23,59)));
-        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem));
+        assertThrows(PolicyException.class, ()->user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData));
     }
 }

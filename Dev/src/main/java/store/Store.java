@@ -62,7 +62,7 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        // this.founder = founder; // TODO: should check how to implement
+        // this.founder = founder;
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
             this.purchasePolicy = new DefaultPurchasePolicy();

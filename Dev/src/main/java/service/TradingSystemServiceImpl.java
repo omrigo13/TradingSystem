@@ -188,9 +188,10 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
-    public void purchaseCart(String userID) throws Exception {
+    public void purchaseCart(String userID, String card_number, int month, int year, String holder, String ccv, String id,
+                             String name, String address, String city, String country, int zip) throws InvalidActionException {
         eventLog.writeToLogger("User purchase cart");
-        tradingSystemImpl.purchaseCart(userID);
+        tradingSystemImpl.purchaseCart(userID, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
     }
 
     @Override
