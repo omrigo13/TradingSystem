@@ -110,6 +110,9 @@ public class Main {
             post(Path.Web.MAKEBASKETPURCHASEPOLICY, tradingSystem.handleMakeBasketPurchasePolicyPost);
             get(Path.Web.MAKEBASKETPURCHASEPOLICY, tradingSystem.serveMakeBasketPurchasePolicyPage);
 
+            post(Path.Web.PURCHASECART, tradingSystem.handlePurchaseCartPost);
+            get(Path.Web.PURCHASECART, tradingSystem.servePurchaseCartPage);
+
             post(Path.Web.GETSTOREDISCOUNTS, tradingSystem.handleGetStoreDiscountsPost);
             get(Path.Web.GETSTOREDISCOUNTS, tradingSystem.serveGetStoreDiscountsPage);
 
