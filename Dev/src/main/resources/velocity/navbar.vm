@@ -89,8 +89,22 @@
 
         <li><a href="/">Home</a></li>
         <li style="float:right"><a href="/cart" id="cartA"> <img id="cartPicture" src="/img/cart.jpg" alt="Cart"></a> </li>
+        #if($currentUser)
+            <div class="navbar">
+                <div class="dropdown" id="notifyDrop">
+                    <button class="dropbtn" id="notify"><img id="notificationsPicture" src="/img/notifications.png" alt="notifications">
+                        <i class="fa fa-caret-down"></i>
+                    </button>
+                    <div class="dropdown-content">
+                        #foreach($notification in $notifications)
+                            <a href="/#">$notification</a>
+                        #end
+                    </div>
+                </div>
+            </div>
+        #end
         <form class="searchBox" action="/search" method="post">
-            <li style="float:right"><input name="searchBox" id="searchBox" type="text" placeholder="Search..."></li>
+        <li style="float:right"><input name="searchBox" id="searchBox" type="text" placeholder="Search..."></li>
         </form>
     </ul>
 </header>

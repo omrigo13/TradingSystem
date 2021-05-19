@@ -267,4 +267,6 @@ public interface TradingSystemService {
     void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException;
 
     boolean isAdmin(String userName) throws InvalidActionException;
+
+    Collection<String> getNotifications(String connectionID) throws InvalidActionException;
 }

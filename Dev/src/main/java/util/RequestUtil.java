@@ -158,6 +158,10 @@ public class RequestUtil {
         return (String) ctx.sessionAttribute("admin");
     }
 
+    public static Collection<String> getSessionNotifications(Context ctx) {
+        return ctx.sessionAttribute("notifications");
+    }
+
     public static boolean removeSessionAttrLoggedOut(Context ctx) {
         String loggedOut = ctx.sessionAttribute("loggedOut");
         ctx.sessionAttribute("loggedOut", null);

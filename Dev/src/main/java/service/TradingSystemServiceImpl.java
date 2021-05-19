@@ -358,4 +358,10 @@ public class TradingSystemServiceImpl implements TradingSystemService {
         eventLog.writeToLogger("check if it is an admin with connection: " + connectionId);
         return tradingSystemImpl.isAdmin(connectionId);
     }
+
+    @Override
+    public Collection<String> getNotifications(String connectionId) throws InvalidActionException {
+        eventLog.writeToLogger("get notifications with connection: " + connectionId);
+        return tradingSystemImpl.getNotifications(connectionId);
+    }
 }

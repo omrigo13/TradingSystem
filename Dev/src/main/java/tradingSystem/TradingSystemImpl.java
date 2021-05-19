@@ -3,6 +3,7 @@ package tradingSystem;
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
 import exceptions.NoPermissionException;
+import notifications.Notification;
 import store.Item;
 import store.Store;
 import user.*;
@@ -429,5 +430,15 @@ public class TradingSystemImpl {
         }catch (NoPermissionException e){
             return false;
         }
+    }
+
+    public Collection<String> getNotifications(String connectionId) throws InvalidActionException {
+        Subscriber user = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Collection<Notification> n1 = user.checkPendingNotifications();
+        Collection<String> result = new LinkedList<>();
+        for (Notification n: n1) {
+            result.add(n.toString());
+        }
+        return result;
     }
 }

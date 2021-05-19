@@ -261,4 +261,9 @@ public class TradingSystemServiceMock implements TradingSystemService {
     public boolean isAdmin(String userName) throws InvalidActionException {
         return false;
     }
+
+    @Override
+    public Collection<String> getNotifications(String connectionID) throws InvalidActionException {
+        return null;
+    }
 }

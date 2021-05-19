@@ -13,6 +13,7 @@ import util.Path;
 import util.RequestUtil;
 import util.ViewUtil;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -423,6 +424,9 @@ public class TradingSystem {
             {
                 ctx.sessionAttribute("admin", "true");
             }
+            Collection<String> notifications = tradingSystemService.getNotifications(RequestUtil.getConnectionID(ctx));
+            ctx.sessionAttribute("notifications", notifications);
+            model.put("notifications", notifications);
             model.put("authenticationSucceeded", true);
             model.put("currentUser", RequestUtil.getQueryUsername(ctx));
             model.put("admin", tradingSystemService.isAdmin(RequestUtil.getConnectionID(ctx)));
@@ -446,6 +450,7 @@ public class TradingSystem {
         tradingSystemService.logout(RequestUtil.getConnectionIDLogout(ctx));
         ctx.sessionAttribute("currentUser", null);
         ctx.sessionAttribute("admin", null);
+        ctx.sessionAttribute("notifications", null);
         ctx.sessionAttribute("loggedOut", "true");
         ctx.redirect(Path.Web.LOGIN);
     };
