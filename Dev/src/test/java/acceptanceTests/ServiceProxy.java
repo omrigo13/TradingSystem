@@ -53,6 +53,12 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
+    public void addItemToBasketByOffer(String userID, String storeId, String productId, int amount, double price) throws InvalidActionException {
+        if(real != null)
+            real.addItemToBasketByOffer(userID, storeId, productId, amount, price);
+    }
+
+    @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         if(real != null)
             return real.showCart(userID);
@@ -206,6 +212,19 @@ public class ServiceProxy implements TradingSystemService {
         if(real != null)
             return real.getSalesHistoryByStore(userID, storeId);
         return null;
+    }
+
+    @Override
+    public Collection<String> getOffersByStore(String userID, String storeId) throws InvalidActionException {
+        if(real != null)
+            return real.getOffersByStore(userID, storeId);
+        return null;
+    }
+
+    @Override
+    public void approveOffer(String userID, String storeId, int offerID, Double price) throws InvalidActionException {
+        if(real != null)
+            real.approveOffer(userID, storeId, offerID, price);
     }
 
     @Override

@@ -52,6 +52,15 @@ public class TradingSystemImpl {
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
     }
 
+    public void addItemToBasketByOffer(String connectionId, String storeId, String productId, int quantity, double price) throws InvalidActionException {
+
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        Item item = store.searchItemById(Integer.parseInt(productId));
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        store.addOffer(subscriber, item, quantity, price);
+        //TODO notify all store owners and managers with manageInventory permission using notifications system
+    }
+
     public Collection<String> showCart(String connectionId) throws InvalidActionException {
 
         Collection<String> itemList = new LinkedList<>();
@@ -394,6 +403,21 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
 
         return subscriber.getSalesHistoryByStore(store);
+    }
+
+    public Collection<String> getOffersByStore(String connectionId, String storeId) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+
+        return subscriber.getOffersByStore(store);
+    }
+
+    public void approveOffer(String connectionId, String storeId, int offerId, double price) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.approveOffer(store, offerId, price);
     }
 
     public String getTotalIncomeByStorePerDay(String connectionId, String storeId, String date) throws InvalidActionException {

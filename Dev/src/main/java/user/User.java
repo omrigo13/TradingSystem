@@ -1,6 +1,9 @@
 package user;
 
-import exceptions.*;
+import Offer.Offer;
+import exceptions.ItemException;
+import exceptions.NotLoggedInException;
+import exceptions.PolicyException;
 import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
@@ -11,17 +14,12 @@ import store.Item;
 import store.Store;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class User {
 
     protected final ConcurrentHashMap<Store, Basket> baskets;
-
-//    private final PaymentData paymentData;
-//    private final DeliveryData deliveryData;
 
     public User() {
         this(new ConcurrentHashMap<>());
@@ -56,7 +54,12 @@ public class User {
         // overridden in subclass
     }
 
-    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem, PaymentData paymentData, DeliveryData deliveryData) throws ItemException, PolicyException, ExternalServicesException {
+    public Collection<Offer> getOffers(Store store) {
+        // overridden in subclass
+        return new LinkedList<Offer>();
+    }
+
+    public void purchaseCart(PaymentSystem paymentSystem, DeliverySystem deliverySystem) throws Exception {
 
         double totalPrice = 0;
         Map<Store, String> storePurchaseDetails = new HashMap<>();
@@ -112,7 +115,15 @@ public class User {
             StringBuilder purchaseDetails = new StringBuilder();
             Store store = storeBasketEntry.getKey();
             Basket basket = storeBasketEntry.getValue();
-            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy);
+            Collection<Offer> userOffers = this.getOffers(store);
+
+            double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy, userOffers);
+
+            for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
+                if(userOffers.contains(offer.getValue()) && offer.getValue().isApproved())
+                    store.getStoreOffers().remove(offer.getKey());
+            }
+
             totalPrice += price;
             String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
             if(store.getTotalValuePerDay().containsKey(date))

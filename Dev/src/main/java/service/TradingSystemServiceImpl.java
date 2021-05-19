@@ -68,6 +68,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     }
 
     @Override
+    public void addItemToBasketByOffer(String userID, String storeId, String productId, int amount, double price) throws InvalidActionException {
+        eventLog.writeToLogger("Add new offer to purchase item: " + productId + " of the store: " + storeId + " for the price: " + price);
+        tradingSystemImpl.addItemToBasketByOffer(userID, storeId, productId, amount, price);
+    }
+
+    @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("Show user cart");
 //        LinkedList<String> l = new LinkedList<>();
@@ -321,6 +327,18 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getSalesHistoryByStore(String userID, String storeId) throws InvalidActionException {
         eventLog.writeToLogger("Get sales history by store");
         return tradingSystemImpl.getSalesHistoryByStore(userID, storeId);
+    }
+
+    @Override
+    public Collection<String> getOffersByStore(String userID, String storeId) throws InvalidActionException {
+        eventLog.writeToLogger("Get offers by store");
+        return tradingSystemImpl.getOffersByStore(userID, storeId);
+    }
+
+    @Override
+    public void approveOffer(String userID, String storeId, int offerID, Double price) throws InvalidActionException {
+        eventLog.writeToLogger("approve offer: " + offerID);
+        tradingSystemImpl.approveOffer(userID, storeId, offerID, price);
     }
 
     @Override
