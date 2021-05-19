@@ -62,6 +62,7 @@ public class Path {
         public static final String DOTIMEPOLICY = "/doTimePolicy";
         public static final String GETTOTALINCOMEBYSTOREPERDAY = "/getTotalIncomeByStorePerDay";
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/getTotalIncomeByAdminPerDay";
+        public static final String PURCHASECART = "/purchaseCart";
         public static final String NotFound = "/notfound";
         public static final String ROOT = "/";
     }
@@ -96,5 +97,6 @@ public class Path {
         public static final String GETTOTALINCOMEBYSTOREPERDAY = "/velocity/store/getTotalIncomeByStorePerDay.vm";
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/velocity/store/getTotalIncomeByAdminPerDay.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
+        public static final String PURCHASECART = "/velocity/cart/purchase.vm";
     }
 }

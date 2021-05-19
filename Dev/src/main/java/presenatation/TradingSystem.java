@@ -305,13 +305,26 @@ public class TradingSystem {
 
     public Handler handlePurchasePost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
-//        try{
-//            tradingSystemService.purchaseCart(RequestUtil.getConnectionID(ctx));
-            model.put("purchase", true);
-            ctx.render(Path.Template.ROOT, model);
-//        }catch (InvalidConnectionIdException ex) {
-//            ctx.render(Path.Template.INVALID_CONNECTION, model);
-//        }
+            ctx.render(Path.Template.PURCHASECART, model);
+    };
+
+    public Handler handlePurchaseCartPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            tradingSystemService.purchaseCart(RequestUtil.getConnectionID(ctx),ctx.formParam("card_number"), Integer.parseInt(ctx.formParam("month")), Integer.parseInt(ctx.formParam("year")), ctx.formParam("holder"), ctx.formParam("ccv"), ctx.formParam("id"), ctx.formParam("name"), ctx.formParam("address"), ctx.formParam("city"), ctx.formParam("country"), Integer.parseInt(ctx.formParam("zip")));
+            model.put("success", true);
+            ctx.render(Path.Template.PURCHASECART, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.PURCHASECART, model);
+        }
+    };
+
+    public Handler servePurchaseCartPage = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.PURCHASECART, model);
     };
 
     public Handler handleShowBasketPost = ctx -> {

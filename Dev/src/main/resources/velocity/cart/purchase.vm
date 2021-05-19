@@ -1,0 +1,121 @@
+#parse("/velocity/navbar.vm")
+<html lang="en-us">
+<head>
+    <title>$msg.get("COMMON_TITLE")</title>
+    <link rel="stylesheet" href="/main.css">
+    <link rel="icon" href="/picture.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    #@navbar()
+    #end
+<main>
+        <div class="container">
+            <form id="purchaseCartForm" action="/purchaseCart" method="post">
+                <h1 id="purchaseCartLabel">purchase cart</h1>
+                <input type="hidden" name="connectionID" id="connectionID" value="">
+                <script type="text/javascript">
+                    document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                </script>
+
+                <div class="row">
+                    <div class="col-25">
+                        <label for="card_number">card_number</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="card_number" placeholder="card_number" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="month">month</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="month" placeholder="month" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="year">year</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="year" placeholder="year" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="holder">holder</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="holder" placeholder="holder" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="ccv">ccv</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="ccv" placeholder="ccv" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="id">id</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="id" placeholder="id" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="name">name</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="name" placeholder="name" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="address">address</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="address" placeholder="address" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="city">city</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="city" placeholder="city" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="country">country</label>
+                    </div>
+                    <div class="col-75">
+                        <input name="country" placeholder="country" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-25">
+                        <label for="zip">zip</label>
+                    </div>
+                    <div class="col-75">
+                        <input type="number" name="zip" placeholder="zip" value="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" value="purchase">
+                </div>
+            </form>
+        </div>
+    #if($success)
+        <p class="good notification">purchase cart successfully</p>
+    #elseif($failed)
+        <p class="bad notification">purchase cart failed<</p>
+    #end
+</main>
+</body>
+</html>
