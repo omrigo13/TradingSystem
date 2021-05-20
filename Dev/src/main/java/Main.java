@@ -28,9 +28,9 @@ public class Main {
             config.server(() -> {
                 Server server = new Server();
                 ServerConnector sslConnector = new ServerConnector(server, getSslContextFactory());
-                sslConnector.setPort(443);
+                sslConnector.setPort(cfg.sslPort);
                 ServerConnector connector = new ServerConnector(server);
-                connector.setPort(80);
+                connector.setPort(cfg.port);
                 server.setConnectors(new Connector[]{sslConnector, connector});
                 return server;
             });
