@@ -2,7 +2,7 @@ package user;
 
 import exceptions.*;
 import notifications.*;
-import persistenceTests.Repo;
+import persistence.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -16,11 +16,12 @@ import javax.persistence.*;
 @Table(name = "Subscriber")
 public class Subscriber extends User {
     @Transient
-    private Repo repo = new Repo();
+    private Repo repo = Repo.getInstance();
     private int id;
     @Id
     private String username;
-    @OneToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable
     private Set<Permission> permissions; // synchronized manually
     @Transient
     private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
@@ -147,10 +148,20 @@ public class Subscriber extends User {
         synchronized (permissions) {
 
             addPermission(OwnerPermission.getInstance(store));
+            if( !OwnerPermission.getInstance(store).getSubscribers().contains(this))
+                OwnerPermission.getInstance(store).getSubscribers().add(this);
             addPermission(ManagerPermission.getInstance(store));
+            if( !ManagerPermission.getInstance(store).getSubscribers().contains(this))
+                ManagerPermission.getInstance(store).getSubscribers().add(this);
             addPermission(EditPolicyPermission.getInstance(store));
+            if( !EditPolicyPermission.getInstance(store).getSubscribers().contains(this))
+                EditPolicyPermission.getInstance(store).getSubscribers().add(this);
             addPermission(ManageInventoryPermission.getInstance(store));
+            if( !ManageInventoryPermission.getInstance(store).getSubscribers().contains(this))
+                ManageInventoryPermission.getInstance(store).getSubscribers().add(this);
             addPermission(GetHistoryPermission.getInstance(store));
+            if( !GetHistoryPermission.getInstance(store).getSubscribers().contains(this))
+                GetHistoryPermission.getInstance(store).getSubscribers().add(this);
             return permissions;
         }
     }

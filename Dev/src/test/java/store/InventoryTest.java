@@ -25,7 +25,7 @@ public class InventoryTest {
     @BeforeMethod
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        inventory = new Inventory(1);
+        inventory = new Inventory();
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
         basket = new Basket(new Store(), items);
     }

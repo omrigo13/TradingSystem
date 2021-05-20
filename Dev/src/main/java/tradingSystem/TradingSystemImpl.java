@@ -2,7 +2,7 @@ package tradingSystem;
 
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
-import persistenceTests.Repo;
+import persistence.Repo;
 import store.Item;
 import store.Store;
 import user.*;
@@ -12,7 +12,7 @@ import java.util.*;
 
 public class TradingSystemImpl {
 
-    private Repo repo = new Repo();
+    private Repo repo = Repo.getInstance();
 
     TradingSystem tradingSystem;
 
@@ -257,7 +257,9 @@ public class TradingSystemImpl {
     public String openNewStore(String connectionId, String newStoreName) throws InvalidActionException {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
-        return "" + tradingSystem.newStore(subscriber, newStoreName);
+//        return "" + tradingSystem.newStore(subscriber, newStoreName);
+        int storeId =  tradingSystem.newStore(subscriber, newStoreName);
+        return "" + storeId;
     }
 
     public void appointStoreManager(String connectionId, String targetUserName, String storeId)
@@ -278,8 +280,7 @@ public class TradingSystemImpl {
         Item newItem = subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
         try {
             this.repo.getItemDAO().add(newItem);
-            this.repo.getInventoryDAO().addItem(store.getInventory().getId(), newItem, quantity);
-
+            this.repo.getInventoryDAO().addItem(store.getInventory());
         } catch (Exception e) {
             e.printStackTrace();
         }

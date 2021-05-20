@@ -9,17 +9,19 @@ import spellChecker.Spelling;
 import user.Basket;
 import notifications.Observable;
 import review.Review;
+import user.Permission;
 import user.Subscriber;
 import user.User;
 import javax.persistence.*;
 
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 @Entity
 @Table(name = "Store")
-public class Store {
+public class Store implements Serializable {
 
 
     @Id
@@ -35,8 +37,15 @@ public class Store {
     private boolean isActive = true;
 //    @OneToOne(cascade = CascadeType.ALL)
 //    private Inventory inventory = new Inventory(this.id);
-    @OneToOne(cascade = CascadeType.ALL)
+
+    //    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "store", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private Inventory inventory;
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
 
     @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
@@ -77,7 +86,7 @@ public class Store {
         else
             this.purchasePolicy = purchasePolicy;
         this.inventory = new Inventory();
-        this.inventory.setId(this.id);
+//        this.inventory.setId(this.id);
         this.inventory.setStore(this);
         if(discountPolicy == null)
             this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());

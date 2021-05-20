@@ -1,4 +1,4 @@
-package persistenceTests;
+package persistence;
 
 import user.Basket;
 
@@ -26,7 +26,7 @@ public class BasketDAO {
 //        return null;
 //    }
 
-    public void add(Basket basket) throws Exception {
+    public static void add(Basket basket) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
@@ -46,7 +46,7 @@ public class BasketDAO {
         }
     }
 
-//    public List<Basket> getAll() throws Exception {
+//    public static List<Basket> getAll() throws Exception {
 //        EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
 //        String query = "select c from Basket c where c.id is not null";
 //        TypedQuery<Basket> tq = em.createQuery(query, Basket.class);

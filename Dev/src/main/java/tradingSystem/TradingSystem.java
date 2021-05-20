@@ -5,22 +5,19 @@ import exceptions.*;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import notifications.Observable;
-import persistenceTests.Repo;
+import persistence.*;
 import policies.*;
 import store.Item;
 import store.Store;
 import user.*;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
-    private Repo repo = new Repo();
+    private Repo repo = Repo.getInstance();
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
     private final AtomicInteger subscriberIdCounter;
@@ -32,7 +29,7 @@ public class TradingSystem {
     private final UserAuthentication auth;
 
     private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
-    private final ConcurrentHashMap<Integer, Store> stores; // key: store id
+    private ConcurrentHashMap<Integer, Store> stores; // key: store id
     private final ConcurrentHashMap<String, User> connections; // key: connection id
     private final ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies; // key: purchase policy id
     private final ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies; // key: discount policy id
@@ -159,14 +156,17 @@ public class TradingSystem {
         Store store = new Store(id, storeName, "description", null, null, new Observable());
         stores.put(id, store);
 
-
         Set<Permission> permissionSet = subscriber.addOwnerPermission(store);
 
-
-//        observables.put(store, new Observable());
         store.subscribe(subscriber);
         try {
-            repo.getStoreDAO().add(store);
+            StoreDAO.add(store);
+            OwnerPermissionDAO.add(OwnerPermission.getInstance(store));
+            ManagerPermissionDAO.add(ManagerPermission.getInstance(store));
+            EditPolicyPermissionDAO.add(EditPolicyPermission.getInstance(store));
+            ManageInventoryPermissionDAO.add(ManageInventoryPermission.getInstance(store));
+            GetHistoryPermissionDAO.add(GetHistoryPermission.getInstance(store));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -188,6 +188,18 @@ public class TradingSystem {
 
     public Collection<String> getItems(String keyWord, String productName, String category, String subCategory,
                                        Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) {
+        ConcurrentHashMap<Integer, Store> updatedList = new ConcurrentHashMap<>();
+
+        try {
+            List<Store> list = StoreDAO.getAll();
+
+            for (Store s: list) {
+                updatedList.put(s.getId(), s);
+            }
+            this.stores = updatedList;//update stores from DB
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Collection<String> items = new LinkedList<>();
         Collection<Item> itemsToAdd;

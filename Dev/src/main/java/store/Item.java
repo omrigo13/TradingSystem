@@ -16,7 +16,8 @@ public class Item {
 
     @Id
     @GeneratedValue
-    private int id;
+    private int global_id;
+    private int id; //id in store
     private String name;
     private double price;
     private String category;
@@ -120,6 +121,15 @@ public class Item {
 //    public void setInventory(Inventory inventory) {
 //        this.inventory = inventory;
 //    }
+
+
+    public int getGlobal_id() {
+        return global_id;
+    }
+
+    public void setGlobal_id(int global_id) {
+        this.global_id = global_id;
+    }
 }
 
 

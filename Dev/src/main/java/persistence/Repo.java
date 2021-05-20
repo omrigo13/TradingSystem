@@ -1,6 +1,8 @@
-package persistenceTests;
+package persistence;
 
 public class Repo {
+    private static Repo repo_instance = null;
+
     private BasketDAO basketDAO;
     private InventoryDAO inventoryDAO;
     private ItemDAO itemDAO;
@@ -9,14 +11,20 @@ public class Repo {
     private UserDAO userDAO;
     private OwnerPermissionDAO ownerPermissionDAO;
 
-    public Repo() {
-        this.ownerPermissionDAO = new OwnerPermissionDAO();
-        this.basketDAO = new BasketDAO();
-        this.inventoryDAO = new InventoryDAO();
-        this.itemDAO = new ItemDAO();
-        this.storeDAO = new StoreDAO();
-        this.subscriberDAO = new SubscriberDAO();
-        this.userDAO = new UserDAO();
+    private Repo() {
+        basketDAO = new BasketDAO();
+        inventoryDAO = new InventoryDAO();
+        itemDAO = new ItemDAO();
+        storeDAO = new StoreDAO();
+        subscriberDAO = new SubscriberDAO();
+        userDAO = new UserDAO();
+        ownerPermissionDAO = new OwnerPermissionDAO();
+    }
+
+    public static Repo getInstance(){
+        if(repo_instance == null)
+            repo_instance = new Repo();
+        return repo_instance;
     }
 
     public BasketDAO getBasketDAO() {

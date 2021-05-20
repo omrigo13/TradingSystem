@@ -8,19 +8,31 @@ import exceptions.*;
 import policies.DiscountPolicy;
 import user.Basket;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "Inventory")
-public class Inventory {
+public class Inventory implements Serializable {
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     @Id
-//    @GeneratedValue
+////    @GeneratedValue
+    @Column(name = "store_id")
     private int id;
 
     @OneToOne
+    @MapsId
+    @JoinColumn(name = "store_id")
     private Store store;
 
     //    @OneToMany
@@ -31,15 +43,10 @@ public class Inventory {
 
     private int itemsCounterValue;
 
-    public Inventory(int id) { //receives store's id, which will be equal to inventory's id
-        this.items = Collections.synchronizedMap(new HashMap<>());
-        this.id = id;
-    }
-
     public Inventory() {
         this.items = Collections.synchronizedMap(new HashMap<>());
-
     }
+
 
     /**
      * this adds a new item and it's amount to the inventory os a store
@@ -64,10 +71,9 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category) && item.getSubCategory().equalsIgnoreCase(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            Item newItem = new Item(itemsCounter.get(), name, price, category, subCategory, 0);
+            this.itemsCounterValue = this.itemsCounter.getAndIncrement();
+            Item newItem = new Item(itemsCounterValue, name, price, category, subCategory, 0);
             items.putIfAbsent(newItem, amount);
-            this.itemsCounterValue = this.itemsCounter.get() + 1;
-            itemsCounter.getAndIncrement();
             return newItem;
         }
     }
@@ -278,17 +284,13 @@ public class Inventory {
         return totalValue;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public AtomicInteger getItemsCounter() {
-        return itemsCounter;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
 
     public Store getStore() {
         return store;
@@ -308,5 +310,9 @@ public class Inventory {
 
     public void setItemsCounterValue(int itemsCounterValue) {
         this.itemsCounterValue = itemsCounterValue;
+    }
+
+    public void updateItemsCounter(int value) {
+        itemsCounter.set(value);
     }
 }

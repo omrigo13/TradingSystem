@@ -3,16 +3,18 @@ package user;
 import store.Store;
 
 import javax.persistence.*;
-import javax.persistence.OneToOne;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
-@Entity
+import java.util.*;
+
+@MappedSuperclass
 public abstract class StorePermission extends Permission {
+
 
     @ManyToOne
     protected Store store = null;
+
+    @ManyToMany
+    @JoinTable
+    private List<Subscriber> subscribers = new LinkedList<>();
 
     protected StorePermission(Store store) {
         this.store = store;
@@ -44,5 +46,17 @@ public abstract class StorePermission extends Permission {
         return getClass().toString() + "{" +
                 "store=" + (store == null ? null : store.getName()) +
                 '}';
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
+
+    public List<Subscriber> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(List<Subscriber> subscribers) {
+        this.subscribers = subscribers;
     }
 }

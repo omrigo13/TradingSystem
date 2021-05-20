@@ -1,4 +1,4 @@
-package persistenceTests;
+package persistence;
 
 import store.Item;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class ItemDAO {
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
 
-    public Item getById(int id) throws Exception {
+    public static Item getById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from Item c where c.id = :id";
         TypedQuery<Item> tq = em.createQuery(query, Item.class);
@@ -27,7 +27,7 @@ public class ItemDAO {
         return null;
     }
 
-    public void add(Item item) throws Exception {
+    public static void add(Item item) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
@@ -47,7 +47,7 @@ public class ItemDAO {
         }
     }
 
-    public List<Item> getAll() throws Exception {
+    public static List<Item> getAll() throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from Item c where c.id is not null";
         TypedQuery<Item> tq = em.createQuery(query, Item.class);

@@ -1,4 +1,4 @@
-package persistenceTests;
+package persistence;
 
 import store.Store;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class StoreDAO{
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
 
-    public Store getById(int id) throws Exception {
+    public static Store getById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from Store c where c.id = :id";
         TypedQuery<Store> tq = em.createQuery(query, Store.class);
@@ -27,13 +27,14 @@ public class StoreDAO{
         return null;
     }
 
-    public void add(Store store) throws Exception {
+    public static void add(Store store) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
             et = em.getTransaction();
             et.begin();
             em.persist(store);
+
             et.commit();
         }
         catch (Exception e){
@@ -47,7 +48,7 @@ public class StoreDAO{
         }
     }
 
-    public List<Store> getAll() throws Exception {
+    public static List<Store> getAll() throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from Store c where c.id is not null";
         TypedQuery<Store> tq = em.createQuery(query, Store.class);
@@ -65,7 +66,7 @@ public class StoreDAO{
         return null;
     }
 
-    public void deleteById(int id) throws Exception {
+    public static void deleteById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         Store store = null;

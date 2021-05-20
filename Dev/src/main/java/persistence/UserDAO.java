@@ -1,4 +1,4 @@
-package persistenceTests;
+package persistence;
 
 import user.User;
 
@@ -8,7 +8,7 @@ import java.util.List;
 public class UserDAO {
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
 
-    public User getById(int id) throws Exception {
+    public static User getById(int id) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from User c where c.id = :id";
         TypedQuery<User> tq = em.createQuery(query, User.class);
@@ -27,7 +27,7 @@ public class UserDAO {
         return null;
     }
 
-    public void add(User user) throws Exception {
+    public static void add(User user) throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction et = null;
         try{
@@ -47,7 +47,7 @@ public class UserDAO {
         }
     }
 
-    public List<User> getAll() throws Exception {
+    public static List<User> getAll() throws Exception {
         EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
         String query = "select c from User c where c.id is not null";
         TypedQuery<User> tq = em.createQuery(query, User.class);

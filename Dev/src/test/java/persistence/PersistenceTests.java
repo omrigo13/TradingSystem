@@ -1,4 +1,4 @@
-package persistenceTests;
+package persistence;
 
 import acceptanceTests.DeliverySystemMock;
 import acceptanceTests.Driver;
@@ -7,7 +7,6 @@ import exceptions.InvalidActionException;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import service.TradingSystemService;
-import store.Item;
 
 import javax.persistence.*;
 
@@ -68,6 +67,10 @@ public class PersistenceTests {
         productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
 
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
+
+        service.openNewStore(subs1Id, "store3");
+
+        service.getItems("fff", "", "", "", 3.0, 3.0, 3.0, 3.0);
 
     }
     @Test
