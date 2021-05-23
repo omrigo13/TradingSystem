@@ -115,11 +115,6 @@ public class User {
 
             double price = store.processBasketAndCalculatePrice(basket, purchaseDetails, storeDiscountPolicy, userOffers);
 
-            for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
-                if(userOffers.contains(offer.getValue()) && offer.getValue().isApproved())
-                    store.getStoreOffers().remove(offer.getKey());
-            }
-
             totalPrice += price;
             String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
             if(store.getTotalValuePerDay().containsKey(date))

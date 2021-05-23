@@ -36,4 +36,9 @@ public class OwnerOrManagerRemovedNotification extends Notification{
                 ", storeId='" + storeId + '\'' +
                 '}';
     }
+
+    @Override
+    public String print() {
+        return null;
+    }
 }

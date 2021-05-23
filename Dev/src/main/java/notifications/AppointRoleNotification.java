@@ -42,4 +42,9 @@ public class AppointRoleNotification extends Notification{
     public void notifyNotification() {
 
     }
+
+    @Override
+    public String print() {
+        return null;
+    }
 }

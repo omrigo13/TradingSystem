@@ -52,6 +52,15 @@ public class Subscriber extends User {
             Basket basket = entry.getValue();
             Collection<Item> itemsPurchasedFromStore = itemsPurchased.computeIfAbsent(store, k -> new HashSet<>());
             itemsPurchasedFromStore.addAll(basket.getItems().keySet());
+
+            Collection<Offer> userOffers = this.getOffers(store);
+            for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
+                if(userOffers.contains(offer.getValue()) && offer.getValue().isApproved()) {
+                    itemsPurchasedFromStore = itemsPurchased.computeIfAbsent(store, k -> new HashSet<>());
+                    itemsPurchasedFromStore.add(offer.getValue().getItem());
+                    store.getStoreOffers().remove(offer.getKey());
+                }
+            }
         }
 
         // add each store purchase details string to the user's purchase history collection

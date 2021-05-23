@@ -30,6 +30,9 @@ public class Observable {
             newMap.put(i, basket.get(i));
         }
 
+        for (Offer offer: buyer.getOffers(store))
+            newMap.put(offer.getItem(), offer.getQuantity());
+
         PurchaseNotification notification = new PurchaseNotification(store, buyer, newMap);
         for (Subscriber s: observers) {
             s.notifyNotification(notification);
