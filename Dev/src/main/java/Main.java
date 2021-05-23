@@ -1,5 +1,6 @@
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
+import exceptions.SubscriberAlreadyExistsException;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import org.eclipse.jetty.server.Connector;
@@ -48,10 +49,16 @@ public class Main {
             cfg.port = Integer.parseInt(prop.getProperty("port"));
             cfg.sslPort = Integer.parseInt(prop.getProperty("sslPort"));
             cfg.stateFileAddress = prop.getProperty("stateFileAddress");
+            cfg.startupScript = prop.getProperty("startupScript");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        run(cfg);
+    }
+
+    public static void run(Config cfg) throws InvalidActionException {
 
         // work around for the system initialization
         UserAuthentication userAuthentication = new UserAuthentication();
@@ -68,10 +75,10 @@ public class Main {
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-        int result = compiler.run(null, null, null, cfg.stateFileAddress);
+        compiler.run(null, null, null, cfg.stateFileAddress);
 
         try {
-            Class<?> cls = Class.forName("Script", true, ClassLoader.getSystemClassLoader());
+            Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
             Method method = cls.getMethod("run", TradingSystemService.class);
             method.invoke(null, tradingSystemService);
 

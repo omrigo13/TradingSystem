@@ -4,4 +4,5 @@ public class Config {
     public int port;
     public int sslPort;
     public String stateFileAddress;
+    public String startupScript;
 }
