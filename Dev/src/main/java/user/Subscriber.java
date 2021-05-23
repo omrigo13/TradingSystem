@@ -386,11 +386,9 @@ public class Subscriber extends User {
         if(price != 0) {
             offer.setPrice(price);
             store.notifyCounterOffer(offer);
-            notifyNotification(new CounterOfferNotification(offer));
         }
         else
             store.notifyApprovedOffer(offer);
-            notifyNotification(new ApprovedOfferNotification(offer));
         offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
     }
 
