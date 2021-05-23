@@ -54,4 +54,12 @@ public class PurchaseNotification extends Notification{
                 ", basket=" + basket +
                 '}';
     }
+
+    @Override
+    public String print() {
+        return "PurchaseNotification{" +
+                "buyer=" + buyer +
+                ", basket=" + basket +
+                '}';
+    }
 }

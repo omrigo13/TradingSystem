@@ -393,6 +393,14 @@ public class Store {
         observable.notifyPurchase(this, buyer, basket);
     }
 
+    public void notifyNewOffer(Offer offer) { observable.notifyNewOffer(offer); }
+
+    public void notifyApprovedOffer(Offer offer) { observable.notifyApprovedOffer(offer); }
+
+    public void notifyDeclinedOffer(Offer offer) { observable.notifyDeclinedOffer(offer); }
+
+    public void notifyCounterOffer(Offer offer) { observable.notifyCounterOffer(offer); }
+
     public void subscribe(Subscriber subscriber) {
         observable.subscribe(subscriber);
     }

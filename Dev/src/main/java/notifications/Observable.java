@@ -1,5 +1,6 @@
 package notifications;
 
+import Offer.Offer;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -72,6 +73,28 @@ public class Observable {
         for (Subscriber s: observers) {
             s.notifyNotification(notification);
         }
+    }
+
+    public void notifyNewOffer(Offer offer) {
+        OfferNotification notification = new OfferNotification(offer);
+        for (Subscriber s: observers) {
+            s.notifyNotification(notification);
+        }
+    }
+
+    public void notifyApprovedOffer(Offer offer) {
+        ApprovedOfferNotification notification = new ApprovedOfferNotification(offer);
+        offer.getSubscriber().notifyNotification(notification);
+    }
+
+    public void notifyDeclinedOffer(Offer offer) {
+        DeclinedOfferNotification notification = new DeclinedOfferNotification(offer);
+        offer.getSubscriber().notifyNotification(notification);
+    }
+
+    public void notifyCounterOffer(Offer offer) {
+        CounterOfferNotification notification = new CounterOfferNotification(offer);
+        offer.getSubscriber().notifyNotification(notification);
     }
 
     public Collection<Subscriber> getObservers() {

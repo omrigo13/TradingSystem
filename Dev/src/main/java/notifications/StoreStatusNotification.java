@@ -38,4 +38,9 @@ public class StoreStatusNotification extends Notification{
                 ", isActive=" + isActive +
                 '}';
     }
+
+    @Override
+    public String print() {
+        return null;
+    }
 }

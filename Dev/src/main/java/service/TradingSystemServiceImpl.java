@@ -8,8 +8,6 @@ import tradingSystem.TradingSystemImpl;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 

@@ -1,0 +1,6 @@
+package notifications;
+
+public interface Observer {
+
+    void notify(Notification notification);
+}

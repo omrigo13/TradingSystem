@@ -13,6 +13,9 @@
                             <input type="hidden" name="connectionIDLogout" id="connectionIDLogout" value="">
                             <script type="text/javascript">
                                 document.getElementById("connectionIDLogout").setAttribute('value',localStorage.getItem("connectID"));
+                                let ws = new WebSocket("ws://" + location.hostname + ":" + location.port + "/notifications");
+                                ws.onopen = () => ws.send(localStorage.getItem("connectID"));
+                                ws.onmessage = msg => document.getElementById("realTime").innerHTML += '<a href="/#">'+msg.data+'</a>';
                             </script>
                             <button id="logout">$msg.get("COMMON_NAV_LOGOUT")</button>
                         </form>
@@ -112,7 +115,7 @@
                     <button class="dropbtn" id="notify"><img id="notificationsPicture" src="/img/notifications.png" alt="notifications">
                         <i class="fa fa-caret-down"></i>
                     </button>
-                    <div class="dropdown-content">
+                    <div class="dropdown-content" id="realTime">
                         #foreach($notification in $notifications)
                             <a href="/#">$notification</a>
                         #end

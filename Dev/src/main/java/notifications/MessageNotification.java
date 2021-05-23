@@ -39,4 +39,9 @@ public class MessageNotification extends Notification{
                 ", message='" + message + '\'' +
                 '}';
     }
+
+    @Override
+    public String print() {
+        return null;
+    }
 }
