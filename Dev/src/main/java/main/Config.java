@@ -1,3 +1,5 @@
+package main;
+
 public class Config {
     public String adminName;
     public String adminPassword;

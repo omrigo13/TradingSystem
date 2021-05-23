@@ -87,8 +87,8 @@ public class Observable {
         unsubscribe(toRemove);
     }
 
-    public void notifyRoleAppointment(Subscriber assignee, Subscriber toAssign, int storeId, String role){
-        AppointRoleNotification n = new AppointRoleNotification(assignee, role, storeId);
+    public void notifyRoleAppointment(Subscriber assignor, Subscriber toAssign, int storeId, String role){
+        AppointRoleNotification n = new AppointRoleNotification(assignor, role, storeId);
         subscribe(toAssign);
         toAssign.notifyNotification(n);
 

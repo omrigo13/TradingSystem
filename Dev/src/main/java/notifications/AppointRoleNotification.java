@@ -4,22 +4,22 @@ import user.Subscriber;
 
 public class AppointRoleNotification extends Notification{
 
-    private Subscriber assignee;
+    private Subscriber assignor;
     private String role; //"owner" or "manager" only
     private int storeId;
 
-    public AppointRoleNotification(Subscriber assignee, String role, int storeId) {
-        this.assignee = assignee;
+    public AppointRoleNotification(Subscriber assignor, String role, int storeId) {
+        this.assignor = assignor;
         this.role = role;
         this.storeId = storeId;
     }
 
-    public Subscriber getAssignee() {
-        return assignee;
+    public Subscriber getAssignor() {
+        return assignor;
     }
 
-    public void setAssignee(Subscriber assignee) {
-        this.assignee = assignee;
+    public void setAssignor(Subscriber assignor) {
+        this.assignor = assignor;
     }
 
     public String getRole() {
