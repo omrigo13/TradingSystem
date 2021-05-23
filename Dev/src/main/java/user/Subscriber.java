@@ -376,6 +376,10 @@ public class Subscriber extends User {
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
 
         Offer offer = store.getOfferById(offerId);
+        if(price < 0) {
+            store.getStoreOffers().remove(offerId);
+            return;
+        }
         offer.approve();
         if(price != 0)
             offer.setPrice(price);
