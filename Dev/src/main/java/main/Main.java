@@ -1,6 +1,7 @@
+package main;
+
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
-import exceptions.SubscriberAlreadyExistsException;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.websocket.WsContext;

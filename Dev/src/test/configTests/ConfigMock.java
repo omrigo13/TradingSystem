@@ -1,5 +1,6 @@
-public class Config {
-    public String adminName;
+package configTests;
+
+public class ConfigMock{    public String adminName;
     public String adminPassword;
     public int port;
     public int sslPort;

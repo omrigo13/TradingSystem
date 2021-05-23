@@ -286,6 +286,7 @@ public class TradingSystemImpl {
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.addManagerPermission(target, store);
+        store.appointRole(subscriber, target, "manager");
     }
 
     public String addProductToStore(String connectionId, String storeId, String itemName, String category, String subCategory, int quantity, double price)
@@ -317,6 +318,8 @@ public class TradingSystemImpl {
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.addOwnerPermission(target, store);
+        store.appointRole(subscriber, target, "owner");
+
     }
 
     public void allowManagerToUpdateProducts(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
@@ -377,6 +380,8 @@ public class TradingSystemImpl {
             return false;
 
         subscriber.removeManagerPermission(target, store);
+        store.removeOwnerOrManager(subscriber, target);
+
         return true;
     }
 

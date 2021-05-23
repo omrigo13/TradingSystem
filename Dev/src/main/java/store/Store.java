@@ -409,6 +409,10 @@ public class Store {
         observable.unsubscribe(subscriber);
     }
 
+    public void removeOwnerOrManager(Subscriber remover, Subscriber toRemove){
+        observable.notifyRoleRemove(remover, toRemove, this.id);
+    }
+
     public void notifyItemOpinion(Review review) {
         observable.notifyItemReview(review);
     }
@@ -434,4 +438,9 @@ public class Store {
     }
 
     public Map<Integer, Offer> getStoreOffers() { return storeOffers; }
+
+    //for appointing store owner or manager
+    public void appointRole(Subscriber subscriber, Subscriber target, String role) {
+        observable.notifyRoleAppointment(subscriber, target, this.id, role);
+    }
 }
