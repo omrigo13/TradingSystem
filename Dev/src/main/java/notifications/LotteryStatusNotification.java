@@ -6,5 +6,10 @@ public class LotteryStatusNotification extends Notification{
 
     }
 
+    @Override
+    public String print() {
+        return null;
+    }
+
 
 }

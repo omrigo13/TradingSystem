@@ -3,6 +3,7 @@ package user;
 import Offer.Offer;
 import exceptions.*;
 import notifications.*;
+import notifications.Observer;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -20,6 +21,7 @@ public class Subscriber extends User {
     private final Collection<String> purchaseHistory; // synchronized in constructor
     private final Collection<Notification> notifications = new LinkedList<>();
     private boolean isLoggedIn = false;
+    private Observer observer;
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -447,10 +449,11 @@ public class Subscriber extends User {
 //    }
 
     public Notification notifyNotification(Notification notification){
-        this.notifications.add(notification);
-        if(isLoggedIn == true){ //todo how to present the notification?
-            notification.setShown(true);
+        if(observer != null) {
+            observer.notify(notification);
         }
+        else
+            this.notifications.add(notification);
         return notification;
     }
 
@@ -483,5 +486,9 @@ public class Subscriber extends User {
 
         double totalValue = store.getTotalValuePerDay().get(date);
         return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
+    }
+
+    public void setObserver(Observer observer) {
+        this.observer = observer;
     }
 }

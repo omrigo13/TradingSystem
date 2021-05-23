@@ -20,4 +20,6 @@ public abstract class Notification {
                 "isShown=" + isShown +
                 '}';
     }
+
+    public abstract String print();
 }

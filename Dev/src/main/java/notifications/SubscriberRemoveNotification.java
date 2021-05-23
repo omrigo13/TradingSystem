@@ -5,4 +5,9 @@ public class SubscriberRemoveNotification extends Notification{
     public void notifyNotification() {
 
     }
+
+    @Override
+    public String print() {
+        return null;
+    }
 }
