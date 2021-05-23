@@ -15,6 +15,10 @@ public class PaymentSystemBasicImpl implements PaymentSystem {
     private String result;
     private int transactionId;
 
+    public PaymentSystemBasicImpl() throws PaymentSystemException {
+        connect();
+    }
+
     @Override
     public void connect() throws PaymentSystemException {
         params = "action_type=handshake";
