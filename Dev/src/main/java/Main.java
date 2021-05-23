@@ -1,4 +1,5 @@
 import exceptions.InvalidActionException;
+import exceptions.SubscriberAlreadyExistsException;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import org.eclipse.jetty.server.Connector;
@@ -20,6 +21,28 @@ public class Main {
     public static presenatation.TradingSystem tradingSystem;
 
     public static void main(String[] args) throws InvalidActionException {
+
+        Config cfg = new Config();
+
+        try (InputStream input = new FileInputStream("Dev/config/config.properties")) {
+            Properties prop = new Properties();
+            // load a properties file
+            prop.load(input);
+            // get the property value and print it out
+            cfg.adminName = prop.getProperty("system.admin.name");
+            cfg.adminPassword = prop.getProperty("system.admin.password");
+            cfg.port = Integer.parseInt(prop.getProperty("port"));
+            cfg.sslPort = Integer.parseInt(prop.getProperty("sslPort"));
+            cfg.stateFileAddress = prop.getProperty("stateFileAddress");
+            cfg.startupScript = prop.getProperty("startupScript");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        run(cfg);
+    }
+    public static void run(Config cfg) throws InvalidActionException {
 
         // Instantiate your dependencies
         tradingSystem = new TradingSystem();
