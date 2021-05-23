@@ -28,6 +28,14 @@ public class Driver {
         return deliverySystem;
     }
 
+    public static void setPaymentSystem(PaymentSystem paymentSystem) {
+        Driver.paymentSystem = paymentSystem;
+    }
+
+    public static void setDeliverySystem(DeliverySystem deliverySystem) {
+        Driver.deliverySystem = deliverySystem;
+    }
+
     /**
      *
      * @param userName - system manager username to register in UserAuthenticator

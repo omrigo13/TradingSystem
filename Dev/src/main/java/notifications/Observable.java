@@ -77,4 +77,20 @@ public class Observable {
     public Collection<Subscriber> getObservers() {
         return observers;
     }
+
+    public void notifyRoleRemove(Subscriber remover, Subscriber toRemove, int storeId) {
+        OwnerOrManagerRemovedNotification n = new OwnerOrManagerRemovedNotification();
+        n.setRemover(remover);
+        n.setStoreId(storeId);
+        toRemove.notifyNotification(n);
+
+        unsubscribe(toRemove);
+    }
+
+    public void notifyRoleAppointment(Subscriber assignee, Subscriber toAssign, int storeId, String role){
+        AppointRoleNotification n = new AppointRoleNotification(assignee, role, storeId);
+        subscribe(toAssign);
+        toAssign.notifyNotification(n);
+
+    }
 }
