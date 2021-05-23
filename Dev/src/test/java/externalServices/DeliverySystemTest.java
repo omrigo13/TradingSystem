@@ -12,7 +12,7 @@ public class DeliverySystemTest {
     private DeliverySystem deliverySystem;
 
     @BeforeMethod
-    void setUp() {
+    void setUp() throws DeliverySystemException {
         MockitoAnnotations.openMocks(this);
         deliverySystem = new DeliverySystemBasicImpl();
     }

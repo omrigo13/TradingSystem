@@ -21,21 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TradingSystem {
     private TradingSystemService tradingSystemService;
 
-    public TradingSystem() throws InvalidActionException {
-        // work around for the system initialization
-        UserAuthentication userAuthentication = new UserAuthentication();
-        String userName = "Admin";
-        String password = "123";
-        userAuthentication.register(userName, password);
-        ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
-        AtomicInteger subscriberIdCounter = new AtomicInteger();
-        Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
-        admin.addPermission(AdminPermission.getInstance());
-        subscribers.put(userName, admin);
-        tradingSystem.TradingSystem build = new TradingSystemBuilder().setUserName(userName).setPassword(password)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
-        //map.clear();
-        tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(build));
+    public TradingSystem(TradingSystemService tradingSystemService) throws InvalidActionException {
+        this.tradingSystemService = tradingSystemService;
     }
 
     public Handler serveHomePage = ctx -> {

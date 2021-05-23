@@ -14,6 +14,10 @@ public class DeliverySystemBasicImpl implements DeliverySystem {
     private String result;
     private int transactionId;
 
+    public DeliverySystemBasicImpl() throws DeliverySystemException {
+        connect();
+    }
+
     @Override
     public void connect() throws DeliverySystemException {
         params = "action_type=handshake";

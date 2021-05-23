@@ -1,3 +1,4 @@
+import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import exceptions.SubscriberAlreadyExistsException;
 import io.javalin.Javalin;
@@ -7,13 +8,27 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import presenatation.TradingSystem;
+import service.TradingSystemService;
+import service.TradingSystemServiceImpl;
+import tradingSystem.TradingSystemBuilder;
+import tradingSystem.TradingSystemImpl;
+import user.AdminPermission;
+import user.Subscriber;
 import util.Filters;
 import util.HerokuUtil;
 import util.Path;
 import util.ViewUtil;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static io.javalin.apibuilder.ApiBuilder.*;
-import static io.javalin.apibuilder.ApiBuilder.post;
 
 public class Main {
 
@@ -42,10 +57,37 @@ public class Main {
 
         run(cfg);
     }
+
     public static void run(Config cfg) throws InvalidActionException {
 
+        // work around for the system initialization
+        UserAuthentication userAuthentication = new UserAuthentication();
+        userAuthentication.register(cfg.adminName, cfg.adminPassword);
+        ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
+        AtomicInteger subscriberIdCounter = new AtomicInteger();
+        Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), cfg.adminName);
+        admin.addPermission(AdminPermission.getInstance());
+        subscribers.put(cfg.adminName, admin);
+        tradingSystem.TradingSystem build = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
+                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
+        //map.clear();
+        TradingSystemService tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(build));
+
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+
+        compiler.run(null, null, null, cfg.stateFileAddress);
+
+        try {
+            Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
+            Method method = cls.getMethod("run", TradingSystemService.class);
+            method.invoke(null, tradingSystemService);
+
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
         // Instantiate your dependencies
-        tradingSystem = new TradingSystem();
+        tradingSystem = new TradingSystem(tradingSystemService);
 
         Javalin app = Javalin.create(config -> {
             config.server(() -> {

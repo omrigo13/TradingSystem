@@ -377,7 +377,7 @@ public class SubscriberTest {
     }
 
     @Test
-    void approveOffer() throws NoPermissionException {
+    void approveOffer() throws NoPermissionException, OfferNotExistsException {
         Offer offer = new Offer(subscriber, item, 5, 3.0);
         when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
         when(store.getOfferById(0)).thenReturn(offer);

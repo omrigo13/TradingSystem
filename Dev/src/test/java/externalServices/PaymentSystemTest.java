@@ -12,7 +12,7 @@ public class PaymentSystemTest {
     private PaymentSystem paymentSystem;
 
     @BeforeMethod
-    void setUp() {
+    void setUp() throws PaymentSystemException {
         MockitoAnnotations.openMocks(this);
         paymentSystem = new PaymentSystemBasicImpl();
     }
