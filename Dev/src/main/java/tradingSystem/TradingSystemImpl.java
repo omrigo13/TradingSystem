@@ -1,5 +1,6 @@
 package tradingSystem;
 
+import Offer.Offer;
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
 import exceptions.NoPermissionException;
@@ -60,7 +61,12 @@ public class TradingSystemImpl {
         Item item = store.searchItemById(Integer.parseInt(productId));
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         store.addOffer(subscriber, item, quantity, price);
-        //TODO notify all store owners and managers with manageInventory permission using notifications system
+        for (Offer offer: store.getStoreOffers().values()) {
+            if(offer.getSubscriber() == subscriber && offer.getItem() == item && offer.getQuantity() == quantity && offer.getPrice() == price) {
+                store.notifyNewOffer(offer);
+                break;
+            }
+        }
     }
 
     public Collection<String> showCart(String connectionId) throws InvalidActionException {

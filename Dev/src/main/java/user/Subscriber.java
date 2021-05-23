@@ -374,17 +374,23 @@ public class Subscriber extends User {
 
     public void approveOffer(Store store, int offerId, double price) throws NoPermissionException, OfferNotExistsException {
 
-        //TODO should make copy constructor for item or deal with item price somehow without change original price
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
 
         Offer offer = store.getOfferById(offerId);
         if(price < 0) {
             store.getStoreOffers().remove(offerId);
+            store.notifyDeclinedOffer(offer);
             return;
         }
         offer.approve();
-        if(price != 0)
+        if(price != 0) {
             offer.setPrice(price);
+            store.notifyCounterOffer(offer);
+            notifyNotification(new CounterOfferNotification(offer));
+        }
+        else
+            store.notifyApprovedOffer(offer);
+            notifyNotification(new ApprovedOfferNotification(offer));
         offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
     }
 
