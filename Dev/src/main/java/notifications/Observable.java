@@ -56,10 +56,11 @@ public class Observable {
         }
     }
 
-    public void notifyItemReview(Review review) {
+    public void notifyItemReview(Subscriber subscriber, Review review) {
         ItemReviewNotification notification = new ItemReviewNotification(review);
         for (Subscriber s: observers) {
-            s.notifyNotification(notification);
+            if(s != subscriber)
+                s.notifyNotification(notification);
         }
     }
 

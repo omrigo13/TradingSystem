@@ -395,6 +395,7 @@ public class TradingSystemImpl {
             return false;
 
         subscriber.removeOwnerPermission(target, store);
+        store.removeOwnerOrManager(subscriber, target);
         return true;
     }
 

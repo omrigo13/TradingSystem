@@ -552,7 +552,7 @@ public class TradingSystem {
     public Handler handleAppointStoreOwnerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
-            tradingSystemService.appointStoreOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
+            tradingSystemService.appointStoreOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUserName(ctx), RequestUtil.getStoreID(ctx));
             model.put("succeeded", true);
             ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
         }catch (InvalidConnectionIdException ex) {
@@ -566,7 +566,7 @@ public class TradingSystem {
     public Handler handleAppointStoreManagerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
-            tradingSystemService.appointStoreManager(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUsername(ctx), RequestUtil.getStoreID(ctx));
+            tradingSystemService.appointStoreManager(RequestUtil.getConnectionID(ctx), RequestUtil.getQueryUserName(ctx), RequestUtil.getStoreID(ctx));
             model.put("succeeded", true);
             ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
         }catch (InvalidConnectionIdException ex) {
@@ -580,7 +580,7 @@ public class TradingSystem {
     public Handler handleRemoveOwnerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
-            tradingSystemService.removeOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
+            tradingSystemService.removeOwner(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUserName(ctx));
             model.put("succeeded", true);
             ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
         }catch (InvalidConnectionIdException ex) {
@@ -594,7 +594,7 @@ public class TradingSystem {
     public Handler handleRemoveManagerPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{
-            tradingSystemService.removeManager(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUsername(ctx));
+            tradingSystemService.removeManager(RequestUtil.getConnectionID(ctx), RequestUtil.getStoreID(ctx), RequestUtil.getQueryUserName(ctx));
             model.put("succeeded", true);
             ctx.render(Path.Template.APPOINTREMOVEMANAGEROROWNER, model);
         }catch (InvalidConnectionIdException ex) {

@@ -417,7 +417,7 @@ public class Subscriber extends User {
 
         Review review1 = new Review(this, store, item, review);
         item.addReview(review1);
-        store.notifyItemOpinion(review1);
+        store.notifyItemOpinion(this, review1);
 
     }
 

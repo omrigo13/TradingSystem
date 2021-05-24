@@ -41,6 +41,9 @@ public class StoreStatusNotification extends Notification{
 
     @Override
     public String print() {
-        return null;
+        return "StoreStatusNotification{" +
+                "storeId='" + storeId + '\'' +
+                ", isActive=" + isActive +
+                '}';
     }
 }

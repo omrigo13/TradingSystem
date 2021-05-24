@@ -32,6 +32,8 @@ public class ItemReviewNotification extends Notification{
 
     @Override
     public String print() {
-        return null;
+        return "ItemReviewNotification{" +
+                "review=" + review +
+                '}';
     }
 }

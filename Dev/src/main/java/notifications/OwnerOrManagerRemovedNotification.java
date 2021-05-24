@@ -39,6 +39,9 @@ public class OwnerOrManagerRemovedNotification extends Notification{
 
     @Override
     public String print() {
-        return null;
+        return "OwnerRemovedNotification{" +
+                "remover=" + remover.getUserName() +
+                ", storeId='" + storeId + '\'' +
+                '}';
     }
 }

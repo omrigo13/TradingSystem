@@ -16,6 +16,10 @@ public class RequestUtil {
         return ctx.formParam("username");
     }
 
+    public static String getQueryUserName(Context ctx) {
+        return ctx.formParam("userName");
+    }
+
     public static String getKeyWord(Context ctx) {
         return ctx.formParam("keyWord");
     }

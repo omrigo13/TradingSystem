@@ -413,8 +413,8 @@ public class Store {
         observable.notifyRoleRemove(remover, toRemove, this.id);
     }
 
-    public void notifyItemOpinion(Review review) {
-        observable.notifyItemReview(review);
+    public void notifyItemOpinion(Subscriber subscriber, Review review) {
+        observable.notifyItemReview(subscriber, review);
     }
 
     public void setObservable(Observable observable) { this.observable = observable; }
