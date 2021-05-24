@@ -17,6 +17,7 @@ system startup:
       5. Noa purchased 10 Bambas and 5 Chips from the eBay store
     
 formats:
+
     configuration file - resource bundle file which defines the parameters for the initialization of the system.
     the parameters should be the resources or services that the system will use during runtime.
     
