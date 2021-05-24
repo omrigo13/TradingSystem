@@ -4,6 +4,7 @@ import Offer.Offer;
 import exceptions.InvalidActionException;
 import exceptions.InvalidStoreIdException;
 import exceptions.NoPermissionException;
+import exceptions.NotLoggedInException;
 import notifications.Notification;
 import externalServices.DeliveryData;
 import externalServices.PaymentData;
@@ -81,8 +82,20 @@ public class TradingSystemImpl {
             for (Map.Entry<Item, Integer> itemQuantityEntry : items.entrySet()) {
                 Item item = itemQuantityEntry.getKey();
                 Integer quantity = itemQuantityEntry.getValue();
-                String itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + quantity;
-                itemList.add(itemString);
+                String itemString = null;
+                try {
+                    Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+                    Offer offer = store.searchOfferByItemAndSubscriber(subscriber, item);
+                    if(offer != null)
+                        itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + offer.getQuantity() + " price: " + offer.getPrice();
+                    else
+                        itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + quantity + " price: " + item.getPrice();
+                }
+                catch (NotLoggedInException e) {
+                    itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + quantity + " price: " + item.getPrice();
+                }
+                if(!itemString.contains("Quantity: 0"))
+                    itemList.add(itemString);
             }
         }
 
@@ -267,8 +280,8 @@ public class TradingSystemImpl {
         Collection<String> itemList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        for (Item item : subscriber.getStoreItems(store))
-            itemList.add("store: " + storeId + ", " + item.toString());
+        for (Map.Entry<Item, Integer> item : subscriber.getStoreItems(store).entrySet())
+            itemList.add("store: " + storeId + ", " + item.getKey().toString() + ", quantity: " + item.getValue());
 
         return itemList;
     }

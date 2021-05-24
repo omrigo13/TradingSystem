@@ -248,7 +248,7 @@ public class Inventory {
                     Item item = entry.getKey();
                     int quantity = entry.getValue();
                     for (Offer offer : userOffers) {
-                        if (offer.getItem().equals(item) && offer.isApproved()) {
+                        if (offer.getItem().equals(item) && offer.isApproved() && offer.getQuantity() != 0) {
                             totalValue += quantity * offer.getPrice();
                             basket.removeItem(item);
                             //noinspection ConstantConditions
@@ -256,6 +256,8 @@ public class Inventory {
                             details.append("\tItem: ").append(item.getName()).append(" Price: ").append(offer.getPrice())
                                     .append(" Quantity: ").append(quantity).append("\n");
                         }
+                        if(offer.getQuantity() == 0)
+                            basket.removeItem(offer.getItem());
                     }
                 }
             }
@@ -266,7 +268,10 @@ public class Inventory {
                 int quantity = entry.getValue();
                 //noinspection ConstantConditions
                 this.items.compute(item, (k, v) -> v - quantity);
-                details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
+                if(quantity == 0)
+                    basket.removeItem(item);
+                if(quantity != 0)
+                    details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                         .append(" Quantity: ").append(quantity).append("\n");
             }
         }

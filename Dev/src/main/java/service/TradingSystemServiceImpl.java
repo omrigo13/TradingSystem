@@ -74,18 +74,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     @Override
     public Collection<String> showCart(String userID) throws InvalidActionException {
         eventLog.writeToLogger("Show user cart");
-//        LinkedList<String> l = new LinkedList<>();
-//        l.add("Barak");
-//        return l;
         return tradingSystemImpl.showCart(userID);
     }
 
     @Override
     public Collection<String> showBasket(String userID, String storeId) throws InvalidActionException {
         eventLog.writeToLogger("Show user basket for store: " + storeId);
-//        LinkedList<String> l = new LinkedList<>();
-//        l.add("Barak");
-//        return l;
         return tradingSystemImpl.showBasket(userID, storeId);
     }
 

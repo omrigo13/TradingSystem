@@ -443,4 +443,12 @@ public class Store {
     public void appointRole(Subscriber subscriber, Subscriber target, String role) {
         observable.notifyRoleAppointment(subscriber, target, this.id, role);
     }
+
+    public Offer searchOfferByItemAndSubscriber(Subscriber subscriber, Item item) {
+        for (Offer offer: this.storeOffers.values()) {
+            if(offer.getSubscriber() == subscriber && offer.getItem() == item)
+                return offer;
+        }
+        return null;
+    }
 }

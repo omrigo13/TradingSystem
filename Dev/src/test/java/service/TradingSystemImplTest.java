@@ -13,6 +13,7 @@ import user.*;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -196,9 +197,9 @@ public class TradingSystemImplTest {
     @Test
     void getItemsByStore() throws InvalidActionException {
 
-        Collection<Item> items = new LinkedList<>();
-        items.add(item1);
-        items.add(item2);
+        Map<Item, Integer> items = new HashMap<>();
+        items.put(item1, 1);
+        items.put(item2, 1);
 
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);
