@@ -91,7 +91,6 @@ public class NotificationsTests {
         Collection<Notification> notifications = subscriber1.getNotifications();
         System.out.println(notifications.toString());
         assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isActive() == false);
-        assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isShown() == true);
     }
 
     @Test
