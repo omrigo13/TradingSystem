@@ -1,7 +1,7 @@
 # TradingSystem
 
 
-system startup: 
+### system startup: 
     
     in order to run the system you should go inside package main and run Main.main
     in the next stage if you want to run the system with secure communication you need to click on the:
@@ -16,7 +16,7 @@ system startup:
       4. Tal assigned Omri to be Store Owner and Omri assigned Noa to be Store Owner
       5. Noa purchased 10 Bambas and 5 Chips from the eBay store
     
-formats:
+### formats:
 
     configuration file - resource bundle file which defines the parameters for the initialization of the system.
     the parameters should be the resources or services that the system will use during runtime.
