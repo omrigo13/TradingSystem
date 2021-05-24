@@ -212,8 +212,8 @@ public class TradingSystemImplTest {
 
         assertNotNull(result);
         assertEquals(2, result.size());
-        assertTrue(result.contains("store: " + storeId + ", item1"));
-        assertTrue(result.contains("store: " + storeId + ", item2"));
+        assertTrue(result.contains("store: " + storeId + ", item1, quantity: 1"));
+        assertTrue(result.contains("store: " + storeId + ", item2, quantity: 1"));
     }
 
     @Test
