@@ -1,21 +1,17 @@
 package notifications;
 
 import exceptions.ItemException;
-import org.junit.jupiter.api.Test;
-//import org.testng.annotations.Test;
-import org.testng.*;
+import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeMethod;
 import review.Review;
 import store.Item;
 import store.Store;
 import user.Basket;
 import user.Subscriber;
 import user.User;
+import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.testng.AssertJUnit.*;
 
@@ -35,8 +31,9 @@ public class NotificationsTests {
     private Basket basket2;
 
 
-
+    @BeforeMethod
     void createUsers(){
+        MockitoAnnotations.openMocks(this);
         subscriber1 = new Subscriber(10, "user1");
         buyer1 = new User();
         buyer2 = new Subscriber(11, "buyer2");
