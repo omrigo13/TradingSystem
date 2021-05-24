@@ -19,7 +19,7 @@ public class Subscriber extends User {
     private final Set<Permission> permissions; // synchronized manually
     private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
     private final Collection<String> purchaseHistory; // synchronized in constructor
-    private final Collection<Notification> notifications = new LinkedList<>();
+    private final Map<Notification, Boolean> notifications = new HashMap<>();
     private boolean isLoggedIn = false;
     private Observer observer;
 
@@ -464,18 +464,19 @@ public class Subscriber extends User {
     public Notification notifyNotification(Notification notification){
         if(observer != null) {
             observer.notify(notification);
+            this.notifications.put(notification,true);
         }
         else
-            this.notifications.add(notification);
+            this.notifications.put(notification,false);
         return notification;
     }
 
     public Collection<Notification> checkPendingNotifications() {
         Collection<Notification> collection = new LinkedList<>();
-        for (Notification n: this.notifications) {
-            if(n.isShown() == false){
+        for (Notification n: this.notifications.keySet()) {
+            if(this.notifications.get(n) == false){
                 collection.add(n);
-                n.setShown(true);
+                this.notifications.put(n,true);
             }
         }
         return collection;
@@ -489,7 +490,7 @@ public class Subscriber extends User {
         isLoggedIn = loggedIn;
     }
 
-    public Collection<Notification> getNotifications() {
+    public Map<Notification, Boolean> getNotifications() {
         return notifications;
     }
 

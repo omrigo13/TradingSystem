@@ -38,6 +38,10 @@ form{
     padding: 0px;
 }
 
+#realTimeNotif{
+    background-color: #b1fc03;
+}
+
 footer{
     text-align: center;
     position: relative;

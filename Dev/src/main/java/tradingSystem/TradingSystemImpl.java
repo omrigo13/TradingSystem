@@ -319,7 +319,7 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.addOwnerPermission(target, store);
         store.appointRole(subscriber, target, "owner");
-
+        store.subscribe(subscriber);
     }
 
     public void allowManagerToUpdateProducts(String connectionId, String storeId, String targetUserName) throws InvalidActionException {
@@ -477,7 +477,7 @@ public class TradingSystemImpl {
         Collection<Notification> n1 = user.checkPendingNotifications();
         Collection<String> result = new LinkedList<>();
         for (Notification n: n1) {
-            result.add(n.toString());
+            result.add(n.print());
         }
         return result;
     }

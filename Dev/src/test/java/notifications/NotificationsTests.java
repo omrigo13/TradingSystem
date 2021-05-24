@@ -14,6 +14,7 @@ import user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.testng.AssertJUnit.*;
@@ -75,10 +76,10 @@ public class NotificationsTests {
         assertTrue(store1.isActive() == true);
 
         store1.setNotActive();
-        Collection<Notification> notifications = subscriber1.getNotifications();
+        Map<Notification, Boolean> notifications = subscriber1.getNotifications();
         System.out.println(notifications.toString());
-        assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isActive() == false);
-        assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isShown() == false);
+        assertTrue(((StoreStatusNotification)(notifications.keySet().toArray()[0])).isActive() == false);
+        assertTrue(((Boolean)notifications.values().toArray()[0] == false));
     }
 
     @Test
@@ -88,10 +89,9 @@ public class NotificationsTests {
         assertTrue(store1.isActive() == true);
 
         store1.setNotActive();
-        Collection<Notification> notifications = subscriber1.getNotifications();
+        Map<Notification, Boolean> notifications = subscriber1.getNotifications();
         System.out.println(notifications.toString());
-        assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isActive() == false);
-        assertTrue(((StoreStatusNotification)(notifications.toArray()[0])).isShown() == true);
+        assertTrue(((StoreStatusNotification)(notifications.keySet().toArray()[0])).isActive() == false);
     }
 
     @Test
@@ -103,12 +103,12 @@ public class NotificationsTests {
         System.out.println( buyer1.getBasket(store1).getItems().toString());
         store1.notifyPurchase(buyer1, buyer1.getBasket(store1).getItems());
 
-        Collection<Notification> notifications = subscriber1.getNotifications();
-        assertTrue(((PurchaseNotification)(notifications.toArray()[0])).getBasket().toString().contains("item1"));
+        Map<Notification, Boolean> notifications = subscriber1.getNotifications();
+        assertTrue(((PurchaseNotification)(notifications.keySet().toArray()[0])).getBasket().toString().contains("item1"));
 
         buyer1.getBasket(store1).getItems().clear(); //after this line, basket is empty
 
-        assertTrue(((PurchaseNotification)(notifications.toArray()[0])).getBasket().toString().contains("item1")); //should receive the basket purchased, although it has been deleted
+        assertTrue(((PurchaseNotification)(notifications.keySet().toArray()[0])).getBasket().toString().contains("item1")); //should receive the basket purchased, although it has been deleted
 
 
     }
@@ -123,10 +123,10 @@ public class NotificationsTests {
 
         store1.notifyItemOpinion(review);
 
-        Collection<Notification> notifications = subscriber1.getNotifications();
+        Map<Notification, Boolean> notifications = subscriber1.getNotifications();
         System.out.println(notifications.toString());
-        assertTrue(((ItemReviewNotification)(notifications.toArray()[0])).getReview().toString().contains("this is my review"));
-        assertTrue(((ItemReviewNotification)(notifications.toArray()[0])).isShown() == false);
+        assertTrue(((ItemReviewNotification)(notifications.keySet().toArray()[0])).getReview().toString().contains("this is my review"));
+        assertTrue(((Boolean)(notifications.values().toArray()[0])) == false);
 
     }
 

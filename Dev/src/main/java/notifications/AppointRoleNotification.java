@@ -4,6 +4,11 @@ import user.Subscriber;
 
 public class AppointRoleNotification extends Notification{
 
+    @Override
+    public String toString() {
+        return "assignor " + assignor.getUserName() + " assign you to be " + role + " of storeId: " + storeId;
+    }
+
     private Subscriber assignor;
     private String role; //"owner" or "manager" only
     private int storeId;
@@ -45,6 +50,6 @@ public class AppointRoleNotification extends Notification{
 
     @Override
     public String print() {
-        return null;
+        return "assignor " + assignor.getUserName() + " assign you to be " + role + " of storeId: " + storeId;
     }
 }

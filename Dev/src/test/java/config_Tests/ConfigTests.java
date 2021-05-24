@@ -1,5 +1,6 @@
+package config_Tests;
+
 import exceptions.InvalidActionException;
-import exceptions.NoPermissionException;
 import main.Config;
 import main.Main;
 import org.testng.annotations.Test;
