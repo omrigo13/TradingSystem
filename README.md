@@ -9,6 +9,8 @@
     in the next stage if you want to run the system without secure communication you need to click on the:
         http://localhost:80/
         
+   [config properties](https://github.com/omrigo13/TradingSystem/blob/main/Dev/config/config.properties)
+        
     the system will load the state file and you should be able to use the system with the next information:
       1. registered users: Tal, Omri, Noa, Admin and their password is: 123
       2. there is a store called eBay with id 0 and the founder of that store is: Tal
