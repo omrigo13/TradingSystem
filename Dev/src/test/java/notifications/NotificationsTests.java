@@ -121,7 +121,7 @@ public class NotificationsTests {
 
         Review review = new Review(buyer1, store1, item1, "this is my review");
 
-        store1.notifyItemOpinion(subscriber1, review);
+        store1.notifyItemOpinion(buyer2, review);
 
         Map<Notification, Boolean> notifications = subscriber1.getNotifications();
         System.out.println(notifications.toString());
