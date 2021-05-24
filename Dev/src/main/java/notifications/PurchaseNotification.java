@@ -1,7 +1,9 @@
 package notifications;
 
+import exceptions.NotLoggedInException;
 import store.Item;
 import store.Store;
+import user.Subscriber;
 import user.User;
 
 import java.util.Map;
@@ -57,9 +59,10 @@ public class PurchaseNotification extends Notification{
 
     @Override
     public String print() {
-        return "PurchaseNotification{" +
-                "buyer=" + buyer +
-                ", basket=" + basket +
-                '}';
+            try {
+                return "buyer " + buyer.getSubscriber().getUserName() + " purchase basket: " + basket.keySet();
+            } catch (NotLoggedInException e) {
+                return "buyer guest purchase basket: " + basket.keySet();
+            }
     }
 }
