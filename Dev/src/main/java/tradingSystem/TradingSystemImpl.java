@@ -86,7 +86,7 @@ public class TradingSystemImpl {
                 try {
                     Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
                     Offer offer = store.searchOfferByItemAndSubscriber(subscriber, item);
-                    if(offer != null)
+                    if(offer != null && offer.isApproved())
                         itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + offer.getQuantity() + " price: " + offer.getPrice();
                     else
                         itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + quantity + " price: " + item.getPrice();
