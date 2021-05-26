@@ -21,7 +21,10 @@ public record Basket(Store store, ConcurrentHashMap<Item, Integer> items) {
     }
 
     public void setQuantity(Item item, int quantity) {
-        items.put(item, quantity);
+        if(quantity == 0)
+            removeItem(item);
+        else
+            items.put(item, quantity);
     }
 
     public Map<Item, Integer> getItems() {

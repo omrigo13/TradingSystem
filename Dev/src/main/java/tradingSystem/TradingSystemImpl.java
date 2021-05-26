@@ -94,8 +94,7 @@ public class TradingSystemImpl {
                 catch (NotLoggedInException e) {
                     itemString = "Store: " + storeName + " Item: " + item.getName() + " Quantity: " + quantity + " price: " + item.getPrice();
                 }
-                if(quantity != 0)
-                    itemList.add(itemString);
+                itemList.add(itemString);
             }
         }
 

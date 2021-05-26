@@ -268,11 +268,8 @@ public class Inventory {
                 int quantity = entry.getValue();
                 //noinspection ConstantConditions
                 this.items.compute(item, (k, v) -> v - quantity);
-                if(quantity == 0)
-                    basket.removeItem(item);
-                if(quantity != 0)
-                    details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
-                        .append(" Quantity: ").append(quantity).append("\n");
+                details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
+                      .append(" Quantity: ").append(quantity).append("\n");
             }
         }
         return totalValue;
