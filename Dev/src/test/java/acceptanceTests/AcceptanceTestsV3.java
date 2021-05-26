@@ -320,4 +320,33 @@ public class AcceptanceTestsV3 {
         assertTrue(service.getSalesHistoryByStore(founderStore1Id, storeId1).toString().contains("Item: tomato Price: 2.0 Quantity: 3"));
         assertTrue(service.getSalesHistoryByStore(founderStore2Id, storeId2).toString().contains("Item: corn Price: 3.2 Quantity: 2"));
     }
+
+    @Test
+    void purchase_countered_offer_with_good_details() throws InvalidActionException {
+        //TODO fix counter offer and let the user approve the offer and add more tests after that
+        //TODO is it possible to update cart after offer?
+
+        setUpStore1();
+        setUpStore2();
+        setUpSubscriber1();
+
+        Collection<String> items = new ArrayList<>();
+        items.add(tomato);
+        Collection<String> items2 = new ArrayList<>();
+        items2.add(corn);
+
+        quantityPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, items, 2, 0);
+        quantityPolicy2 = service.makeQuantityPolicy(founderStore2Id, storeId2, items2, 2, 0);
+        service.assignStorePurchasePolicy(quantityPolicy, founderStore1Id, storeId1);
+        service.assignStorePurchasePolicy(quantityPolicy2, founderStore2Id, storeId2);
+
+        service.addItemToBasketByOffer(subs1Id, storeId1, tomato, 3, 2.0);
+        service.addItemToBasketByOffer(subs1Id, storeId2, corn, 2, 3.2);
+        service.approveOffer(founderStore1Id, storeId1, 0, 3.0);
+        service.approveOffer(founderStore2Id, storeId2, 0, 4.2);
+
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        assertTrue(service.getSalesHistoryByStore(founderStore1Id, storeId1).toString().contains("Item: tomato Price: 3.0 Quantity: 3"));
+        assertTrue(service.getSalesHistoryByStore(founderStore2Id, storeId2).toString().contains("Item: corn Price: 4.2 Quantity: 2"));
+    }
 }
