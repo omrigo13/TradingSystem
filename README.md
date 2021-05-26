@@ -34,7 +34,7 @@
     the state file contains a series of instructions of use cases and arguments for them.
     the state file will be loaded and the system should be in that state after the initialization finished.
     
-   the state file you create should follow the service of the system, the script instructions should be written using [these_methods](https://github.com/omrigo13/TradingSystem/blob/main/Dev/src/main/java/service/TradingSystemService.java)
+   the state file you create should follow the service of the system, the script instructions should be written using [these methods](https://github.com/omrigo13/TradingSystem/blob/main/Dev/src/main/java/service/TradingSystemService.java)
    
    ```java
    public class ScriptFileName {
