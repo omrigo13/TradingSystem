@@ -352,6 +352,16 @@ public class Store {
 
     //TODO remember to deal with policies and types in a furure version
     public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException { // TODO should get basket
+        if(userOffers != null) {
+            for (Offer offer: userOffers) {
+                if(offer.getQuantity() == 0)
+                    basket.removeItem(offer.getItem());
+                if (!basket.getItems().containsKey(offer.getItem())) {
+                    userOffers.remove(offer);
+                    storeOffers.values().remove(offer);
+                }
+            }
+        }
         return inventory.calculate(basket, details, storeDiscountPolicy, userOffers);
     }
 

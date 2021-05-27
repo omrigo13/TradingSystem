@@ -244,20 +244,16 @@ public class Inventory {
             }
 
             if(userOffers != null) {
-                for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
-                    Item item = entry.getKey();
-                    int quantity = entry.getValue();
+                for (Item item : basket.getItems().keySet()) {
                     for (Offer offer : userOffers) {
                         if (offer.getItem().equals(item) && offer.isApproved() && offer.getQuantity() != 0) {
-                            totalValue += quantity * offer.getPrice();
+                            totalValue += offer.getQuantity() * offer.getPrice();
                             basket.removeItem(item);
                             //noinspection ConstantConditions
-                            this.items.compute(item, (k, v) -> v - quantity);
+                            this.items.compute(item, (k, v) -> v - offer.getQuantity());
                             details.append("\tItem: ").append(item.getName()).append(" Price: ").append(offer.getPrice())
-                                    .append(" Quantity: ").append(quantity).append("\n");
+                                    .append(" Quantity: ").append(offer.getQuantity()).append("\n");
                         }
-                        if(offer.getQuantity() == 0)
-                            basket.removeItem(offer.getItem());
                     }
                 }
             }
