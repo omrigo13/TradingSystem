@@ -35,7 +35,7 @@ public class TradingSystem {
     private final ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies; // key: discount policy id
     private final ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; // key: store, value: purchase policies
     private final ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; // key: store, value: discount policies
-
+    private final ConcurrentHashMap<String, Integer> visitors;
 
     //private final Map<Store, Observable> observables;
 
@@ -43,7 +43,7 @@ public class TradingSystem {
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
                   ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies,
                   ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies, ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies,
-                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies)
+                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Integer> visitors)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -57,6 +57,12 @@ public class TradingSystem {
         this.discountPolicies = discountPolicies;
         this.storesPurchasePolicies = storesPurchasePolicies;
         this.storesDiscountPolicies = storesDiscountPolicies;
+        this.visitors = visitors;
+        this.visitors.putIfAbsent("guests", 0);
+        this.visitors.putIfAbsent("subscribers", 0);
+        this.visitors.putIfAbsent("store managers", 0);
+        this.visitors.putIfAbsent("store owners", 0);
+        this.visitors.putIfAbsent("system admins", 0);
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
@@ -99,7 +105,8 @@ public class TradingSystem {
 
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
-
+        //noinspection ConstantConditions
+        visitors.compute("guests", (k, v) -> v + 1);
         connections.put(connectionId, new User());
         return connectionId;
     }
@@ -109,9 +116,46 @@ public class TradingSystem {
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
         Subscriber subscriber = getSubscriberByUserName(userName);
+        boolean managerAndOwner = false;
+        int managers = visitors.get("store managers"), owners = visitors.get("store owners");
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
+        if(subscriber.havePermission(AdminPermission.getInstance())) {
+            //noinspection ConstantConditions
+            visitors.compute("system admins", (k, v) -> v + 1);
+            //noinspection ConstantConditions
+            visitors.compute("guests", (k, v) -> v - 1);
+            return;
+        }
+        for (Store store : stores.values()) {
+            if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
+                //noinspection ConstantConditions
+                visitors.compute("store owners", (k, v) -> v + 1);
+                //noinspection ConstantConditions
+                visitors.compute("guests", (k, v) -> v - 1);
+                if(managerAndOwner) {
+                    //noinspection ConstantConditions
+                    visitors.compute("store managers", (k, v) -> v - 1);
+                    //noinspection ConstantConditions
+                    visitors.compute("guests", (k, v) -> v + 1);
+                }
+                return;
+            }
+            if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
+                //noinspection ConstantConditions
+                visitors.compute("store managers", (k, v) -> v + 1);
+                //noinspection ConstantConditions
+                visitors.compute("guests", (k, v) -> v - 1);
+                managerAndOwner = true;
+            }
+        }
+        if(managers == visitors.get("store managers") && owners == visitors.get("store owners")) {
+            //noinspection ConstantConditions
+            visitors.compute("subscribers", (k, v) -> v + 1);
+            //noinspection ConstantConditions
+            visitors.compute("guests", (k, v) -> v - 1);
+        }
     }
 
     public void logout(String connectionId) throws InvalidActionException {
@@ -347,12 +391,6 @@ public class TradingSystem {
 
         admin.validatePermission(AdminPermission.getInstance());
 
-        Map<String, Integer> totalVisitors = new HashMap<>();
-        totalVisitors.put("guests", 1);
-        totalVisitors.put("subscribers", 1);
-        totalVisitors.put("store managers", 1);
-        totalVisitors.put("store owners", 1);
-        totalVisitors.put("system admins", 1);
-        return totalVisitors;
+        return visitors;
     }
 }

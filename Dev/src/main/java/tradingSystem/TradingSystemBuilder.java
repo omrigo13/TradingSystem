@@ -31,6 +31,7 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies;
     private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies;
     private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies;
+    private ConcurrentHashMap<String, Integer> visitors;
 
     public TradingSystemBuilder setUserName(String userName) {
 
@@ -123,8 +124,9 @@ public class TradingSystemBuilder {
         storesPurchasePolicies = (storesPurchasePolicies == null) ? new ConcurrentHashMap<>(): storesPurchasePolicies;
         storesDiscountPolicies = (storesDiscountPolicies == null) ? new ConcurrentHashMap<>(): storesDiscountPolicies;
         subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
+        visitors = (visitors == null) ? new ConcurrentHashMap() : visitors;
 
         return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores, purchasePolicies,
-                discountPolicies, storesPurchasePolicies, storesDiscountPolicies);
+                discountPolicies, storesPurchasePolicies, storesDiscountPolicies, visitors);
     }
 }
