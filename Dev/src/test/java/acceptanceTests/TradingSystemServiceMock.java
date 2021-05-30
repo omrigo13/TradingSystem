@@ -5,6 +5,7 @@ import exceptions.InvalidStoreIdException;
 import service.TradingSystemService;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class TradingSystemServiceMock implements TradingSystemService {
 
@@ -181,6 +182,11 @@ public class TradingSystemServiceMock implements TradingSystemService {
 
     @Override
     public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(String userID, String date) throws InvalidActionException {
         return null;
     }
 

@@ -226,6 +226,9 @@ public class Main {
             post(Path.Web.GETTOTALINCOMEBYADMINPERDAY, Main.tradingSystem.handleGetTotalIncomeByAdminPerDayPost);
             get(Path.Web.GETTOTALINCOMEBYADMINPERDAY, Main.tradingSystem.serveGetTotalIncomeByAdminPerDayPage);
 
+            post(Path.Web.GETTOTALVISITORSBYADMINPERDAY, Main.tradingSystem.handleGetTotalVisitorsByAdminPerDayPost);
+            get(Path.Web.GETTOTALVISITORSBYADMINPERDAY, Main.tradingSystem.serveGetTotalVisitorsByAdminPerDay);
+
             post(Path.Web.UPDATEPRODUCTDETAILS, Main.tradingSystem.handleUpdateProductDetailsPost);
             get(Path.Web.UPDATEPRODUCTDETAILS, Main.tradingSystem.serveUpdateProductDetailsPage);
 

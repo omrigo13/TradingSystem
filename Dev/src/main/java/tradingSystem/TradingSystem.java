@@ -13,10 +13,7 @@ import store.Store;
 import user.*;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -344,5 +341,18 @@ public class TradingSystem {
             storesValuesPerDay.add(admin.getTotalIncomeByStorePerDay(store, date));
         }
         return storesValuesPerDay;
+    }
+
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
+
+        admin.validatePermission(AdminPermission.getInstance());
+
+        Map<String, Integer> totalVisitors = new HashMap<>();
+        totalVisitors.put("guests", 1);
+        totalVisitors.put("subscribers", 1);
+        totalVisitors.put("store managers", 1);
+        totalVisitors.put("store owners", 1);
+        totalVisitors.put("system admins", 1);
+        return totalVisitors;
     }
 }

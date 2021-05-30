@@ -6,6 +6,7 @@ import exceptions.InvalidStoreIdException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 public interface TradingSystemService {
     
@@ -259,6 +260,12 @@ public interface TradingSystemService {
     precondition: invoker has the permissions to get the info. */
     //every string element contains store total income value, store name, date. and there is a total for all the stores
     Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException;
+
+    /* shows total visitors for a specific date divided into groups: guests, subscribers, store managers,
+    store owners, system admins by permissions: system admin.
+    precondition: invoker has the permissions to get the info. */
+    //every element contains key: group name, value: number of total visitors
+    Map<String, Integer> getTotalVisitorsByAdminPerDay(String userID, String date) throws InvalidActionException;
 
     // ***********************************************************************
     // Topics: service level, external systems

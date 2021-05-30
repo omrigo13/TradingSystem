@@ -62,6 +62,7 @@ public class Path {
         public static final String DOTIMEPOLICY = "/doTimePolicy";
         public static final String GETTOTALINCOMEBYSTOREPERDAY = "/getTotalIncomeByStorePerDay";
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/getTotalIncomeByAdminPerDay";
+        public static final String GETTOTALVISITORSBYADMINPERDAY = "/getTotalVisitorsPerDayByAdmin";
         public static final String PURCHASECART = "/purchaseCart";
         public static final String ADDITEMTOBASKETBYOFFER = "/addItemToBasketByOffer";
         public static final String GETOFFERSBYSTORE = "/getOffersByStore";
@@ -99,6 +100,7 @@ public class Path {
         public static final String MAKETIMEPOLICY = "/velocity/policies/makeTimePolicy.vm";
         public static final String GETTOTALINCOMEBYSTOREPERDAY = "/velocity/store/getTotalIncomeByStorePerDay.vm";
         public static final String GETTOTALINCOMEBYADMINPERDAY = "/velocity/store/getTotalIncomeByAdminPerDay.vm";
+        public static final String GETTOTALVISITORSPERDAYBYADMIN = "/velocity/store/getTotalVisitorsPerDayByAdmin.vm";
         public static final String INVALID_CONNECTION = "/velocity/invalidConnection.vm";
         public static final String PURCHASECART = "/velocity/cart/purchase.vm";
         public static final String ADDITEMTOBASKETBYOFFER = "/velocity/offers/addItemToBasketByOffer.vm";

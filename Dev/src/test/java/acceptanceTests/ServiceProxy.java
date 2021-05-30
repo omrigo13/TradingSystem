@@ -6,6 +6,7 @@ import service.TradingSystemService;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 public class ServiceProxy implements TradingSystemService {
     private TradingSystemService real;
@@ -238,6 +239,13 @@ public class ServiceProxy implements TradingSystemService {
     public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException {
         if(real != null)
             return real.getTotalIncomeByAdminPerDay(userID, date);
+        return null;
+    }
+
+    @Override
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(String userID, String date) throws InvalidActionException {
+        if(real != null)
+            return real.getTotalVisitorsByAdminPerDay(userID, date);
         return null;
     }
 
