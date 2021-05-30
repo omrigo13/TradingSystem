@@ -13,6 +13,7 @@ import user.Subscriber;
 import user.User;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,7 +32,7 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies;
     private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies;
     private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies;
-    private ConcurrentHashMap<String, Integer> visitors;
+    private ConcurrentHashMap<String, Map<String, Integer>> visitors;
 
     public TradingSystemBuilder setUserName(String userName) {
 

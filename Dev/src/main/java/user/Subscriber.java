@@ -471,6 +471,12 @@ public class Subscriber extends User {
         return notification;
     }
 
+    public void notifyVisitors(Map<String, Integer> visitors) {
+        if(observer != null) {
+            observer.notifyVisitors(visitors);
+        }
+    }
+
     public Collection<Notification> checkPendingNotifications() {
         Collection<Notification> collection = new LinkedList<>();
         for (Notification n: this.notifications.keySet()) {

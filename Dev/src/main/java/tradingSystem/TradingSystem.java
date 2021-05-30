@@ -12,6 +12,7 @@ import store.Item;
 import store.Store;
 import user.*;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +36,8 @@ public class TradingSystem {
     private final ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies; // key: discount policy id
     private final ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; // key: store, value: purchase policies
     private final ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; // key: store, value: discount policies
-    private final ConcurrentHashMap<String, Integer> visitors;
+    private final ConcurrentHashMap<String, Map<String, Integer>> visitors; // key: date, value: Map of visitors per type
+    private final Subscriber admin;
 
     //private final Map<Store, Observable> observables;
 
@@ -43,7 +45,7 @@ public class TradingSystem {
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
                   ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies,
                   ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies, ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies,
-                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Integer> visitors)
+                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Map<String, Integer>> visitors)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -58,14 +60,11 @@ public class TradingSystem {
         this.storesPurchasePolicies = storesPurchasePolicies;
         this.storesDiscountPolicies = storesDiscountPolicies;
         this.visitors = visitors;
-        this.visitors.putIfAbsent("guests", 0);
-        this.visitors.putIfAbsent("subscribers", 0);
-        this.visitors.putIfAbsent("store managers", 0);
-        this.visitors.putIfAbsent("store owners", 0);
-        this.visitors.putIfAbsent("system admins", 0);
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
+
+        this.admin = subscribers.get(userName).getSubscriber();
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {
@@ -105,9 +104,17 @@ public class TradingSystem {
 
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
+        String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        visitors.putIfAbsent(date, new HashMap<>());
+        visitors.get(date).putIfAbsent("guests", 0);
+        visitors.get(date).putIfAbsent("system admins", 0);
+        visitors.get(date).putIfAbsent("store owners", 0);
+        visitors.get(date).putIfAbsent("store managers", 0);
+        visitors.get(date).putIfAbsent("subscribers", 0);
         //noinspection ConstantConditions
-        visitors.compute("guests", (k, v) -> v + 1);
+        visitors.get(date).compute("guests", (k, v) -> v + 1);
         connections.put(connectionId, new User());
+        admin.notifyVisitors(visitors.get(date));
         return connectionId;
     }
 
@@ -117,44 +124,45 @@ public class TradingSystem {
         auth.authenticate(userName, password);
         Subscriber subscriber = getSubscriberByUserName(userName);
         boolean managerAndOwner = false;
-        int managers = visitors.get("store managers"), owners = visitors.get("store owners");
+        String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        int managers = visitors.get(date).get("store managers"), owners = visitors.get(date).get("store owners");
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
         if(subscriber.havePermission(AdminPermission.getInstance())) {
             //noinspection ConstantConditions
-            visitors.compute("system admins", (k, v) -> v + 1);
+            visitors.get(date).compute("system admins", (k, v) -> v + 1);
             //noinspection ConstantConditions
-            visitors.compute("guests", (k, v) -> v - 1);
+            visitors.get(date).compute("guests", (k, v) -> v - 1);
             return;
         }
         for (Store store : stores.values()) {
             if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
-                visitors.compute("store owners", (k, v) -> v + 1);
+                visitors.get(date).compute("store owners", (k, v) -> v + 1);
                 //noinspection ConstantConditions
-                visitors.compute("guests", (k, v) -> v - 1);
+                visitors.get(date).compute("guests", (k, v) -> v - 1);
                 if(managerAndOwner) {
                     //noinspection ConstantConditions
-                    visitors.compute("store managers", (k, v) -> v - 1);
+                    visitors.get(date).compute("store managers", (k, v) -> v - 1);
                     //noinspection ConstantConditions
-                    visitors.compute("guests", (k, v) -> v + 1);
+                    visitors.get(date).compute("guests", (k, v) -> v + 1);
                 }
                 return;
             }
             if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
-                visitors.compute("store managers", (k, v) -> v + 1);
+                visitors.get(date).compute("store managers", (k, v) -> v + 1);
                 //noinspection ConstantConditions
-                visitors.compute("guests", (k, v) -> v - 1);
+                visitors.get(date).compute("guests", (k, v) -> v - 1);
                 managerAndOwner = true;
             }
         }
-        if(managers == visitors.get("store managers") && owners == visitors.get("store owners")) {
+        if(managers == visitors.get(date).get("store managers") && owners == visitors.get(date).get("store owners")) {
             //noinspection ConstantConditions
-            visitors.compute("subscribers", (k, v) -> v + 1);
+            visitors.get(date).compute("subscribers", (k, v) -> v + 1);
             //noinspection ConstantConditions
-            visitors.compute("guests", (k, v) -> v - 1);
+            visitors.get(date).compute("guests", (k, v) -> v - 1);
         }
     }
 
@@ -391,6 +399,6 @@ public class TradingSystem {
 
         admin.validatePermission(AdminPermission.getInstance());
 
-        return visitors;
+        return visitors.get(date);
     }
 }

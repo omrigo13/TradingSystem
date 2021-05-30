@@ -28,6 +28,7 @@ import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,6 +48,12 @@ public class Main {
         public void notify(Notification notification) {
             if(ctx.session.isOpen())
                 ctx.send(notification.print());
+        }
+
+        @Override
+        public void notifyVisitors(Map<String, Integer> visitors) {
+            if(ctx.session.isOpen())
+                ctx.send(visitors);
         }
     }
     // Declare dependencies
