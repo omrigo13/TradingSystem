@@ -2,6 +2,8 @@ package main;
 
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
+import externalServices.DeliverySystem;
+import externalServices.PaymentSystem;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.websocket.WsContext;
@@ -67,6 +69,8 @@ public class Main {
             cfg.sslPort = Integer.parseInt(prop.getProperty("sslPort"));
             cfg.stateFileAddress = prop.getProperty("stateFileAddress");
             cfg.startupScript = prop.getProperty("startupScript");
+            cfg.paymentSystem = prop.getProperty("paymentSystem");
+            cfg.deliverySystem = prop.getProperty("deliverySystem");
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -85,8 +89,20 @@ public class Main {
         Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), cfg.adminName);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(cfg.adminName, admin);
+        PaymentSystem paymentSystem;
+        DeliverySystem deliverySystem;
+        try {
+            Class<?> cls = Class.forName(cfg.paymentSystem, true, ClassLoader.getSystemClassLoader());
+            paymentSystem = (PaymentSystem) cls.getConstructor().newInstance();
+            cls = Class.forName(cfg.deliverySystem, true, ClassLoader.getSystemClassLoader());
+            deliverySystem = (DeliverySystem) cls.getConstructor().newInstance();
+
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
         tradingSystem.TradingSystem tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication).build();
+                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication)
+                .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
         //map.clear();
         TradingSystemService tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(tradingSystem));
 
