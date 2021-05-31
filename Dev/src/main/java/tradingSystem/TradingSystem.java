@@ -108,9 +108,9 @@ public class TradingSystem {
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
         visitors.get(date).putIfAbsent("guests", 0);
-        visitors.get(date).putIfAbsent("system admins", 0);
-        visitors.get(date).putIfAbsent("store owners", 0);
-        visitors.get(date).putIfAbsent("store managers", 0);
+        visitors.get(date).putIfAbsent("admins", 0);
+        visitors.get(date).putIfAbsent("owners", 0);
+        visitors.get(date).putIfAbsent("managers", 0);
         visitors.get(date).putIfAbsent("subscribers", 0);
         //noinspection ConstantConditions
         visitors.get(date).compute("guests", (k, v) -> v + 1);
@@ -126,34 +126,34 @@ public class TradingSystem {
         Subscriber subscriber = getSubscriberByUserName(userName);
         boolean managerAndOwner = false;
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-        int managers = visitors.get(date).get("store managers"), owners = visitors.get(date).get("store owners");
+        int managers = visitors.get(date).get("managers"), owners = visitors.get(date).get("owners");
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
         if(subscriber.havePermission(AdminPermission.getInstance())) {
             //noinspection ConstantConditions
-            visitors.get(date).compute("system admins", (k, v) -> v + 1);
+            visitors.get(date).compute("admins", (k, v) -> v + 1);
             admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
             return;
         }
         for (Store store : stores.values()) {
             if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
-                visitors.get(date).compute("store owners", (k, v) -> v + 1);
+                visitors.get(date).compute("owners", (k, v) -> v + 1);
                 if(managerAndOwner) {
                     //noinspection ConstantConditions
-                    visitors.get(date).compute("store managers", (k, v) -> v - 1);
+                    visitors.get(date).compute("managers", (k, v) -> v - 1);
                 }
                 admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
                 return;
             }
             if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
-                visitors.get(date).compute("store managers", (k, v) -> v + 1);
+                visitors.get(date).compute("managers", (k, v) -> v + 1);
                 managerAndOwner = true;
             }
         }
-        if(managers == visitors.get(date).get("store managers") && owners == visitors.get(date).get("store owners")) {
+        if(managers == visitors.get(date).get("managers") && owners == visitors.get(date).get("owners")) {
             //noinspection ConstantConditions
             visitors.get(date).compute("subscribers", (k, v) -> v + 1);
         }

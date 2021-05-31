@@ -1,5 +1,6 @@
 package notifications;
 
+import org.json.JSONObject;
 import java.util.Map;
 
 public class VisitorsNotification extends Notification {
@@ -17,6 +18,6 @@ public class VisitorsNotification extends Notification {
 
     @Override
     public String print() {
-        return this.visitors.toString();
+        return new JSONObject(this.visitors).toString();
     }
 }
