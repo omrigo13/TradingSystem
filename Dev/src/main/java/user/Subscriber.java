@@ -22,6 +22,7 @@ public class Subscriber extends User {
     private final Map<Notification, Boolean> notifications = new HashMap<>();
     private boolean isLoggedIn = false;
     private Observer observer;
+    private Observer adminObserver;
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -471,9 +472,9 @@ public class Subscriber extends User {
         return notification;
     }
 
-    public void notifyVisitors(Map<String, Integer> visitors) {
-        if(observer != null) {
-            observer.notifyVisitors(visitors);
+    public void notifyVisitors(Notification notification) {
+        if(adminObserver != null) {
+            adminObserver.notify(notification);
         }
     }
 
@@ -511,4 +512,9 @@ public class Subscriber extends User {
     public void setObserver(Observer observer) {
         this.observer = observer;
     }
+
+    public void setAdminObserver(Observer observer) {
+        this.adminObserver = observer;
+    }
+
 }

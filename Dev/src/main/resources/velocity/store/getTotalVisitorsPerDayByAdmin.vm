@@ -16,8 +16,32 @@
             <input type="hidden" name="connectionID" id="connectionID" value="">
             <script type="text/javascript">
                 document.getElementById("connectionID").setAttribute('value',localStorage.getItem("connectID"));
+                let ws2 = new WebSocket("ws://" + location.hostname + ":" + location.port + "/visitors");
+                ws2.onopen = () => ws2.send(localStorage.getItem("connectID"));
+                ws2.onmessage = msg => {
+                    guestsIndex = msg.data.indexOf("guests") + 7
+                    guestsMsg = msg.data.substring(guestsIndex)
+                    subscribersIndex = msg.data.indexOf("subscribers") + 12
+                    subscribersMsg = msg.data.substring(subscribersIndex)
+                    storeManagersIndex = msg.data.indexOf("store managers") + 15
+                    managersMsg = msg.data.substring(storeManagersIndex)
+                    storeOwnersIndex = msg.data.indexOf("store owners") + 13
+                    ownersMsg = msg.data.substring(storeOwnersIndex)
+                    systemAdminsIndex = msg.data.indexOf("system admins") + 14
+                    adminsMsg = msg.data.substring(systemAdminsIndex)
+                    document.getElementById("guests").innerHTML = guestsMsg.substring(0, guestsMsg.indexOf(","));
+                    document.getElementById("subscribers").innerHTML = subscribersMsg.substring(0, subscribersMsg.indexOf(","));
+                    document.getElementById("store managers").innerHTML = managersMsg.substring(0, managersMsg.indexOf(","));
+                    document.getElementById("store owners").innerHTML = ownersMsg.substring(0, ownersMsg.indexOf(","));
+                    document.getElementById("system admins").innerHTML = adminsMsg.substring(0, adminsMsg.indexOf("}"));
+                    drawChart()
+                }
             </script>
-
+            <div id="guests" hidden="true"> $visitors.get("guests") </div>
+            <div id="subscribers" hidden="true"> $visitors.get("subscribers") </div>
+            <div id="store managers" hidden="true"> $visitors.get("store managers") </div>
+            <div id="store owners" hidden="true"> $visitors.get("store owners") </div>
+            <div id="system admins" hidden="true"> $visitors.get("system admins") </div>
             <div class="row">
                 <div class="col-25">
                     <label for="date">date</label>
@@ -42,11 +66,11 @@
             function drawChart() {
                 var data = google.visualization.arrayToDataTable([
                     ["Element", "visitors", { role: "style" } ],
-                    ["Guests", $visitors.get("guests"), "#ffff66"],
-                    ["Subscribers", $visitors.get("subscribers"), "ffcc66"],
-                    ["Store Managers", $visitors.get("store managers"), "ff5050"],
-                    ["Store Owners", $visitors.get("store owners"), "color: #66ccff"],
-                    ["System Admins", $visitors.get("system admins"), "color: #66ff66"]
+                    ["Guests", parseInt(document.getElementById("guests").innerHTML), "#ffff66"],
+                    ["Subscribers", parseInt(document.getElementById("subscribers").innerHTML), "ffcc66"],
+                    ["Store Managers", parseInt(document.getElementById("store managers").innerHTML), "ff5050"],
+                    ["Store Owners", parseInt(document.getElementById("store owners").innerHTML), "color: #66ccff"],
+                    ["System Admins", parseInt(document.getElementById("system admins").innerHTML), "color: #66ff66"]
                 ]);
 
                 var view = new google.visualization.DataView(data);

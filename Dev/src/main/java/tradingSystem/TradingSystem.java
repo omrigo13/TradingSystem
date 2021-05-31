@@ -7,6 +7,7 @@ import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
+import notifications.VisitorsNotification;
 import policies.*;
 import store.Item;
 import store.Store;
@@ -114,7 +115,7 @@ public class TradingSystem {
         //noinspection ConstantConditions
         visitors.get(date).compute("guests", (k, v) -> v + 1);
         connections.put(connectionId, new User());
-        admin.notifyVisitors(visitors.get(date));
+        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
         return connectionId;
     }
 
@@ -132,38 +133,31 @@ public class TradingSystem {
         if(subscriber.havePermission(AdminPermission.getInstance())) {
             //noinspection ConstantConditions
             visitors.get(date).compute("system admins", (k, v) -> v + 1);
-            //noinspection ConstantConditions
-            visitors.get(date).compute("guests", (k, v) -> v - 1);
+            admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
             return;
         }
         for (Store store : stores.values()) {
             if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
                 visitors.get(date).compute("store owners", (k, v) -> v + 1);
-                //noinspection ConstantConditions
-                visitors.get(date).compute("guests", (k, v) -> v - 1);
                 if(managerAndOwner) {
                     //noinspection ConstantConditions
                     visitors.get(date).compute("store managers", (k, v) -> v - 1);
-                    //noinspection ConstantConditions
-                    visitors.get(date).compute("guests", (k, v) -> v + 1);
                 }
+                admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
                 return;
             }
             if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
                 //noinspection ConstantConditions
                 visitors.get(date).compute("store managers", (k, v) -> v + 1);
-                //noinspection ConstantConditions
-                visitors.get(date).compute("guests", (k, v) -> v - 1);
                 managerAndOwner = true;
             }
         }
         if(managers == visitors.get(date).get("store managers") && owners == visitors.get(date).get("store owners")) {
             //noinspection ConstantConditions
             visitors.get(date).compute("subscribers", (k, v) -> v + 1);
-            //noinspection ConstantConditions
-            visitors.get(date).compute("guests", (k, v) -> v - 1);
         }
+        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
     }
 
     public void logout(String connectionId) throws InvalidActionException {

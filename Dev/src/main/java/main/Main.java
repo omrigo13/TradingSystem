@@ -49,12 +49,6 @@ public class Main {
             if(ctx.session.isOpen())
                 ctx.send(notification.print());
         }
-
-        @Override
-        public void notifyVisitors(Map<String, Integer> visitors) {
-            if(ctx.session.isOpen())
-                ctx.send(visitors);
-        }
     }
     // Declare dependencies
     public static presenatation.TradingSystem tradingSystem;
@@ -137,6 +131,19 @@ public class Main {
                 ctx.attribute("subscriber", subscriber);
                 Observer wsObserver = new WsObserver(ctx);
                 subscriber.setObserver(wsObserver);
+            });
+        });
+
+        app.ws("/visitors", ws -> {
+            ws.onClose(ctx -> {
+                Subscriber subscriber = ctx.attribute("subscriber");
+                subscriber.setAdminObserver(null);
+            });
+            ws.onMessage(ctx -> {
+                Subscriber subscriber = tradingSystem.getUserByConnectionId(ctx.message()).getSubscriber();
+                ctx.attribute("subscriber", subscriber);
+                Observer wsObserver = new WsObserver(ctx);
+                subscriber.setAdminObserver(wsObserver);
             });
         });
 
