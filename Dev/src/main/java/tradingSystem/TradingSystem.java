@@ -345,4 +345,13 @@ public class TradingSystem {
         }
         return storesValuesPerDay;
     }
+
+    public int getStoreOwners(Store store) {
+        int storeOwners = 0;
+        for (Subscriber owner: subscribers.values()) {
+            if(owner.havePermission(OwnerPermission.getInstance(store)))
+                storeOwners++;
+        }
+        return storeOwners;
+    }
 }

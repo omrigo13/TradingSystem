@@ -18,12 +18,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertThrows;
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertTrue;
+import static org.testng.AssertJUnit.*;
 
 public class SubscriberTest {
 
     private Subscriber subscriber;
+    private Subscriber subscriber2;
 
     @Mock private Permission permission;
     @Mock private Set<Permission> permissions;
@@ -58,6 +58,7 @@ public class SubscriberTest {
         purchaseHistory = spy(new LinkedList<>());
         item = spy(new Item());
         subscriber = spy(new Subscriber(1, "Johnny", permissions, itemsPurchased, purchaseHistory));
+        subscriber2 = spy(new Subscriber(2, "Johnny2", permissions, itemsPurchased, purchaseHistory));
 
         reset(store);
         reset(target);
@@ -380,10 +381,41 @@ public class SubscriberTest {
     void approveOffer() throws NoPermissionException, OfferNotExistsException {
         Offer offer = new Offer(subscriber, item, 5, 3.0);
         when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
+        when(subscriber.havePermission(ownerPermission)).thenReturn(true);
         when(store.getOfferById(0)).thenReturn(offer);
 
         assertFalse(store.getOfferById(0).isApproved());
-        subscriber.approveOffer(store, 0 , 0.0);
+        subscriber.approveOffer(store, 0 , 0.0, 1);
+        assertTrue(store.getOfferById(0).isApproved());
+        assertEquals(5, subscriber.getBasket(store).getItems().get(item).intValue());
+    }
+
+    @Test
+    void approveOfferNotAllOwnersApproved() throws NoPermissionException, OfferNotExistsException {
+        Offer offer = new Offer(subscriber, item, 5, 3.0);
+        when(subscriber.havePermission(ownerPermission)).thenReturn(true);
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
+        when(store.getOfferById(0)).thenReturn(offer);
+
+        subscriber.approveOffer(store, 0 , 0.0, 2);
+        assertFalse(store.getOfferById(0).isApproved());
+        assertNull(subscriber.getBasket(store).getItems().get(item));
+    }
+
+    @Test
+    void approveOfferOwner1CounteredAndOwner2Approved() throws NoPermissionException, OfferNotExistsException {
+        Offer offer = new Offer(subscriber, item, 5, 3.0);
+        when(subscriber.havePermission(manageInventoryPermission)).thenReturn(true);
+        when(subscriber.havePermission(ownerPermission)).thenReturn(true);
+        when(subscriber2.havePermission(manageInventoryPermission)).thenReturn(true);
+        when(subscriber2.havePermission(ownerPermission)).thenReturn(true);
+        when(store.getOfferById(0)).thenReturn(offer);
+
+        subscriber.approveOffer(store, 0 , 1.5, 2);
+        assertFalse(store.getOfferById(0).isApproved());
+        assertNull(subscriber.getBasket(store).getItems().get(item));
+
+        subscriber2.approveOffer(store, 0 , 0.0, 2);
         assertTrue(store.getOfferById(0).isApproved());
         assertEquals(5, subscriber.getBasket(store).getItems().get(item).intValue());
     }
@@ -391,7 +423,7 @@ public class SubscriberTest {
     @Test
     void approveOfferNoPermission() {
         when(subscriber.havePermission(manageInventoryPermission)).thenReturn(false);
-        assertThrows(NoPermissionException.class, ()-> subscriber.approveOffer(store, 0, 0.0));
+        assertThrows(NoPermissionException.class, ()-> subscriber.approveOffer(store, 0, 0.0, 1));
     }
 
     @Test
