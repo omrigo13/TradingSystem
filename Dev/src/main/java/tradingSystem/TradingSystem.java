@@ -65,7 +65,7 @@ public class TradingSystem {
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
 
-        this.admin = subscribers.get(userName).getSubscriber();
+        this.admin = subscribers.get(userName);
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {
@@ -107,13 +107,7 @@ public class TradingSystem {
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
-        visitors.get(date).putIfAbsent("guests", 0);
-        visitors.get(date).putIfAbsent("admins", 0);
-        visitors.get(date).putIfAbsent("owners", 0);
-        visitors.get(date).putIfAbsent("managers", 0);
-        visitors.get(date).putIfAbsent("subscribers", 0);
-        //noinspection ConstantConditions
-        visitors.get(date).compute("guests", (k, v) -> v + 1);
+        visitors.get(date).compute("guests", (k, v) -> v == null ? 0 : v + 1);
         connections.put(connectionId, new User());
         admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
         return connectionId;
@@ -126,36 +120,33 @@ public class TradingSystem {
         Subscriber subscriber = getSubscriberByUserName(userName);
         boolean managerAndOwner = false;
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-        int managers = visitors.get(date).get("managers"), owners = visitors.get(date).get("owners");
+        visitors.putIfAbsent(date, new HashMap<>());
+        int managers = visitors.get(date).computeIfAbsent("managers", s -> 0);
+        int owners = visitors.get(date).computeIfAbsent("owners", s -> 0);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
         if(subscriber.havePermission(AdminPermission.getInstance())) {
-            //noinspection ConstantConditions
-            visitors.get(date).compute("admins", (k, v) -> v + 1);
+            visitors.get(date).compute("admins", (k, v) -> v == null ? 1 : v + 1);
             admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
             return;
         }
         for (Store store : stores.values()) {
             if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
-                //noinspection ConstantConditions
-                visitors.get(date).compute("owners", (k, v) -> v + 1);
+                visitors.get(date).compute("owners", (k, v) -> v == null ? 1 : v + 1);
                 if(managerAndOwner) {
-                    //noinspection ConstantConditions
-                    visitors.get(date).compute("managers", (k, v) -> v - 1);
+                    visitors.get(date).compute("managers", (k, v) -> v == null ? 0 : v - 1);
                 }
                 admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
                 return;
             }
             if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
-                //noinspection ConstantConditions
-                visitors.get(date).compute("managers", (k, v) -> v + 1);
+                visitors.get(date).compute("managers", (k, v) -> v == null ? 1 : v + 1);
                 managerAndOwner = true;
             }
         }
         if(managers == visitors.get(date).get("managers") && owners == visitors.get(date).get("owners")) {
-            //noinspection ConstantConditions
-            visitors.get(date).compute("subscribers", (k, v) -> v + 1);
+            visitors.get(date).compute("subscribers", (k, v) -> v == null ? 1 : v + 1);
         }
         admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
     }
