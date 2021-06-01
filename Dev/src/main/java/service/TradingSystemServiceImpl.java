@@ -8,6 +8,7 @@ import tradingSystem.TradingSystemImpl;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 public class TradingSystemServiceImpl implements TradingSystemService {
 
@@ -343,6 +344,12 @@ public class TradingSystemServiceImpl implements TradingSystemService {
     public Collection<String> getTotalIncomeByAdminPerDay(String userID, String date) throws InvalidActionException {
         eventLog.writeToLogger("Get total income of all the stores for date: " + date);
         return tradingSystemImpl.getTotalIncomeByAdminPerDay(userID, date);
+    }
+
+    @Override
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(String userID, String date) throws InvalidActionException {
+        eventLog.writeToLogger("Get total visitors for date: " + date);
+        return tradingSystemImpl.getTotalVisitorsByAdminPerDay(userID, date);
     }
 
     @Override

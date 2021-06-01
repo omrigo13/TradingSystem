@@ -7,16 +7,15 @@ import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
+import notifications.VisitorsNotification;
 import policies.*;
 import store.Item;
 import store.Store;
 import user.*;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,7 +37,8 @@ public class TradingSystem {
     private final ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies; // key: discount policy id
     private final ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; // key: store, value: purchase policies
     private final ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; // key: store, value: discount policies
-
+    private final ConcurrentHashMap<String, Map<String, Integer>> visitors; // key: date, value: Map of visitors per type
+    private final Subscriber admin;
 
     //private final Map<Store, Observable> observables;
 
@@ -46,7 +46,7 @@ public class TradingSystem {
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
                   ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies,
                   ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies, ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies,
-                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies)
+                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Map<String, Integer>> visitors)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -60,9 +60,12 @@ public class TradingSystem {
         this.discountPolicies = discountPolicies;
         this.storesPurchasePolicies = storesPurchasePolicies;
         this.storesDiscountPolicies = storesDiscountPolicies;
+        this.visitors = visitors;
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
+
+        this.admin = subscribers.get(userName);
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {
@@ -102,8 +105,11 @@ public class TradingSystem {
 
         String connectionId = java.util.UUID.randomUUID().toString();
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
-
+        String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        visitors.putIfAbsent(date, new HashMap<>());
+        visitors.get(date).compute("guests", (k, v) -> v == null ? 0 : v + 1);
         connections.put(connectionId, new User());
+        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
         return connectionId;
     }
 
@@ -112,9 +118,37 @@ public class TradingSystem {
         User user = getUserByConnectionId(connectionId);
         auth.authenticate(userName, password);
         Subscriber subscriber = getSubscriberByUserName(userName);
+        boolean managerAndOwner = false;
+        String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+        visitors.putIfAbsent(date, new HashMap<>());
+        int managers = visitors.get(date).computeIfAbsent("managers", s -> 0);
+        int owners = visitors.get(date).computeIfAbsent("owners", s -> 0);
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
+        if(subscriber.havePermission(AdminPermission.getInstance())) {
+            visitors.get(date).compute("admins", (k, v) -> v == null ? 1 : v + 1);
+            admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+            return;
+        }
+        for (Store store : stores.values()) {
+            if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
+                visitors.get(date).compute("owners", (k, v) -> v == null ? 1 : v + 1);
+                if(managerAndOwner) {
+                    visitors.get(date).compute("managers", (k, v) -> v == null ? 0 : v - 1);
+                }
+                admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+                return;
+            }
+            if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
+                visitors.get(date).compute("managers", (k, v) -> v == null ? 1 : v + 1);
+                managerAndOwner = true;
+            }
+        }
+        if(managers == visitors.get(date).get("managers") && owners == visitors.get(date).get("owners")) {
+            visitors.get(date).compute("subscribers", (k, v) -> v == null ? 1 : v + 1);
+        }
+        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
     }
 
     public void logout(String connectionId) throws InvalidActionException {
@@ -353,5 +387,12 @@ public class TradingSystem {
                 storeOwners++;
         }
         return storeOwners;
+    }
+
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
+
+        admin.validatePermission(AdminPermission.getInstance());
+
+        return visitors.get(date);
     }
 }

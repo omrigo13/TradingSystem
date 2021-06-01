@@ -904,6 +904,24 @@ public class TradingSystem {
         ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
     };
 
+    public Handler handleGetTotalVisitorsByAdminPerDayPost = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        try{
+            model.put("visitors", tradingSystemService.getTotalVisitorsByAdminPerDay(RequestUtil.getConnectionID(ctx), RequestUtil.getDate(ctx)));
+            ctx.render(Path.Template.GETTOTALVISITORSPERDAYBYADMIN, model);
+        }catch (InvalidConnectionIdException ex) {
+            ctx.render(Path.Template.INVALID_CONNECTION, model);
+        }catch (Exception e) {
+            model.put("failed", true);
+            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+        }
+    };
+
+    public Handler serveGetTotalVisitorsByAdminPerDay = ctx -> {
+        Map<String, Object> model = ViewUtil.baseModel(ctx);
+        ctx.render(Path.Template.GETTOTALVISITORSPERDAYBYADMIN, model);
+    };
+
     public Handler handleAddItemToBasketByOfferPost = ctx -> {
         Map<String, Object> model = ViewUtil.baseModel(ctx);
         try{

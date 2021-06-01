@@ -30,6 +30,7 @@ import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -149,6 +150,19 @@ public class Main {
             });
         });
 
+        app.ws("/visitors", ws -> {
+            ws.onClose(ctx -> {
+                Subscriber subscriber = ctx.attribute("subscriber");
+                subscriber.setAdminObserver(null);
+            });
+            ws.onMessage(ctx -> {
+                Subscriber subscriber = tradingSystem.getUserByConnectionId(ctx.message()).getSubscriber();
+                ctx.attribute("subscriber", subscriber);
+                Observer wsObserver = new WsObserver(ctx);
+                subscriber.setAdminObserver(wsObserver);
+            });
+        });
+
         app.routes(() -> {
             before(Filters.handleLocaleChange);
             //before(LoginController.ensureLoginBeforeViewingBooks);
@@ -241,6 +255,9 @@ public class Main {
 
             post(Path.Web.GETTOTALINCOMEBYADMINPERDAY, Main.tradingSystem.handleGetTotalIncomeByAdminPerDayPost);
             get(Path.Web.GETTOTALINCOMEBYADMINPERDAY, Main.tradingSystem.serveGetTotalIncomeByAdminPerDayPage);
+
+            post(Path.Web.GETTOTALVISITORSBYADMINPERDAY, Main.tradingSystem.handleGetTotalVisitorsByAdminPerDayPost);
+            get(Path.Web.GETTOTALVISITORSBYADMINPERDAY, Main.tradingSystem.serveGetTotalVisitorsByAdminPerDay);
 
             post(Path.Web.UPDATEPRODUCTDETAILS, Main.tradingSystem.handleUpdateProductDetailsPost);
             get(Path.Web.UPDATEPRODUCTDETAILS, Main.tradingSystem.serveUpdateProductDetailsPage);

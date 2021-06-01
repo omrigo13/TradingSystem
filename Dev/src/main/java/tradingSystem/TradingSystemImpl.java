@@ -460,6 +460,12 @@ public class TradingSystemImpl {
         return tradingSystem.getTotalIncomeByAdminPerDay(admin, date);
     }
 
+    public Map<String, Integer> getTotalVisitorsByAdminPerDay(String connectionId, String date) throws InvalidActionException {
+
+        Subscriber admin = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        return tradingSystem.getTotalVisitorsByAdminPerDay(admin, date);
+    }
+
     public Collection<String> getEventLog(String connectionId, Collection<String> eventLog) throws InvalidActionException {
         return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }
