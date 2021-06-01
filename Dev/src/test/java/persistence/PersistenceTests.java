@@ -74,7 +74,7 @@ public class PersistenceTests {
 
     }
     @Test
-    void test1() throws InvalidActionException {
+    void testDB1() throws InvalidActionException {
         System.out.println(service.getStoresInfo(founderStore1Id).toString());
     }
 
