@@ -23,13 +23,28 @@
    these are the fields that you can edit:  
    >1. system.admin.name - this field sets the system admin's username
    >2. system.admin.password - this field sets the system admin's password
-   >3. stateFileAddress - this field sets the address of the script file, the path should be like 🔴**Dev/config/ScriptFileName.java**❗🔴 and you can locate your script file [here](https://github.com/omrigo13/TradingSystem/tree/main/Dev/config)
-   >4. startupScript - this field sets the script file name, for example: if you added 🔴**Dev/config/ScriptFileName.java**❗🔴 as state file you should sets this field to: 🔴**ScriptFileName**❗🔴
+   >3. port - this field sets the unsecured port for system connection
+   >4. sslPort - this field sets the secured port for system connection
+   >5. stateFileAddress - this field sets the address of the script file, the path should be like 🔴**Dev/config/ScriptFileName.java**❗🔴 and you can locate your script file [here](https://github.com/omrigo13/TradingSystem/tree/main/Dev/config)
+   >6. startupScript - this field sets the script file name, for example: if you added 🔴**Dev/config/ScriptFileName.java**❗🔴 as state file you should sets this field to: 🔴**ScriptFileName**❗🔴
+   >7. paymentSystem - this field sets the external payment system that will work with the system, the payment system should follow this implementation
+   ```java
+   void connect();
+   void pay(PaymentData data);
+   void cancel(PaymentData data);
    
-   these are the fields you 🔴**cannot edit**❗🔴:
-   >1. port = 80
-   >2. sslPort = 443
-    
+   data contains: card number, month, year, holder, ccv, id
+   ```
+   >8. deliverySystem - this field sets the external delivery system that will work with the system, the delivery system should follow this implementation
+   ```java
+   void connect();
+   void deliver(DeliveryData data);
+   void cancel(DeliveryData data);
+   
+   data contains: name, address, city, country, zip
+   ```
+   <br><br>
+   
     state file - java class that will be compiled during runtime
     the state file contains a series of instructions of use cases and arguments for them.
     the state file will be loaded and the system should be in that state after the initialization finished.
