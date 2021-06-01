@@ -283,7 +283,7 @@ public class AcceptanceTestsV1 {
         assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk") && s1.toString().contains("cheese"));
         service.updateProductAmountInBasket(store1Manager1Id, storeId1, productId1, 0);
         s1 = service.showBasket(store1Manager1Id,storeId1);
-        assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("milk") && s1.toString().contains("cheese"));
+        assertTrue(s1 != null && !s1.isEmpty() && s1.toString().contains("cheese"));
         service.updateProductAmountInBasket(store1Manager1Id, storeId2, productId4, 1 );    // productId4 not added by store1Manager1Id to his basket
         Collection<String> str = service.showBasket(store1Manager1Id, storeId2);
         assertTrue(str.toString().contains("baguette"));
