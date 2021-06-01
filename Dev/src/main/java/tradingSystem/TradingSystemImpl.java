@@ -443,7 +443,8 @@ public class TradingSystemImpl {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        subscriber.approveOffer(store, offerId, price);
+        int storeOwners = tradingSystem.getStoreOwners(store);
+        subscriber.approveOffer(store, offerId, price, storeOwners);
     }
 
     public String getTotalIncomeByStorePerDay(String connectionId, String storeId, String date) throws InvalidActionException {

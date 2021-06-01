@@ -382,7 +382,7 @@ public class Subscriber extends User {
         return store.getOffers();
     }
 
-    public void approveOffer(Store store, int offerId, double price) throws NoPermissionException, OfferNotExistsException {
+    public void approveOffer(Store store, int offerId, double price, int storeOwners) throws NoPermissionException, OfferNotExistsException {
 
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManageInventoryPermission.getInstance(store));
 
@@ -392,14 +392,23 @@ public class Subscriber extends User {
             store.notifyDeclinedOffer(offer);
             return;
         }
-        offer.approve();
         if(price != 0) {
             offer.setPrice(price);
+            if(this.havePermission(OwnerPermission.getInstance(store)))
+                offer.addCounteredOwner(this);
+        }
+        else if (this.havePermission(OwnerPermission.getInstance(store)))
+            offer.addApprovedOwner(this);
+        if(offer.getApprovedOwners() == storeOwners) {
+            offer.approve();
+            store.notifyApprovedOffer(offer);
+        }
+        if(offer.getApprovedOwners() == storeOwners - 1 && offer.getCounteredOwners() == 1) {
+            offer.approve();
             store.notifyCounterOffer(offer);
         }
-        else
-            store.notifyApprovedOffer(offer);
-        offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
+        if(offer.isApproved())
+            offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
     }
 
     public Collection<String> getPurchaseHistory() {

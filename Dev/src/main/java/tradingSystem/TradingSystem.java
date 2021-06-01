@@ -389,6 +389,15 @@ public class TradingSystem {
         return storesValuesPerDay;
     }
 
+    public int getStoreOwners(Store store) {
+        int storeOwners = 0;
+        for (Subscriber owner: subscribers.values()) {
+            if(owner.havePermission(OwnerPermission.getInstance(store)))
+                storeOwners++;
+        }
+        return storeOwners;
+    }
+
     public Map<String, Integer> getTotalVisitorsByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
 
         admin.validatePermission(AdminPermission.getInstance());

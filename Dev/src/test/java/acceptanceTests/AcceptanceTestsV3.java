@@ -254,7 +254,6 @@ public class AcceptanceTestsV3 {
         service.approveOffer(store1Manager1Id, storeId1, 0 , 0.0);
         service.approveOffer(founderStore2Id, storeId2, 0 , 0.0);
         service.approveOffer(store2Manager1Id, storeId2, 0 , 0.0);
-        System.out.println(service.showBasket(subs1Id, storeId1));
 
         assertTrue(service.showBasket(subs1Id, storeId1).toString().contains("Item: cheese Quantity: 4"));
         assertTrue(service.showBasket(subs1Id, storeId2).toString().contains("Item: milk Quantity: 4"));
