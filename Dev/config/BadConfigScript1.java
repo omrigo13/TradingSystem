@@ -1,5 +1,3 @@
-package configTests;
-
 import exceptions.InvalidActionException;
 import service.TradingSystemService;
 
@@ -14,7 +12,6 @@ public class BadConfigScript1 {
         String connId1 = tradingSystemService.connect();
         tradingSystemService.login(connId1, userName1, password);
         String storeId1 = tradingSystemService.openNewStore(connId1, "eBay");
-        tradingSystemService.appointStoreOwner(connId1, userName2, storeId1);
         String itemId1 = tradingSystemService.addProductToStore(connId1, storeId1, "Bamba", "snacks", "yummy", 20, 30.0);
         tradingSystemService.logout(connId1);
         String connId2 = tradingSystemService.connect();

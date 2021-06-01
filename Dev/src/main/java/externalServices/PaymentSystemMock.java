@@ -1,4 +1,4 @@
-package acceptanceTests;
+package externalServices;
 
 import exceptions.PaymentSystemException;
 import externalServices.PaymentData;

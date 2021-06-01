@@ -30,6 +30,8 @@ public class ConfigTests {
         cfg.sslPort = 443;
         cfg.stateFileAddress = "Dev/config/BadConfigScript1.java";
         cfg.startupScript = "BadConfigScript1";
+        cfg.paymentSystem = "externalServices.PaymentSystemMock";
+        cfg.deliverySystem = "externalServices.DeliverySystemMock";
         assertThrows(RuntimeException.class, ()-> Main.run(cfg));
 
     }
@@ -47,6 +49,8 @@ public class ConfigTests {
         cfg.sslPort = 443;
         cfg.stateFileAddress = "Dev/config/BadConfigScript2.java";
         cfg.startupScript = "BadConfigScript2";
+        cfg.paymentSystem = "externalServices.PaymentSystemMock";
+        cfg.deliverySystem = "externalServices.DeliverySystemMock";
         assertThrows(RuntimeException.class, ()-> Main.run(cfg));
 
     }
