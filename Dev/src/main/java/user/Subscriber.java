@@ -8,21 +8,72 @@ import review.Review;
 import store.Item;
 import store.Store;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+@Entity
 public class Subscriber extends User {
-
-    private final int id;
-    private final String userName;
-    private final Set<Permission> permissions; // synchronized manually
-    private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
-    private final Collection<String> purchaseHistory; // synchronized in constructor
-    private final Map<Notification, Boolean> notifications = new HashMap<>();
+    private int id;
+    @Id
+    private String userName;
+    @Transient
+    private Set<Permission> permissions; // synchronized manually
+    @Transient
+    private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
+    @ElementCollection
+    private Collection<String> purchaseHistory; // synchronized in constructor
+    @ElementCollection
+    private Map<Notification, Boolean> notifications = new HashMap<>();
     private boolean isLoggedIn = false;
+    @Transient
     private Observer observer;
+    @Transient
     private Observer adminObserver;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public ConcurrentMap<Store, Collection<Item>> getItemsPurchased() {
+        return itemsPurchased;
+    }
+
+    public void setItemsPurchased(ConcurrentMap<Store, Collection<Item>> itemsPurchased) {
+        this.itemsPurchased = itemsPurchased;
+    }
+
+    public void setPurchaseHistory(Collection<String> purchaseHistory) {
+        this.purchaseHistory = purchaseHistory;
+    }
+
+    public void setNotifications(Map<Notification, Boolean> notifications) {
+        this.notifications = notifications;
+    }
+
+    public Observer getObserver() {
+        return observer;
+    }
+
+    public Observer getAdminObserver() {
+        return adminObserver;
+    }
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -34,6 +85,10 @@ public class Subscriber extends User {
         this.permissions = permissions;
         this.itemsPurchased = itemsPurchased;
         this.purchaseHistory = Collections.synchronizedCollection(purchaseHistory);
+    }
+
+    public Subscriber() {
+
     }
 
     public String getUserName() {

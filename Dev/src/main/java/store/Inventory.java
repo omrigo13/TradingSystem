@@ -6,18 +6,32 @@ package store;
 
 import Offer.Offer;
 import exceptions.*;
+import persistence.Repo;
 import policies.DiscountPolicy;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
+@Entity
 public class Inventory {
 
+    @ElementCollection
     private final Map<Item, Integer> items;
     private final AtomicInteger id = new AtomicInteger(0);
+    @Id
+    @GeneratedValue
+    private int pKey;
+
+    public int getpKey() {
+        return pKey;
+    }
+
+    public void setpKey(int pKey) {
+        this.pKey = pKey;
+    }
 
     public Inventory() {
         this.items = Collections.synchronizedMap(new HashMap<>());
@@ -45,7 +59,9 @@ public class Inventory {
             for (Item item : items.keySet())
                 if (item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category) && item.getSubCategory().equalsIgnoreCase(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            items.putIfAbsent(new Item(id.get(), name, price, category, subCategory, 0), amount);
+
+            Item item =   new Item(id.get(), name, price, category, subCategory, 0);
+            items.putIfAbsent(item, amount);
             return id.getAndIncrement();
         }
     }

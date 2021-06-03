@@ -1,8 +1,16 @@
 package notifications;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public abstract class Notification {
 
     private boolean isShown = false;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
     public boolean isShown() {
         return isShown;
@@ -22,4 +30,12 @@ public abstract class Notification {
     }
 
     public abstract String print();
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }

@@ -2,14 +2,20 @@ package policies;
 
 import store.Item;
 
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.Collection;
-
 public abstract class CompoundDiscountPolicy implements DiscountPolicy {
 
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;
     protected Collection<Item> items;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
     public CompoundDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
 
@@ -29,4 +35,12 @@ public abstract class CompoundDiscountPolicy implements DiscountPolicy {
     public int getDiscount() { return discount; }
 
     public Collection<Item> getItems() { return items; }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }

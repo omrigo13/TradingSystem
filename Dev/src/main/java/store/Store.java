@@ -13,29 +13,62 @@ import review.Review;
 import user.Subscriber;
 import user.User;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Entity
 public class Store {
 
 
-
+    @Id
     private int id;
     private String name;
     private String description;
     private double rating;
+    @Transient
     private DiscountPolicy discountPolicy;
+    @Transient
     private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive = true;
+    @OneToOne(cascade = {CascadeType.ALL})
     private final Inventory inventory = new Inventory();
+    @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
+    @Transient
     private Observable observable;
+    @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
+    @OneToMany
     private final Map<Integer, Offer> storeOffers = new HashMap<>();
     private final AtomicInteger offerIdCounter = new AtomicInteger();
 
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Collection<String> getPurchases() {
+        return purchases;
+    }
+
+    public AtomicInteger getOfferIdCounter() {
+        return offerIdCounter;
+    }
 
     public Store() {
         this.observable = new Observable();

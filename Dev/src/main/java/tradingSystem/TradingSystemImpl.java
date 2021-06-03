@@ -12,10 +12,16 @@ import store.Item;
 import store.Store;
 import user.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.time.LocalTime;
 import java.util.*;
 
 public class TradingSystemImpl {
+    private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
+    EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
 
     TradingSystem tradingSystem;
 
@@ -306,7 +312,32 @@ public class TradingSystemImpl {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+//        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        int itemId = subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        Map<Item, Integer> map = store.getItems();
+        Item item = null;
+        for (Item i:map.keySet()) {
+            if(i.getId() == itemId)
+                item = i;
+        }
+        EntityTransaction et = null;
+        try{
+//            et = em.getTransaction();
+//            et.begin();
+//            em.merge(item);
+//            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
+        return "" + itemId;
     }
 
     public void deleteProductFromStore(String connectionId, String storeId, String itemId) throws InvalidActionException {

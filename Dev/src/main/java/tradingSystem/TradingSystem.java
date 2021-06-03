@@ -13,6 +13,10 @@ import store.Item;
 import store.Store;
 import user.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.*;
@@ -20,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
+    private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
+    EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
     private final AtomicInteger subscriberIdCounter;
@@ -98,7 +104,25 @@ public class TradingSystem {
 
     public void register(String userName, String password) throws InvalidActionException {
         auth.register(userName, password);
-        subscribers.put(userName, new Subscriber(subscriberIdCounter.getAndIncrement(), userName));
+        Subscriber subscriber = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
+        subscribers.put(userName, subscriber);
+
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(subscriber);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
     }
 
     public String connect() {
@@ -149,11 +173,46 @@ public class TradingSystem {
             visitors.get(date).compute("subscribers", (k, v) -> v == null ? 1 : v + 1);
         }
         admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(subscriber);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
     }
 
     public void logout(String connectionId) throws InvalidActionException {
+        Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
+        subscriber.setLoggedIn(false); // this is here in order to throw exceptions
 
-        getUserByConnectionId(connectionId).getSubscriber().setLoggedIn(false); // this is here in order to throw exceptions
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(subscriber);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
         User guest = new User();
         connections.put(connectionId, guest);
     }
@@ -173,6 +232,25 @@ public class TradingSystem {
 
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
+
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(store);
+            em.merge(subscriber);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
 
         return id;
     }

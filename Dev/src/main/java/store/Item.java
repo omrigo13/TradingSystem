@@ -5,11 +5,12 @@ import exceptions.WrongPriceException;
 import exceptions.WrongRatingException;
 import review.Review;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
-
+@Entity
 public class Item {
-
+    @Id
     private int id;
     private String name;
     private double price;
@@ -17,9 +18,26 @@ public class Item {
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
+    @OneToMany
     private final Collection<Review> reviews = new LinkedList<>();
 
     public Item() {}
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
 
     public Item(int id, String name, double price, String category, String subCategory, double rating) {
         this.id = id;

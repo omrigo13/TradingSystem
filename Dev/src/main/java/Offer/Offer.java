@@ -3,18 +3,26 @@ package Offer;
 import store.Item;
 import user.Subscriber;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
-
+@Entity
 public class Offer {
 
-    private final Subscriber subscriber;
-    private final Item item;
-    private final int quantity;
+    @ManyToOne
+    private Subscriber subscriber;
+    @ManyToOne
+    private Item item;
+    private int quantity;
     private double price;
     private boolean approved;
+    @ManyToMany
     private Collection<Subscriber> approvedOwners;
+    @ManyToMany
     private Collection<Subscriber> counteredOwners;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
     public Offer(Subscriber subscriber, Item item, int quantity, double price) {
         this.subscriber = subscriber;
@@ -24,6 +32,10 @@ public class Offer {
         this.approved = false;
         this.approvedOwners = new LinkedList<>();
         this.counteredOwners = new LinkedList<>();
+    }
+
+    public Offer() {
+
     }
 
     public Subscriber getSubscriber() { return subscriber; }
@@ -51,4 +63,12 @@ public class Offer {
     public void addCounteredOwner(Subscriber owner) { this.counteredOwners.add(owner); }
 
     public int getCounteredOwners() { return this.counteredOwners.size(); }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }
