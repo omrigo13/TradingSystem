@@ -43,8 +43,8 @@ public class NotificationsTests {
         createUsers();
         store1 = new Store();
         store1.subscribe(subscriber1);
-        item1 = new Item(1, "item1", 10, "category1", null, -1);
-        item2 = new Item(2, "item2", 10, "category2", null, -1);
+        item1 = new Item(store1.getId(), 1, "item1", 10, "category1", null, -1);
+        item2 = new Item(store1.getId(), 2, "item2", 10, "category2", null, -1);
         store1.addItem(item1.getName(), item1.getPrice(), item1.getCategory(), null, 20);
         store1.addItem(item2.getName(), item2.getPrice(), item2.getCategory(), null, 20);
 

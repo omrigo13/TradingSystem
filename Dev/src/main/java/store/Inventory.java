@@ -12,29 +12,40 @@ import user.Basket;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 @Entity
 public class Inventory {
+    @Id
+//    @GeneratedValue
+    private int storeId;
 
-    @ElementCollection
+//    @ElementCollection(targetClass = Item.class)
+//    @CollectionTable(name = "MAP")
+//    @MapKeyColumn(name = "key")
+//    @Column(name = "value")
+    @OneToMany
+//    @JoinColumn(name = "id")
+    @MapKeyJoinColumn(name = "id")
     private final Map<Item, Integer> items;
     private final AtomicInteger id = new AtomicInteger(0);
-    @Id
-    @GeneratedValue
-    private int pKey;
 
-    public int getpKey() {
-        return pKey;
+
+
+    public int getStoreId() {
+        return storeId;
     }
 
-    public void setpKey(int pKey) {
-        this.pKey = pKey;
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 
     public Inventory() {
         this.items = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    public Inventory(int storeId) {
+        this();
+        this.storeId = storeId;
     }
 
     /**
@@ -60,8 +71,26 @@ public class Inventory {
                 if (item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category) && item.getSubCategory().equalsIgnoreCase(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
 
-            Item item =   new Item(id.get(), name, price, category, subCategory, 0);
+            Item item =   new Item(storeId, id.get(), name, price, category, subCategory, 0);
             items.putIfAbsent(item, amount);
+            EntityManager em = Repo.getEm();
+            EntityTransaction et = null;
+            try{
+                et = em.getTransaction();
+                et.begin();
+                em.merge(item);
+                em.merge(this);
+                et.commit();
+            }
+            catch (Exception e){
+                if(et != null){
+                    et.rollback();
+                }
+                e.printStackTrace();
+            }
+            finally {
+//            em.close();
+            }
             return id.getAndIncrement();
         }
     }

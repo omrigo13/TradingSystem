@@ -9,9 +9,12 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
 @Entity
-public class Item {
-    @Id
-    private int id;
+    @IdClass(ItemId.class)
+    public class Item {
+        @Id
+        private int id;
+        @Id
+        private int storeId;
     private String name;
     private double price;
     private String category;
@@ -39,13 +42,22 @@ public class Item {
         isLocked = locked;
     }
 
-    public Item(int id, String name, double price, String category, String subCategory, double rating) {
+    public Item(int storeId, int id, String name, double price, String category, String subCategory, double rating) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.category = category;
         this.subCategory = subCategory;
         this.rating = rating;
+        this.storeId = storeId;
+    }
+
+    public int getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
     }
 
     public int getId() {

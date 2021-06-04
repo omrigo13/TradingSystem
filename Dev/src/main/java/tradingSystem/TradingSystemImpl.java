@@ -8,6 +8,7 @@ import exceptions.NotLoggedInException;
 import notifications.Notification;
 import externalServices.DeliveryData;
 import externalServices.PaymentData;
+import persistence.Repo;
 import store.Item;
 import store.Store;
 import user.*;
@@ -20,8 +21,6 @@ import java.time.LocalTime;
 import java.util.*;
 
 public class TradingSystemImpl {
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
-    EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
 
     TradingSystem tradingSystem;
 

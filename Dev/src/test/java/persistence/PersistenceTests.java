@@ -63,6 +63,7 @@ public class PersistenceTests {
         productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk", "DairyProducts", "sub1", 30, 6.5);
         productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
 
+        System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
 
         service.openNewStore(subs1Id, "store3");

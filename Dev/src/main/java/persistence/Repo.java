@@ -8,7 +8,7 @@ public class Repo {
 
     private static Repo repo_instance = null;
     private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
-    private EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+    private static EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
     private Repo() {
     }
 
@@ -18,7 +18,7 @@ public class Repo {
         return repo_instance;
     }
 
-    public EntityManager getEm() {
+    public static EntityManager getEm() {
         return em;
     }
 }

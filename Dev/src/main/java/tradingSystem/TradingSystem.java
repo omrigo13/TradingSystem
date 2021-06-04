@@ -8,6 +8,7 @@ import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import notifications.Observable;
 import notifications.VisitorsNotification;
+import persistence.Repo;
 import policies.*;
 import store.Item;
 import store.Store;
@@ -24,8 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TradingSystem {
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
-    EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
+    private final EntityManager em = Repo.getEm();
 
     private final AtomicInteger storeIdCounter = new AtomicInteger();
     private final AtomicInteger subscriberIdCounter;

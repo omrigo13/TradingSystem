@@ -34,7 +34,7 @@ public class Store {
     //private String founder;
     private boolean isActive = true;
     @OneToOne(cascade = {CascadeType.ALL})
-    private final Inventory inventory = new Inventory();
+    private Inventory inventory;
     @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
     @Transient
@@ -44,7 +44,6 @@ public class Store {
     @OneToMany
     private final Map<Integer, Offer> storeOffers = new HashMap<>();
     private final AtomicInteger offerIdCounter = new AtomicInteger();
-
 
     public void setId(int id) {
         this.id = id;
@@ -101,6 +100,7 @@ public class Store {
             this.purchasePolicy = new DefaultPurchasePolicy();
         else
             this.purchasePolicy = purchasePolicy;
+        this.inventory = new Inventory(id);
         if(discountPolicy == null)
             this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
         else
@@ -130,6 +130,10 @@ public class Store {
         if (rating < 0)
             throw new WrongRatingException("rating must be a positive number");
         this.rating = rating;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
     public Inventory getInventory() {
