@@ -34,6 +34,8 @@ public class Store {
     //private String founder;
     private boolean isActive = true;
     @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "id")
+    @MapsId
     private Inventory inventory;
     @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();

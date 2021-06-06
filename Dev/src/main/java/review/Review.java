@@ -12,9 +12,8 @@ public class Review {
     @Id
     @GeneratedValue
     private int id;
+//    @ManyToOne
     @Transient
-    private User user;
-    @ManyToOne
     private Store store;
     @ManyToOne
     private Item item;
@@ -30,14 +29,6 @@ public class Review {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Store getStore() {
@@ -60,8 +51,7 @@ public class Review {
         this.review = review;
     }
 
-    public Review(User user, Store store, Item item, String review) {
-        this.user = user;
+    public Review(Store store, Item item, String review) {
         this.store = store;
         this.item = item;
         this.review = review;
@@ -74,7 +64,6 @@ public class Review {
     @Override
     public String toString() {
         return "Review{" +
-                "user=" + user +
                 ", store=" + store +
                 ", item=" + item +
                 ", review='" + review + '\'' +

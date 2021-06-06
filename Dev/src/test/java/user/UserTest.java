@@ -43,8 +43,9 @@ public class UserTest {
         store = new Store();
         item = new Item();
         baskets = spy(new ConcurrentHashMap<>());
-        basket = new Basket(store, items); // do not make this a spy (Mockito doesn't handle records properly)
         user = new User(baskets);
+
+        basket = new Basket(user, store, items); // do not make this a spy (Mockito doesn't handle records properly)
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
         store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().keySet()));

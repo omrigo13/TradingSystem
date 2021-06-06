@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
+import user.User;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,13 +22,15 @@ public class InventoryTest {
     @Mock private TradingSystem tradingSystem;
     private Basket basket;
     private Inventory inventory;
+    @Mock
+    private User user;
 
     @BeforeMethod
     void setUp() {
         MockitoAnnotations.openMocks(this);
         inventory = new Inventory();
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
-        basket = new Basket(new Store(), items);
+        basket = new Basket(user, new Store(), items);
     }
 
 //    @Test
@@ -101,7 +104,7 @@ public class InventoryTest {
         int cucumberId= inventory.addItem("cucumber", 15, "vegetables", "green", 10);
         int tomato2ID= inventory.addItem("tomato", 20, "vegetables", "blue", 5);
         assertThrows(ItemNotFoundException.class, () -> inventory.searchItem(6));
-        assertEquals(inventory.searchItem(tomato2ID).getId(), 2);
+        assertEquals(inventory.searchItem(tomato2ID).getItem_id(), 2);
     }
 
     @Test
@@ -167,7 +170,7 @@ public class InventoryTest {
 
         Item item =inventory.removeItem(carrotId);
         assertEquals(inventory.getItems().size(), 1);
-        assertEquals(item.getId(),carrotId);
+        assertEquals(item.getItem_id(),carrotId);
         assertThrows(ItemNotFoundException.class, () -> inventory.removeItem(carrotId));
 
     }

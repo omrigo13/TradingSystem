@@ -12,9 +12,9 @@ import java.util.LinkedList;
     @IdClass(ItemId.class)
     public class Item {
         @Id
-        private int id;
+        private int item_id;
         @Id
-        private int storeId;
+        private int store_id;
     private String name;
     private double price;
     private String category;
@@ -23,11 +23,20 @@ import java.util.LinkedList;
     private boolean isLocked = false;
     @OneToMany
     private final Collection<Review> reviews = new LinkedList<>();
+    private int quantity_in_store;
 
     public Item() {}
 
-    public void setId(int id) {
-        this.id = id;
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
+    }
+
+    public int getQuantity_in_store() {
+        return quantity_in_store;
+    }
+
+    public void setQuantity_in_store(int quantity_in_store) {
+        this.quantity_in_store = quantity_in_store;
     }
 
     public void setName(String name) {
@@ -42,26 +51,26 @@ import java.util.LinkedList;
         isLocked = locked;
     }
 
-    public Item(int storeId, int id, String name, double price, String category, String subCategory, double rating) {
-        this.id = id;
+    public Item(int store_id, int id, String name, double price, String category, String subCategory, double rating) {
+        this.item_id = id;
         this.name = name;
         this.price = price;
         this.category = category;
         this.subCategory = subCategory;
         this.rating = rating;
-        this.storeId = storeId;
+        this.store_id = store_id;
     }
 
-    public int getStoreId() {
-        return storeId;
+    public int getStore_id() {
+        return store_id;
     }
 
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
+    public void setStore_id(int storeId) {
+        this.store_id = storeId;
     }
 
-    public int getId() {
-        return id;
+    public int getItem_id() {
+        return item_id;
     }
 
     public String getName() {
@@ -98,7 +107,7 @@ import java.util.LinkedList;
         this.rating = rating;
     }
 
-    public String toString() { return "id:" + id +
+    public String toString() { return "id:" + item_id +
             "\nname:" + name +
             "\nprice:" + price +
             "\ncategory:" + category +

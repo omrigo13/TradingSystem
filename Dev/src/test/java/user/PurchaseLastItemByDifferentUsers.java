@@ -49,7 +49,7 @@ public class PurchaseLastItemByDifferentUsers {
 
     private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
     private final Map<Item, Integer> storeItems = store.getItems();
-    private final Basket basket = new Basket(store, basketItems);
+    private final Basket basket = new Basket(user1, store, basketItems);
 
     public PurchaseLastItemByDifferentUsers() throws ItemException {
     }

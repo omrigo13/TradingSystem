@@ -1,32 +1,36 @@
 package store;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Embeddable
 public class ItemId implements Serializable {
-    private int id;
-    private int storeId;
+    private int item_id;
+    private int store_id;
+
 
     public ItemId() {
 
     }
 
-    public int getId() {
-        return id;
+    public ItemId(int item_id, int store_id) {
+        this.item_id = item_id;
+        this.store_id = store_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getItem_id() {
+        return item_id;
     }
 
-    public int getStoreId() {
-        return storeId;
+    public void setItem_id(int id) {
+        this.item_id = id;
     }
 
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
+    public int getStore_id() {
+        return store_id;
+    }
+
+    public void setStore_id(int storeId) {
+        this.store_id = storeId;
     }
 
     @Override
@@ -34,11 +38,11 @@ public class ItemId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ItemId itemId = (ItemId) o;
-        return id == itemId.id && storeId == itemId.storeId;
+        return item_id == itemId.item_id && store_id == itemId.store_id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, storeId);
+        return Objects.hash(item_id, store_id);
     }
 }

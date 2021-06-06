@@ -6,6 +6,8 @@ import externalServices.PaymentSystemMock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import service.TradingSystemService;
+import tradingSystem.TradingSystem;
+import user.Subscriber;
 
 import javax.persistence.*;
 
@@ -63,6 +65,8 @@ public class PersistenceTests {
         productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk", "DairyProducts", "sub1", 30, 6.5);
         productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
 
+        service.deleteProductFromStore(founderStore1Id, storeId1, productId1);
+
         System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
 
@@ -74,6 +78,12 @@ public class PersistenceTests {
     @Test
     void testDB1() throws InvalidActionException {
 //        System.out.println(service.getStoresInfo(founderStore1Id).toString());
+    }
+
+    @Test
+    void review_item() throws InvalidActionException {
+        service.writeOpinionOnProduct(subs2Id, storeId1, productId2, "reviewwww!!");
+
     }
 
     //todo: persist users, subscribers, notifications, carts, permissions

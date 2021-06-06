@@ -10,6 +10,7 @@ import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
 import user.Subscriber;
+import user.User;
 
 
 import java.util.*;
@@ -25,13 +26,14 @@ public class StoreTest {
     @Mock private TradingSystem tradingSystem;
     private Store store;
     private Basket basket;
+    @Mock private User user;
 
     @BeforeMethod
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
         store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null, new Observable());
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
-        basket = new Basket(new Store(), items);
+        basket = new Basket(user, new Store(), items);
     }
 
     @Test
@@ -91,7 +93,7 @@ public class StoreTest {
         int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
         int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5);
         assertThrows(ItemNotFoundException.class, () -> store.searchItemById(6));
-        assertEquals(store.searchItemById(tomato2Id).getId(), 2);
+        assertEquals(store.searchItemById(tomato2Id).getItem_id(), 2);
     }
 
     @Test

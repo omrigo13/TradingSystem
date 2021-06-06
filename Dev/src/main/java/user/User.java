@@ -45,7 +45,7 @@ public class User {
 
     public Basket getBasket(Store store) {
 
-        return baskets.computeIfAbsent(store, k -> new Basket(k, new ConcurrentHashMap<>()));
+        return baskets.computeIfAbsent(store, k -> new Basket(this, k, new ConcurrentHashMap<>()));
     }
 
     public void addCartToPurchases(Map<Store, String> details) {

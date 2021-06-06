@@ -4,6 +4,7 @@ import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import notifications.Observer;
+import persistence.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -473,20 +474,72 @@ public class Subscriber extends User {
 
     public void writeOpinionOnProduct(Store store, int itemId, String review) throws ItemException, WrongReviewException {
 
-        if (review == null || review.trim().isEmpty())
-            throw new WrongReviewException("Review can't be empty or null");
+//        if (review == null || review.trim().isEmpty())
+//            throw new WrongReviewException("Review can't be empty or null");
 
         Item item = store.searchItemById(itemId);
-        if (!itemsPurchased.get(store).contains(item))
-            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+//        if (!itemsPurchased.get(store).contains(item))
+//            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
 
-        Review review1 = new Review(this, store, item, review);
+        Review review1 = new Review(store, item, review);
         item.addReview(review1);
         store.notifyItemOpinion(this, review1);
 
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(review1);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
     }
 
-    public void subscribe(Store store){
+    public void writeOpinionOnProduct2(Store store, int itemId, String review) throws ItemException, WrongReviewException {
+//        if (review == null || review.trim().isEmpty())
+//            throw new WrongReviewException("Review can't be empty or null");
+
+        Item item = store.searchItemById(itemId);
+//        if (!itemsPurchased.get(store).contains(item))
+//            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+
+        Review review1 = new Review(store, item, review);
+        item.addReview(review1);
+        store.notifyItemOpinion(this, review1);
+
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(review1);
+            em.merge(item);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
+    }
+
+
+        public void subscribe(Store store){
         store.subscribe(this);
     }
 

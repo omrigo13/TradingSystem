@@ -40,7 +40,7 @@ public class PurchaseRemovedItemFromStore {
     private final Map<Item, Integer> storeItems = store.getItems();
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
     private final StorePermission manageInventory = ManageInventoryPermission.getInstance(store);
-    private final Basket basket = new Basket(store, basketItems);
+    private final Basket basket = new Basket(user, store, basketItems);
     private final AtomicInteger trialNumber = new AtomicInteger();
     private final AtomicInteger itemsBoughtFromStore = new AtomicInteger();
     private final AtomicInteger itemsAddedToStore = new AtomicInteger();

@@ -16,8 +16,9 @@ public class BasketTest {
 
     private Basket basket;
 
-    @Mock Store store;
-    @Mock Item item;
+    @Mock private Store store;
+    @Mock private Item item;
+    @Mock private User user;
 
     private final ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
 
@@ -29,7 +30,7 @@ public class BasketTest {
         MockitoAnnotations.openMocks(this);
         items.clear();
         items.put(item, quantity);
-        basket = new Basket(store, items);
+        basket = new Basket(user, store, items);
     }
 
     @Test

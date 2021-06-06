@@ -116,7 +116,7 @@ public class NotificationsTests {
         addItemsToBasket();
         subscriber1.setLoggedIn(false);
 
-        Review review = new Review(buyer1, store1, item1, "this is my review");
+        Review review = new Review(store1, item1, "this is my review");
 
         store1.notifyItemOpinion(buyer2, review);
 

@@ -8,15 +8,11 @@ import exceptions.NotLoggedInException;
 import notifications.Notification;
 import externalServices.DeliveryData;
 import externalServices.PaymentData;
-import persistence.Repo;
 import store.Item;
 import store.Store;
 import user.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -59,6 +55,7 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
+
     }
 
     public void addItemToBasketByOffer(String connectionId, String storeId, String productId, int quantity, double price) throws InvalidActionException {
@@ -268,6 +265,12 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.writeOpinionOnProduct(store, Integer.parseInt(itemId), review);
     }
+    public void writeOpinionOnProduct2(String connectionId, String storeId, String itemId, String review) throws InvalidActionException {
+
+        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
+        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
+        subscriber.writeOpinionOnProduct2(store, Integer.parseInt(itemId), review);
+    }
 
     public Collection<String> getStoresInfo(String connectionId) throws InvalidActionException {
 
@@ -316,7 +319,7 @@ public class TradingSystemImpl {
         Map<Item, Integer> map = store.getItems();
         Item item = null;
         for (Item i:map.keySet()) {
-            if(i.getId() == itemId)
+            if(i.getItem_id() == itemId)
                 item = i;
         }
         EntityTransaction et = null;
