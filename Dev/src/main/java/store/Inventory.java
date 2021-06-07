@@ -18,26 +18,17 @@ public class Inventory {
     @Id
     private int storeId;
 
-//    @ElementCollection(targetClass = Item.class)
-//    @CollectionTable(name = "MAP")
-//    @MapKeyColumn(name = "key")
-//    @Column(name = "value")
-//    @OneToMany
-//    @MapKeyJoinColumn(name = "id")
-//    @Transient
-    @Transient
+
+    @ElementCollection
+    @MapKeyJoinColumns({
+            @MapKeyJoinColumn(name="item_id"),
+            @MapKeyJoinColumn(name="store_id")
+    })
     private final Map<Item, Integer> items;
     private final AtomicInteger id = new AtomicInteger(0);
-    @OneToMany
-    private final Map<Integer, Item> items_by_item_id = new HashMap<>();
-
 
     public AtomicInteger getId() {
         return id;
-    }
-
-    public Map<Integer, Item> getItems_by_item_id() {
-        return items_by_item_id;
     }
 
     public int getStoreId() {
@@ -82,7 +73,6 @@ public class Inventory {
 
             Item item =   new Item(storeId, id.get(), name, price, category, subCategory, 0);
             items.putIfAbsent(item, amount);
-            items_by_item_id.putIfAbsent(item.getItem_id(), item);
             item.setQuantity_in_store(amount);
             EntityManager em = Repo.getEm();
             EntityTransaction et = null;
@@ -232,29 +222,27 @@ public class Inventory {
         if(amount < 0)
             throw new WrongAmountException("item amount should be 0 or more than that");
         items.replace(searchItem(itemId), amount);
-        if(items_by_item_id.keySet().contains(itemId)){
-            Item item = items_by_item_id.get(itemId);
-            item.setQuantity_in_store(amount);
-            EntityManager em = Repo.getEm();
-            EntityTransaction et = null;
-            try{
-                et = em.getTransaction();
-                et.begin();
-                em.merge(item);
-                em.merge(this);
-                et.commit();
-            }
-            catch (Exception e){
-                if(et != null){
-                    et.rollback();
-                }
-                e.printStackTrace();
-            }
-            finally {
-//            em.close();
-            }
 
+        Item item = searchItem(itemId);
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(item);
+            em.merge(this);
+            et.commit();
         }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
 
 
     }
@@ -279,8 +267,6 @@ public class Inventory {
     public Item removeItem(int itemID) throws ItemException {
         Item item = searchItem(itemID);
         items.remove(item);
-        items_by_item_id.remove(itemID);
-
         ItemId tempItemId = new ItemId(item.getItem_id(), item.getStore_id());
 
         EntityManager em = Repo.getEm();
