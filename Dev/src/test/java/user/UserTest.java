@@ -8,6 +8,7 @@ import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.OngoingStubbing;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import policies.DefaultDiscountPolicy;
@@ -96,6 +97,34 @@ public class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
         assertEquals(2, store.getItems().get(item).intValue()); // checks that the inventory quantity updated
+    }
+
+    @Test
+    void purchaseCartPaymentCheck() throws InvalidActionException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        item = store.searchItemById(0);
+        baskets.put(store, basket);
+
+        items.put(item, 3);
+        doThrow(PaymentSystemException.class).when(paymentSystem).pay(paymentData);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+        assertEquals(1, user.getCart().size());
+        assertTrue(user.getCart().get(store).getItems().containsKey(item));
+        assertEquals(5, store.getItems().get(item).intValue());
+    }
+
+    @Test
+    void purchaseCartDeliveryCheck() throws InvalidActionException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        item = store.searchItemById(0);
+        baskets.put(store, basket);
+
+        items.put(item, 3);
+        doThrow(DeliverySystemException.class).when(deliverySystem).deliver(deliveryData);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+        assertEquals(1, user.getCart().size());
+        assertTrue(user.getCart().get(store).getItems().containsKey(item));
+        assertEquals(5, store.getItems().get(item).intValue());
     }
 
     @Test
