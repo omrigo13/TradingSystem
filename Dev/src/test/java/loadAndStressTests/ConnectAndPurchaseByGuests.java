@@ -2,13 +2,12 @@ package loadAndStressTests;
 
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
-import notifications.Observable;
-import org.mockito.Mock;
+import externalServices.DeliverySystemRealMock;
+import externalServices.PaymentSystemRealMock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import policies.DefaultDiscountPolicy;
-import policies.DefaultPurchasePolicy;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystemBuilder;
@@ -31,6 +30,8 @@ public class ConnectAndPurchaseByGuests {
     private ConcurrentHashMap<Integer, Store> stores = new ConcurrentHashMap<>();
     UserAuthentication auth = new UserAuthentication();
     private Subscriber admin;
+    private PaymentSystemRealMock paymentSystem;
+    private DeliverySystemRealMock deliverySystem;
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -39,13 +40,16 @@ public class ConnectAndPurchaseByGuests {
         admin = new Subscriber(0, userName);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
+        paymentSystem = new PaymentSystemRealMock();
+        deliverySystem = new DeliverySystemRealMock();
         tradingSystemService = spy(new TradingSystemServiceImpl(new TradingSystemImpl(new TradingSystemBuilder().setUserName(userName)
                 .setPassword(password)
                 .setSubscribers(subscribers)
                 .setConnections(connections)
                 .setStores(stores)
                 .setAuth(auth)
-                .build())));
+                .setPaymentSystem(paymentSystem)
+                .setDeliverySystem(deliverySystem).build())));
 
         String conn = tradingSystemService.connect();
         tradingSystemService.login(conn, userName, password);
@@ -58,5 +62,11 @@ public class ConnectAndPurchaseByGuests {
         String conn = tradingSystemService.connect();
         tradingSystemService.addItemToBasket(conn, "0", "0", 1);
         tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+    }
+
+    @AfterClass
+    public void tearDown() {
+        System.out.println(paymentSystem.getTime());
+        System.out.println(deliverySystem.getTime());
     }
 }
