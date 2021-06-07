@@ -743,62 +743,103 @@ public class AcceptanceTestsV2 {
     }
 
     @Test
-    void validNotifyOwnersOfStoreAboutItemsPurchased() {
+    void validNotifyOwnersOfStoreAboutItemsPurchased() throws InvalidActionException {
+        setUpStore1();
+        Collection<String> notifications;
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
 
+        assertEquals(0, service.getNotifications(founderStore1Id).size());
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        notifications = service.getNotifications(founderStore1Id);
+        assertEquals(1, notifications.size());
+        assertTrue(notifications.toString().contains("buyer store1FounderUserName"));
     }
 
     @Test
-    void noNotificationOfPurchasedItemForAdmin() {
+    void noNotificationOfPurchasedItemForAdmin() throws InvalidActionException {
+        setUpStore1();
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
 
+        assertEquals(0, service.getNotifications(admin1Id).size());
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        assertEquals(0, service.getNotifications(admin1Id).size());
     }
 
     @Test
-    void noNotificationOfPurchasedItemForStoreManagersOrOwnersOfDifferentStore() {
+    void noNotificationOfPurchasedItemForStoreManagersOrOwnersOfDifferentStore() throws InvalidActionException {
+        setUpStore1();
+        setUpStore2();
+        Collection<String> notifications;
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
 
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        notifications = service.getNotifications(store2Manager1Id);
+        assertEquals(0, service.getNotifications(founderStore2Id).size());
+        assertEquals(1, notifications.size());
+        assertFalse(notifications.toString().contains("buyer store1FounderUserName"));
     }
 
     @Test
-    void noNotificationOfPurchasedItemForGuestOrSubscriber() {
+    void noNotificationOfPurchasedItemForGuestOrSubscriber() throws InvalidActionException {
+        setUpStore1();
+        setUpGuest();
+        setUpSubscriber1();
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
 
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        assertThrows(NotLoggedInException.class, () -> service.getNotifications(guest1Id));
+        assertEquals(0, service.getNotifications(subs1Id).size());
     }
 
     @Test
-    void validNotifyOwnersOfStoreAboutItemsReviews() {
+    void validNotifyOwnersOfStoreAboutItemsReviews() throws InvalidActionException {
+        setUpStore1();
+        Collection<String> notifications;
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 2);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
+        assertEquals(1, service.getNotifications(founderStore1Id).size());
+        service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "description");
+        notifications = service.getNotifications(founderStore1Id);
+        assertEquals(1, notifications.size());
+        assertTrue(notifications.toString().contains("ItemReviewNotification"));
     }
 
     @Test
-    void noNotificationOfItemReviewForAdmin() {
+    void noNotificationOfItemReviewForAdmin() throws InvalidActionException {
+        setUpStore1();
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
+        service.writeOpinionOnProduct(founderStore1Id, storeId1, productId1, "description");
 
+        assertEquals(0, service.getNotifications(admin1Id).size());
     }
 
     @Test
-    void noNotificationOfReviewItemForStoreManagersOrOwnersOfDifferentStore() {
+    void noNotificationOfReviewItemForStoreManagersOrOwnersOfDifferentStore() throws InvalidActionException {
+        setUpStore1();
+        setUpStore2();
+        Collection<String> notifications;
+        service.addItemToBasket(store1Manager1Id, storeId1, productId1, 2);
+        service.purchaseCart(store1Manager1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
+        service.writeOpinionOnProduct(store1Manager1Id, storeId1, productId1, "description");
+        notifications = service.getNotifications(store2Manager1Id);
+        assertEquals(0, service.getNotifications(founderStore2Id).size());
+        assertEquals(1, notifications.size());
+        assertFalse(notifications.toString().contains("ItemReviewNotification"));
     }
 
     @Test
-    void noNotificationOfReviewItemForGuestOrSubscriber() {
+    void noNotificationOfReviewItemForGuestOrSubscriber() throws InvalidActionException {
+        setUpStore1();
+        setUpGuest();
+        setUpSubscriber1();
+        service.addItemToBasket(founderStore1Id, storeId1, productId1, 2);
+        service.purchaseCart(founderStore1Id, card_number, month, year, holder, ccv, id, name, address, city, country, zip);
 
-    }
-
-    @Test
-    void logoutStoreOwnerThenPurchaseItemAndGetNotificationWhenLogin() {
-
-    }
-
-    @Test
-    void logoutStoreOwnerThenReviewItemAndGetNotificationWhenLogin() {
-
-    }
-
-    @Test
-    void logoutStoreManagerOrDifferentStoreOwnerThenPurchaseItemAndGetNotificationWhenLogin() {
-
-    }
-
-    @Test
-    void logoutStoreManagerOrDifferentStoreOwnerThenReviewItemAndGetNotificationWhenLogin() {
-
+        service.writeOpinionOnProduct(founderStore1Id, storeId1, productId1, "description");
+        assertThrows(NotLoggedInException.class, () -> service.getNotifications(guest1Id));
+        assertEquals(0, service.getNotifications(subs1Id).size());
     }
 }
