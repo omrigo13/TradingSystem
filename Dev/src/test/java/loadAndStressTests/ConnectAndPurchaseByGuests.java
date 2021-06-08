@@ -16,46 +16,42 @@ import user.AdminPermission;
 import user.Subscriber;
 import user.User;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.mockito.Mockito.*;
 
 public class ConnectAndPurchaseByGuests {
 
     private TradingSystemServiceImpl tradingSystemService;
     private final String userName = "Admin";
     private final String password = "123";
-    private ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, User> connections = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<Integer, Store> stores = new ConcurrentHashMap<>();
-    UserAuthentication auth = new UserAuthentication();
-    private Subscriber admin;
+    private final ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, User> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Store> stores = new ConcurrentHashMap<>();
+    private final UserAuthentication auth = new UserAuthentication();
+    private final Subscriber admin = new Subscriber(0, userName);
     private PaymentSystemRealMock paymentSystem;
     private DeliverySystemRealMock deliverySystem;
     private long start, end;
-    private AtomicInteger index = new AtomicInteger(0);
-    private LinkedList<String> subscribersIds = new LinkedList<>();
+    private final AtomicInteger index = new AtomicInteger(0);
+    private final LinkedList<String> subscribersIds = new LinkedList<>();
 
     @BeforeClass
     void setUp() throws InvalidActionException {
         MockitoAnnotations.openMocks(this);
         auth.register(userName, password);
-        admin = new Subscriber(0, userName);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
         paymentSystem = new PaymentSystemRealMock();
         deliverySystem = new DeliverySystemRealMock();
-        tradingSystemService = spy(new TradingSystemServiceImpl(new TradingSystemImpl(new TradingSystemBuilder().setUserName(userName)
+        tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(new TradingSystemBuilder().setUserName(userName)
                 .setPassword(password)
                 .setSubscribers(subscribers)
                 .setConnections(connections)
                 .setStores(stores)
                 .setAuth(auth)
                 .setPaymentSystem(paymentSystem)
-                .setDeliverySystem(deliverySystem).build())));
+                .setDeliverySystem(deliverySystem).build()));
 
         String conn = tradingSystemService.connect();
         tradingSystemService.login(conn, userName, password);
