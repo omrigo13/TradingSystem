@@ -16,9 +16,10 @@ import user.AdminPermission;
 import user.Subscriber;
 import user.User;
 
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.testng.AssertJUnit.assertTrue;
 
 public class ConnectAndPurchaseByGuests {
 
@@ -34,7 +35,6 @@ public class ConnectAndPurchaseByGuests {
     private DeliverySystemRealMock deliverySystem;
     private long start, end;
     private final AtomicInteger index = new AtomicInteger(0);
-    private final LinkedList<String> subscribersIds = new LinkedList<>();
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -57,24 +57,24 @@ public class ConnectAndPurchaseByGuests {
         tradingSystemService.login(conn, userName, password);
         tradingSystemService.openNewStore(conn, "eBay");
         tradingSystemService.addProductToStore(conn, "0", "bamba", "snacks", "sub1", 2000, 5.5);
-        for(int i = 0; i < 100; i++) {
-            subscribersIds.add(tradingSystemService.connect());
-            tradingSystemService.register("s" + i, "1234");
-            tradingSystemService.login(subscribersIds.get(i), "s" + i, "1234");
-            tradingSystemService.addItemToBasket(subscribersIds.get(i),"0", "0", 1);
-        }
         paymentSystem.connect();
         deliverySystem.connect();
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 10, invocationCount = 100, timeOut = 5000)
+    @Test (threadPoolSize = 100, invocationCount = 100, timeOut = 5000)
     public void test() throws InvalidActionException {
-        tradingSystemService.purchaseCart(subscribersIds.get(index.getAndIncrement()), "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+        String conn = tradingSystemService.connect();
+        int id = index.getAndIncrement();
+        tradingSystemService.register("s" + id, "1234");
+        tradingSystemService.login(conn, "s" + id, "1234");
+        tradingSystemService.addItemToBasket(conn,"0", "0", 1);
+        tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
     }
 
     @AfterClass
     public void tearDown() {
+        assertTrue((System.nanoTime() - start) / 1000000 < 5000);
         end = System.nanoTime();
         System.out.println((end - start) / 1000000);
         System.out.println(paymentSystem.getTime());

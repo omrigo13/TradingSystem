@@ -514,7 +514,9 @@ public class Subscriber extends User {
 
         validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
 
-        double totalValue = store.getTotalValuePerDay().get(date);
+        double totalValue = 0.0;
+        if(store.getTotalValuePerDay().get(date) != null)
+            totalValue = store.getTotalValuePerDay().get(date);
         return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
     }
 
