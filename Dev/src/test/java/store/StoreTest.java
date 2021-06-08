@@ -31,7 +31,7 @@ public class StoreTest {
     @BeforeMethod
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null, new Observable());
+        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null);
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
         basket = new Basket(user, new Store(), items);
     }
@@ -39,13 +39,13 @@ public class StoreTest {
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null));
     }
 
 //    @Test

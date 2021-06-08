@@ -2,16 +2,15 @@ package policies;
 
 import store.Item;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+@Entity
 public abstract class CompoundDiscountPolicy extends DiscountPolicy {
-
+        @ManyToMany
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;
+    @ManyToMany
     protected Collection<Item> items;
     @Id
     @GeneratedValue
@@ -24,6 +23,10 @@ public abstract class CompoundDiscountPolicy extends DiscountPolicy {
         else
             this.discountPolicies = discountPolicies;
         this.items = new ArrayList<>();
+    }
+
+    public CompoundDiscountPolicy() {
+
     }
 
     public void add(SimpleDiscountPolicy discountPolicy) { this.discountPolicies.add(discountPolicy); }

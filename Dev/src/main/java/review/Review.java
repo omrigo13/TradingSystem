@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Review {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int id;
 //    @ManyToOne
     @Transient

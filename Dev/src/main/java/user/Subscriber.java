@@ -624,8 +624,8 @@ public class Subscriber extends User {
         try{
             et = em.getTransaction();
             et.begin();
-            em.merge(notification);
-//            em.merge(this);
+            em.persist(notification);
+            em.merge(this);
             et.commit();
         }
         catch (Exception e){

@@ -3,13 +3,10 @@ package policies;
 import exceptions.PolicyException;
 import user.Basket;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.*;
 import java.util.Collection;
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class PurchasePolicy {
     @Id
     private int purchase_id;

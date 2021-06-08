@@ -28,7 +28,7 @@ public class Store {
     private String name;
     private String description;
     private double rating;
-    @Transient
+    @OneToOne
     private DiscountPolicy discountPolicy;
     @Transient
     private PurchasePolicy purchasePolicy;
@@ -40,7 +40,8 @@ public class Store {
     private Inventory inventory;
     @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
-    @Transient
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private Observable observable;
     @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
@@ -73,7 +74,7 @@ public class Store {
     }
 
     public Store() {
-        this.observable = new Observable();
+        this.observable = new Observable(this);
     }
 
     /**
@@ -84,7 +85,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, Observable observable) throws ItemException {
+    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -132,7 +133,7 @@ public class Store {
             this.discountPolicy = discountPolicy;
         this.isActive = true;
 //        this.observable = observable;
-        this.observable = new Observable();
+        this.observable = new Observable(this);
     }
 
     public int getId() {

@@ -110,4 +110,42 @@ public class Repo {
     public static EntityManager getEm() {
         return em;
     }
+
+    public static <T> void merge(T obj){
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(obj);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+    }
+
+    public static <T> void persist(T obj){
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.persist(obj);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+    }
 }

@@ -9,12 +9,37 @@ import user.Basket;
 import user.Subscriber;
 import user.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
+@Entity
+public class Observable implements Serializable {
+    @Id
+    private int storeId;
 
-public class Observable {
+    @ManyToMany
     private Collection<Subscriber> observers = new HashSet<>();
+
+    public Observable(Store store) {
+        this.storeId = store.getId();
+    }
+
+    public Observable() {
+
+    }
+
+    public int getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
+
+    public void setObservers(Collection<Subscriber> observers) {
+        this.observers = observers;
+    }
+
 
     public void subscribe(Subscriber observer){
         if(!observers.contains(observer))
@@ -121,6 +146,24 @@ public class Observable {
         AppointRoleNotification n = new AppointRoleNotification(assignor, role, storeId);
         subscribe(toAssign);
         toAssign.notifyNotification(n);
+
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(this);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
 
     }
 }

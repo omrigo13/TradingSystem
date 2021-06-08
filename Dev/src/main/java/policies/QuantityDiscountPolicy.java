@@ -11,12 +11,9 @@ import java.util.Collection;
 import java.util.Map;
 @Entity
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
-    @Transient
-    private PurchasePolicy policy;
+
     @ManyToOne
-    private SimpleDiscountPolicy simpleDiscountPolicy;
-
-
+    private PurchasePolicy policy;
 
     public QuantityDiscountPolicy(int id, int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
         super(id, discount, items);
@@ -27,7 +24,9 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         {
             Collection<PurchasePolicy> policies = new ArrayList<>();
             policies.add(new DefaultPurchasePolicy());
-            this.policy = new AndPolicy(policies);
+            this.policy = null; //todo: Omri
+//            this.policy = new AndPolicy(policies);
+
         }
         else
             this.policy = policy;

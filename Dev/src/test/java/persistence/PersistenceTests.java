@@ -14,6 +14,8 @@ import user.Basket;
 import user.Subscriber;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -93,6 +95,12 @@ public class PersistenceTests {
         service.addItemToBasket(subs1Id, storeId2, productId4, 4);
         service.addItemToBasket(subs2Id, storeId1, productId2, 2);
         service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, subs1UserName, subs1UserName, address, city, country, zip);
+        Collection<String> items_discount = new ArrayList<>();
+        items_discount.add(productId2);
+        items_discount.add(productId4);
+        service.makeQuantityDiscount(founderStore1Id, storeId1, 1 ,items_discount, null );
+
+        service.makeQuantityPolicy(founderStore1Id, storeId1,items_discount, 1, 100);
 
 
         List<Item> items = Repo.getInstance().getItems();

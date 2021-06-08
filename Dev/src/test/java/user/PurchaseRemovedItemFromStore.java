@@ -34,9 +34,9 @@ public class PurchaseRemovedItemFromStore {
     @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
-    private final Observable observable = mock(Observable.class);
+//    private final Observable observable = mock(Observable.class);
 
-    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
+    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
     private final Map<Item, Integer> storeItems = store.getItems();
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
     private final StorePermission manageInventory = ManageInventoryPermission.getInstance(store);

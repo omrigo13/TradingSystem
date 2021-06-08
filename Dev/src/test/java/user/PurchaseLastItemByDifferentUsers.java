@@ -45,9 +45,9 @@ public class PurchaseLastItemByDifferentUsers {
     @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
-    private final Observable observable = mock(Observable.class);
+//    private final Observable observable = mock(Observable.class);
 
-    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
+    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
     private final Map<Item, Integer> storeItems = store.getItems();
     private final Basket basket = new Basket(user1, store, basketItems);
 

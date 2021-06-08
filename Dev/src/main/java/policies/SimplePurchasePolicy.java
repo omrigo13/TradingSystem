@@ -9,7 +9,6 @@ import javax.persistence.InheritanceType;
 import java.util.Collection;
 import java.util.LinkedList;
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class SimplePurchasePolicy extends PurchasePolicy {
 
     public SimplePurchasePolicy(int id) {

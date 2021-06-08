@@ -225,7 +225,7 @@ public class TradingSystem {
 
         // create the new store
         int id = storeIdCounter.getAndIncrement();
-        Store store = new Store(id, storeName, "description", null, null, new Observable());
+        Store store = new Store(id, storeName, "description", null, null);
         stores.put(id, store);
 
         subscriber.addOwnerPermission(store);
@@ -310,6 +310,9 @@ public class TradingSystem {
         purchasePolicies.put(id, purchasePolicy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(purchasePolicy);
+
         return id;
     }
 
@@ -408,9 +411,13 @@ public class TradingSystem {
             throw new PolicyException();
         if (policyId != null)
             purchasePolicy = purchasePolicies.get(policyId);
-        discountPolicies.put(id, new QuantityDiscountPolicy(id, discount, items, purchasePolicy));
+        QuantityDiscountPolicy quantityDiscountPolicy = new QuantityDiscountPolicy(id, discount, items, purchasePolicy);
+        discountPolicies.put(id, quantityDiscountPolicy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesDiscountPolicies.get(store).add(id);
+
+        Repo.merge(quantityDiscountPolicy);
+
         return id;
     }
 

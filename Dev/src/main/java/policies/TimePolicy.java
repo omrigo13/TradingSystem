@@ -5,18 +5,23 @@ import exceptions.TimePolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-
 public class TimePolicy extends SimplePurchasePolicy {
-
-    private final Collection<Item> items;
-    private final LocalTime time;
+    @ManyToMany
+    private Collection<Item> items;
+    private LocalTime time;
 
     public TimePolicy(Collection<Item> items, LocalTime time) {
         this.items = items;
         this.time = time;
+    }
+
+    public TimePolicy() {
+
     }
 
     @Override
