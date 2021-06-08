@@ -68,7 +68,7 @@ public class ConnectAndPurchaseByGuests {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 10, invocationCount = 100, timeOut = 4000)
+    @Test (threadPoolSize = 10, invocationCount = 100, timeOut = 5000)
     public void test() throws InvalidActionException {
         tradingSystemService.purchaseCart(subscribersIds.get(index.getAndIncrement()), "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
     }

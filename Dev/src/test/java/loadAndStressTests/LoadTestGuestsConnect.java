@@ -16,6 +16,8 @@ import user.User;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.testng.AssertJUnit.assertTrue;
+
 
 public class LoadTestGuestsConnect {
 
@@ -46,13 +48,13 @@ public class LoadTestGuestsConnect {
         start = System.nanoTime();
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 1000)
+    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 1200)
     public void test() throws InvalidActionException {
         tradingSystemService.connect();
     }
 
     @AfterClass
     public void tearDown() {
-        System.out.println((System.nanoTime() - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 1200);
     }
 }
