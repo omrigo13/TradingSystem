@@ -8,7 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.Collection;
-public abstract class CompoundDiscountPolicy implements DiscountPolicy {
+public abstract class CompoundDiscountPolicy extends DiscountPolicy {
 
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;

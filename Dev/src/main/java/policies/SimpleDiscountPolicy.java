@@ -6,17 +6,17 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-//@Entity
-//@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class SimpleDiscountPolicy implements DiscountPolicy {
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class SimpleDiscountPolicy extends DiscountPolicy {
 
 
     protected int discount;
-    @OneToMany
-    @MapsId
+    @ManyToMany
     protected Collection<Item> items = new ArrayList<>();
 
-    public SimpleDiscountPolicy(int discount, Collection<Item> items) {
+    public SimpleDiscountPolicy(int id, int discount, Collection<Item> items) {
+        super(id);
         this.discount = discount;
         this.items = items;
 

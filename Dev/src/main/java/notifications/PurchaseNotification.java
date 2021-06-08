@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.Map;
 @Entity
 public class PurchaseNotification extends Notification{
-
+    //todo: replace with username/guest string
     @Transient
     private User buyer = null;
     @ElementCollection

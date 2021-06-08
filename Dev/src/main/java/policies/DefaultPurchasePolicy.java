@@ -2,6 +2,9 @@ package policies;
 
 import user.Basket;
 
+import javax.persistence.Entity;
+
+@Entity
 public class DefaultPurchasePolicy extends SimplePurchasePolicy {
 
     @Override

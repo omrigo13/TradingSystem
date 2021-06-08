@@ -2,6 +2,7 @@ package store;
 
 import Offer.Offer;
 import exceptions.*;
+import persistence.Repo;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
 import policies.DiscountPolicy;
@@ -103,8 +104,30 @@ public class Store {
         else
             this.purchasePolicy = purchasePolicy;
         this.inventory = new Inventory(id);
-        if(discountPolicy == null)
-            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
+        if(discountPolicy == null){
+            DefaultDiscountPolicy defaultDiscountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
+            this.discountPolicy = defaultDiscountPolicy;
+
+            EntityManager em = Repo.getEm();
+            EntityTransaction et = null;
+            try{
+                et = em.getTransaction();
+                et.begin();
+                em.merge(defaultDiscountPolicy);
+                em.merge(this);
+                et.commit();
+            }
+            catch (Exception e){
+                if(et != null){
+                    et.rollback();
+                }
+                e.printStackTrace();
+            }
+            finally {
+//            em.close();
+            }
+
+        }
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
@@ -362,7 +385,10 @@ public class Store {
         return discountPolicy;
     }
 
-    public void setDiscountPolicy(DiscountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+        this.discountPolicy = discountPolicy;
+
+    }
 
     public void setPurchasePolicy(PurchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 

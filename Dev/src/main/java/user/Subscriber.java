@@ -4,6 +4,7 @@ import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import notifications.Observer;
+import org.jetbrains.annotations.NotNull;
 import persistence.Repo;
 import review.Review;
 import store.Item;
@@ -31,6 +32,35 @@ public class Subscriber extends User {
     private Observer observer;
     @Transient
     private Observer adminObserver;
+
+    @Override
+    @NotNull
+    protected Basket createBasket(Store store) {
+        Basket basket = new Basket(this, store, new ConcurrentHashMap<>());
+
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(basket);
+            em.merge(this);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
+
+        return basket;
+    }
+
 
     public int getId() {
         return id;
@@ -515,15 +545,14 @@ public class Subscriber extends User {
 
         Review review1 = new Review(store, item, review);
         item.addReview(review1);
-        store.notifyItemOpinion(this, review1);
 
         EntityManager em = Repo.getEm();
         EntityTransaction et = null;
         try{
             et = em.getTransaction();
             et.begin();
-            em.merge(review1);
-            em.merge(item);
+//            em.merge(review1);
+//            em.merge(item);
             et.commit();
         }
         catch (Exception e){
@@ -535,6 +564,9 @@ public class Subscriber extends User {
         finally {
 //            em.close();
         }
+        store.notifyItemOpinion(this, review1);
+
+
 
     }
 

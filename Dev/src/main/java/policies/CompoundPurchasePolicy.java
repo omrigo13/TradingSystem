@@ -6,7 +6,7 @@ import user.Basket;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public abstract class CompoundPurchasePolicy implements PurchasePolicy {
+public abstract class CompoundPurchasePolicy extends PurchasePolicy {
 
     protected Collection<PurchasePolicy> purchasePolicies;
 

@@ -6,18 +6,21 @@ import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
+import org.jetbrains.annotations.NotNull;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Item;
 import store.Store;
 
+import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@MappedSuperclass
 public class User {
-
-    protected final ConcurrentHashMap<Store, Basket> baskets;
+    @OneToMany(cascade = CascadeType.ALL)
+    protected Map<Store, Basket> baskets;
 
     public User() {
         this(new ConcurrentHashMap<>());
@@ -25,6 +28,10 @@ public class User {
 
     User(ConcurrentHashMap<Store, Basket> baskets) {
         this.baskets = baskets;
+    }
+
+    public Map<Store, Basket> getBaskets() {
+        return baskets;
     }
 
     public Map<Store, Basket> getCart()
@@ -44,8 +51,12 @@ public class User {
     }
 
     public Basket getBasket(Store store) {
+        return baskets.computeIfAbsent(store, k -> createBasket(k));
+    }
 
-        return baskets.computeIfAbsent(store, k -> new Basket(this, k, new ConcurrentHashMap<>()));
+    @NotNull
+    protected Basket createBasket(Store k) {
+        return new Basket(this, k, new ConcurrentHashMap<>());
     }
 
     public void addCartToPurchases(Map<Store, String> details) {

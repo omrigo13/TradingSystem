@@ -4,15 +4,37 @@ import exceptions.PolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.Collection;
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 
-public interface DiscountPolicy {
+public abstract class DiscountPolicy {
 
-    double cartTotalValue(Basket purchaseBasket) throws PolicyException;
+    @Id
+    private int discount_id;
 
-    int getDiscount();
+    public DiscountPolicy(int discount_id) {
+        this.discount_id = discount_id;
+    }
 
-    Collection<Item> getItems();
+    public DiscountPolicy() {
 
-    Collection<DiscountPolicy> getDiscountPolicies();
+    }
+
+    public int getDiscount_id() {
+        return discount_id;
+    }
+
+    public void setDiscount_id(int id) {
+        this.discount_id = id;
+    }
+
+    public abstract double cartTotalValue(Basket purchaseBasket) throws PolicyException;
+
+    public abstract int getDiscount();
+
+    public abstract Collection<Item> getItems();
+
+    public abstract Collection<DiscountPolicy> getDiscountPolicies();
 }

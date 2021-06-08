@@ -3,13 +3,18 @@ package policies;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.Entity;
 import java.util.Collection;
 import java.util.Map;
-
+@Entity
 public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
 
     public DefaultDiscountPolicy(Collection<Item> items) {
-        super(0, items);
+        super(-1, 0, items);
+    }
+
+    public DefaultDiscountPolicy() {
+
     }
 
     @Override

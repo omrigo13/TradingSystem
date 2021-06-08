@@ -3,10 +3,22 @@ package policies;
 import exceptions.PolicyException;
 import user.Basket;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import java.util.Collection;
 import java.util.LinkedList;
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class SimplePurchasePolicy extends PurchasePolicy {
 
-public abstract class SimplePurchasePolicy implements PurchasePolicy {
+    public SimplePurchasePolicy(int id) {
+        super(id);
+    }
+
+    public SimplePurchasePolicy() {
+
+    }
 
     public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;
 

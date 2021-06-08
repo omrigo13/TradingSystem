@@ -3,12 +3,35 @@ package policies;
 import exceptions.PolicyException;
 import user.Basket;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import java.util.Collection;
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class PurchasePolicy {
+    @Id
+    private int purchase_id;
 
-public interface PurchasePolicy {
+    public PurchasePolicy(int purchase_id) {
+        this.purchase_id = purchase_id;
+    }
 
-    boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;
+    public PurchasePolicy() {
 
-    Collection<PurchasePolicy> getPurchasePolicies();
+    }
+
+    public int getPurchase_id() {
+        return purchase_id;
+    }
+
+    public void setPurchase_id(int id) {
+        this.purchase_id = id;
+    }
+
+    public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;
+
+    public abstract Collection<PurchasePolicy> getPurchasePolicies();
 
 }

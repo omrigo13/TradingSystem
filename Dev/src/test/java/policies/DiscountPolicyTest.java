@@ -68,7 +68,7 @@ public class DiscountPolicyTest {
 
     @Test void discountByCategory() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, null, "cat1");
-        store.setDiscountPolicy(new QuantityDiscountPolicy(50, items, null));
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 50, items, null));
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("33.0")); // checks that the purchase value correct
     }
@@ -76,7 +76,7 @@ public class DiscountPolicyTest {
     @Test // 20% discount on all store
     void discountByStore() throws InvalidActionException {
         Collection<Item> items = store.getItems().keySet();
-        store.setDiscountPolicy(new QuantityDiscountPolicy(20, items, null));
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 20, items, null));
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("34.8")); // checks that the purchase value correct
     }
@@ -85,7 +85,7 @@ public class DiscountPolicyTest {
     void discountByBasketValueForItemWithGoodBasketValue() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, "cheese", null);
         policies.add(new BasketPurchasePolicy(50));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
 
         user.getBasket(store).addItem(item2, 2);
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -96,7 +96,7 @@ public class DiscountPolicyTest {
     void discountByBasketValueForItemWithLowerBasketValue() throws InvalidActionException {
         Collection<Item> items = store.searchItems(null, "cheese", null);
         policies.add(new BasketPurchasePolicy(50));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 10, items, new AndPolicy(policies))); //policy for 10% on cheese and basket value > 50
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 10% discount
@@ -110,7 +110,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new QuantityPolicy(tomato, 2, 0));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
 
         user.getBasket(store).addItem(item1, 2);
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -125,7 +125,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new QuantityPolicy(tomato, 2, 0));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, items, new AndPolicy(policies))); //policy for 5% on cheese and tomato
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 5% discount
@@ -138,7 +138,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new QuantityPolicy(tomato, 7, 0));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new OrPolicy(policies))); //policy for 5% on cheese
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, items, new OrPolicy(policies))); //policy for 5% on cheese
 
         user.getBasket(store).addItem(item1, 2);
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -152,7 +152,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new QuantityPolicy(tomato, 7, 0));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, items, new OrPolicy(policies))); //policy for 5% on cheese
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, items, new OrPolicy(policies))); //policy for 5% on cheese
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value without 5% discount
@@ -164,7 +164,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new BasketPurchasePolicy(50));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
 
         user.getBasket(store).addItem(item1, 2);
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -177,7 +177,7 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         policies.add(new QuantityPolicy(cheese, 5, 0));
         policies.add(new BasketPurchasePolicy(50));
-        store.setDiscountPolicy(new QuantityDiscountPolicy(5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
+        store.setDiscountPolicy(new QuantityDiscountPolicy(0, 5, tomato, new AndPolicy(policies))); //policy for 5% on tomato, basket value > 50, at least 5 cheese
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("43.5")); // checks that the purchase value correct
@@ -187,8 +187,8 @@ public class DiscountPolicyTest {
     void maxbasketDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
-        discountPolicies.add(new QuantityDiscountPolicy(5, cheese, null));
-        discountPolicies.add(new QuantityDiscountPolicy(10, tomato, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 5, cheese, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 10, tomato, null));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -199,8 +199,8 @@ public class DiscountPolicyTest {
     void maxbasketDiscountOtherOption() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
-        discountPolicies.add(new QuantityDiscountPolicy(10, cheese, null));
-        discountPolicies.add(new QuantityDiscountPolicy(5, tomato, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 10, cheese, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 5, tomato, null));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -211,8 +211,8 @@ public class DiscountPolicyTest {
     void plusbasketDiscount() throws InvalidActionException {
         Collection<Item> storeItems = store.getItems().keySet();
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
-        discountPolicies.add(new QuantityDiscountPolicy(5, tomato, null));
-        discountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 5, tomato, null));
+        discountPolicies.add(new QuantityDiscountPolicy(0, 20, storeItems, null));
         store.setDiscountPolicy(new PlusDiscountPolicy(discountPolicies)); //policy for 25% on tomato and 20% on cheese
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
@@ -225,9 +225,9 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         Collection<Item> storeItems = store.getItems().keySet();
         Collection<DiscountPolicy> maxDiscountPolicies = new ArrayList<>();
-        maxDiscountPolicies.add(new QuantityDiscountPolicy(5, cheese, null)); // discount 5% on cheese
-        maxDiscountPolicies.add(new QuantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
-        discountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null)); // discount 20% on store
+        maxDiscountPolicies.add(new QuantityDiscountPolicy(0, 5, cheese, null)); // discount 5% on cheese
+        maxDiscountPolicies.add(new QuantityDiscountPolicy(0, 10, tomato, null)); // discount 10% on tomato
+        discountPolicies.add(new QuantityDiscountPolicy(0, 20, storeItems, null)); // discount 20% on store
         discountPolicies.add(new MaxDiscountPolicy(maxDiscountPolicies));
         store.setDiscountPolicy(new PlusDiscountPolicy(discountPolicies)); //policy for 10% on tomato or 5% on cheese plus 20% on store
         //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5
@@ -241,9 +241,9 @@ public class DiscountPolicyTest {
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         Collection<Item> storeItems = store.getItems().keySet();
         Collection<DiscountPolicy> plusDiscountPolicies = new ArrayList<>();
-        plusDiscountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null)); // discount 20% on store
-        plusDiscountPolicies.add(new QuantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
-        discountPolicies.add(new QuantityDiscountPolicy(70, cheese, null)); // discount 70% on cheese
+        plusDiscountPolicies.add(new QuantityDiscountPolicy(0, 20, storeItems, null)); // discount 20% on store
+        plusDiscountPolicies.add(new QuantityDiscountPolicy(0, 10, tomato, null)); // discount 10% on tomato
+        discountPolicies.add(new QuantityDiscountPolicy(0, 70, cheese, null)); // discount 70% on cheese
         discountPolicies.add(new PlusDiscountPolicy(plusDiscountPolicies));
         store.setDiscountPolicy(new MaxDiscountPolicy(discountPolicies)); //policy for 10% on tomato and 20% store or 50% cheese
         //cheese costs 7.0 and got 3, tomato costs 4.5 and got 5

@@ -5,11 +5,17 @@ import externalServices.DeliverySystemMock;
 import externalServices.PaymentSystemMock;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.w3c.dom.stylesheets.LinkStyle;
 import service.TradingSystemService;
+import store.Item;
+import store.Store;
 import tradingSystem.TradingSystem;
+import user.Basket;
 import user.Subscriber;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class PersistenceTests {
 
@@ -88,6 +94,14 @@ public class PersistenceTests {
         service.addItemToBasket(subs2Id, storeId1, productId2, 2);
         service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, subs1UserName, subs1UserName, address, city, country, zip);
 
+
+        List<Item> items = Repo.getInstance().getItems();
+        List<Subscriber> subs = Repo.getInstance().getSubscribers();
+        List<Store> stores = Repo.getInstance().getStores();
+        List<Basket> baskets = Repo.getInstance().getBaskets();
+
+
+        System.out.println("");
     }
 
     //todo: persist users, subscribers, notifications, carts, permissions

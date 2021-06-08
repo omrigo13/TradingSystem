@@ -5,16 +5,21 @@ import exceptions.QuantityDiscountPolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-
+@Entity
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
+    @Transient
+    private PurchasePolicy policy;
+    @ManyToOne
+    private SimpleDiscountPolicy simpleDiscountPolicy;
 
-    private final PurchasePolicy policy;
 
-    public QuantityDiscountPolicy(int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
-        super(discount, items);
+
+    public QuantityDiscountPolicy(int id, int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
+        super(id, discount, items);
         if(discount < 0)
             throw new QuantityDiscountPolicyException();
         this.items = items;
@@ -26,6 +31,10 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         }
         else
             this.policy = policy;
+    }
+
+    public QuantityDiscountPolicy() {
+
     }
 
     @Override

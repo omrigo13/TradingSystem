@@ -408,7 +408,7 @@ public class TradingSystem {
             throw new PolicyException();
         if (policyId != null)
             purchasePolicy = purchasePolicies.get(policyId);
-        discountPolicies.put(id, new QuantityDiscountPolicy(discount, items, purchasePolicy));
+        discountPolicies.put(id, new QuantityDiscountPolicy(id, discount, items, purchasePolicy));
         storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesDiscountPolicies.get(store).add(id);
         return id;
