@@ -23,6 +23,8 @@ public class PersistenceTests {
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
     private PaymentSystemMock paymentSystem = (PaymentSystemMock) Driver.getPaymentSystem();
     private DeliverySystemMock deliverySystem = (DeliverySystemMock) Driver.getDeliverySystem();
+    private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
+    private int month = 1, year = 2022, zip = 12345;
 
     @BeforeMethod
     public void setUp() throws Exception {
@@ -59,11 +61,11 @@ public class PersistenceTests {
         storeId2 = service.openNewStore(founderStore2Id, "store2");
 
         //add items for store1:
-        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk", "DairyProducts", "sub1", 10, 6.5);
-        productId2 = service.addProductToStore(founderStore1Id, storeId1, "cheese", "DairyProducts", "sub1", 20, 3);
+        productId1 = service.addProductToStore(founderStore1Id, storeId1, "milk_store1", "DairyProducts", "sub1", 10, 6.5);
+        productId2 = service.addProductToStore(founderStore1Id, storeId1, "cheese_store1", "DairyProducts", "sub1", 20, 3);
         //add items for store2:
-        productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk", "DairyProducts", "sub1", 30, 6.5);
-        productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette", "bread", "", 20, 9);
+        productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk_store2", "DairyProducts", "sub1", 30, 6.5);
+        productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette_store2", "bread", "", 20, 9);
 
         service.deleteProductFromStore(founderStore1Id, storeId1, productId1);
 
@@ -75,14 +77,16 @@ public class PersistenceTests {
         service.getItems("fff", "", "", "", 3.0, 3.0, 3.0, 3.0);
 
     }
-    @Test
-    void testDB1() throws InvalidActionException {
-//        System.out.println(service.getStoresInfo(founderStore1Id).toString());
-    }
 
     @Test
     void review_item() throws InvalidActionException {
         service.writeOpinionOnProduct(subs2Id, storeId1, productId2, "reviewwww!!");
+
+        //purchase notification test
+//        service.addItemToBasket(subs1Id, storeId1, productId1, 10);
+        service.addItemToBasket(subs1Id, storeId2, productId4, 4);
+        service.addItemToBasket(subs2Id, storeId1, productId2, 2);
+        service.purchaseCart(subs1Id, card_number, month, year, holder, ccv, subs1UserName, subs1UserName, address, city, country, zip);
 
     }
 

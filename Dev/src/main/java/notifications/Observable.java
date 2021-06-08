@@ -1,6 +1,7 @@
 package notifications;
 
 import Offer.Offer;
+import persistence.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -8,6 +9,8 @@ import user.Basket;
 import user.Subscriber;
 import user.User;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import java.util.*;
 
 public class Observable {

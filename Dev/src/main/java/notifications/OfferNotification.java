@@ -2,12 +2,19 @@ package notifications;
 
 import Offer.Offer;
 
-public class OfferNotification extends Notification {
+import javax.persistence.*;
 
+@Entity
+
+public class OfferNotification extends Notification {
+    @OneToOne
     private Offer offer;
 
     public OfferNotification(Offer offer) {
         this.offer = offer;
+    }
+
+    public OfferNotification() {
     }
 
     @Override

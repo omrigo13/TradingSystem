@@ -1,5 +1,8 @@
 package notifications;
 
+import javax.persistence.Entity;
+
+@Entity
 public class LotteryStatusNotification extends Notification{
     @Override
     public void notifyNotification() {

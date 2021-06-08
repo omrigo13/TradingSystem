@@ -1,5 +1,8 @@
 package notifications;
 
+import javax.persistence.Entity;
+
+@Entity
 public class StoreStatusNotification extends Notification{
 
     private String storeId;
@@ -8,6 +11,10 @@ public class StoreStatusNotification extends Notification{
     public StoreStatusNotification(String storeId, boolean isActive) {
         this.storeId = storeId;
         this.isActive = isActive;
+    }
+
+    public StoreStatusNotification() {
+
     }
 
     public boolean isActive() {

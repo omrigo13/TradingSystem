@@ -73,7 +73,6 @@ public class Inventory {
 
             Item item =   new Item(storeId, id.get(), name, price, category, subCategory, 0);
             items.putIfAbsent(item, amount);
-            item.setQuantity_in_store(amount);
             EntityManager em = Repo.getEm();
             EntityTransaction et = null;
             try{

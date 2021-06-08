@@ -2,12 +2,21 @@ package notifications;
 
 import review.Review;
 
+import javax.persistence.*;
+
+@Entity
 public class ItemReviewNotification extends Notification{
 
+    @ManyToOne(cascade = CascadeType.ALL)
+//    @Transient
     private Review review;
 
     public ItemReviewNotification(Review review) {
         this.review = review;
+    }
+
+    public ItemReviewNotification() {
+
     }
 
     public Review getReview() {

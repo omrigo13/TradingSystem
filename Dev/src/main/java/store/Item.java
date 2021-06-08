@@ -23,20 +23,11 @@ import java.util.LinkedList;
     private boolean isLocked = false;
     @OneToMany
     private final Collection<Review> reviews = new LinkedList<>();
-    private int quantity_in_store;
 
     public Item() {}
 
     public void setItem_id(int item_id) {
         this.item_id = item_id;
-    }
-
-    public int getQuantity_in_store() {
-        return quantity_in_store;
-    }
-
-    public void setQuantity_in_store(int quantity_in_store) {
-        this.quantity_in_store = quantity_in_store;
     }
 
     public void setName(String name) {
