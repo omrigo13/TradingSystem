@@ -16,7 +16,6 @@ public final class Basket {
     @Id
     private int store_id;
 
-//    @Transient
 @ElementCollection
 @MapKeyJoinColumns({
         @MapKeyJoinColumn(name="item_id"),

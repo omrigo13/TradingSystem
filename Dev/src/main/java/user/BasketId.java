@@ -12,6 +12,9 @@ public class BasketId implements Serializable {
 
     private int store_id;
 
+    public BasketId() {
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
