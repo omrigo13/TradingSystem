@@ -16,7 +16,10 @@ import user.AdminPermission;
 import user.Subscriber;
 import user.User;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Mockito.*;
 
@@ -32,6 +35,9 @@ public class ConnectAndPurchaseByGuests {
     private Subscriber admin;
     private PaymentSystemRealMock paymentSystem;
     private DeliverySystemRealMock deliverySystem;
+    private long start, end;
+    private AtomicInteger index = new AtomicInteger(0);
+    private LinkedList<String> subscribersIds = new LinkedList<>();
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -55,17 +61,26 @@ public class ConnectAndPurchaseByGuests {
         tradingSystemService.login(conn, userName, password);
         tradingSystemService.openNewStore(conn, "eBay");
         tradingSystemService.addProductToStore(conn, "0", "bamba", "snacks", "sub1", 2000, 5.5);
+        for(int i = 0; i < 100; i++) {
+            subscribersIds.add(tradingSystemService.connect());
+            tradingSystemService.register("s" + i, "1234");
+            tradingSystemService.login(subscribersIds.get(i), "s" + i, "1234");
+            tradingSystemService.addItemToBasket(subscribersIds.get(i),"0", "0", 1);
+        }
+        paymentSystem.connect();
+        deliverySystem.connect();
+        start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 1000, invocationCount = 1000, timeOut = 10000)
+    @Test (threadPoolSize = 10, invocationCount = 100, timeOut = 4000)
     public void test() throws InvalidActionException {
-        String conn = tradingSystemService.connect();
-        tradingSystemService.addItemToBasket(conn, "0", "0", 1);
-        tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+        tradingSystemService.purchaseCart(subscribersIds.get(index.getAndIncrement()), "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
     }
 
     @AfterClass
     public void tearDown() {
+        end = System.nanoTime();
+        System.out.println((end - start) / 1000000);
         System.out.println(paymentSystem.getTime());
         System.out.println(deliverySystem.getTime());
     }

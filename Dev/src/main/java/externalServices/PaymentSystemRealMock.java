@@ -10,12 +10,11 @@ public class PaymentSystemRealMock implements PaymentSystem {
 
     public PaymentSystemRealMock() throws PaymentSystemException {
         paymentSystem = new PaymentSystemBasicImpl();
-        startTime = System.nanoTime();
     }
 
     @Override
     public void connect() throws PaymentSystemException {
-        paymentSystem.connect();
+        startTime = System.nanoTime();
     }
 
     @Override
@@ -30,5 +29,5 @@ public class PaymentSystemRealMock implements PaymentSystem {
         endTime = System.nanoTime();
     }
 
-    public long getTime() { return (this.endTime - this.startTime) / 1000000000; }
+    public long getTime() { return (this.endTime - this.startTime) / 1000000; }
 }

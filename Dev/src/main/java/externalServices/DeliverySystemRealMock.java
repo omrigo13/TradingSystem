@@ -10,11 +10,10 @@ public class DeliverySystemRealMock implements DeliverySystem {
 
     public DeliverySystemRealMock() throws DeliverySystemException {
         deliverySystem = new DeliverySystemBasicImpl();
-        startTime = System.nanoTime();
     }
     @Override
     public void connect() throws DeliverySystemException {
-        deliverySystem.connect();
+        startTime = System.nanoTime();
     }
 
     @Override
@@ -29,5 +28,5 @@ public class DeliverySystemRealMock implements DeliverySystem {
         endTime = System.nanoTime();
     }
 
-    public long getTime() { return (this.endTime - this.startTime) / 1000000000; }
+    public long getTime() { return (this.endTime - this.startTime) / 1000000; }
 }
