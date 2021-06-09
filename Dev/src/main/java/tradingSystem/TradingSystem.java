@@ -311,7 +311,7 @@ public class TradingSystem {
         storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesPurchasePolicies.get(store).add(id);
 
-        Repo.merge(purchasePolicy);
+//        Repo.merge(purchasePolicy);
 
         return id;
     }
@@ -416,7 +416,7 @@ public class TradingSystem {
         storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
         storesDiscountPolicies.get(store).add(id);
 
-        Repo.merge(quantityDiscountPolicy);
+//        Repo.merge(quantityDiscountPolicy);
 
         return id;
     }

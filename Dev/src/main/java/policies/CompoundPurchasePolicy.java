@@ -3,20 +3,17 @@ package policies;
 import exceptions.PolicyException;
 import user.Basket;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 @Entity
 public abstract class CompoundPurchasePolicy extends PurchasePolicy {
-    @ManyToMany
+    @Transient
     protected Collection<PurchasePolicy> purchasePolicies;
 
-    public CompoundPurchasePolicy(int id, Collection<PurchasePolicy> purchasePolicies)
+    public CompoundPurchasePolicy( Collection<PurchasePolicy> purchasePolicies)
     {
-        super(id);
+        super(-1);
         if(purchasePolicies == null)
             this.purchasePolicies = new ArrayList<>();
         else

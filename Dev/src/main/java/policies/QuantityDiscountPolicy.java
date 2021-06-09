@@ -12,7 +12,7 @@ import java.util.Map;
 @Entity
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
 
-    @ManyToOne
+    @Transient
     private PurchasePolicy policy;
 
     public QuantityDiscountPolicy(int id, int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {

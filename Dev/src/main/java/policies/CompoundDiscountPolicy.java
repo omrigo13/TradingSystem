@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 @Entity
 public abstract class CompoundDiscountPolicy extends DiscountPolicy {
-        @ManyToMany
+        @Transient
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;
-    @ManyToMany
+    @Transient
     protected Collection<Item> items;
-    @Id
-    @GeneratedValue
-    private Integer id;
+//    @Id
+//    @GeneratedValue
+//    private Integer id;
 
     public CompoundDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
 
@@ -39,11 +39,11 @@ public abstract class CompoundDiscountPolicy extends DiscountPolicy {
 
     public Collection<Item> getItems() { return items; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
+//    public void setId(Integer id) {
+//        this.id = id;
+//    }
+//
+//    public Integer getId() {
+//        return id;
+//    }
 }
