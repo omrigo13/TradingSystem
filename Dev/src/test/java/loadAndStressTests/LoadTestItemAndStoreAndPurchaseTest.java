@@ -70,20 +70,20 @@ public class LoadTestItemAndStoreAndPurchaseTest {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 10, invocationCount = 10000, timeOut = 200000)
+    @Test (threadPoolSize = 8, invocationCount = 100, timeOut = 200000)
     public void complexTest() throws InvalidActionException {
-            int i = subscriberId.getAndIncrement();
-            String conn = tradingSystemService.connect();
-            tradingSystemService.register("s" + i, "1234");
-            tradingSystemService.login(conn, "s" + i, "1234");
-            paymentSystem.setFake(true);
-            deliverySystem.setFake(true);
-            if (i % 10 == 0) {
-                String store = tradingSystemService.openNewStore(conn, "eBay" + i);
-                for (int j = 0; j < 500; j++) {
-                    tradingSystemService.addProductToStore(conn, store, "bamba" + j, "snacks", "sub1", 10000, 5.5);
-                    tradingSystemService.addProductToStore(conn, store, "bisli" + j, "snacks", "sub1", 10000, 5.5);
-                }
+        int i = subscriberId.getAndIncrement();
+        String conn = tradingSystemService.connect();
+        tradingSystemService.register("s" + i, "1234");
+        tradingSystemService.login(conn, "s" + i, "1234");
+        paymentSystem.setFake(true);
+        deliverySystem.setFake(true);
+        if (i % 10 == 0) {
+            String store = tradingSystemService.openNewStore(conn, "eBay" + i);
+            for (int j = 0; j < 500; j++) {
+                tradingSystemService.addProductToStore(conn, store, "bamba" + j, "snacks", "sub1", 10000, 5.5);
+                tradingSystemService.addProductToStore(conn, store, "bisli" + j, "snacks", "sub1", 10000, 5.5);
+            }
                 try {
                     String conn2 = tradingSystemService.connect();
                     if(i != 0)
@@ -97,7 +97,7 @@ public class LoadTestItemAndStoreAndPurchaseTest {
                     if (i != 0) {
                         for (int x = 0; x < max; x++) {
                             tradingSystemService.addItemToBasket(conn2, store, String.valueOf(x), 1);
-//                            tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+                            tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
                         }
                     }
                 } catch (PaymentSystemException | DeliverySystemException e) {
