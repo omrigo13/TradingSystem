@@ -3,6 +3,7 @@ package loadAndStressTests;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import service.TradingSystemServiceImpl;
@@ -16,7 +17,9 @@ import user.User;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LoadTestRegisterAndLogin {
+import static org.testng.AssertJUnit.assertTrue;
+
+public class LoadTestRegisterLoginLogout {
 
     private TradingSystemServiceImpl tradingSystemService;
     private final String userName = "Admin";
@@ -52,5 +55,12 @@ public class LoadTestRegisterAndLogin {
         int id = subscriberId.getAndIncrement();
         tradingSystemService.register("s" + id, "1234");
         tradingSystemService.login(conn, "s" + id, "1234");
+        tradingSystemService.logout(conn);
+    }
+
+    @AfterClass
+    public void tearDown() {
+        System.out.println((System.nanoTime() - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 1500);
     }
 }

@@ -48,13 +48,14 @@ public class LoadTestGuestsConnect {
         start = System.nanoTime();
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 1200)
+    @Test(threadPoolSize = 10, invocationCount = 5000, timeOut = 5000)
     public void test() throws InvalidActionException {
         tradingSystemService.connect();
     }
 
     @AfterClass
     public void tearDown() {
-        assertTrue((System.nanoTime() - start) / 1000000 < 1200);
+        System.out.println((System.nanoTime() - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 1500);
     }
 }

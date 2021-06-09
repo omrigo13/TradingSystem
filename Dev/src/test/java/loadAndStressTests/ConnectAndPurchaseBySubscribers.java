@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.testng.AssertJUnit.assertTrue;
 
-public class ConnectAndPurchaseByGuests {
+public class ConnectAndPurchaseBySubscribers {
 
     private TradingSystemServiceImpl tradingSystemService;
     private final String userName = "Admin";

@@ -56,7 +56,7 @@ public class SystemAliveWithoutExternalServicesTest {
         deliverySystem.connect();
     }
 
-    @Test (threadPoolSize = 100, invocationCount = 100, timeOut = 2000)
+    @Test (threadPoolSize = 10, invocationCount = 500, timeOut = 10000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();

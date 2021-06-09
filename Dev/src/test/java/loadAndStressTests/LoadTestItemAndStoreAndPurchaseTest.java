@@ -84,24 +84,24 @@ public class LoadTestItemAndStoreAndPurchaseTest {
                 tradingSystemService.addProductToStore(conn, store, "bamba" + j, "snacks", "sub1", 10000, 5.5);
                 tradingSystemService.addProductToStore(conn, store, "bisli" + j, "snacks", "sub1", 10000, 5.5);
             }
-            if (i == 0)
-                max = 1000;
-            else
-                max = 500;
+//            if (i == 0)
+//                max = 1000;
+//            else
+//                max = 250;
+            max = 500;
             for (int x = 0; x < max; x++) {
                 String conn3 = tradingSystemService.connect();
                 tradingSystemService.addItemToBasket(conn3, store, String.valueOf(x), 1);
                 tradingSystemService.purchaseCart(conn3, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
             }
-            String conn2 = tradingSystemService.connect();
-            if(i != 0)
-                tradingSystemService.login(conn2, "s" + (i - 5), "1234");
-            if (i != 0) {
-                for (int x = 0; x < max; x++) {
-                    tradingSystemService.addItemToBasket(conn2, store, String.valueOf(x), 1);
-                    tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
-                }
-            }
+//            if(i != 0) {
+//                String conn2 = tradingSystemService.connect();
+//                tradingSystemService.login(conn2, "s" + (i - 5), "1234");
+//                for (int x = 0; x < max; x++) {
+//                    tradingSystemService.addItemToBasket(conn2, store, String.valueOf(x), 1);
+//                    tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+//                }
+//            }
         }
     }
 }
