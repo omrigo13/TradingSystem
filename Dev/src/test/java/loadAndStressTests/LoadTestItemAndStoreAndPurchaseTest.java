@@ -70,40 +70,39 @@ public class LoadTestItemAndStoreAndPurchaseTest {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 1000, invocationCount = 10000, timeOut = 200000)
+    @Test (threadPoolSize = 10, invocationCount = 10000, timeOut = 200000)
     public void complexTest() throws InvalidActionException {
-        synchronized (subscribersConnections) {
             int i = subscriberId.getAndIncrement();
-            subscribersConnections.add(tradingSystemService.connect());
+            String conn = tradingSystemService.connect();
             tradingSystemService.register("s" + i, "1234");
-            tradingSystemService.login(subscribersConnections.get(i), "s" + i, "1234");
+            tradingSystemService.login(conn, "s" + i, "1234");
             paymentSystem.setFake(true);
             deliverySystem.setFake(true);
             if (i % 10 == 0) {
-                int store = storeId.getAndIncrement();
-                tradingSystemService.openNewStore(subscribersConnections.get(i), "eBay" + i);
+                String store = tradingSystemService.openNewStore(conn, "eBay" + i);
                 for (int j = 0; j < 500; j++) {
-                    tradingSystemService.addProductToStore(subscribersConnections.get(i), String.valueOf(store), "bamba" + j, "snacks", "sub1", 10000, 5.5);
-                    tradingSystemService.addProductToStore(subscribersConnections.get(i), String.valueOf(store), "bisli" + j, "snacks", "sub1", 10000, 5.5);
+                    tradingSystemService.addProductToStore(conn, store, "bamba" + j, "snacks", "sub1", 10000, 5.5);
+                    tradingSystemService.addProductToStore(conn, store, "bisli" + j, "snacks", "sub1", 10000, 5.5);
                 }
                 try {
+                    String conn2 = tradingSystemService.connect();
+                    if(i != 0)
+                        tradingSystemService.login(conn2, "s" + (i - 5), "1234");
                     if (i == 0)
                         max = 1000;
                     for (int x = 0; x < max; x++) {
-                        String conn = tradingSystemService.connect();
-                        tradingSystemService.addItemToBasket(conn, String.valueOf(store), String.valueOf(x), 1);
-                        tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+                        tradingSystemService.addItemToBasket(conn2, store, String.valueOf(x), 1);
+                        tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
                     }
                     if (i != 0) {
                         for (int x = 0; x < max; x++) {
-                            tradingSystemService.addItemToBasket(subscribersConnections.get(i - 5), String.valueOf(store), String.valueOf(x), 1);
-                            tradingSystemService.purchaseCart(subscribersConnections.get(i - 5), "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
+                            tradingSystemService.addItemToBasket(conn2, store, String.valueOf(x), 1);
+//                            tradingSystemService.purchaseCart(conn2, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
                         }
                     }
                 } catch (PaymentSystemException | DeliverySystemException e) {
                     //nothing
                 }
             }
-        }
     }
 }
