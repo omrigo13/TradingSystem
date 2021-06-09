@@ -4,6 +4,7 @@ import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import externalServices.*;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import service.TradingSystemServiceImpl;
@@ -30,6 +31,7 @@ public class SystemAliveWithoutExternalServicesTest {
     private PaymentSystemRealMock paymentSystem;
     private DeliverySystemRealMock deliverySystem;
     private final AtomicInteger index = new AtomicInteger(0);
+    private long start, end;
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -54,9 +56,10 @@ public class SystemAliveWithoutExternalServicesTest {
         tradingSystemService.addProductToStore(conn, "0", "bamba", "snacks", "sub1", 2000, 5.5);
         paymentSystem.connect();
         deliverySystem.connect();
+        start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 10, invocationCount = 500, timeOut = 10000)
+    @Test (threadPoolSize = 100, invocationCount = 500, timeOut = 20000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();
@@ -73,5 +76,13 @@ public class SystemAliveWithoutExternalServicesTest {
         }
         tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
         tradingSystemService.openNewStore(conn, "eBay" + id);
+    }
+
+    @AfterClass
+    public void tearDown() {
+        System.out.println(paymentSystem.getTime());
+        System.out.println(deliverySystem.getTime());
+        end = System.nanoTime();
+        System.out.println((end - start) / 1000000);
     }
 }

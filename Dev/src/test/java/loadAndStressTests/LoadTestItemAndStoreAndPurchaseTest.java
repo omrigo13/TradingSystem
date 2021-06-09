@@ -88,7 +88,7 @@ public class LoadTestItemAndStoreAndPurchaseTest {
 //                max = 1000;
 //            else
 //                max = 250;
-            max = 500;
+            max = 1000;
             for (int x = 0; x < max; x++) {
                 String conn3 = tradingSystemService.connect();
                 tradingSystemService.addItemToBasket(conn3, store, String.valueOf(x), 1);
@@ -103,5 +103,13 @@ public class LoadTestItemAndStoreAndPurchaseTest {
 //                }
 //            }
         }
+    }
+
+    @AfterClass
+    public void tearDown() {
+        System.out.println(paymentSystem.getTime());
+        System.out.println(deliverySystem.getTime());
+        end = System.nanoTime();
+        System.out.println((end - start) / 1000000);
     }
 }

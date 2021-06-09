@@ -5,6 +5,7 @@ import exceptions.InvalidActionException;
 import exceptions.ItemNotFoundException;
 import exceptions.ItemNotPurchasedException;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import service.TradingSystemServiceImpl;
@@ -31,7 +32,7 @@ public class LoadTestRealSimulation2 {
     private final UserAuthentication auth = new UserAuthentication();
     private final Subscriber admin = new Subscriber(0, userName);
     private final AtomicInteger subscriberId = new AtomicInteger(0);
-    private long start;
+    private long start, end;
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -47,7 +48,6 @@ public class LoadTestRealSimulation2 {
                 .setStores(stores)
                 .setAuth(auth)
                 .build()));
-        start = System.nanoTime();
         String conn;
         for(int i = 0; i < 70; i++){
             conn = tradingSystemService.connect();
@@ -60,6 +60,7 @@ public class LoadTestRealSimulation2 {
             String store = tradingSystemService.openNewStore(conn, "eBay" + i);
             tradingSystemService.addProductToStore(conn, store, "bisli", "snacks", "sub1", 500, 5.5);
         }
+        start = System.nanoTime();
     }
 
     @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 5000)
@@ -79,5 +80,11 @@ public class LoadTestRealSimulation2 {
             tradingSystemService.updateProductDetails(conn3, String.valueOf(id), "0", null, null, 3.5);
         }
         tradingSystemService.addItemToBasket(conn, "0", "0", 3);
+    }
+
+    @AfterClass
+    public void tearDown() {
+        end = System.nanoTime();
+        System.out.println((end - start) / 1000000);
     }
 }

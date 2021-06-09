@@ -59,14 +59,16 @@ public class ConnectAndPurchaseBySubscribers {
         tradingSystemService.addProductToStore(conn, "0", "bamba", "snacks", "sub1", 2000, 5.5);
         paymentSystem.connect();
         deliverySystem.connect();
+        for(int i = 0; i < 1000; i++) {
+            tradingSystemService.register("s" + i, "1234");
+        }
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 100, invocationCount = 100, timeOut = 5000)
+    @Test (threadPoolSize = 100, invocationCount = 1000, timeOut = 10000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();
-        tradingSystemService.register("s" + id, "1234");
         tradingSystemService.login(conn, "s" + id, "1234");
         tradingSystemService.addItemToBasket(conn,"0", "0", 1);
         tradingSystemService.purchaseCart(conn, "1", 1, 2022, "1", "1", "1", "1", "1", "1", "1", 1);
@@ -74,10 +76,10 @@ public class ConnectAndPurchaseBySubscribers {
 
     @AfterClass
     public void tearDown() {
-        assertTrue((System.nanoTime() - start) / 1000000 < 5000);
-        end = System.nanoTime();
-        System.out.println((end - start) / 1000000);
         System.out.println(paymentSystem.getTime());
         System.out.println(deliverySystem.getTime());
+        end = System.nanoTime();
+        System.out.println((end - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 10000);
     }
 }
