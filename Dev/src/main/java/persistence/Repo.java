@@ -130,6 +130,8 @@ public class Repo {
         }
     }
 
+
+
     public static <T> void persist(T obj){
         EntityTransaction et = null;
         try{
@@ -148,4 +150,5 @@ public class Repo {
 //            em.close();
         }
     }
+
 }

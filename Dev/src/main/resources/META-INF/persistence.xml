@@ -26,7 +26,7 @@ mapped to database tables. Database driver, location, userid and pw
 
         <properties>
 
-            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
 
             <!-- Driver for DB database -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
@@ -36,6 +36,8 @@ mapped to database tables. Database driver, location, userid and pw
             <property name="javax.persistence.jdbc.user" value="root" />
             <!-- Password -->
             <property name="javax.persistence.jdbc.password" value="1234" />
+            <!-- Drop and re-create the database schema on startup -->
+
         </properties>
     </persistence-unit>
 </persistence>

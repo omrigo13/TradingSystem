@@ -477,6 +477,8 @@ public class Subscriber extends User {
         if(price < 0) {
             store.getStoreOffers().remove(offerId);
             store.notifyDeclinedOffer(offer);
+            Repo.merge(offer);
+
             return;
         }
         if(price != 0) {
@@ -525,6 +527,7 @@ public class Subscriber extends User {
             et = em.getTransaction();
             et.begin();
             em.merge(review1);
+            em.merge(item);
             et.commit();
         }
         catch (Exception e){
@@ -623,28 +626,9 @@ public class Subscriber extends User {
         else
             this.notifications.put(notification,false);
 
-
-        Repo.persist(notification);
+//        Repo.persist(notification);
         Repo.merge(this);
 
-//        EntityManager em = Repo.getEm();
-//        EntityTransaction et = null;
-//        try{
-//            et = em.getTransaction();
-//            et.begin();
-//            em.persist(notification);
-//            em.merge(this);
-//            et.commit();
-//        }
-//        catch (Exception e){
-//            if(et != null){
-//                et.rollback();
-//            }
-//            e.printStackTrace();
-//        }
-//        finally {
-////            em.close();
-//        }
         return notification;
     }
 

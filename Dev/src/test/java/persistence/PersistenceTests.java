@@ -103,12 +103,14 @@ public class PersistenceTests {
         service.makeQuantityPolicy(founderStore1Id, storeId1,items_discount, 1, 100);
 
 
-        service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
-        service.approveOffer(founderStore1Id, storeId1, 0, 0.0);
+//        service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
+//        service.approveOffer(founderStore1Id, storeId1, 0, -1.0);
 
-        service.addItemToBasketByOffer(founderStore1Id, storeId2, productId4, 2, 1);
-        service.approveOffer(founderStore2Id, storeId2, 0, 6.0);
+//        service.addItemToBasketByOffer(founderStore1Id, storeId2, productId4, 2, 1);
+//        service.approveOffer(founderStore2Id, storeId2, 0, 6.0);
 
+//        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        service.appointStoreOwner(founderStore1Id, subs2UserName, storeId1);
 
 
         List<Item> items = Repo.getInstance().getItems();
