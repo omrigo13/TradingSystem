@@ -2,6 +2,7 @@ package store;
 
 import Offer.Offer;
 import exceptions.*;
+import org.hibernate.annotations.Cascade;
 import persistence.Repo;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
@@ -45,7 +46,7 @@ public class Store {
     private Observable observable;
     @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private final Map<Integer, Offer> storeOffers = new HashMap<>();
     private final AtomicInteger offerIdCounter = new AtomicInteger();
 
