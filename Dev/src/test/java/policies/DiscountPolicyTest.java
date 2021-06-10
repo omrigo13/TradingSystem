@@ -75,7 +75,7 @@ public class DiscountPolicyTest {
 
     @Test // 20% discount on all store
     void discountByStore() throws InvalidActionException {
-        Collection<Item> items = store.getItems().keySet();
+        Collection<Item> items = store.getItems().values();
         store.setDiscountPolicy(new QuantityDiscountPolicy(20, items, null));
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertTrue(store.getPurchaseHistory().toString().contains("34.8")); // checks that the purchase value correct
@@ -209,7 +209,7 @@ public class DiscountPolicyTest {
 
     @Test // 5% discount on tomatoes and 20% discount on store (tomatoes discount = 25% and cheese discount = 20%)
     void plusbasketDiscount() throws InvalidActionException {
-        Collection<Item> storeItems = store.getItems().keySet();
+        Collection<Item> storeItems = store.getItems().values();
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
         discountPolicies.add(new QuantityDiscountPolicy(5, tomato, null));
         discountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null));
@@ -223,7 +223,7 @@ public class DiscountPolicyTest {
     void compoundPlusAndMaxDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
-        Collection<Item> storeItems = store.getItems().keySet();
+        Collection<Item> storeItems = store.getItems().values();
         Collection<DiscountPolicy> maxDiscountPolicies = new ArrayList<>();
         maxDiscountPolicies.add(new QuantityDiscountPolicy(5, cheese, null)); // discount 5% on cheese
         maxDiscountPolicies.add(new QuantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
@@ -239,7 +239,7 @@ public class DiscountPolicyTest {
     void compoundMaxAndPlusDiscount() throws InvalidActionException {
         Collection<Item> cheese = store.searchItems(null, "cheese", null);
         Collection<Item> tomato = store.searchItems(null, "tomato", null);
-        Collection<Item> storeItems = store.getItems().keySet();
+        Collection<Item> storeItems = store.getItems().values();
         Collection<DiscountPolicy> plusDiscountPolicies = new ArrayList<>();
         plusDiscountPolicies.add(new QuantityDiscountPolicy(20, storeItems, null)); // discount 20% on store
         plusDiscountPolicies.add(new QuantityDiscountPolicy(10, tomato, null)); // discount 10% on tomato
