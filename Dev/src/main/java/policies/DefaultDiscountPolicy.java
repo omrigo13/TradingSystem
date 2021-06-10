@@ -1,13 +1,10 @@
 package policies;
 
-import org.hibernate.Session;
-import persistence.DatabaseConfigBuilder;
 import persistence.Repo;
 import store.Item;
 import user.Basket;
 
 import javax.persistence.Entity;
-import java.util.Collection;
 import java.util.Map;
 @Entity
 public class DefaultDiscountPolicy extends SimpleDiscountPolicy {

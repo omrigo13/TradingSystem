@@ -12,8 +12,7 @@ public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private int id;
-//    @ManyToOne
-    @Transient
+    @ManyToOne
     private Store store;
     @ManyToOne
     private Item item;

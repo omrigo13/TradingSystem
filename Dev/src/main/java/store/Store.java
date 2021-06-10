@@ -25,7 +25,7 @@ public class Store {
 
 
     @Id
-    private int id;
+    private Integer id;
     private String name;
     private String description;
     private double rating;
@@ -75,7 +75,6 @@ public class Store {
     }
 
     public Store() {
-        this.observable = new Observable(this);
     }
 
     /**
