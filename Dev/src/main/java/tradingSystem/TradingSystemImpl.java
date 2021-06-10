@@ -8,6 +8,7 @@ import exceptions.NotLoggedInException;
 import notifications.Notification;
 import externalServices.DeliveryData;
 import externalServices.PaymentData;
+import persistence.Repo;
 import store.Item;
 import store.Store;
 import user.*;
@@ -360,6 +361,7 @@ public class TradingSystemImpl {
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.addOwnerPermission(target, store);
+
         store.appointRole(subscriber, target, "owner");
         store.subscribe(subscriber);
     }

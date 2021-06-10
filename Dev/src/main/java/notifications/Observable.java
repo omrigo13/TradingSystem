@@ -140,30 +140,17 @@ public class Observable implements Serializable {
         toRemove.notifyNotification(n);
 
         unsubscribe(toRemove);
+        Repo.merge(this);
+
     }
 
     public void notifyRoleAppointment(Subscriber assignor, Subscriber toAssign, int storeId, String role){
         AppointRoleNotification n = new AppointRoleNotification(assignor, role, storeId);
         subscribe(toAssign);
+        Repo.merge(this);
+
         toAssign.notifyNotification(n);
 
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(this);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
 
     }
 }

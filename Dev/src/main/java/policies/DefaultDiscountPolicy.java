@@ -1,5 +1,8 @@
 package policies;
 
+import org.hibernate.Session;
+import persistence.DatabaseConfigBuilder;
+import persistence.Repo;
 import store.Item;
 import user.Basket;
 
@@ -8,12 +11,18 @@ import java.util.Collection;
 import java.util.Map;
 @Entity
 public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
-
-    public DefaultDiscountPolicy(Collection<Item> items) {
-        super(-1, 0, items);
-    }
+    private static DefaultDiscountPolicy p = null;
 
     public DefaultDiscountPolicy() {
+        super(-1, 0, null);
+    }
+
+    public static DefaultDiscountPolicy getInstance() {
+        if(p==null) {
+            p = new DefaultDiscountPolicy();
+            Repo.persist(p);
+        }
+        return p;
 
     }
 

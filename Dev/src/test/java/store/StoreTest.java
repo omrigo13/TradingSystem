@@ -324,7 +324,7 @@ public class StoreTest {
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(tomatoId).getAmount(), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().values()), null), 110.0);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, DefaultDiscountPolicy.getInstance(), null), 110.0);
         assertEquals(store.getItems().get(tomatoId).getAmount(), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
@@ -333,7 +333,7 @@ public class StoreTest {
         basket.addItem(store.searchItemById(0), 2);
         basket.addItem(store.searchItemById(1), 2);
         basket.addItem(store.searchItemById(2), 8);
-        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().values()), null));
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, DefaultDiscountPolicy.getInstance(), null));
     }
 
     @Test

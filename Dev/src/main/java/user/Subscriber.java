@@ -626,7 +626,7 @@ public class Subscriber extends User {
         else
             this.notifications.put(notification,false);
 
-//        Repo.persist(notification);
+        Repo.persist(notification);
         Repo.merge(this);
 
         return notification;

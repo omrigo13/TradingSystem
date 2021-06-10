@@ -107,30 +107,9 @@ public class Store {
             this.purchasePolicy = purchasePolicy;
         this.inventory = new Inventory(id);
 
-        if(discountPolicy == null)
-            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
         if(discountPolicy == null){
-            DefaultDiscountPolicy defaultDiscountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
+            DefaultDiscountPolicy defaultDiscountPolicy = DefaultDiscountPolicy.getInstance();
             this.discountPolicy = defaultDiscountPolicy;
-
-            EntityManager em = Repo.getEm();
-            EntityTransaction et = null;
-            try{
-                et = em.getTransaction();
-                et.begin();
-                em.merge(defaultDiscountPolicy);
-                em.merge(this);
-                et.commit();
-            }
-            catch (Exception e){
-                if(et != null){
-                    et.rollback();
-                }
-                e.printStackTrace();
-            }
-            finally {
-//            em.close();
-            }
 
         }
         else
@@ -534,7 +513,9 @@ public class Store {
 
     //for appointing store owner or manager
     public void appointRole(Subscriber subscriber, Subscriber target, String role) {
+
         observable.notifyRoleAppointment(subscriber, target, this.id, role);
+
     }
 
     public Offer searchOfferByItemAndSubscriber(Subscriber subscriber, Item item) {

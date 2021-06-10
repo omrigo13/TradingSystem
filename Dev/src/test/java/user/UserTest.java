@@ -48,7 +48,7 @@ public class UserTest {
         basket = new Basket(user, store, items); // do not make this a spy (Mockito doesn't handle records properly)
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
-        store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().values()));
+        store.setDiscountPolicy(DefaultDiscountPolicy.getInstance());
     }
 
     @Test

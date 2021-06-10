@@ -48,7 +48,7 @@ public class DiscountPolicyTest {
         user.makeCart(user);
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
-        store.setDiscountPolicy(new DefaultDiscountPolicy(items));
+        store.setDiscountPolicy(DefaultDiscountPolicy.getInstance());
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);
         store.addItem("tomato", 4.5, "cat2", "sub2", 12);
         item1 = store.searchItemById(0);

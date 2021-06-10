@@ -237,7 +237,7 @@ public class TradingSystem {
         try{
             et = em.getTransaction();
             et.begin();
-            em.merge(store);
+            em.persist(store);
             em.merge(subscriber);
             et.commit();
         }
