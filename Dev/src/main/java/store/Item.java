@@ -22,7 +22,7 @@ public class Item {
     private double rating;
     private boolean isLocked = false;
     @OneToMany
-    private final Collection<Review> reviews = new LinkedList<>();
+    private Collection<Review> reviews = new LinkedList<>();
     private int amount;
 
     public Item() {}
@@ -36,6 +36,10 @@ public class Item {
         this.subCategory = subCategory;
         this.rating = rating;
         this.amount = amount;
+    }
+
+    public void setReviews(Collection<Review> reviews) {
+        this.reviews = reviews;
     }
 
     public int getItem_id() {
