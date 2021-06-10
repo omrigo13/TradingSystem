@@ -54,7 +54,7 @@ public class UserAuthentication {
             throw new SubscriberAlreadyExistsException(userName);
     }
 
-    String computeHash(String password, byte[] salt) {
+    synchronized String computeHash(String password, byte[] salt) {
         digest.reset();
         digest.update(password.getBytes());
         digest.update(salt);

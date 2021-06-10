@@ -110,7 +110,7 @@ public class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(1, user.getCart().size());
         assertTrue(user.getCart().get(store).getItems().containsKey(item));
-        assertEquals(5, store.getItems().get(item).intValue());
+        assertEquals(5, store.getItems().get(item.getId()).getAmount());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(1, user.getCart().size());
         assertTrue(user.getCart().get(store).getItems().containsKey(item));
-        assertEquals(5, store.getItems().get(item).intValue());
+        assertEquals(5, store.getItems().get(item.getId()).getAmount());
     }
 
     @Test
