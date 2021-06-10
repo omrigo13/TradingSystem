@@ -197,7 +197,7 @@ public class TradingSystem {
         for (Store store : stores.values()) {
             itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
             for (Item item : itemsToAdd)
-                items.add("store: " + store.getId() + ", " + item.toString() + " quantity: " + store.getItems().get(item));
+                items.add("store: " + store.getId() + ", " + item.toString());
         }
         return items;
     }
