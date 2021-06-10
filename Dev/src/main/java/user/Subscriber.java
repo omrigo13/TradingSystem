@@ -325,7 +325,7 @@ public class Subscriber extends User {
         return stores;
     }
 
-    public Map<Item, Integer> getStoreItems(Store store) throws NoPermissionException {
+    public Map<Integer, Item> getStoreItems(Store store) throws NoPermissionException {
 
         // check this user has the permission to perform this action
         validateAtLeastOnePermission(AdminPermission.getInstance(), ManagerPermission.getInstance(store));
