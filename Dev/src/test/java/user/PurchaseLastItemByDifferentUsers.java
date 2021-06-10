@@ -45,10 +45,10 @@ public class PurchaseLastItemByDifferentUsers {
     @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
-//    private final Observable observable = mock(Observable.class);
+    private final Observable observable = mock(Observable.class);
 
     private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
-    private final Map<Item, Integer> storeItems = store.getItems();
+    private final Map<Integer, Item> storeItems = store.getItems();
     private final Basket basket = new Basket(user1, store, basketItems);
 
     public PurchaseLastItemByDifferentUsers() throws ItemException {
@@ -76,8 +76,13 @@ public class PurchaseLastItemByDifferentUsers {
             int trialNumber = this.trialNumber.getAndIncrement();
             User user = trialNumber % 2 == 0 ? user1 : user2;
             if (trialNumber % 2 == 0) {
-                //noinspection ConstantConditions
-                int currentQuantity = storeItems.compute(item, (k, v) -> v + 1);
+                int currentQuantity;
+                synchronized (storeItems) {
+                    currentQuantity = storeItems.compute(item.getItem_id(), (k, v) -> {
+                        item.setAmount(item.getAmount() + 1);
+                        return item;
+                    }).getAmount();
+                }
                 itemsAddedToStore.getAndIncrement();
                 assertTrue(currentQuantity > 0);
             }

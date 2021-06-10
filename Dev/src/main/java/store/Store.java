@@ -105,9 +105,11 @@ public class Store {
             this.purchasePolicy = new DefaultPurchasePolicy();
         else
             this.purchasePolicy = purchasePolicy;
+        if(discountPolicy == null)
+            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
         this.inventory = new Inventory(id);
         if(discountPolicy == null){
-            DefaultDiscountPolicy defaultDiscountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().keySet());
+            DefaultDiscountPolicy defaultDiscountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
             this.discountPolicy = defaultDiscountPolicy;
 
             EntityManager em = Repo.getEm();
@@ -170,7 +172,7 @@ public class Store {
     /**
      * This method returns the items in the store's inventory
      */
-    public Map<Item, Integer> getItems() {
+    public Map<Integer, Item> getItems() {
         return this.inventory.getItems();
     }
 
@@ -247,7 +249,7 @@ public class Store {
 //     * @exception  ItemNotFound  */
     public Collection<Item> searchItems(String keyWord, String itemName, String category) {
 
-        Collection<Item> result = new HashSet<>(inventory.getItems().keySet());
+        Collection<Item> result = new HashSet<>(inventory.getItems().values());
         boolean itemValue = itemName != null && !itemName.trim().isEmpty();
         boolean categoryValue = category != null && !category.trim().isEmpty();
         boolean keyWordValue = keyWord != null && !keyWord.trim().isEmpty();
@@ -434,8 +436,10 @@ public class Store {
 
     //TODO make an exception for this
     public void rollBack(Map<Item, Integer> items) {
-        for (Map.Entry<Item, Integer> entry: items.entrySet()) {
-            inventory.getItems().replace(entry.getKey(), inventory.getItems().get(entry.getKey()) + entry.getValue());
+        synchronized (inventory.getItems()) {
+            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
+                inventory.getItems().get(entry.getKey().getId()).setAmount(entry.getKey().getAmount() + entry.getValue());
+            }
         }
         unlockItems(items.keySet());
     }

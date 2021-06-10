@@ -34,10 +34,10 @@ public class PurchaseRemovedItemFromStore {
     @Mock private DeliveryData deliveryData;
     private final PurchasePolicy purchasePolicy = mock(PurchasePolicy.class);
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
-//    private final Observable observable = mock(Observable.class);
+    private final Observable observable = mock(Observable.class);
 
     private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
-    private final Map<Item, Integer> storeItems = store.getItems();
+    private final Map<Integer, Item> storeItems = store.getItems();
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
     private final StorePermission manageInventory = ManageInventoryPermission.getInstance(store);
     private final Basket basket = new Basket(user, store, basketItems);
@@ -73,7 +73,13 @@ public class PurchaseRemovedItemFromStore {
     public void test() throws Exception{
         try {
             if(trialNumber.getAndIncrement() % 2 == 0) {
-                storeItems.compute(item, (k, v) -> v == null ? 1 : v + 1);
+                storeItems.compute(item.getItem_id(), (k, v) -> {
+                    if (v == null)
+                        item.setAmount(1);
+                    else
+                        item.setAmount(item.getAmount() + 1);
+                    return item;
+                });
                 itemsAddedToStore.getAndIncrement();
                 user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
                 itemsBoughtFromStore.getAndIncrement();

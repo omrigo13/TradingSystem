@@ -322,9 +322,6 @@ public class AcceptanceTestsV3 {
 
     @Test
     void purchase_countered_offer_with_good_details() throws InvalidActionException {
-        //TODO fix counter offer and let the user approve the offer and add more tests after that
-        //TODO is it possible to update cart after offer?
-
         setUpStore1();
         setUpStore2();
         setUpSubscriber1();

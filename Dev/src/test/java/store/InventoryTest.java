@@ -68,7 +68,7 @@ public class InventoryTest {
 
         assertThrows(ItemAlreadyExistsException.class, () -> inventory.addItem("tomato", 20, "vegetables", "red", 5));
         assertEquals(inventory.getItems().size(), 1);
-        assertTrue(inventory.getItems().keySet().contains(inventory.searchItem(tomatoID)));
+        assertTrue(inventory.getItems().values().contains(inventory.searchItem(tomatoID)));
     }
 
     @Test
@@ -139,9 +139,9 @@ public class InventoryTest {
         assertThrows(WrongAmountException.class, () -> inventory.changeQuantity(tomatoId,-1));
 
         inventory.changeQuantity(tomatoId, 8);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 8);
+        assertEquals(inventory.getItems().get(tomatoId).getAmount(), 8);
         inventory.changeQuantity(tomatoId, 2);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 2);
+        assertEquals(inventory.getItems().get(tomatoId).getAmount(), 2);
     }
 
 //    @Test
@@ -201,7 +201,7 @@ public class InventoryTest {
         assertEquals(inventory.searchItem(tomatoId).getSubCategory(),"minPrice");
 
         inventory.changeItemDetails(cucumberID,null,7,null);
-        assertEquals(inventory.getItems().get(inventory.searchItem(cucumberID)).intValue(),7);
+        assertEquals(inventory.getItems().get(cucumberID).getAmount(),7);
 
         inventory.changeItemDetails(tomatoId,null,null,8.7);
         assertEquals(inventory.searchItem(tomatoId).getPrice(),8.7);
@@ -224,10 +224,10 @@ public class InventoryTest {
         basket.addItem(inventory.searchItem(carrotId), 2);
         StringBuilder details = new StringBuilder();
 //        assertThrows(Exception.class, () -> inventory.calculate(items, details));
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 5);
+        assertEquals(inventory.getItems().get(tomatoId).getAmount(), 5);
         inventory.searchItem(carrotId).unlock();
-        assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet()), null), 110.0);
-        assertEquals(inventory.getItems().get(inventory.searchItem(tomatoId)).intValue(), 3);
+        assertEquals(inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().values()), null), 110.0);
+        assertEquals(inventory.getItems().get(tomatoId).getAmount(), 3);
         inventory.searchItem(tomatoId).unlock();
         inventory.searchItem(cucumberID).unlock();
         inventory.searchItem(carrotId).unlock();
@@ -235,7 +235,7 @@ public class InventoryTest {
         basket.addItem(inventory.searchItem(tomatoId), 2);
         basket.addItem(inventory.searchItem(cucumberID), 2);
         basket.addItem(inventory.searchItem(carrotId), 8);
-        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().keySet()), null));
+        assertThrows(WrongAmountException.class, () -> inventory.calculate(basket, details, new DefaultDiscountPolicy(inventory.getItems().values()), null));
     }
 //
 //    @Test

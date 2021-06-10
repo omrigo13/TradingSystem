@@ -287,8 +287,8 @@ public class TradingSystemImpl {
         Collection<String> itemList = new LinkedList<>();
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        for (Map.Entry<Item, Integer> item : subscriber.getStoreItems(store).entrySet())
-            itemList.add("store: " + storeId + ", " + item.getKey().toString() + ", quantity: " + item.getValue());
+        for (Item item : subscriber.getStoreItems(store).values())
+            itemList.add("store: " + storeId + ", " + item.toString() + ", quantity: " + item.getAmount());
 
         return itemList;
     }
