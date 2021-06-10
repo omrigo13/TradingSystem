@@ -31,7 +31,7 @@ public class Store {
     private double rating;
     @OneToOne
     private DiscountPolicy discountPolicy;
-    @Transient
+    @OneToOne
     private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive = true;
@@ -101,7 +101,7 @@ public class Store {
         // this.founder = founder;
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
-            this.purchasePolicy = new DefaultPurchasePolicy();
+            this.purchasePolicy = DefaultPurchasePolicy.getInstance();
         else
             this.purchasePolicy = purchasePolicy;
         this.inventory = new Inventory(id);

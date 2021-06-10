@@ -5,6 +5,7 @@ import exceptions.TimePolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import java.time.LocalTime;
@@ -12,10 +13,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 public class TimePolicy extends SimplePurchasePolicy {
     @ManyToMany
+    @CollectionTable(name = "time_policy_items")
     private Collection<Item> items;
     private LocalTime time;
 
-    public TimePolicy(Collection<Item> items, LocalTime time) {
+    public TimePolicy(int id, Collection<Item> items, LocalTime time) {
+        super(id);
         this.items = items;
         this.time = time;
     }

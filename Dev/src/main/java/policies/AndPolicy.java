@@ -9,8 +9,8 @@ import java.util.Collection;
 @Entity
 public class AndPolicy extends CompoundPurchasePolicy {
 
-    public AndPolicy( Collection<PurchasePolicy> purchasePolicies) {
-        super( purchasePolicies);
+    public AndPolicy(int id, Collection<PurchasePolicy> purchasePolicies) {
+        super( id, purchasePolicies);
     }
 
     public AndPolicy() {

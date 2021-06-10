@@ -5,28 +5,31 @@ import store.Item;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+
 @Entity
 public abstract class CompoundDiscountPolicy extends DiscountPolicy {
-        @Transient
+    @ManyToMany
+    @CollectionTable(name = "compound_policy_discount_policies")
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;
-    @Transient
+    @ManyToMany
+    @CollectionTable(name = "compound_policy_items")
     protected Collection<Item> items;
 //    @Id
 //    @GeneratedValue
 //    private Integer id;
 
-    public CompoundDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
-
+    public CompoundDiscountPolicy(int id, Collection<DiscountPolicy> discountPolicies) {
+        super(id);
         if(discountPolicies == null)
-            this.discountPolicies = new ArrayList<>();
+            this.discountPolicies = new LinkedList<>();
         else
             this.discountPolicies = discountPolicies;
-        this.items = new ArrayList<>();
+        this.items = new LinkedList<>();
     }
 
     public CompoundDiscountPolicy() {
-
     }
 
     public void add(SimpleDiscountPolicy discountPolicy) { this.discountPolicies.add(discountPolicy); }

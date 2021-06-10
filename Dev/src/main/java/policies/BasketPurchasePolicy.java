@@ -12,14 +12,14 @@ public class BasketPurchasePolicy extends SimplePurchasePolicy {
 
     private double cartValue;
 
-    public BasketPurchasePolicy(double cartValue) throws PolicyException {
+    public BasketPurchasePolicy(int id, double cartValue) throws PolicyException {
+        super(id);
         this.cartValue = cartValue;
         if(cartValue < 0.0)
             throw new BasketPurchasePolicyException();
     }
 
     public BasketPurchasePolicy() {
-
     }
 
     public double getCartValue() {

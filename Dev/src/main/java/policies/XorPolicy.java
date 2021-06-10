@@ -2,14 +2,19 @@ package policies;
 
 import exceptions.XorPolicyException;
 import exceptions.PolicyException;
+import jdk.jfr.Enabled;
 import user.Basket;
 
+import javax.persistence.Entity;
 import java.util.Collection;
-
+@Entity
 public class XorPolicy extends CompoundPurchasePolicy {
 
-    public XorPolicy(Collection<PurchasePolicy> purchasePolicies) {
-        super(purchasePolicies);
+    public XorPolicy(int id, Collection<PurchasePolicy> purchasePolicies) {
+        super(id, purchasePolicies);
+    }
+
+    public XorPolicy() {
     }
 
     @Override

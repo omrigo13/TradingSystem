@@ -22,6 +22,9 @@ public class Repo {
     private Repo() {
     }
 
+    public static void setRepo_instance(Repo repo){
+        repo_instance = repo;
+    }
 
     private static Session getSession() {
         if (sessionFactory == null) {

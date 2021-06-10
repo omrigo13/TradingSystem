@@ -17,7 +17,7 @@ public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
     public static DefaultDiscountPolicy getInstance() {
         if(p==null) {
             p = new DefaultDiscountPolicy();
-            Repo.persist(p);
+            Repo.merge(p);
         }
         return p;
 

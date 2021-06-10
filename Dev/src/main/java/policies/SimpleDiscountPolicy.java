@@ -22,7 +22,6 @@ public abstract class SimpleDiscountPolicy extends DiscountPolicy {
     }
 
     public SimpleDiscountPolicy() {
-
     }
 
     public void setDiscount(int discount) {

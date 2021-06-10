@@ -8,11 +8,12 @@ import user.Basket;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 @Entity
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
 
-    @Transient
+    @ManyToOne
     private PurchasePolicy policy;
 
     public QuantityDiscountPolicy(int id, int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
@@ -22,7 +23,7 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         this.items = items;
         if(policy == null)
         {
-            Collection<PurchasePolicy> policies = new ArrayList<>();
+            Collection<PurchasePolicy> policies = new LinkedList<>();
             policies.add(new DefaultPurchasePolicy());
             this.policy = null; //todo: Omri
 //            this.policy = new AndPolicy(policies);
@@ -33,7 +34,6 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
     }
 
     public QuantityDiscountPolicy() {
-
     }
 
     @Override

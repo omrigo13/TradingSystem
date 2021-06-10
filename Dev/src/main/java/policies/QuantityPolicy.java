@@ -16,7 +16,8 @@ public class QuantityPolicy extends SimplePurchasePolicy {
     private int maxQuantity;
 
     // if i got 0 in minQuantity or maxQuantity i will ignore it
-    public QuantityPolicy(Collection<Item> items, int minQuantity, int maxQuantity) throws QuantityPolicyException {
+    public QuantityPolicy(int id, Collection<Item> items, int minQuantity, int maxQuantity) throws QuantityPolicyException {
+        super(id);
         this.items = items;
         if(minQuantity < 0 || maxQuantity < 0)
             throw new QuantityPolicyException();

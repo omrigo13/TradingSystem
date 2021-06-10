@@ -16,7 +16,6 @@ public abstract class SimplePurchasePolicy extends PurchasePolicy {
     }
 
     public SimplePurchasePolicy() {
-
     }
 
     public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;

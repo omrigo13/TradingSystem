@@ -100,8 +100,8 @@ public class PersistenceTests {
         items_discount.add(productId4);
         service.makeQuantityDiscount(founderStore1Id, storeId1, 1 ,items_discount, null );
 
-        service.makeQuantityPolicy(founderStore1Id, storeId1,items_discount, 1, 100);
-
+        int policy_id = service.makeQuantityPolicy(founderStore1Id, storeId1,items_discount, 1, 100);
+        service.assignStoreDiscountPolicy(policy_id, founderStore1Id, storeId1);
 
         service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
         service.approveOffer(founderStore1Id, storeId1, 0, -1.0);
@@ -114,8 +114,27 @@ public class PersistenceTests {
 
 //        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
 
+        int purchase_id = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
+        service.assignStorePurchasePolicy(purchase_id, founderStore1Id, storeId1);
 
-        List<Item> items = Repo.getInstance().getItems();
+        Collection<String> items = new LinkedList<>();
+        items.add(productId1);
+        items.add(productId2);
+        int quantityPolicy = service.makeQuantityPolicy(founderStore1Id, storeId1, items, 1, 0);
+        int basketPolicy = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
+        int timePolicy = service.makeTimePolicy(founderStore1Id, storeId1, items, "00:00");
+
+        int andPolicy = service.andPolicy(founderStore1Id, storeId1, quantityPolicy, basketPolicy);
+        service.orPolicy(founderStore1Id, storeId1, quantityPolicy, timePolicy);
+        service.xorPolicy(founderStore1Id, storeId1, basketPolicy, timePolicy);
+
+        service.assignStorePurchasePolicy(andPolicy, founderStore1Id, storeId1);
+
+        service.removePolicy(founderStore1Id, storeId1, quantityPolicy);
+        service.removePolicy(founderStore1Id, storeId1, basketPolicy);
+        service.removePolicy(founderStore1Id, storeId1, andPolicy);
+
+        List<Item> items2 = Repo.getInstance().getItems();
         List<Subscriber> subs = Repo.getInstance().getSubscribers();
         List<Store> stores = Repo.getInstance().getStores();
         List<Basket> baskets = Repo.getInstance().getBaskets();

@@ -6,22 +6,24 @@ import user.Basket;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+
 @Entity
 public abstract class CompoundPurchasePolicy extends PurchasePolicy {
-    @Transient
+    @ManyToMany
+    @CollectionTable(name = "compound_purchase_policy_purchase_policies")
     protected Collection<PurchasePolicy> purchasePolicies;
 
-    public CompoundPurchasePolicy( Collection<PurchasePolicy> purchasePolicies)
+    public CompoundPurchasePolicy(int id, Collection<PurchasePolicy> purchasePolicies)
     {
-        super(-1);
+        super(id);
         if(purchasePolicies == null)
-            this.purchasePolicies = new ArrayList<>();
+            this.purchasePolicies = new LinkedList<>();
         else
             this.purchasePolicies = purchasePolicies;
     }
 
     public CompoundPurchasePolicy() {
-
     }
 
     public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;

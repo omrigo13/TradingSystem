@@ -290,6 +290,8 @@ public class TradingSystem {
         if (!purchasePolicies.containsKey(policy))
             throw new PolicyException();
         store.setPurchasePolicy(purchasePolicies.get(policy));
+
+        Repo.merge(store);
     }
 
     public void removePolicy(Store store, int policy) throws PolicyException {
@@ -306,30 +308,35 @@ public class TradingSystem {
 
     public int makeQuantityPolicy(Store store, Collection<Item> items, int minQuantity, int maxQuantity) throws PolicyException {
         int id = policyIdCounter.getAndIncrement();
-        PurchasePolicy purchasePolicy = new QuantityPolicy(items, minQuantity, maxQuantity);
+        PurchasePolicy purchasePolicy = new QuantityPolicy(id, items, minQuantity, maxQuantity);
         purchasePolicies.put(id, purchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
 
-//        Repo.merge(purchasePolicy);
+        Repo.merge(purchasePolicy);
+        Repo.merge(store);
 
         return id;
     }
 
     public int makeBasketPurchasePolicy(Store store, int minBasketValue) throws PolicyException {
         int id = policyIdCounter.getAndIncrement();
-        PurchasePolicy purchasePolicy = new BasketPurchasePolicy(minBasketValue);
+        PurchasePolicy purchasePolicy = new BasketPurchasePolicy(id, minBasketValue);
         purchasePolicies.put(id, purchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(purchasePolicy);
+        Repo.merge(store);
+
         return id;
     }
 
     public int makeTimePolicy(Store store, Collection<Item> items, LocalTime time) {
         int id = policyIdCounter.getAndIncrement();
-        PurchasePolicy purchasePolicy = new TimePolicy(items, time);
+        PurchasePolicy purchasePolicy = new TimePolicy(id, items, time);
         purchasePolicies.put(id, purchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
         return id;
     }
@@ -337,14 +344,14 @@ public class TradingSystem {
     public int andPolicy(Store store, int policy1, int policy2) throws PolicyException {
 
         int id = policyIdCounter.getAndIncrement();
-        Collection<PurchasePolicy> andPolicies = new ArrayList<>();
+        Collection<PurchasePolicy> andPolicies = new LinkedList<>();
         if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         andPolicies.add(purchasePolicies.get(policy1));
         andPolicies.add(purchasePolicies.get(policy2));
-        PurchasePolicy andPurchasePolicy = new AndPolicy(andPolicies);
+        PurchasePolicy andPurchasePolicy = new AndPolicy(id, andPolicies);
         purchasePolicies.put(id, andPurchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
         return id;
     }
@@ -352,14 +359,14 @@ public class TradingSystem {
     public int orPolicy(Store store, int policy1, int policy2) throws PolicyException {
 
         int id = policyIdCounter.getAndIncrement();
-        Collection<PurchasePolicy> orPolicies = new ArrayList<>();
+        Collection<PurchasePolicy> orPolicies = new LinkedList<>();
         if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         orPolicies.add(purchasePolicies.get(policy1));
         orPolicies.add(purchasePolicies.get(policy2));
-        PurchasePolicy orPurchasePolicy = new OrPolicy(orPolicies);
+        PurchasePolicy orPurchasePolicy = new OrPolicy(id, orPolicies);
         purchasePolicies.put(id, orPurchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
         return id;
     }
@@ -367,14 +374,14 @@ public class TradingSystem {
     public int xorPolicy(Store store, int policy1, int policy2) throws PolicyException {
 
         int id = policyIdCounter.getAndIncrement();
-        Collection<PurchasePolicy> xorPolicies = new ArrayList<>();
+        Collection<PurchasePolicy> xorPolicies = new LinkedList<>();
         if (!purchasePolicies.containsKey(policy1) || !purchasePolicies.containsKey(policy2))
             throw new PolicyException();
         xorPolicies.add(purchasePolicies.get(policy1));
         xorPolicies.add(purchasePolicies.get(policy2));
-        PurchasePolicy xorPurchasePolicy = new XorPolicy(xorPolicies);
+        PurchasePolicy xorPurchasePolicy = new XorPolicy(id, xorPolicies);
         purchasePolicies.put(id, xorPurchasePolicy);
-        storesPurchasePolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
         return id;
     }
@@ -389,6 +396,8 @@ public class TradingSystem {
         if (!discountPolicies.containsKey(discountId))
             throw new PolicyException();
         store.setDiscountPolicy(discountPolicies.get(discountId));
+
+        Repo.merge(store);
     }
 
     public void removeDiscount(Store store, int discountId) throws PolicyException {
@@ -413,10 +422,11 @@ public class TradingSystem {
             purchasePolicy = purchasePolicies.get(policyId);
         QuantityDiscountPolicy quantityDiscountPolicy = new QuantityDiscountPolicy(id, discount, items, purchasePolicy);
         discountPolicies.put(id, quantityDiscountPolicy);
-        storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
 
-//        Repo.merge(quantityDiscountPolicy);
+        Repo.merge(quantityDiscountPolicy);
+        Repo.merge(store);
 
         return id;
     }
@@ -424,13 +434,13 @@ public class TradingSystem {
     public int makePlusDiscount(Store store, int discountId1, int discountId2) throws PolicyException {
 
         int id = discountIdCounter.getAndIncrement();
-        Collection<DiscountPolicy> plusDiscountPolicies = new ArrayList<>();
+        Collection<DiscountPolicy> plusDiscountPolicies = new LinkedList<>();
         if (!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         plusDiscountPolicies.add(discountPolicies.get(discountId1));
         plusDiscountPolicies.add(discountPolicies.get(discountId2));
-        discountPolicies.put(id, new PlusDiscountPolicy(plusDiscountPolicies));
-        storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        discountPolicies.put(id, new PlusDiscountPolicy(id, plusDiscountPolicies));
+        storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
         return id;
     }
@@ -438,13 +448,13 @@ public class TradingSystem {
     public int makeMaxDiscount(Store store, int discountId1, int discountId2) throws PolicyException {
 
         int id = discountIdCounter.getAndIncrement();
-        Collection<DiscountPolicy> maxDiscountPolicies = new ArrayList<>();
+        Collection<DiscountPolicy> maxDiscountPolicies = new LinkedList<>();
         if (!discountPolicies.containsKey(discountId1) || !discountPolicies.containsKey(discountId2))
             throw new PolicyException();
         maxDiscountPolicies.add(discountPolicies.get(discountId1));
         maxDiscountPolicies.add(discountPolicies.get(discountId2));
-        discountPolicies.put(id, new MaxDiscountPolicy(maxDiscountPolicies));
-        storesDiscountPolicies.computeIfAbsent(store, k -> new ArrayList<>());
+        discountPolicies.put(id, new MaxDiscountPolicy(id, maxDiscountPolicies));
+        storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
         return id;
     }
