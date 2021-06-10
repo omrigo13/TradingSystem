@@ -56,6 +56,6 @@ public class LoadTestGuestsConnect {
     @AfterClass
     public void tearDown() {
         System.out.println((System.nanoTime() - start) / 1000000);
-        assertTrue((System.nanoTime() - start) / 1000000 < 1500);
+        assertTrue((System.nanoTime() - start) / 1000000 < 5000);
     }
 }
