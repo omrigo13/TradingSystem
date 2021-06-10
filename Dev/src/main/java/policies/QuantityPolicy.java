@@ -5,12 +5,15 @@ import exceptions.QuantityPolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import java.util.Collection;
 @Entity
 public class QuantityPolicy extends SimplePurchasePolicy {
+
     @ManyToMany
+    @CollectionTable(name = "quantity_policy_items")
     private Collection<Item> items;
     private int minQuantity;
     private int maxQuantity;
@@ -28,7 +31,6 @@ public class QuantityPolicy extends SimplePurchasePolicy {
     }
 
     public QuantityPolicy() {
-
     }
 
     @Override

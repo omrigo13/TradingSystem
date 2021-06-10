@@ -21,5 +21,4 @@ public abstract class SimplePurchasePolicy extends PurchasePolicy {
     public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;
 
     public Collection<PurchasePolicy> getPurchasePolicies() { return new LinkedList<>(); }
-
 }

@@ -18,7 +18,6 @@ public abstract class DiscountPolicy {
     }
 
     public DiscountPolicy() {
-
     }
 
     public int getDiscount_id() {

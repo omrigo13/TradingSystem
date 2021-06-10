@@ -8,6 +8,7 @@ import java.util.Collection;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class PurchasePolicy {
+
     @Id
     private int purchase_id;
 
@@ -16,7 +17,6 @@ public abstract class PurchasePolicy {
     }
 
     public PurchasePolicy() {
-
     }
 
     public int getPurchase_id() {

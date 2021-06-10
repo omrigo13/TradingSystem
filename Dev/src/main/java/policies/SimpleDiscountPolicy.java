@@ -9,10 +9,11 @@ import java.util.LinkedList;
 @Entity
 public abstract class SimpleDiscountPolicy extends DiscountPolicy {
 
-
     protected int discount;
+
     @ManyToMany
-    protected Collection<Item> items = new ArrayList<>();
+    @CollectionTable(name = "simple_discount_policy_items")
+    protected Collection<Item> items = new LinkedList<>();
 
     public SimpleDiscountPolicy(int id, int discount, Collection<Item> items) {
         super(id);

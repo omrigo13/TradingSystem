@@ -14,7 +14,6 @@ public class AndPolicy extends CompoundPurchasePolicy {
     }
 
     public AndPolicy() {
-
     }
 
     @Override

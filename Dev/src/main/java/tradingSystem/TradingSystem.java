@@ -6,7 +6,6 @@ import externalServices.DeliveryData;
 import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
-import notifications.Observable;
 import notifications.VisitorsNotification;
 import persistence.Repo;
 import policies.*;
@@ -15,9 +14,6 @@ import store.Store;
 import user.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.*;
@@ -107,22 +103,7 @@ public class TradingSystem {
         Subscriber subscriber = new Subscriber(subscriberIdCounter.getAndIncrement(), userName);
         subscribers.put(userName, subscriber);
 
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(subscriber);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
+        Repo.merge(subscriber);
     }
 
     public String connect() {
@@ -174,44 +155,14 @@ public class TradingSystem {
         }
         admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
 
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(subscriber);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
+        Repo.merge(subscriber);
     }
 
     public void logout(String connectionId) throws InvalidActionException {
         Subscriber subscriber = getUserByConnectionId(connectionId).getSubscriber();
         subscriber.setLoggedIn(false); // this is here in order to throw exceptions
 
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(subscriber);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
+        Repo.merge(subscriber);
 
         User guest = new User();
         connections.put(connectionId, guest);
@@ -233,24 +184,8 @@ public class TradingSystem {
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
 
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.persist(store);
-            em.merge(subscriber);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
-
+        Repo.merge(store);
+        Repo.merge(subscriber);
 
         return id;
     }
@@ -304,6 +239,8 @@ public class TradingSystem {
         }
         purchasePolicies.remove(policy);
         storesPurchasePolicies.get(store).remove(policy);
+
+        Repo.merge(store);
     }
 
     public int makeQuantityPolicy(Store store, Collection<Item> items, int minQuantity, int maxQuantity) throws PolicyException {
@@ -338,6 +275,10 @@ public class TradingSystem {
         purchasePolicies.put(id, purchasePolicy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(purchasePolicy);
+        Repo.merge(store);
+
         return id;
     }
 
@@ -353,6 +294,10 @@ public class TradingSystem {
         purchasePolicies.put(id, andPurchasePolicy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(andPolicies);
+        Repo.merge(store);
+
         return id;
     }
 
@@ -368,6 +313,10 @@ public class TradingSystem {
         purchasePolicies.put(id, orPurchasePolicy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(orPolicies);
+        Repo.merge(store);
+
         return id;
     }
 
@@ -383,6 +332,10 @@ public class TradingSystem {
         purchasePolicies.put(id, xorPurchasePolicy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+
+        Repo.merge(xorPolicies);
+        Repo.merge(store);
+
         return id;
     }
 
@@ -410,6 +363,8 @@ public class TradingSystem {
         }
         discountPolicies.remove(discountId);
         storesDiscountPolicies.get(store).remove(discountId);
+
+        Repo.merge(store);
     }
 
     public int makeQuantityDiscount(Store store, int discount, Collection<Item> items, Integer policyId) throws PolicyException {
@@ -442,6 +397,10 @@ public class TradingSystem {
         discountPolicies.put(id, new PlusDiscountPolicy(id, plusDiscountPolicies));
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+
+        Repo.merge(discountPolicies);
+        Repo.merge(store);
+
         return id;
     }
 
@@ -456,6 +415,10 @@ public class TradingSystem {
         discountPolicies.put(id, new MaxDiscountPolicy(id, maxDiscountPolicies));
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+
+        Repo.merge(maxDiscountPolicies);
+        Repo.merge(store);
+
         return id;
     }
 

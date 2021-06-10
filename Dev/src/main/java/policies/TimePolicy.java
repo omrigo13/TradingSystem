@@ -11,7 +11,10 @@ import javax.persistence.ManyToMany;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+
+@Entity
 public class TimePolicy extends SimplePurchasePolicy {
+
     @ManyToMany
     @CollectionTable(name = "time_policy_items")
     private Collection<Item> items;
@@ -24,7 +27,6 @@ public class TimePolicy extends SimplePurchasePolicy {
     }
 
     public TimePolicy() {
-
     }
 
     @Override

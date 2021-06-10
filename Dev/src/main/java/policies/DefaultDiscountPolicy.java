@@ -20,7 +20,6 @@ public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
             Repo.merge(p);
         }
         return p;
-
     }
 
     @Override
