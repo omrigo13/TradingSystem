@@ -17,11 +17,12 @@ public class Offer {
     private double price;
     private boolean approved;
     @ManyToMany
+    @CollectionTable(name = "offer_approved_owners")
     private Collection<Subscriber> approvedOwners;
     @ManyToMany
+    @CollectionTable(name = "offer_countered_owners")
     private Collection<Subscriber> counteredOwners;
     @Id
-    @GeneratedValue
     private Integer id;
 
     public Offer(Subscriber subscriber, Item item, int quantity, double price) {

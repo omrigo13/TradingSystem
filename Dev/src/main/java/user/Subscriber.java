@@ -4,6 +4,7 @@ import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import notifications.Observer;
+import org.hibernate.annotations.Cascade;
 import org.jetbrains.annotations.NotNull;
 import persistence.Repo;
 import review.Review;
@@ -480,8 +481,9 @@ public class Subscriber extends User {
         }
         if(price != 0) {
             offer.setPrice(price);
-            if(this.havePermission(OwnerPermission.getInstance(store)))
+            if(this.havePermission(OwnerPermission.getInstance(store))){
                 offer.addCounteredOwner(this);
+            }
         }
         else if (this.havePermission(OwnerPermission.getInstance(store)))
             offer.addApprovedOwner(this);
@@ -495,6 +497,7 @@ public class Subscriber extends User {
         }
         if(offer.isApproved())
             offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
+        Repo.merge(offer);
     }
 
     public Collection<String> getPurchaseHistory() {

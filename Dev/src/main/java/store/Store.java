@@ -475,7 +475,9 @@ public class Store {
 
     public void notifyDeclinedOffer(Offer offer) { observable.notifyDeclinedOffer(offer); }
 
-    public void notifyCounterOffer(Offer offer) { observable.notifyCounterOffer(offer); }
+    public void notifyCounterOffer(Offer offer) {
+        observable.notifyCounterOffer(offer);
+    }
 
     public void subscribe(Subscriber subscriber) {
         observable.subscribe(subscriber);
@@ -496,7 +498,12 @@ public class Store {
     public void setObservable(Observable observable) { this.observable = observable; }
 
     public void addOffer(Subscriber subscriber, Item item, int quantity, double price) {
-        this.storeOffers.put(offerIdCounter.getAndIncrement(), new Offer(subscriber, item, quantity, price));
+        Offer offer = new Offer(subscriber, item, quantity, price);
+        int id = offerIdCounter.getAndIncrement();
+        this.storeOffers.put(id, offer);
+        offer.setId(id);
+        Repo.persist(offer);
+
     }
 
     public Collection<String> getOffers() {

@@ -75,7 +75,7 @@ public class PersistenceTests {
         productId3 = service.addProductToStore(founderStore2Id, storeId2, "milk_store2", "DairyProducts", "sub1", 30, 6.5);
         productId4 = service.addProductToStore(founderStore2Id, storeId2, "baguette_store2", "bread", "", 20, 9);
 
-        service.deleteProductFromStore(founderStore1Id, storeId1, productId1);
+//        service.deleteProductFromStore(founderStore1Id, storeId1, productId1);
 
         System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
@@ -101,6 +101,13 @@ public class PersistenceTests {
         service.makeQuantityDiscount(founderStore1Id, storeId1, 1 ,items_discount, null );
 
         service.makeQuantityPolicy(founderStore1Id, storeId1,items_discount, 1, 100);
+
+
+        service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
+        service.approveOffer(founderStore1Id, storeId1, 0, 6.0);
+        service.addItemToBasketByOffer(founderStore2Id, storeId1, productId2, 2, 1);
+        service.approveOffer(founderStore1Id, storeId1, 1, 1.0);
+
 
 
         List<Item> items = Repo.getInstance().getItems();
