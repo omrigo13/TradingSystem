@@ -9,12 +9,12 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
 @Entity
-    @IdClass(ItemId.class)
-    public class Item {
-        @Id
-        private int item_id;
-        @Id
-        private int store_id;
+@IdClass(ItemId.class)
+public class Item {
+    @Id
+    private int item_id;
+    @Id
+    private int store_id;
     private String name;
     private double price;
     private String category;

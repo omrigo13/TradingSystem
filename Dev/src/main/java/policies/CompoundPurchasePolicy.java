@@ -10,6 +10,7 @@ import java.util.LinkedList;
 
 @Entity
 public abstract class CompoundPurchasePolicy extends PurchasePolicy {
+
     @ManyToMany
     @CollectionTable(name = "compound_purchase_policy_purchase_policies")
     protected Collection<PurchasePolicy> purchasePolicies;

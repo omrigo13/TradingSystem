@@ -13,13 +13,12 @@ public abstract class SimpleDiscountPolicy extends DiscountPolicy {
 
     @ManyToMany
     @CollectionTable(name = "simple_discount_policy_items")
-    protected Collection<Item> items = new LinkedList<>();
+    protected Collection<Item> items;
 
     public SimpleDiscountPolicy(int id, int discount, Collection<Item> items) {
         super(id);
         this.discount = discount;
         this.items = items;
-
     }
 
     public SimpleDiscountPolicy() {

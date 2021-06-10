@@ -9,10 +9,12 @@ import java.util.LinkedList;
 
 @Entity
 public abstract class CompoundDiscountPolicy extends DiscountPolicy {
+
     @ManyToMany
     @CollectionTable(name = "compound_policy_discount_policies")
     protected Collection<DiscountPolicy> discountPolicies;
     protected int discount;
+
     @ManyToMany
     @CollectionTable(name = "compound_policy_items")
     protected Collection<Item> items;
