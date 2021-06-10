@@ -20,8 +20,8 @@ public class Observable implements Serializable {
     @ManyToMany
     private Collection<Subscriber> observers = new HashSet<>();
 
-    public Observable(Store store) {
-        this.storeId = store.getId();
+    public Observable(int store_id) {
+        this.storeId = store_id;
     }
 
     public Observable() {

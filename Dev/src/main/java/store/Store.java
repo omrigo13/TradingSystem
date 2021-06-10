@@ -115,7 +115,7 @@ public class Store {
             this.discountPolicy = discountPolicy;
         this.isActive = true;
 //        this.observable = observable;
-        this.observable = new Observable(this);
+        this.observable = new Observable(this.id);
     }
 
     public int getId() {
