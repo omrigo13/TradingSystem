@@ -197,9 +197,11 @@ public class TradingSystemImplTest {
     @Test
     void getItemsByStore() throws InvalidActionException {
 
-        Map<Item, Integer> items = new HashMap<>();
-        items.put(item1, 1);
-        items.put(item2, 1);
+        Map<Integer, Item> items = new HashMap<>();
+        items.put(0, item1);
+        items.put(1, item2);
+        when(item1.getAmount()).thenReturn(1);
+        when(item2.getAmount()).thenReturn(1);
 
         when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
         when(user.getSubscriber()).thenReturn(subscriber);

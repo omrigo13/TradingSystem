@@ -18,8 +18,19 @@ public class Item {
     private double rating;
     private boolean isLocked = false;
     private final Collection<Review> reviews = new LinkedList<>();
+    private int amount;
 
     public Item() {}
+
+    public Item(int id, String name, double price, String category, String subCategory, double rating, int amount) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.rating = rating;
+        this.amount = amount;
+    }
 
     public Item(int id, String name, double price, String category, String subCategory, double rating) {
         this.id = id;
@@ -28,6 +39,7 @@ public class Item {
         this.category = category;
         this.subCategory = subCategory;
         this.rating = rating;
+        this.amount = 0;
     }
 
     public int getId() {
@@ -73,7 +85,8 @@ public class Item {
             "\nprice:" + price +
             "\ncategory:" + category +
             "\nsub category:" + subCategory +
-            "\nrating:" + rating + '\n';}
+            "\nrating:" + rating +
+            "\nquantity:" + amount + '\n';}
 
     public void lock() { isLocked = true; }
 
@@ -84,6 +97,10 @@ public class Item {
     public void addReview(Review review) {reviews.add(review); }
 
     public Collection<Review> getReviews() {return reviews; }
+
+    public void setAmount(int amount) { this.amount = amount; }
+
+    public int getAmount() { return amount; }
 }
 
 
