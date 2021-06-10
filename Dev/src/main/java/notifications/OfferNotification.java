@@ -5,7 +5,6 @@ import Offer.Offer;
 import javax.persistence.*;
 
 @Entity
-
 public class OfferNotification extends Notification {
     @OneToOne
     private Offer offer;

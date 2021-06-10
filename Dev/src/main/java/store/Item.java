@@ -27,24 +27,15 @@ import java.util.LinkedList;
 
     public Item() {}
 
-    public Item(int id, String name, double price, String category, String subCategory, double rating, int amount) {
-        this.item_id = id;
+    public Item(int store_id, int item_id, String name, double price, String category, String subCategory, double rating, int amount) {
+        this.store_id = store_id;
+        this.item_id = item_id;
         this.name = name;
         this.price = price;
         this.category = category;
         this.subCategory = subCategory;
         this.rating = rating;
         this.amount = amount;
-    }
-
-    public Item(int id, String name, double price, String category, String subCategory, double rating) {
-        this.item_id = id;
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.rating = rating;
-        this.amount = 0;
     }
 
     public int getItem_id() {
@@ -106,6 +97,30 @@ import java.util.LinkedList;
     public void setAmount(int amount) { this.amount = amount; }
 
     public int getAmount() { return amount; }
+
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
+    }
+
+    public int getStore_id() {
+        return store_id;
+    }
+
+    public void setStore_id(int store_id) {
+        this.store_id = store_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
 }
 
 

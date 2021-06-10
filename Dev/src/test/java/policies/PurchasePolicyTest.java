@@ -55,8 +55,8 @@ public class PurchasePolicyTest {
     }
 
     void updateDetails() {
-        store.getItems().get(item1.getId()).setAmount(5);
-        store.getItems().get(item2.getId()).setAmount(12);
+        store.getItems().get(item1.getItem_id()).setAmount(5);
+        store.getItems().get(item2.getItem_id()).setAmount(12);
     }
     @AfterMethod
     void tearDown() throws ItemException {

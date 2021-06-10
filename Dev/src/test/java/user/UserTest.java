@@ -93,10 +93,10 @@ public class UserTest {
 
         items.put(item, 3);
         assertEquals(1, user.getCart().size());
-        assertEquals(5, store.getItems().get(item.getId()).getAmount());
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
-        assertEquals(2, store.getItems().get(item.getId()).getAmount()); // checks that the inventory quantity updated
+        assertEquals(2, store.getItems().get(item.getItem_id()).getAmount()); // checks that the inventory quantity updated
     }
 
     @Test

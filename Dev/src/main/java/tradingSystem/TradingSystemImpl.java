@@ -316,12 +316,9 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
 //        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
         int itemId = subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
-        Map<Item, Integer> map = store.getItems();
-        Item item = null;
-        for (Item i:map.keySet()) {
-            if(i.getItem_id() == itemId)
-                item = i;
-        }
+        Map<Integer, Item> map = store.getItems();
+        Item item = map.get(itemId);
+
         EntityTransaction et = null;
         try{
 //            et = em.getTransaction();

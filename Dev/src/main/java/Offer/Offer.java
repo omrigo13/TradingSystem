@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
 @Entity
+@IdClass(OfferId.class)
 public class Offer {
 
     @ManyToOne
@@ -24,6 +25,42 @@ public class Offer {
     private Collection<Subscriber> counteredOwners;
     @Id
     private Integer id;
+    @Id
+    private Integer store_id;
+
+
+
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public void setApprovedOwners(Collection<Subscriber> approvedOwners) {
+        this.approvedOwners = approvedOwners;
+    }
+
+    public void setCounteredOwners(Collection<Subscriber> counteredOwners) {
+        this.counteredOwners = counteredOwners;
+    }
+
+    public Integer getStore_id() {
+        return store_id;
+    }
+
+    public void setStore_id(Integer store_id) {
+        this.store_id = store_id;
+    }
 
     public Offer(Subscriber subscriber, Item item, int quantity, double price) {
         this.subscriber = subscriber;

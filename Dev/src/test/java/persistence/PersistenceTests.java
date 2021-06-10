@@ -104,9 +104,10 @@ public class PersistenceTests {
 
 
         service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
-        service.approveOffer(founderStore1Id, storeId1, 0, 6.0);
-        service.addItemToBasketByOffer(founderStore2Id, storeId1, productId2, 2, 1);
-        service.approveOffer(founderStore1Id, storeId1, 1, 1.0);
+        service.approveOffer(founderStore1Id, storeId1, 0, 0.0);
+
+        service.addItemToBasketByOffer(founderStore1Id, storeId2, productId4, 2, 1);
+        service.approveOffer(founderStore2Id, storeId2, 0, 6.0);
 
 
 

@@ -105,9 +105,10 @@ public class Store {
             this.purchasePolicy = new DefaultPurchasePolicy();
         else
             this.purchasePolicy = purchasePolicy;
+        this.inventory = new Inventory(id);
+
         if(discountPolicy == null)
             this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
-        this.inventory = new Inventory(id);
         if(discountPolicy == null){
             DefaultDiscountPolicy defaultDiscountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
             this.discountPolicy = defaultDiscountPolicy;
@@ -438,7 +439,7 @@ public class Store {
     public void rollBack(Map<Item, Integer> items) {
         synchronized (inventory.getItems()) {
             for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                inventory.getItems().get(entry.getKey().getId()).setAmount(entry.getKey().getAmount() + entry.getValue());
+                inventory.getItems().get(entry.getKey().getItem_id()).setAmount(entry.getKey().getAmount() + entry.getValue());
             }
         }
         unlockItems(items.keySet());
@@ -474,7 +475,8 @@ public class Store {
         observable.notifyPurchase(this, buyer, basket);
     }
 
-    public void notifyNewOffer(Offer offer) { observable.notifyNewOffer(offer); }
+    public void notifyNewOffer(Offer offer) {
+        observable.notifyNewOffer(offer); }
 
     public void notifyApprovedOffer(Offer offer) { observable.notifyApprovedOffer(offer); }
 
@@ -503,11 +505,14 @@ public class Store {
     public void setObservable(Observable observable) { this.observable = observable; }
 
     public void addOffer(Subscriber subscriber, Item item, int quantity, double price) {
-        Offer offer = new Offer(subscriber, item, quantity, price);
         int id = offerIdCounter.getAndIncrement();
+        Offer offer = new Offer(subscriber, item, quantity, price);
         this.storeOffers.put(id, offer);
         offer.setId(id);
+        offer.setStore_id(this.id);
+
         Repo.persist(offer);
+        Repo.merge(this);
 
     }
 
