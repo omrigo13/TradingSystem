@@ -261,11 +261,7 @@ public class Inventory {
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
     public Item removeItem(int itemID) throws ItemException {
-        if(items.get(itemID) == null)
-            throw new ItemNotFoundException("no item in inventory matching item id");
-        Item item = this.items.get(itemID);
-        items.remove(itemID);
-
+        Item item = searchItem(itemID);
         ItemId tempItemId = new ItemId(item.getItem_id(), item.getStore_id());
 
         EntityManager em = Repo.getEm();
