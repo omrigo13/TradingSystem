@@ -107,6 +107,34 @@ public class UserTest {
     }
 
     @Test
+    void purchaseCartPaymentCheck() throws InvalidActionException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        item = store.searchItemById(0);
+        baskets.put(store, basket);
+
+        items.put(item, 3);
+        doThrow(PaymentSystemException.class).when(paymentSystem).pay(paymentData);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+        assertEquals(1, user.getCart().size());
+        assertTrue(user.getCart().get(store).getItems().containsKey(item));
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
+    }
+
+    @Test
+    void purchaseCartDeliveryCheck() throws InvalidActionException {
+        store.addItem("cheese", 7.0, "cat1", "sub1", 5);
+        item = store.searchItemById(0);
+        baskets.put(store, basket);
+
+        items.put(item, 3);
+        doThrow(DeliverySystemException.class).when(deliverySystem).deliver(deliveryData);
+        user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+        assertEquals(1, user.getCart().size());
+        assertTrue(user.getCart().get(store).getItems().containsKey(item));
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
+    }
+
+    @Test
     void purchaseCartNegativeQuantity() throws ItemException {
         // trying to purchase negative quantity
         store.addItem("cheese", 7.0, "cat1", "sub1", 5);

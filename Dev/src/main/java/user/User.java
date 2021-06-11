@@ -85,12 +85,14 @@ public class User {
             // for each store, rollback the basket (return items to inventory)
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());
+            return;
         }
         catch (DeliverySystemException de) {
             paymentSystem.cancel(paymentData);
             deliverySystem.cancel(deliveryData);
             for (Map.Entry<Store, Basket> entry : baskets.entrySet())
                 entry.getKey().rollBack(entry.getValue().getItems());
+            return;
         }
 
         // add each purchase details string to the store it was purchased from
