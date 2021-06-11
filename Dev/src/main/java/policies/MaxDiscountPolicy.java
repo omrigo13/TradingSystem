@@ -4,13 +4,17 @@ import exceptions.PolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.Entity;
 import java.util.Collection;
 import java.util.Map;
-
+@Entity
 public class MaxDiscountPolicy extends CompoundDiscountPolicy {
 
-    public MaxDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
-        super(discountPolicies);
+    public MaxDiscountPolicy(int id, Collection<DiscountPolicy> discountPolicies) {
+        super(id, discountPolicies);
+    }
+
+    public MaxDiscountPolicy() {
     }
 
     @Override

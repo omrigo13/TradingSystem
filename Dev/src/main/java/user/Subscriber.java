@@ -4,25 +4,108 @@ import Offer.Offer;
 import exceptions.*;
 import notifications.*;
 import notifications.Observer;
+import org.hibernate.annotations.Cascade;
+import org.jetbrains.annotations.NotNull;
+import persistence.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+@Entity
 public class Subscriber extends User {
-
-    private final int id;
-    private final String userName;
-    private final Set<Permission> permissions; // synchronized manually
-    private final ConcurrentMap<Store, Collection<Item>> itemsPurchased;
-    private final Collection<String> purchaseHistory; // synchronized in constructor
-    private final Map<Notification, Boolean> notifications = new HashMap<>();
+    private int id;
+    @Id
+    private String userName;
+    @Transient
+    private Set<Permission> permissions; // synchronized manually
+    @Transient
+    private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
+    @ElementCollection
+    private Collection<String> purchaseHistory; // synchronized in constructor
+    @ElementCollection
+    private Map<Notification, Boolean> notifications = new HashMap<>();
     private boolean isLoggedIn = false;
+    @Transient
     private Observer observer;
+    @Transient
     private Observer adminObserver;
+
+    @Override
+    @NotNull
+    protected Basket createBasket(Store store) {
+        Basket basket = new Basket(this, store, new ConcurrentHashMap<>());
+
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(basket);
+            em.merge(this);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
+
+        return basket;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public ConcurrentMap<Store, Collection<Item>> getItemsPurchased() {
+        return itemsPurchased;
+    }
+
+    public void setItemsPurchased(ConcurrentMap<Store, Collection<Item>> itemsPurchased) {
+        this.itemsPurchased = itemsPurchased;
+    }
+
+    public void setPurchaseHistory(Collection<String> purchaseHistory) {
+        this.purchaseHistory = purchaseHistory;
+    }
+
+    public void setNotifications(Map<Notification, Boolean> notifications) {
+        this.notifications = notifications;
+    }
+
+    public Observer getObserver() {
+        return observer;
+    }
+
+    public Observer getAdminObserver() {
+        return adminObserver;
+    }
 
     public Subscriber(int id, String userName) {
         this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
@@ -34,6 +117,10 @@ public class Subscriber extends User {
         this.permissions = permissions;
         this.itemsPurchased = itemsPurchased;
         this.purchaseHistory = Collections.synchronizedCollection(purchaseHistory);
+    }
+
+    public Subscriber() {
+
     }
 
     public String getUserName() {
@@ -390,12 +477,15 @@ public class Subscriber extends User {
         if(price < 0) {
             store.getStoreOffers().remove(offerId);
             store.notifyDeclinedOffer(offer);
+            Repo.merge(offer);
+
             return;
         }
         if(price != 0) {
             offer.setPrice(price);
-            if(this.havePermission(OwnerPermission.getInstance(store)))
+            if(this.havePermission(OwnerPermission.getInstance(store))){
                 offer.addCounteredOwner(this);
+            }
         }
         else if (this.havePermission(OwnerPermission.getInstance(store)))
             offer.addApprovedOwner(this);
@@ -409,6 +499,8 @@ public class Subscriber extends User {
         }
         if(offer.isApproved())
             offer.getSubscriber().getBasket(store).getItems().compute(offer.getItem(), (k, v) -> offer.getQuantity());
+//        Repo.merge(store);
+        Repo.merge(offer);
     }
 
     public Collection<String> getPurchaseHistory() {
@@ -416,19 +508,23 @@ public class Subscriber extends User {
         return new ArrayList<>(purchaseHistory);
     }
 
-    public void writeOpinionOnProduct(Store store, int itemId, String review) throws ItemException, WrongReviewException {
-
-        if (review == null || review.trim().isEmpty())
-            throw new WrongReviewException("Review can't be empty or null");
+    public void writeOpinionOnProduct(Store store, int itemId, String reviewText) throws ItemException, WrongReviewException {
 
         Item item = store.searchItemById(itemId);
-        if (!itemsPurchased.get(store).contains(item))
+
+        if (reviewText == null || reviewText.trim().isEmpty()) {
+            throw new WrongReviewException("Review can't be empty or null");
+        }
+
+        if (!itemsPurchased.get(store).contains(item)) {
             throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+        }
 
-        Review review1 = new Review(this, store, item, review);
-        item.addReview(review1);
-        store.notifyItemOpinion(this, review1);
+        Review review = new Review(store, item, reviewText);
+        item.addReview(review);
+        store.notifyItemOpinion(this, review);
 
+        Repo.persist(review);
     }
 
     public void subscribe(Store store){
@@ -474,10 +570,14 @@ public class Subscriber extends User {
     public Notification notifyNotification(Notification notification){
         if(observer != null) {
             observer.notify(notification);
-            this.notifications.put(notification,true);
+            notifications.put(notification,true);
         }
         else
-            this.notifications.put(notification,false);
+            notifications.put(notification,false);
+
+        Repo.persist(notification);
+        Repo.merge(this);
+
         return notification;
     }
 

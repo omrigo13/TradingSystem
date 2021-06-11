@@ -2,11 +2,20 @@ package notifications;
 
 import Offer.Offer;
 
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+
+@Entity
 public class ApprovedOfferNotification extends OfferNotification {
 
     public ApprovedOfferNotification(Offer offer) {
         super(offer);
     }
+
+    public ApprovedOfferNotification() {
+
+    }
+
 
     @Override
     public void notifyNotification() {

@@ -8,9 +8,11 @@ import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.mockito.stubbing.OngoingStubbing;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
 import store.Item;
@@ -37,6 +39,11 @@ public class UserTest {
     private ConcurrentHashMap<Item, Integer> items;
     private Item item;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
     @BeforeMethod
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -44,11 +51,12 @@ public class UserTest {
         store = new Store();
         item = new Item();
         baskets = spy(new ConcurrentHashMap<>());
-        basket = new Basket(store, items); // do not make this a spy (Mockito doesn't handle records properly)
         user = new User(baskets);
+
+        basket = new Basket(user, store, items); // do not make this a spy (Mockito doesn't handle records properly)
         store.setObservable(new Observable());
         store.setPurchasePolicy(new DefaultPurchasePolicy());
-        store.setDiscountPolicy(new DefaultDiscountPolicy(store.getItems().values()));
+        store.setDiscountPolicy(DefaultDiscountPolicy.getInstance());
     }
 
     @Test
@@ -93,10 +101,10 @@ public class UserTest {
 
         items.put(item, 3);
         assertEquals(1, user.getCart().size());
-        assertEquals(5, store.getItems().get(item.getId()).getAmount());
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
-        assertEquals(2, store.getItems().get(item.getId()).getAmount()); // checks that the inventory quantity updated
+        assertEquals(2, store.getItems().get(item.getItem_id()).getAmount()); // checks that the inventory quantity updated
     }
 
     @Test

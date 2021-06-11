@@ -3,8 +3,10 @@ package acceptanceTests;
 import exceptions.*;
 import externalServices.DeliverySystemMock;
 import externalServices.PaymentSystemMock;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemService;
 
 import java.util.Collection;
@@ -22,14 +24,20 @@ public class AcceptanceTestsV1 {
     private String admin1UserName="Admin1", store1FounderUserName="store1FounderUserName", store2FounderUserName="store2FounderUserName",
             store1Manager1UserName="Store1Manager1UserName", subs1UserName = "subs1UserName", subs2UserName = "subs2UserName",
             subs3UserName = "subs3UserName", guest1UserName = "guest1UserName";
-    private PaymentSystemMock paymentSystem = (PaymentSystemMock) Driver.getPaymentSystem();
-    private DeliverySystemMock deliverySystem = (DeliverySystemMock) Driver.getDeliverySystem();
+    private PaymentSystemMock paymentSystem = new PaymentSystemMock();
+    private DeliverySystemMock deliverySystem = new DeliverySystemMock();
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
     @BeforeMethod
     public void setUp() throws Exception {
-
+        Driver.setPaymentSystem(paymentSystem);
+        Driver.setDeliverySystem(deliverySystem);
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
         admin1Id = service.connect();
         founderStore1Id = service.connect();

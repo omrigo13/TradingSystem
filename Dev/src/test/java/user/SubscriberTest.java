@@ -4,14 +4,14 @@ import Offer.Offer;
 import exceptions.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,6 +51,10 @@ public class SubscriberTest {
     private LinkedList<String> purchaseHistory;
     private Item item;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -310,14 +314,14 @@ public class SubscriberTest {
         when(store.searchItemById(0)).thenReturn(item);
 
         assertEquals(0, item.getReviews().size());
-        subscriber.writeOpinionOnProduct(store, item.getId(), "good product");
+        subscriber.writeOpinionOnProduct(store, item.getItem_id(), "good product");
         assertEquals(1, item.getReviews().size());
     }
 
     @Test
     void writeOpinionOnProductBadReviewDetails() {
-        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), null));
-        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getId(), "    "));
+        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getItem_id(), null));
+        assertThrows(WrongReviewException.class, ()-> subscriber.writeOpinionOnProduct(store, item.getItem_id(), "    "));
     }
 
     @Test
@@ -327,7 +331,7 @@ public class SubscriberTest {
         when(store.searchItemById(0)).thenReturn(item2);
         when(itemsPurchased.get(store)).thenReturn(items);
 
-        assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getId(), "good product"));
+        assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getItem_id(), "good product"));
         assertEquals(0, item.getReviews().size());
         assertEquals(0, item2.getReviews().size());
     }

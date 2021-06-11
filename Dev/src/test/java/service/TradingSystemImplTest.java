@@ -3,8 +3,10 @@ package service;
 import exceptions.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -58,6 +60,11 @@ public class TradingSystemImplTest {
     private final int month = 1;
     private final int year = 2022;
     private final int zip = 12345;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() {

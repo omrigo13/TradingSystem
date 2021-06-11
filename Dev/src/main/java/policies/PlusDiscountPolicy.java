@@ -4,17 +4,22 @@ import exceptions.PolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
-
+@Entity
 public class PlusDiscountPolicy extends CompoundDiscountPolicy {
 
-    public PlusDiscountPolicy(Collection<DiscountPolicy> discountPolicies) {
-        super(discountPolicies);
+    public PlusDiscountPolicy(int id, Collection<DiscountPolicy> discountPolicies) {
+        super(id, discountPolicies);
         for (DiscountPolicy discountPolicy: discountPolicies) {
             items.addAll(discountPolicy.getItems());
         }
+    }
+
+    public PlusDiscountPolicy() {
     }
 
     @Override
@@ -35,7 +40,7 @@ public class PlusDiscountPolicy extends CompoundDiscountPolicy {
             Item item = itemsAndQuantity.getKey();
             int quantity = itemsAndQuantity.getValue();
             int totalDiscount = 0;
-            Collection<Item> items = new ArrayList<>();
+            Collection<Item> items = new LinkedList<>();
             items.add(item);
             for (DiscountPolicy discountPolicy : discountPolicies) {
                 discountPolicy.cartTotalValue(purchaseBasket);

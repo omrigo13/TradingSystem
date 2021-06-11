@@ -5,6 +5,7 @@ import externalServices.*;
 import notifications.Observable;
 import org.mockito.*;
 import org.testng.annotations.*;
+import persistence.RepoMock;
 import policies.*;
 import store.*;
 
@@ -36,16 +37,21 @@ public class PurchaseRemovedItemFromStore {
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
     private final Observable observable = mock(Observable.class);
 
-    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
+    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
     private final Map<Integer, Item> storeItems = store.getItems();
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
     private final StorePermission manageInventory = ManageInventoryPermission.getInstance(store);
-    private final Basket basket = new Basket(store, basketItems);
+    private final Basket basket = new Basket(user, store, basketItems);
     private final AtomicInteger trialNumber = new AtomicInteger();
     private final AtomicInteger itemsBoughtFromStore = new AtomicInteger();
     private final AtomicInteger itemsAddedToStore = new AtomicInteger();
 
     public PurchaseRemovedItemFromStore() throws ItemException {
+    }
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
     }
 
     @BeforeClass
@@ -73,7 +79,7 @@ public class PurchaseRemovedItemFromStore {
     public void test() throws Exception{
         try {
             if(trialNumber.getAndIncrement() % 2 == 0) {
-                storeItems.compute(item.getId(), (k, v) -> {
+                storeItems.compute(item.getItem_id(), (k, v) -> {
                     if (v == null)
                         item.setAmount(1);
                     else

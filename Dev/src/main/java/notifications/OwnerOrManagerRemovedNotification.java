@@ -2,8 +2,13 @@ package notifications;
 
 import user.Subscriber;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class OwnerOrManagerRemovedNotification extends Notification{
 
+    @ManyToOne
     private Subscriber remover;
     private int storeId;
 

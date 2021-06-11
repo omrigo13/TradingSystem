@@ -5,25 +5,31 @@ import exceptions.WrongPriceException;
 import exceptions.WrongRatingException;
 import review.Review;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
-
+@Entity
+@IdClass(ItemId.class)
 public class Item {
-
-    private int id;
+    @Id
+    private int item_id;
+    @Id
+    private int store_id;
     private String name;
     private double price;
     private String category;
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
-    private final Collection<Review> reviews = new LinkedList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    private Collection<Review> reviews = new LinkedList<>();
     private int amount;
 
     public Item() {}
 
-    public Item(int id, String name, double price, String category, String subCategory, double rating, int amount) {
-        this.id = id;
+    public Item(int store_id, int item_id, String name, double price, String category, String subCategory, double rating, int amount) {
+        this.store_id = store_id;
+        this.item_id = item_id;
         this.name = name;
         this.price = price;
         this.category = category;
@@ -32,18 +38,12 @@ public class Item {
         this.amount = amount;
     }
 
-    public Item(int id, String name, double price, String category, String subCategory, double rating) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.category = category;
-        this.subCategory = subCategory;
-        this.rating = rating;
-        this.amount = 0;
+    public void setReviews(Collection<Review> reviews) {
+        this.reviews = reviews;
     }
 
-    public int getId() {
-        return id;
+    public int getItem_id() {
+        return item_id;
     }
 
     public String getName() {
@@ -80,7 +80,7 @@ public class Item {
         this.rating = rating;
     }
 
-    public String toString() { return "id:" + id +
+    public String toString() { return "id:" + item_id +
             "\nname:" + name +
             "\nprice:" + price +
             "\ncategory:" + category +
@@ -101,6 +101,30 @@ public class Item {
     public void setAmount(int amount) { this.amount = amount; }
 
     public int getAmount() { return amount; }
+
+    public void setItem_id(int item_id) {
+        this.item_id = item_id;
+    }
+
+    public int getStore_id() {
+        return store_id;
+    }
+
+    public void setStore_id(int store_id) {
+        this.store_id = store_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
 }
 
 

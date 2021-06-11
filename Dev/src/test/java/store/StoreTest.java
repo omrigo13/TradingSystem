@@ -4,12 +4,15 @@ import exceptions.*;
 import notifications.Observable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import policies.DefaultDiscountPolicy;
 import tradingSystem.TradingSystem;
 import user.Basket;
 import user.Subscriber;
+import user.User;
 
 
 import java.util.*;
@@ -25,25 +28,31 @@ public class StoreTest {
     @Mock private TradingSystem tradingSystem;
     private Store store;
     private Basket basket;
+    @Mock private User user;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
-        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null, new Observable());
+        store = new Store( 1,"ebay","www.ebay.com online shopping", null ,null);
         ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
-        basket = new Basket(new Store(), items);
+        basket = new Basket(user, new Store(), items);
     }
 
     @Test
     void createNewStore() throws Exception{
         //checks that store name cannot be null
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, null, "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot be with only white spaces
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "   ", "www.ebay.com online shopping", null, null));
 
         //checks that store name cannot start with a number
-        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null, new Observable()));
+        assertThrows(WrongNameException.class, () -> store = new Store( 1, "95ebay", "www.ebay.com online shopping", null, null));
     }
 
 //    @Test
@@ -91,7 +100,7 @@ public class StoreTest {
         int cucumberId= store.addItem("cucumber", 15, "vegetables", "green", 10);
         int tomato2Id= store.addItem("tomato", 20, "vegetables", "blue", 5);
         assertThrows(ItemNotFoundException.class, () -> store.searchItemById(6));
-        assertEquals(store.searchItemById(tomato2Id).getId(), 2);
+        assertEquals(store.searchItemById(tomato2Id).getItem_id(), 2);
     }
 
     @Test
@@ -322,7 +331,7 @@ public class StoreTest {
 //        assertThrows(Exception.class, () -> store.processBasketAndCalculatePrice(items, details));
         assertEquals(store.getItems().get(tomatoId).getAmount(), 5);
         store.searchItemById(carrotId).unlock();
-        assertEquals(store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().values()), null), 110.0);
+        assertEquals(store.processBasketAndCalculatePrice(basket, details, DefaultDiscountPolicy.getInstance(), null), 110.0);
         assertEquals(store.getItems().get(tomatoId).getAmount(), 3);
         store.searchItemById(tomatoId).unlock();
         store.searchItemById(cucumberID).unlock();
@@ -331,7 +340,7 @@ public class StoreTest {
         basket.addItem(store.searchItemById(0), 2);
         basket.addItem(store.searchItemById(1), 2);
         basket.addItem(store.searchItemById(2), 8);
-        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, new DefaultDiscountPolicy(store.getItems().values()), null));
+        assertThrows(WrongAmountException.class, () -> store.processBasketAndCalculatePrice(basket, details, DefaultDiscountPolicy.getInstance(), null));
     }
 
     @Test

@@ -5,16 +5,22 @@ import exceptions.QuantityPolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import java.util.Collection;
-
+@Entity
 public class QuantityPolicy extends SimplePurchasePolicy {
 
-    private final Collection<Item> items;
-    private final int minQuantity;
-    private final int maxQuantity;
+    @ManyToMany
+    @CollectionTable(name = "quantity_policy_items")
+    private Collection<Item> items;
+    private int minQuantity;
+    private int maxQuantity;
 
     // if i got 0 in minQuantity or maxQuantity i will ignore it
-    public QuantityPolicy(Collection<Item> items, int minQuantity, int maxQuantity) throws QuantityPolicyException {
+    public QuantityPolicy(int id, Collection<Item> items, int minQuantity, int maxQuantity) throws QuantityPolicyException {
+        super(id);
         this.items = items;
         if(minQuantity < 0 || maxQuantity < 0)
             throw new QuantityPolicyException();
@@ -22,6 +28,9 @@ public class QuantityPolicy extends SimplePurchasePolicy {
             throw new QuantityPolicyException();
         this.minQuantity = minQuantity;
         this.maxQuantity = maxQuantity;
+    }
+
+    public QuantityPolicy() {
     }
 
     @Override

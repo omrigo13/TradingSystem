@@ -5,27 +5,35 @@ import exceptions.QuantityDiscountPolicyException;
 import store.Item;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
-
+@Entity
 public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
 
-    private final PurchasePolicy policy;
+    @ManyToOne
+    private PurchasePolicy policy;
 
-    public QuantityDiscountPolicy(int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
-        super(discount, items);
+    public QuantityDiscountPolicy(int id, int discount, Collection<Item> items, PurchasePolicy policy) throws QuantityDiscountPolicyException {
+        super(id, discount, items);
         if(discount < 0)
             throw new QuantityDiscountPolicyException();
         this.items = items;
         if(policy == null)
         {
-            Collection<PurchasePolicy> policies = new ArrayList<>();
+            Collection<PurchasePolicy> policies = new LinkedList<>();
             policies.add(new DefaultPurchasePolicy());
-            this.policy = new AndPolicy(policies);
+            this.policy = null; //todo: Omri
+//            this.policy = new AndPolicy(policies);
+
         }
         else
             this.policy = policy;
+    }
+
+    public QuantityDiscountPolicy() {
     }
 
     @Override
@@ -34,6 +42,7 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         boolean validPolicy;
         try { validPolicy = policy.isValidPurchase(purchaseBasket); }
         catch (PolicyException p) { validPolicy = false; }
+        catch (NullPointerException e) { validPolicy = true; }
         for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
         {
             Item item = itemsAndQuantity.getKey();

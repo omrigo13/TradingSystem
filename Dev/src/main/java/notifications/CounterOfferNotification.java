@@ -2,10 +2,17 @@ package notifications;
 
 import Offer.Offer;
 
+import javax.persistence.Entity;
+
+@Entity
 public class CounterOfferNotification extends OfferNotification {
 
     public CounterOfferNotification(Offer offer) {
         super(offer);
+    }
+
+    public CounterOfferNotification() {
+
     }
 
     @Override

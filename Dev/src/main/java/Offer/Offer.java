@@ -3,18 +3,64 @@ package Offer;
 import store.Item;
 import user.Subscriber;
 
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.LinkedList;
-
+@Entity
+@IdClass(OfferId.class)
 public class Offer {
 
-    private final Subscriber subscriber;
-    private final Item item;
-    private final int quantity;
+    @ManyToOne
+    private Subscriber subscriber;
+    @ManyToOne
+    private Item item;
+    private int quantity;
     private double price;
     private boolean approved;
+    @ManyToMany
+    @CollectionTable(name = "offer_approved_owners")
     private Collection<Subscriber> approvedOwners;
+    @ManyToMany
+    @CollectionTable(name = "offer_countered_owners")
     private Collection<Subscriber> counteredOwners;
+    @Id
+    private Integer id;
+    @Id
+    private Integer store_id;
+
+
+
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public void setApprovedOwners(Collection<Subscriber> approvedOwners) {
+        this.approvedOwners = approvedOwners;
+    }
+
+    public void setCounteredOwners(Collection<Subscriber> counteredOwners) {
+        this.counteredOwners = counteredOwners;
+    }
+
+    public Integer getStore_id() {
+        return store_id;
+    }
+
+    public void setStore_id(Integer store_id) {
+        this.store_id = store_id;
+    }
 
     public Offer(Subscriber subscriber, Item item, int quantity, double price) {
         this.subscriber = subscriber;
@@ -24,6 +70,10 @@ public class Offer {
         this.approved = false;
         this.approvedOwners = new LinkedList<>();
         this.counteredOwners = new LinkedList<>();
+    }
+
+    public Offer() {
+
     }
 
     public Subscriber getSubscriber() { return subscriber; }
@@ -51,4 +101,12 @@ public class Offer {
     public void addCounteredOwner(Subscriber owner) { this.counteredOwners.add(owner); }
 
     public int getCounteredOwners() { return this.counteredOwners.size(); }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }

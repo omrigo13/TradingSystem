@@ -2,13 +2,21 @@ package notifications;
 
 import user.Subscriber;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class AppointRoleNotification extends Notification{
+
+    public AppointRoleNotification() {
+
+    }
 
     @Override
     public String toString() {
         return "assignor " + assignor.getUserName() + " assign you to be " + role + " of storeId: " + storeId;
     }
-
+    @ManyToOne
     private Subscriber assignor;
     private String role; //"owner" or "manager" only
     private int storeId;
