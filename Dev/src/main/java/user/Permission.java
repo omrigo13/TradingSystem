@@ -1,11 +1,12 @@
 package user;
 
-import org.hibernate.cfg.InheritanceState;
 import persistence.Repo;
 
 import javax.persistence.*;
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
