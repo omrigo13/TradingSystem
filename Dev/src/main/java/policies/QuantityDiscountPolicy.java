@@ -42,6 +42,7 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         boolean validPolicy;
         try { validPolicy = policy.isValidPurchase(purchaseBasket); }
         catch (PolicyException p) { validPolicy = false; }
+        catch (NullPointerException e) { validPolicy = true; }
         for(Map.Entry<Item, Integer> itemsAndQuantity: purchaseBasket.getItems().entrySet())
         {
             Item item = itemsAndQuantity.getKey();
