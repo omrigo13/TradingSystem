@@ -25,7 +25,7 @@ public class Inventory {
 //            @MapKeyJoinColumn(name="store_id")
 //    })
 //    private final Map<Item, Integer> items;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Map<Integer, Item> items;
     private final AtomicInteger id = new AtomicInteger(0);
 

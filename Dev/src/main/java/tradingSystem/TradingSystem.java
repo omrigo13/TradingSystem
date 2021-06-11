@@ -184,7 +184,7 @@ public class TradingSystem {
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
 
-        Repo.merge(store);
+        Repo.persist(store);
         Repo.merge(subscriber);
 
         return id;

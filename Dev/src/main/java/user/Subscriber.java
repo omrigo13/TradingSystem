@@ -508,7 +508,7 @@ public class Subscriber extends User {
         return new ArrayList<>(purchaseHistory);
     }
 
-    public void writeOpinionOnProduct(Store store, int itemId, String review) throws ItemException, WrongReviewException {
+    public void writeOpinionOnProduct(Store store, int itemId, String reviewText) throws ItemException, WrongReviewException {
 
 //        if (review == null || review.trim().isEmpty())
 //            throw new WrongReviewException("Review can't be empty or null");
@@ -517,24 +517,25 @@ public class Subscriber extends User {
 //        if (!itemsPurchased.get(store).contains(item))
 //            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
 
-        Review review1 = new Review(store, item, review);
-        item.addReview(review1);
-        store.notifyItemOpinion(this, review1);
+        Review review = new Review(store, item, reviewText);
+        item.addReview(review);
+        store.notifyItemOpinion(this, review);
 
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try {
-            et = em.getTransaction();
-            et.begin();
-            em.persist(review1);
-            em.merge(item);
-            et.commit();
-        }
-        catch (Exception e) {
-            if (et != null)
-                et.rollback();
-            throw new RuntimeException(e);
-        }
+        Repo.persist(review);
+//        EntityManager em = Repo.getEm();
+//        EntityTransaction et = null;
+//        try {
+//            et = em.getTransaction();
+//            et.begin();
+//            em.persist(review1);
+//            em.merge(item);
+//            et.commit();
+//        }
+//        catch (Exception e) {
+//            if (et != null)
+//                et.rollback();
+//            throw new RuntimeException(e);
+//        }
     }
 
     public void subscribe(Store store){

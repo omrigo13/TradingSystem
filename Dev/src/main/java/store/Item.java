@@ -21,7 +21,7 @@ public class Item {
     private String subCategory;
     private double rating;
     private boolean isLocked = false;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Collection<Review> reviews = new LinkedList<>();
     private int amount;
 
