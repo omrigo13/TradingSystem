@@ -264,6 +264,8 @@ public class Inventory {
         Item item = searchItem(itemID);
         ItemId tempItemId = new ItemId(item.getItem_id(), item.getStore_id());
 
+        items.remove(itemID);
+
         EntityManager em = Repo.getEm();
 
         Item tempItem = em.find(Item.class, tempItemId);
