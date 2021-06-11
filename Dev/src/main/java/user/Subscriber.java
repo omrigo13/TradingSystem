@@ -526,7 +526,7 @@ public class Subscriber extends User {
         try{
             et = em.getTransaction();
             et.begin();
-            em.merge(review1);
+            em.persist(review1);
             em.merge(item);
             et.commit();
         }
