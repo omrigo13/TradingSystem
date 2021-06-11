@@ -1,8 +1,15 @@
 package notifications;
 
+import javax.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Notification {
 
     private boolean isShown = false;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
     public boolean isShown() {
         return isShown;
@@ -22,4 +29,12 @@ public abstract class Notification {
     }
 
     public abstract String print();
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
 }

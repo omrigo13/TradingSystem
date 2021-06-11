@@ -1,15 +1,25 @@
 package policies;
 
+import persistence.Repo;
 import store.Item;
 import user.Basket;
 
-import java.util.Collection;
+import javax.persistence.Entity;
 import java.util.Map;
-
+@Entity
 public class DefaultDiscountPolicy extends SimpleDiscountPolicy {
+    private static DefaultDiscountPolicy p = null;
 
-    public DefaultDiscountPolicy(Collection<Item> items) {
-        super(0, items);
+    public DefaultDiscountPolicy() {
+        super(-1, 0, null);
+    }
+
+    public static DefaultDiscountPolicy getInstance() {
+        if(p==null) {
+            p = new DefaultDiscountPolicy();
+            Repo.merge(p);
+        }
+        return p;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package notifications;
 
 import Offer.Offer;
+import persistence.Repo;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -8,10 +9,37 @@ import user.Basket;
 import user.Subscriber;
 import user.User;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
+@Entity
+public class Observable implements Serializable {
+    @Id
+    private int storeId;
 
-public class Observable {
+    @ManyToMany
     private Collection<Subscriber> observers = new HashSet<>();
+
+    public Observable(int store_id) {
+        this.storeId = store_id;
+    }
+
+    public Observable() {
+
+    }
+
+    public int getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
+
+    public void setObservers(Collection<Subscriber> observers) {
+        this.observers = observers;
+    }
+
 
     public void subscribe(Subscriber observer){
         if(!observers.contains(observer))
@@ -112,12 +140,17 @@ public class Observable {
         toRemove.notifyNotification(n);
 
         unsubscribe(toRemove);
+        Repo.merge(this);
+
     }
 
     public void notifyRoleAppointment(Subscriber assignor, Subscriber toAssign, int storeId, String role){
         AppointRoleNotification n = new AppointRoleNotification(assignor, role, storeId);
         subscribe(toAssign);
+        Repo.merge(this);
+
         toAssign.notifyNotification(n);
+
 
     }
 }

@@ -1,6 +1,8 @@
 package user;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Store;
 
 import static org.mockito.Mockito.mock;
@@ -14,6 +16,11 @@ public class EditPolicyPermissionTest {
     private final StorePermission permission = EditPolicyPermission.getInstance(store);
     private final StorePermission samePermission = EditPolicyPermission.getInstance(store);
     private final StorePermission differentPermission = EditPolicyPermission.getInstance(differentStore);
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @Test
     void testPermissionSame() {

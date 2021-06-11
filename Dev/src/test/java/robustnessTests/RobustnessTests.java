@@ -6,7 +6,9 @@ import exceptions.InvalidActionException;
 import exceptions.PaymentSystemException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemService;
 
 import static org.testng.Assert.assertThrows;
@@ -25,6 +27,11 @@ public class RobustnessTests {
     private DeliverySystem deliverySystem;
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     //setup with payment system that only throws exceptions
     public void setUpBadPaymentSystem() throws Exception {

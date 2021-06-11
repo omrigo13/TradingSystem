@@ -2,13 +2,23 @@ package notifications;
 
 import user.User;
 
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+@Entity
 public class MessageNotification extends Notification{
+    @Transient
     private User sender;
     private String message;
 
     public MessageNotification(User sender, String message) {
         this.sender = sender;
         this.message = message;
+    }
+
+    public MessageNotification() {
+
     }
 
     public User getSender() {

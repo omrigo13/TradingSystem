@@ -2,8 +2,10 @@ package user;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 
@@ -16,20 +18,26 @@ public class BasketTest {
 
     private Basket basket;
 
-    @Mock Store store;
-    @Mock Item item;
+    @Mock private Store store;
+    @Mock private Item item;
+    @Mock private User user;
 
     private final ConcurrentHashMap<Item, Integer> items = new ConcurrentHashMap<>();
 
     private final int quantity = 3;
     private final int differentQuantity = 5;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
     @BeforeMethod
     void setUp() {
         MockitoAnnotations.openMocks(this);
         items.clear();
         items.put(item, quantity);
-        basket = new Basket(store, items);
+        basket = new Basket(user, store, items);
     }
 
     @Test

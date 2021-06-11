@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Item;
@@ -47,11 +48,16 @@ public class PurchaseLastItemByDifferentUsers {
     private final DiscountPolicy discountPolicy = mock(DiscountPolicy.class);
     private final Observable observable = mock(Observable.class);
 
-    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy, observable);
+    private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
     private final Map<Integer, Item> storeItems = store.getItems();
-    private final Basket basket = new Basket(store, basketItems);
+    private final Basket basket = new Basket(user1, store, basketItems);
 
     public PurchaseLastItemByDifferentUsers() throws ItemException {
+    }
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
     }
 
     @BeforeClass
@@ -78,7 +84,7 @@ public class PurchaseLastItemByDifferentUsers {
             if (trialNumber % 2 == 0) {
                 int currentQuantity;
                 synchronized (storeItems) {
-                    currentQuantity = storeItems.compute(item.getId(), (k, v) -> {
+                    currentQuantity = storeItems.compute(item.getItem_id(), (k, v) -> {
                         item.setAmount(item.getAmount() + 1);
                         return item;
                     }).getAmount();

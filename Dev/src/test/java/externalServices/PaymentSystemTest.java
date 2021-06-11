@@ -2,14 +2,21 @@ package externalServices;
 
 import exceptions.PaymentSystemException;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 
 import static org.testng.AssertJUnit.*;
 
 public class PaymentSystemTest {
 
     private PaymentSystem paymentSystem;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws PaymentSystemException {

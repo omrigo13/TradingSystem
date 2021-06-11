@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 
@@ -34,6 +35,7 @@ public class GiveManagerPermissionByOtherOwners {
     @BeforeClass
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        RepoMock.enable();
         Set<Permission> targetPermissions = new HashSet<>();
         Set<Permission> source1Permissions = new HashSet<>();
         Set<Permission> source2Permissions = new HashSet<>();

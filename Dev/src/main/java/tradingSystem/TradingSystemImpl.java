@@ -8,10 +8,12 @@ import exceptions.NotLoggedInException;
 import notifications.Notification;
 import externalServices.DeliveryData;
 import externalServices.PaymentData;
+import persistence.Repo;
 import store.Item;
 import store.Store;
 import user.*;
 
+import javax.persistence.EntityTransaction;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -54,6 +56,7 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         Item item = store.searchItemById(Integer.parseInt(productId));
         tradingSystem.getUserByConnectionId(connectionId).getBasket(store).addItem(item, quantity);
+
     }
 
     public void addItemToBasketByOffer(String connectionId, String storeId, String productId, int quantity, double price) throws InvalidActionException {
@@ -306,7 +309,29 @@ public class TradingSystemImpl {
 
         Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+//        return "" + subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        int itemId = subscriber.addStoreItem(store, itemName, category, subCategory, quantity, price);
+        Map<Integer, Item> map = store.getItems();
+        Item item = map.get(itemId);
+
+        EntityTransaction et = null;
+        try{
+//            et = em.getTransaction();
+//            et.begin();
+//            em.merge(item);
+//            et.commit();
+        }
+        catch (Exception e){
+            if(et != null){
+                et.rollback();
+            }
+            e.printStackTrace();
+        }
+        finally {
+//            em.close();
+        }
+
+        return "" + itemId;
     }
 
     public void deleteProductFromStore(String connectionId, String storeId, String itemId) throws InvalidActionException {
@@ -330,6 +355,7 @@ public class TradingSystemImpl {
         Subscriber target = tradingSystem.getSubscriberByUserName(targetUserName);
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.addOwnerPermission(target, store);
+
         store.appointRole(subscriber, target, "owner");
         store.subscribe(subscriber);
     }
@@ -393,6 +419,8 @@ public class TradingSystemImpl {
 
         subscriber.removeManagerPermission(target, store);
         store.removeOwnerOrManager(subscriber, target);
+
+
 
         return true;
     }

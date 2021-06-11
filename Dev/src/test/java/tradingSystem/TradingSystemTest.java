@@ -9,8 +9,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 import user.*;
@@ -47,6 +49,11 @@ public class TradingSystemTest {
     private final String userName = "Johnny";
     private final String password = "Cash";
     private final int storeId = 984585;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws InvalidActionException {

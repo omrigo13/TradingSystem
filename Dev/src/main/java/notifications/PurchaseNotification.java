@@ -6,18 +6,30 @@ import store.Store;
 import user.Subscriber;
 import user.User;
 
+import javax.persistence.*;
 import java.util.Map;
-
+@Entity
 public class PurchaseNotification extends Notification{
-
+    //todo: replace with username/guest string
+    @Transient
     private User buyer = null;
+    @ElementCollection
+    @MapKeyJoinColumns({
+            @MapKeyJoinColumn(name="item_id"),
+            @MapKeyJoinColumn(name="store_id")
+    })
     private Map<Item, Integer> basket = null;
+    @ManyToOne
     private Store store = null;
 
     public PurchaseNotification(Store store, User buyer, Map<Item, Integer> basket) {
         this.store = store;
         this.buyer = buyer;
         this.basket = basket;
+    }
+
+    public PurchaseNotification() {
+
     }
 
     public Store getStore() {

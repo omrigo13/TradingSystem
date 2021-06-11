@@ -6,21 +6,49 @@ package store;
 
 import Offer.Offer;
 import exceptions.*;
+import persistence.Repo;
 import policies.DiscountPolicy;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
+@Entity
 public class Inventory {
+    @Id
+    private int storeId;
 
-    private final Map<Integer, Item> items;
+
+//    @ElementCollection
+//    @MapKeyJoinColumns({
+//            @MapKeyJoinColumn(name="item_id"),
+//            @MapKeyJoinColumn(name="store_id")
+//    })
+//    private final Map<Item, Integer> items;
+    @OneToMany(cascade = CascadeType.ALL)
+    private Map<Integer, Item> items;
     private final AtomicInteger id = new AtomicInteger(0);
+
+    public AtomicInteger getId() {
+        return id;
+    }
+
+    public int getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(int storeId) {
+        this.storeId = storeId;
+    }
 
     public Inventory() {
         this.items = Collections.synchronizedMap(new HashMap<>());
+    }
+
+    public Inventory(int storeId) {
+        this();
+        this.items = Collections.synchronizedMap(new HashMap<>());
+        this.storeId = storeId;
     }
 
     /**
@@ -45,7 +73,25 @@ public class Inventory {
             for (Item item : items.values())
                 if (item.getName().equalsIgnoreCase(name) && item.getCategory().equalsIgnoreCase(category) && item.getSubCategory().equalsIgnoreCase(subCategory))
                     throw new ItemAlreadyExistsException("item already exists");
-            items.putIfAbsent(id.get(), new Item(id.get(), name, price, category, subCategory, 0, amount));
+            items.putIfAbsent(id.get(), new Item(storeId, id.get(), name, price, category, subCategory, 0, amount));
+
+            Item item =   new Item(storeId, id.get(), name, price, category, subCategory, 0, amount);
+            items.putIfAbsent(item.getItem_id(), item);
+            EntityManager em = Repo.getEm();
+            EntityTransaction et = null;
+            try{
+                et = em.getTransaction();
+                et.begin();
+                em.merge(item);
+                em.merge(this);
+                et.commit();
+            }
+            catch (Exception e) {
+                if(et != null){
+                    et.rollback();
+                }
+                throw new RuntimeException(e);
+            }
             return id.getAndIncrement();
         }
     }
@@ -177,6 +223,22 @@ public class Inventory {
         if(items.get(itemId) == null)
             throw new ItemNotFoundException("no item in inventory matching item id");
         items.get(itemId).setAmount(amount);
+
+        Item item = searchItem(itemId);
+        EntityManager em = Repo.getEm();
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(item);
+            em.merge(this);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null)
+                et.rollback();
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -199,10 +261,29 @@ public class Inventory {
      * @param itemID - the id of the item
      * @exception ItemNotFoundException - when the wanted item does not exist in the inventory */
     public Item removeItem(int itemID) throws ItemException {
-        if(items.get(itemID) == null)
-            throw new ItemNotFoundException("no item in inventory matching item id");
-        Item item = this.items.get(itemID);
+        Item item = searchItem(itemID);
+        ItemId tempItemId = new ItemId(item.getItem_id(), item.getStore_id());
+
         items.remove(itemID);
+
+        EntityManager em = Repo.getEm();
+
+        Item tempItem = em.find(Item.class, tempItemId);
+//        em.remove(tempItem);
+        EntityTransaction et = null;
+        try{
+            et = em.getTransaction();
+            et.begin();
+            em.merge(this);
+            em.remove(tempItem);
+            et.commit();
+        }
+        catch (Exception e){
+            if(et != null)
+                et.rollback();
+        throw new RuntimeException(e);
+        }
+
         return item;
     }
 
@@ -227,10 +308,26 @@ public class Inventory {
                item.setSubCategory(newSubCategory);
 
             if(newQuantity !=null)
-                changeQuantity(itemID,newQuantity);
+                        changeQuantity(itemID,newQuantity);
 
             if(newPrice != null)
                 item.setPrice(newPrice);
+
+            EntityManager em = Repo.getEm();
+            EntityTransaction et = null;
+            try{
+                et = em.getTransaction();
+                et.begin();
+                em.merge(item);
+                em.merge(this);
+                et.commit();
+            }
+            catch (Exception e){
+                if(et != null){
+                    et.rollback();
+                }
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -240,7 +337,7 @@ public class Inventory {
         synchronized (this.items) {
             // check that every item has quantity in inventory
             for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
-                checkAmount(entry.getKey().getId(), entry.getValue());
+                checkAmount(entry.getKey().getItem_id(), entry.getValue());
             }
 
             if(userOffers != null) {
@@ -249,7 +346,7 @@ public class Inventory {
                         if (offer.getItem().equals(item) && offer.isApproved() && offer.getQuantity() != 0) {
                             totalValue += offer.getQuantity() * offer.getPrice();
                             basket.removeItem(item);
-                            this.items.get(item.getId()).setAmount(item.getAmount() - offer.getQuantity());
+                            this.items.get(item.getItem_id()).setAmount(item.getAmount() - offer.getQuantity());
                             details.append("\tItem: ").append(item.getName()).append(" Price: ").append(offer.getPrice())
                                     .append(" Quantity: ").append(offer.getQuantity()).append("\n");
                         }
@@ -261,7 +358,7 @@ public class Inventory {
             for (Map.Entry<Item, Integer> entry : basket.getItems().entrySet()) {
                 Item item = entry.getKey();
                 int quantity = entry.getValue();
-                this.items.get(item.getId()).setAmount(item.getAmount() - quantity);
+                this.items.get(item.getItem_id()).setAmount(item.getAmount() - quantity);
                 details.append("\tItem: ").append(item.getName()).append(" Price: ").append(item.getPrice())
                       .append(" Quantity: ").append(quantity).append("\n");
             }

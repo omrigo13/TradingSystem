@@ -2,6 +2,8 @@ package store;
 
 import Offer.Offer;
 import exceptions.*;
+import org.hibernate.annotations.Cascade;
+import persistence.Repo;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
 import policies.DiscountPolicy;
@@ -13,32 +15,66 @@ import review.Review;
 import user.Subscriber;
 import user.User;
 
+import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Entity
 public class Store {
 
 
-
-    private int id;
+    @Id
+    private Integer id = 0;
     private String name;
     private String description;
     private double rating;
+    @OneToOne
     private DiscountPolicy discountPolicy;
+    @OneToOne
     private PurchasePolicy purchasePolicy;
     //private String founder;
     private boolean isActive = true;
-    private final Inventory inventory = new Inventory();
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "id")
+    @MapsId
+    private Inventory inventory = new Inventory();
+    @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
-    private Observable observable;
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private Observable observable = new Observable(0);
+    @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
+    @OneToMany(cascade = CascadeType.ALL)
     private final Map<Integer, Offer> storeOffers = new HashMap<>();
     private final AtomicInteger offerIdCounter = new AtomicInteger();
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public Collection<String> getPurchases() {
+        return purchases;
+    }
+
+    public AtomicInteger getOfferIdCounter() {
+        return offerIdCounter;
+    }
 
     public Store() {
-        this.observable = new Observable();
     }
 
     /**
@@ -49,7 +85,7 @@ public class Store {
      *                    //  * @param founder - the fonder of the new store
      * @throws WrongNameException
      */
-    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy, Observable observable) throws ItemException {
+    public Store(int id, String name, String description, PurchasePolicy purchasePolicy, DiscountPolicy discountPolicy) throws ItemException {
         if (name == null || name.isEmpty() || name.trim().isEmpty())
             throw new WrongNameException("store name is null or contains only white spaces");
         if (name.charAt(0) >= '0' && name.charAt(0) <= '9')
@@ -65,16 +101,21 @@ public class Store {
         // this.founder = founder;
 //        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
-            this.purchasePolicy = new DefaultPurchasePolicy();
+            this.purchasePolicy = DefaultPurchasePolicy.getInstance();
         else
             this.purchasePolicy = purchasePolicy;
-        if(discountPolicy == null)
-            this.discountPolicy = new DefaultDiscountPolicy(this.inventory.getItems().values());
+        this.inventory = new Inventory(id);
+
+        if(discountPolicy == null){
+            DefaultDiscountPolicy defaultDiscountPolicy = DefaultDiscountPolicy.getInstance();
+            this.discountPolicy = defaultDiscountPolicy;
+
+        }
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
 //        this.observable = observable;
-        this.observable = new Observable();
+        this.observable = new Observable(this.id);
     }
 
     public int getId() {
@@ -97,6 +138,10 @@ public class Store {
         if (rating < 0)
             throw new WrongRatingException("rating must be a positive number");
         this.rating = rating;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
     }
 
     public Inventory getInventory() {
@@ -323,7 +368,10 @@ public class Store {
         return discountPolicy;
     }
 
-    public void setDiscountPolicy(DiscountPolicy discountPolicy) { this.discountPolicy = discountPolicy; }
+    public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+        this.discountPolicy = discountPolicy;
+
+    }
 
     public void setPurchasePolicy(PurchasePolicy purchasePolicy) { this.purchasePolicy = purchasePolicy; }
 
@@ -369,7 +417,7 @@ public class Store {
     public void rollBack(Map<Item, Integer> items) {
         synchronized (inventory.getItems()) {
             for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                inventory.getItems().get(entry.getKey().getId()).setAmount(entry.getKey().getAmount() + entry.getValue());
+                inventory.getItems().get(entry.getKey().getItem_id()).setAmount(entry.getKey().getAmount() + entry.getValue());
             }
         }
         unlockItems(items.keySet());
@@ -405,13 +453,16 @@ public class Store {
         observable.notifyPurchase(this, buyer, basket);
     }
 
-    public void notifyNewOffer(Offer offer) { observable.notifyNewOffer(offer); }
+    public void notifyNewOffer(Offer offer) {
+        observable.notifyNewOffer(offer); }
 
     public void notifyApprovedOffer(Offer offer) { observable.notifyApprovedOffer(offer); }
 
     public void notifyDeclinedOffer(Offer offer) { observable.notifyDeclinedOffer(offer); }
 
-    public void notifyCounterOffer(Offer offer) { observable.notifyCounterOffer(offer); }
+    public void notifyCounterOffer(Offer offer) {
+        observable.notifyCounterOffer(offer);
+    }
 
     public void subscribe(Subscriber subscriber) {
         observable.subscribe(subscriber);
@@ -432,7 +483,15 @@ public class Store {
     public void setObservable(Observable observable) { this.observable = observable; }
 
     public void addOffer(Subscriber subscriber, Item item, int quantity, double price) {
-        this.storeOffers.put(offerIdCounter.getAndIncrement(), new Offer(subscriber, item, quantity, price));
+        int id = offerIdCounter.getAndIncrement();
+        Offer offer = new Offer(subscriber, item, quantity, price);
+        this.storeOffers.put(id, offer);
+        offer.setId(id);
+        offer.setStore_id(this.id);
+
+        Repo.persist(offer);
+        Repo.merge(this);
+
     }
 
     public Collection<String> getOffers() {
@@ -453,7 +512,9 @@ public class Store {
 
     //for appointing store owner or manager
     public void appointRole(Subscriber subscriber, Subscriber target, String role) {
+
         observable.notifyRoleAppointment(subscriber, target, this.id, role);
+
     }
 
     public Offer searchOfferByItemAndSubscriber(Subscriber subscriber, Item item) {

@@ -1,6 +1,8 @@
 package user;
 
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Store;
 
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,11 @@ public class AppointerPermissionTest {
     private final StorePermission differentStorePermission = AppointerPermission.getInstance(target, differentStore);
     private final StorePermission differentAllPermission = AppointerPermission.getInstance(differentTarget, differentStore);
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+    
     @Test
     void testPermissionSame() {
         assertSame(permission, samePermission);

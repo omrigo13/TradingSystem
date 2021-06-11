@@ -3,8 +3,10 @@ package acceptanceTests;
 import exceptions.InvalidActionException;
 import exceptions.NoPermissionException;
 import exceptions.NotLoggedInException;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemService;
 
 import java.text.SimpleDateFormat;
@@ -20,6 +22,11 @@ public class AcceptanceTestsV4 {
     private String storeId1;
     private String store1FounderUserName = "store1FounderUserName", store1Manager1UserName = "Store1Manager1UserName", subs1UserName = "subs1UserName";
     private String date;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws InvalidActionException {

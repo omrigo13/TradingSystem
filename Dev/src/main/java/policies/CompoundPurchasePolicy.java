@@ -3,19 +3,28 @@ package policies;
 import exceptions.PolicyException;
 import user.Basket;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
-public abstract class CompoundPurchasePolicy implements PurchasePolicy {
+@Entity
+public abstract class CompoundPurchasePolicy extends PurchasePolicy {
 
+    @ManyToMany
+    @CollectionTable(name = "compound_purchase_policy_purchase_policies")
     protected Collection<PurchasePolicy> purchasePolicies;
 
-    public CompoundPurchasePolicy(Collection<PurchasePolicy> purchasePolicies)
+    public CompoundPurchasePolicy(int id, Collection<PurchasePolicy> purchasePolicies)
     {
+        super(id);
         if(purchasePolicies == null)
-            this.purchasePolicies = new ArrayList<>();
+            this.purchasePolicies = new LinkedList<>();
         else
             this.purchasePolicies = purchasePolicies;
+    }
+
+    public CompoundPurchasePolicy() {
     }
 
     public abstract boolean isValidPurchase(Basket purchaseBasket) throws PolicyException;
