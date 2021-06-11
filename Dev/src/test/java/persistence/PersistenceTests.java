@@ -88,6 +88,8 @@ public class PersistenceTests {
 
     @Test
     void review_item() throws InvalidActionException {
+        service.addItemToBasket(subs2Id, storeId1, productId2, 1);
+        service.purchaseCart(subs2Id, card_number, month, year, holder, ccv, subs2UserName, subs2UserName, address, city, country, zip);
         service.writeOpinionOnProduct(subs2Id, storeId1, productId2, "reviewwww!!");
 
         //purchase notification test
