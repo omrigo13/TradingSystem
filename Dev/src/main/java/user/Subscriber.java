@@ -15,12 +15,14 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 @Entity
 public class Subscriber extends User {
+
     private int id;
     @Id
     private String userName;
-    @Transient
+    @ManyToMany
     private Set<Permission> permissions; // synchronized manually
     @Transient
     private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
@@ -38,30 +40,11 @@ public class Subscriber extends User {
     @NotNull
     protected Basket createBasket(Store store) {
         Basket basket = new Basket(this, store, new ConcurrentHashMap<>());
-
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(basket);
-            em.merge(this);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
-
+        Repo.persist(basket);
+        Repo.merge(this);
 
         return basket;
     }
-
 
     public int getId() {
         return id;
@@ -69,6 +52,10 @@ public class Subscriber extends User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public void setUserName(String userName) {
@@ -121,10 +108,6 @@ public class Subscriber extends User {
 
     public Subscriber() {
 
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     @Override

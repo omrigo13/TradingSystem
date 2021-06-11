@@ -2,18 +2,22 @@ package user;
 
 import store.Store;
 
+import javax.persistence.Entity;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+@Entity
 public class ManageInventoryPermission extends StorePermission
 {
     private ManageInventoryPermission(Store store) {
         super(store);
     }
 
-    public static ManageInventoryPermission getInstance(Store store) {
+    public ManageInventoryPermission() {
+    }
 
-        return (ManageInventoryPermission)pool.computeIfAbsent(new ManageInventoryPermission(store), WeakReference::new).get();
+    public static ManageInventoryPermission getInstance(Store store) {
+        return getInstance(new ManageInventoryPermission(store));
     }
 
     @Override

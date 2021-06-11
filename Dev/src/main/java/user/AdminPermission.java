@@ -1,15 +1,15 @@
 package user;
 
-import java.lang.ref.WeakReference;
+import javax.persistence.Entity;
 
+@Entity
 public class AdminPermission extends Permission
 {
-    private AdminPermission() {
+    public AdminPermission() {
     }
 
     public static AdminPermission getInstance() {
-
-        return (AdminPermission)pool.computeIfAbsent(new AdminPermission(), WeakReference::new).get();
+        return getInstance(new AdminPermission());
     }
 
     @Override

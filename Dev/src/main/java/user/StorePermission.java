@@ -2,14 +2,17 @@ package user;
 
 import store.Store;
 
-import java.util.Collections;
-import java.util.Map;
+import javax.persistence.*;
 import java.util.Objects;
-import java.util.WeakHashMap;
 
+@MappedSuperclass
 public abstract class StorePermission extends Permission {
 
-    protected final Store store;
+    @ManyToOne
+    protected Store store;
+
+    public StorePermission() {
+    }
 
     protected StorePermission(Store store) {
         this.store = store;
@@ -17,6 +20,10 @@ public abstract class StorePermission extends Permission {
 
     public Store getStore() {
         return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
     }
 
     @Override

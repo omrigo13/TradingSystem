@@ -1,26 +1,39 @@
 package user;
 
+import persistence.Repo;
 import store.Store;
 
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+@Entity
 public class AppointerPermission extends StorePermission
 {
-    private final Subscriber target;
+    @ManyToOne
+    private Subscriber target;
 
     private AppointerPermission(Subscriber target, Store store) {
         super(store);
         this.target = target;
     }
 
+    public AppointerPermission() {
+    }
+
     public Subscriber getTarget() {
         return target;
     }
 
-    public static AppointerPermission getInstance(Subscriber target, Store store) {
+    public void setTarget(Subscriber target) {
+        this.target = target;
+    }
 
-        return (AppointerPermission)pool.computeIfAbsent(new AppointerPermission(target, store), WeakReference::new).get();
+    public static AppointerPermission getInstance(Subscriber target, Store store) {
+        return getInstance(new AppointerPermission(target, store));
     }
 
     @Override
