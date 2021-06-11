@@ -70,7 +70,7 @@ public class LoadTestItemAndStoreAndPurchaseTest {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 1000, invocationCount = 10000, timeOut = 200000)
+    @Test (threadPoolSize = 1000, invocationCount = 1000, timeOut = 200000) // invocation can be changed to 10000 but it will be too slow
     public void complexTest() throws InvalidActionException {
         int i = subscriberId.getAndIncrement();
         String conn = tradingSystemService.connect();
