@@ -9,7 +9,6 @@ import notifications.Observable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeClass;
-import org.mockito.stubbing.OngoingStubbing;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import persistence.RepoMock;
@@ -118,7 +117,7 @@ public class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(1, user.getCart().size());
         assertTrue(user.getCart().get(store).getItems().containsKey(item));
-        assertEquals(5, store.getItems().get(item.getId()).getAmount());
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
     }
 
     @Test
@@ -132,7 +131,7 @@ public class UserTest {
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
         assertEquals(1, user.getCart().size());
         assertTrue(user.getCart().get(store).getItems().containsKey(item));
-        assertEquals(5, store.getItems().get(item.getId()).getAmount());
+        assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
     }
 
     @Test
