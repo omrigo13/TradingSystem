@@ -1,8 +1,10 @@
 package acceptanceTests;
 
 import exceptions.*;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemService;
 
 import java.text.SimpleDateFormat;
@@ -26,6 +28,11 @@ public class AcceptanceTestsV3 {
     private final String today = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
     private int quantityPolicy, quantityPolicy2;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+    
     @BeforeMethod
     void setUp() throws InvalidActionException {
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator

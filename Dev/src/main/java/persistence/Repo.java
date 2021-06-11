@@ -1,7 +1,5 @@
 package persistence;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import store.Item;
 import store.Store;
 import user.Basket;
@@ -12,28 +10,15 @@ import java.util.List;
 
 public class Repo {
 
-    private static Repo repo_instance = null;
-    private static EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence.createEntityManagerFactory("TradingSystem");
-    private static EntityManager em = ENTITY_MANAGER_FACTORY.createEntityManager();
-
-    private static SessionFactory sessionFactory;
-
+    private static Repo repo = null;
+    private static EntityManager em;
 
     private Repo() {
     }
 
-    public static void setRepo_instance(Repo repo){
-        repo_instance = repo;
-    }
-
-    private static Session getSession() {
-        if (sessionFactory == null) {
-            sessionFactory = new DatabaseConfigBuilder()
-                    .buildConfiguration()
-                    .buildSessionFactory();
-        }
-
-        return sessionFactory.getCurrentSession();
+    public static void set(Repo repo, EntityManager em, EntityTransaction et) {
+        Repo.repo = repo;
+        Repo.em = em;
     }
 
     public List<Item> getItems() {
@@ -105,12 +90,15 @@ public class Repo {
     }
 
     public static Repo getInstance(){
-        if(repo_instance == null)
-            repo_instance = new Repo();
-        return repo_instance;
+        if(repo == null)
+            repo = new Repo();
+        return repo;
     }
 
     public static EntityManager getEm() {
+        if (em == null)
+            em = Persistence.createEntityManagerFactory("TradingSystem").createEntityManager();
+
         return em;
     }
 
@@ -132,8 +120,6 @@ public class Repo {
 //            em.close();
         }
     }
-
-
 
     public static <T> void persist(T obj){
         EntityTransaction et = null;

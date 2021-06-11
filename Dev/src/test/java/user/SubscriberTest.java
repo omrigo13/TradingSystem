@@ -4,8 +4,10 @@ import Offer.Offer;
 import exceptions.*;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 
@@ -49,6 +51,10 @@ public class SubscriberTest {
     private LinkedList<String> purchaseHistory;
     private Item item;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws NoSuchFieldException, IllegalAccessException {

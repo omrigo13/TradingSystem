@@ -8,8 +8,10 @@ import externalServices.PaymentSystem;
 import notifications.Observable;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import policies.DefaultDiscountPolicy;
 import policies.DefaultPurchasePolicy;
 import store.Item;
@@ -35,6 +37,11 @@ public class UserTest {
     private Store store;
     private ConcurrentHashMap<Item, Integer> items;
     private Item item;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() {

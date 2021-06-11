@@ -2,7 +2,9 @@ package notifications;
 
 import exceptions.ItemException;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import persistence.RepoMock;
 import review.Review;
 import store.Item;
 import store.Store;
@@ -30,6 +32,10 @@ public class NotificationsTests {
     private Subscriber buyer2;
     private Basket basket2;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void createUsers(){

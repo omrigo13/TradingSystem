@@ -5,6 +5,7 @@ import externalServices.*;
 import notifications.Observable;
 import org.mockito.*;
 import org.testng.annotations.*;
+import persistence.RepoMock;
 import policies.*;
 import store.*;
 
@@ -46,6 +47,11 @@ public class PurchaseRemovedItemFromStore {
     private final AtomicInteger itemsAddedToStore = new AtomicInteger();
 
     public PurchaseRemovedItemFromStore() throws ItemException {
+    }
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
     }
 
     @BeforeClass

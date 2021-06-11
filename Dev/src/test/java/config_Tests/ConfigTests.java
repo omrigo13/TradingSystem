@@ -3,12 +3,20 @@ package config_Tests;
 import exceptions.InvalidActionException;
 import main.Config;
 import main.Main;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 
 import static org.testng.Assert.assertThrows;
 
 
 public class ConfigTests {
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
     public static void main(String[] args) throws InvalidActionException, ClassNotFoundException {
         badScript1();
 

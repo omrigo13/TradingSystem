@@ -5,8 +5,10 @@ import exceptions.SubscriberDoesNotExistException;
 import exceptions.WrongPasswordException;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +33,11 @@ public class UserAuthenticationTest {
     private final String userName = "Jones";
     private final String password = "jones12345";
     private final SecureRandom random = new SecureRandom();
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     void setUp() throws NoSuchAlgorithmException {

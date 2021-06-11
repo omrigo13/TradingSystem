@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Store;
 import tradingSystem.TradingSystem;
 import tradingSystem.TradingSystemBuilder;
@@ -36,6 +37,7 @@ public class CreateManyStoresWithTheSameNameStressTest {
     @BeforeClass
     void setUp() throws InvalidActionException {
         MockitoAnnotations.openMocks(this);
+        RepoMock.enable();
         stores = new ConcurrentHashMap<>();
         String userName = "Johnny";
         when(subscribers.get(userName)).thenReturn(subscriber);

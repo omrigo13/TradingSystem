@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Item;
@@ -52,6 +53,11 @@ public class PurchaseLastItemByDifferentUsers {
     private final Basket basket = new Basket(user1, store, basketItems);
 
     public PurchaseLastItemByDifferentUsers() throws ItemException {
+    }
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
     }
 
     @BeforeClass

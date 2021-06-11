@@ -25,7 +25,7 @@ public class Store {
 
 
     @Id
-    private Integer id;
+    private Integer id = 0;
     private String name;
     private String description;
     private double rating;
@@ -38,12 +38,12 @@ public class Store {
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "id")
     @MapsId
-    private Inventory inventory;
+    private Inventory inventory = new Inventory();
     @ElementCollection
     private final Collection<String> purchases = new LinkedList<>();
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private Observable observable;
+    private Observable observable = new Observable(0);
     @ElementCollection
     private final Map<String, Double> totalValuePerDay = new HashMap<>();
     @OneToMany(cascade = CascadeType.ALL)

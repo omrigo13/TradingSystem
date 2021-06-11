@@ -4,8 +4,10 @@ import exceptions.AlreadyOwnerException;
 import exceptions.NoPermissionException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import store.Item;
 import store.Store;
 
@@ -25,6 +27,11 @@ public class SubscriberConcurrencyTest {
     @Mock private Store store;
     @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
     @Mock private Collection<String> purchaseHistory;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeMethod
     public void setUp() {
