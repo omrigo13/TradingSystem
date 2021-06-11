@@ -522,20 +522,6 @@ public class Subscriber extends User {
         store.notifyItemOpinion(this, review);
 
         Repo.persist(review);
-//        EntityManager em = Repo.getEm();
-//        EntityTransaction et = null;
-//        try {
-//            et = em.getTransaction();
-//            et.begin();
-//            em.persist(review1);
-//            em.merge(item);
-//            et.commit();
-//        }
-//        catch (Exception e) {
-//            if (et != null)
-//                et.rollback();
-//            throw new RuntimeException(e);
-//        }
     }
 
     public void subscribe(Store store){
