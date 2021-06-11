@@ -29,13 +29,9 @@ public class Repo {
             list = tq.getResultList();
             return list;
         }
-        catch(NoResultException e){
-            e.printStackTrace();
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-        return null;
     }
 
     public List<Subscriber> getSubscribers() {
@@ -46,13 +42,9 @@ public class Repo {
             list = tq.getResultList();
             return list;
         }
-        catch(NoResultException e){
-            e.printStackTrace();
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-        return null;
     }
 
     public List<Store> getStores() {
@@ -63,13 +55,9 @@ public class Repo {
             list = tq.getResultList();
             return list;
         }
-        catch(NoResultException e){
-            e.printStackTrace();
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-        return null;
     }
 
     public List<Basket> getBaskets() {
@@ -80,13 +68,9 @@ public class Repo {
             list = tq.getResultList();
             return list;
         }
-        catch(NoResultException e){
-            e.printStackTrace();
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-        return null;
     }
 
     public static Repo getInstance(){
@@ -110,14 +94,10 @@ public class Repo {
             em.merge(obj);
             et.commit();
         }
-        catch (Exception e){
-            if(et != null){
+        catch (Exception e) {
+            if(et != null)
                 et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
+            throw new RuntimeException(e);
         }
     }
 
@@ -129,14 +109,10 @@ public class Repo {
             em.persist(obj);
             et.commit();
         }
-        catch (Exception e){
-            if(et != null){
+        catch (Exception e) {
+            if(et != null)
                 et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
+            throw new RuntimeException(e);
         }
     }
 

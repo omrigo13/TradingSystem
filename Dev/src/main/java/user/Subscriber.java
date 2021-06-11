@@ -523,62 +523,21 @@ public class Subscriber extends User {
 
         EntityManager em = Repo.getEm();
         EntityTransaction et = null;
-        try{
+        try {
             et = em.getTransaction();
             et.begin();
             em.persist(review1);
             em.merge(item);
             et.commit();
         }
-        catch (Exception e){
-            if(et != null){
+        catch (Exception e) {
+            if (et != null)
                 et.rollback();
-            }
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-
     }
 
-    public void writeOpinionOnProduct2(Store store, int itemId, String review) throws ItemException, WrongReviewException {
-//        if (review == null || review.trim().isEmpty())
-//            throw new WrongReviewException("Review can't be empty or null");
-
-        Item item = store.searchItemById(itemId);
-//        if (!itemsPurchased.get(store).contains(item))
-//            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
-
-        Review review1 = new Review(store, item, review);
-        item.addReview(review1);
-
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-//            em.merge(review1);
-//            em.merge(item);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
-        store.notifyItemOpinion(this, review1);
-
-
-
-    }
-
-
-        public void subscribe(Store store){
+    public void subscribe(Store store){
         store.subscribe(this);
     }
 
@@ -621,10 +580,10 @@ public class Subscriber extends User {
     public Notification notifyNotification(Notification notification){
         if(observer != null) {
             observer.notify(notification);
-            this.notifications.put(notification,true);
+            notifications.put(notification,true);
         }
         else
-            this.notifications.put(notification,false);
+            notifications.put(notification,false);
 
         Repo.persist(notification);
         Repo.merge(this);

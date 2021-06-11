@@ -86,14 +86,11 @@ public class Inventory {
                 em.merge(this);
                 et.commit();
             }
-            catch (Exception e){
+            catch (Exception e) {
                 if(et != null){
                     et.rollback();
                 }
-                e.printStackTrace();
-            }
-            finally {
-//            em.close();
+                throw new RuntimeException(e);
             }
             return id.getAndIncrement();
         }
@@ -238,17 +235,10 @@ public class Inventory {
             et.commit();
         }
         catch (Exception e){
-            if(et != null){
+            if(et != null)
                 et.rollback();
-            }
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-
-
-
     }
 
     /**
@@ -291,17 +281,10 @@ public class Inventory {
             et.commit();
         }
         catch (Exception e){
-            if(et != null){
+            if(et != null)
                 et.rollback();
-            }
-            e.printStackTrace();
+        throw new RuntimeException(e);
         }
-        finally {
-//            em.close();
-        }
-
-
-
 
         return item;
     }
@@ -345,10 +328,7 @@ public class Inventory {
                 if(et != null){
                     et.rollback();
                 }
-                e.printStackTrace();
-            }
-            finally {
-//            em.close();
+                throw new RuntimeException(e);
             }
         }
     }

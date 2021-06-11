@@ -266,12 +266,6 @@ public class TradingSystemImpl {
         Store store = tradingSystem.getStore(Integer.parseInt(storeId));
         subscriber.writeOpinionOnProduct(store, Integer.parseInt(itemId), review);
     }
-    public void writeOpinionOnProduct2(String connectionId, String storeId, String itemId, String review) throws InvalidActionException {
-
-        Subscriber subscriber = tradingSystem.getUserByConnectionId(connectionId).getSubscriber();
-        Store store = tradingSystem.getStore(Integer.parseInt(storeId));
-        subscriber.writeOpinionOnProduct2(store, Integer.parseInt(itemId), review);
-    }
 
     public Collection<String> getStoresInfo(String connectionId) throws InvalidActionException {
 
