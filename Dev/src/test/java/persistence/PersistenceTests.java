@@ -36,7 +36,8 @@ public class PersistenceTests {
 
     @BeforeMethod
     public void setUp() throws Exception {
-
+        Driver.setPaymentSystem(paymentSystem);
+        Driver.setDeliverySystem(deliverySystem);
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
         admin1Id = service.connect();
         founderStore1Id = service.connect();
