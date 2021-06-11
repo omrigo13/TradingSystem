@@ -3,6 +3,7 @@ import acceptanceTests.Driver;
 import exceptions.InvalidActionException;
 import externalServices.DeliverySystemMock;
 import externalServices.PaymentSystemMock;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -34,7 +35,7 @@ public class PersistenceTests {
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
 
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
@@ -79,6 +80,8 @@ public class PersistenceTests {
 
         System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
+        service.appointStoreOwner(founderStore1Id, store1Manager1UserName, storeId1);
+
 
         service.openNewStore(subs1Id, "store3");
 

@@ -179,12 +179,11 @@ public class TradingSystem {
         Store store = new Store(id, storeName, "description", null, null);
         stores.put(id, store);
 
+        Repo.persist(store);
         subscriber.addOwnerPermission(store);
 
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
-
-        Repo.persist(store);
         Repo.merge(subscriber);
 
         return id;

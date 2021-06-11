@@ -1,6 +1,7 @@
 package user;
 
 import org.hibernate.cfg.InheritanceState;
+import persistence.Repo;
 
 import javax.persistence.*;
 import java.lang.ref.WeakReference;
@@ -18,7 +19,10 @@ public abstract class Permission {
     protected static Map<Permission, Permission> pool = Collections.synchronizedMap(new HashMap<>());
 
     protected static <T extends Permission> T getInstance(T permission) {
-        pool.putIfAbsent(permission, permission);
+        pool.computeIfAbsent(permission, k -> {
+            Repo.persist(permission);
+            return permission;
+        });
         return (T)pool.get(permission);
     }
 
@@ -44,7 +48,6 @@ public abstract class Permission {
         this.id = id;
     }
 
-    @Id
     public Integer getId() {
         return id;
     }

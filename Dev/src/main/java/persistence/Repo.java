@@ -89,9 +89,9 @@ public class Repo {
     public static <T> void merge(T obj){
         EntityTransaction et = null;
         try{
-            et = em.getTransaction();
+            et = getEm().getTransaction();
             et.begin();
-            em.merge(obj);
+            getEm().merge(obj);
             et.commit();
         }
         catch (Exception e) {
@@ -104,9 +104,9 @@ public class Repo {
     public static <T> void persist(T obj){
         EntityTransaction et = null;
         try{
-            et = em.getTransaction();
+            et = getEm().getTransaction();
             et.begin();
-            em.persist(obj);
+            getEm().persist(obj);
             et.commit();
         }
         catch (Exception e) {
