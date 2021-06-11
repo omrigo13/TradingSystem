@@ -49,7 +49,7 @@ public class LoadTestRegisterLoginLogout {
         start = System.nanoTime();
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 3000)
+    @Test(threadPoolSize = 10, invocationCount = 1000, timeOut = 1500)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = subscriberId.getAndIncrement();

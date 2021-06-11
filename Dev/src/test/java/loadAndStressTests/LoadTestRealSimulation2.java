@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.testng.AssertJUnit.assertTrue;
+
 public class LoadTestRealSimulation2 {
 
     private TradingSystemServiceImpl tradingSystemService;
@@ -63,7 +65,7 @@ public class LoadTestRealSimulation2 {
         start = System.nanoTime();
     }
 
-    @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 5000)
+    @Test(threadPoolSize = 10, invocationCount = 100, timeOut = 1000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = subscriberId.getAndIncrement();
@@ -86,5 +88,6 @@ public class LoadTestRealSimulation2 {
     public void tearDown() {
         end = System.nanoTime();
         System.out.println((end - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 1000);
     }
 }

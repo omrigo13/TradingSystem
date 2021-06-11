@@ -18,6 +18,8 @@ import user.User;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.testng.AssertJUnit.assertTrue;
+
 public class SystemAliveWithoutExternalServicesTest {
 
     private TradingSystemServiceImpl tradingSystemService;
@@ -59,7 +61,7 @@ public class SystemAliveWithoutExternalServicesTest {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 100, invocationCount = 500, timeOut = 20000)
+    @Test (threadPoolSize = 100, invocationCount = 500, timeOut = 10000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();
@@ -84,5 +86,6 @@ public class SystemAliveWithoutExternalServicesTest {
         System.out.println(deliverySystem.getTime());
         end = System.nanoTime();
         System.out.println((end - start) / 1000000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 10000);
     }
 }
