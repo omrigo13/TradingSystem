@@ -68,6 +68,7 @@ public class TradingSystem {
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
 
         this.admin = subscribers.get(userName);
+        Repo.merge(admin);
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {

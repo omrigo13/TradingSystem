@@ -80,7 +80,7 @@ public class PersistenceTests {
 
         System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
-        service.appointStoreOwner(founderStore1Id, store1Manager1UserName, storeId1);
+        service.appointStoreOwner(founderStore1Id, store2FounderUserName, storeId1);
 
 
         service.openNewStore(subs1Id, "store3");
@@ -115,6 +115,10 @@ public class PersistenceTests {
         service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
         service.approveOffer(founderStore1Id, storeId1, 1, 0.0);
 
+        service.addItemToBasket(founderStore2Id, storeId1, productId1, 1);
+        service.updateProductAmountInBasket(founderStore2Id, storeId1, productId1, 20);
+
+
 //        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
 
         int purchase_id = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
@@ -136,6 +140,18 @@ public class PersistenceTests {
         service.removePolicy(founderStore1Id, storeId1, quantityPolicy);
         service.removePolicy(founderStore1Id, storeId1, basketPolicy);
         service.removePolicy(founderStore1Id, storeId1, andPolicy);
+
+        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
+        service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+
+        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        service.removeOwner(founderStore1Id, storeId1, store2FounderUserName);
+        service.setStoreStatus(storeId1, false);
+
 
         List<Item> items2 = Repo.getInstance().getItems();
         List<Subscriber> subs = Repo.getInstance().getSubscribers();

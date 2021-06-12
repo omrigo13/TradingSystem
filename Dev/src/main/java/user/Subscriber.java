@@ -22,7 +22,7 @@ public class Subscriber extends User {
     private int id;
     @Id
     private String userName;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Permission> permissions; // synchronized manually
     @Transient
     private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
@@ -43,6 +43,13 @@ public class Subscriber extends User {
         Repo.persist(basket);
         Repo.merge(this);
 
+        return basket;
+    }
+
+    @Override
+    public Basket getBasket(Store store) {
+        Basket basket = baskets.computeIfAbsent(store, k -> createBasket(k));
+        Repo.merge(this);
         return basket;
     }
 
@@ -140,6 +147,11 @@ public class Subscriber extends User {
             //purchaseHistory.add("Store: " + entry.getKey().getName() + "\n" + entry.getValue());
             cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
         purchaseHistory.add(cartPurchase);
+
+        Repo.merge(this);
+        for (Store s:details.keySet()) {
+            Repo.merge(s);
+        }
 
     }
 

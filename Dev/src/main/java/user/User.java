@@ -7,6 +7,7 @@ import externalServices.DeliverySystem;
 import externalServices.PaymentData;
 import externalServices.PaymentSystem;
 import org.jetbrains.annotations.NotNull;
+import persistence.Repo;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Item;
@@ -104,6 +105,7 @@ public class User {
         }
 
         addCartToPurchases(storePurchaseDetails);
+
         baskets.clear();
     }
 

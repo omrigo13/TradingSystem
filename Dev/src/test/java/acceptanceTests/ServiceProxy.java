@@ -366,7 +366,8 @@ public class ServiceProxy implements TradingSystemService {
 
     @Override
     public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
-
+        if(real != null)
+            real.setStoreStatus(storeId, status);
     }
 
     @Override
