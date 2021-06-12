@@ -162,11 +162,6 @@ public class PersistenceTests {
         System.out.println("");
     }
 
-    @Test
-    public void permissionTest() {
-
-
-    }
 
     //todo: persist users, subscribers, notifications, carts, permissions
     //todo: check why Admin1 is not a Subscriber in TradingSystem.connections

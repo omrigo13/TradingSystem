@@ -13,9 +13,13 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import persistence.DatabaseFetcher;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import presenatation.TradingSystem;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
+import store.Store;
 import tradingSystem.TradingSystemBuilder;
 import tradingSystem.TradingSystemImpl;
 import user.AdminPermission;
@@ -30,8 +34,10 @@ import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -76,11 +82,21 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("How to initialize the system?");
+        System.out.println("0 - from scratch");
+        System.out.println("1 - from existing DB");
+        Scanner scan = new Scanner(System.in);
+        int num = scan.nextInt();
+        if(num == 0)
+            run(cfg, 0);
+        else
+            run(cfg, 1);
 
-        run(cfg);
+
+//        run(cfg);
     }
 
-    public static void run(Config cfg) throws InvalidActionException {
+    public static void run(Config cfg, int flag) throws InvalidActionException {
 
         // work around for the system initialization
         UserAuthentication userAuthentication = new UserAuthentication();
@@ -101,10 +117,35 @@ public class Main {
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        tradingSystem.TradingSystem tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication)
-                .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
-        //map.clear();
+
+        tradingSystem.TradingSystem tradingSystem;
+        if(flag == 0) {
+            tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
+                    .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication)
+                    .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
+            //map.clear();
+        }else
+        {
+            DatabaseFetcher fetcher = new DatabaseFetcher();
+
+            ConcurrentHashMap<String, Subscriber> subscribers_from_DB = fetcher.getSubscribers();
+            ConcurrentHashMap<Integer, Store> stores_fromDB = fetcher.getStores();
+            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
+            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
+            ConcurrentHashMap<Store, Collection<Integer>> stores_discounts = fetcher.getStoresDiscountPolicies();
+            ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
+            AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();
+
+            tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
+                    .setSubscriberIdCounter(subscribersIdCounter).setSubscribers(subscribers_from_DB).setAuth(userAuthentication)
+                    .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setStores(stores_fromDB)
+                    .setDiscountPolicies(discounts).setPurchasePolicies(purchases)
+                    .setStoresDiscountPolicies(stores_discounts).setStoresPurchasePolicies(stores_purchases)
+                    .build();
+        }
+
+
+
         TradingSystemService tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(tradingSystem));
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();

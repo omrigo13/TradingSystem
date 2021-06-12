@@ -17,15 +17,10 @@ mapped to database tables. Database driver, location, userid and pw
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <!-- Define the object that should be persisted in the database -->
 <!--        <class>store.Inventory</class>-->
-<!--        <class>store.Item</class>-->
-<!--        <class>store.Store</class>-->
-<!--        <class>user.Basket</class>-->
-<!--        <class>user.Subscriber</class>-->
-<!--        <class>user.User</class>-->
-
 
         <properties>
 
+            <!--     first time: use create-drop, to create DB, or update if DB already exist-->
             <property name="hibernate.hbm2ddl.auto" value="create-drop" />
 
             <!-- Driver for DB database -->

@@ -130,4 +130,10 @@ public class TradingSystemBuilder {
         return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores, purchasePolicies,
                 discountPolicies, storesPurchasePolicies, storesDiscountPolicies, visitors);
     }
+
+    public void setVisitors(ConcurrentHashMap<String, Map<String, Integer>> visitors) {
+        this.visitors = visitors;
+    }
+
+
 }

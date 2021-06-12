@@ -26,6 +26,7 @@ public class DatabaseFetcher {
 
 
     public DatabaseFetcher() {
+        Repo.getEm(); //initializing Entity Manager
         subscribers = new ConcurrentHashMap<>();
         stores = new ConcurrentHashMap<>();
         subscriberIdCounter = new AtomicInteger();
@@ -36,7 +37,7 @@ public class DatabaseFetcher {
     }
 
     public ConcurrentHashMap<String, Subscriber> getSubscribers() {
-        List<Subscriber> list = Repo.getInstance().getSubscribers();
+        List<Subscriber> list = Repo.getSubscribers();
         for (Subscriber s:list ) {
             subscribers.put(s.getUserName(), s);
         }
@@ -44,7 +45,7 @@ public class DatabaseFetcher {
     }
 
     public ConcurrentHashMap<Integer, Store> getStores() {
-        List<Store> list = Repo.getInstance().getStores();
+        List<Store> list = Repo.getStores();
         for (Store s:list ) {
             stores.put(s.getId(), s);
         }
@@ -52,13 +53,13 @@ public class DatabaseFetcher {
     }
 
     public AtomicInteger getSubscriberIdCounter() {
-        List<Subscriber> list = Repo.getInstance().getSubscribers();
+        List<Subscriber> list = Repo.getSubscribers();
         subscriberIdCounter.set(list.size());
         return subscriberIdCounter;
     }
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresPurchasePolicies() {
-        List<Store> list = Repo.getInstance().getStores();
+        List<Store> list = Repo.getStores();
         for (Store s:list ) {
             storesPurchasePolicies.put(s, new LinkedList<>());
             storesPurchasePolicies.get(s).add(s.getPurchasePolicy().getPurchase_id());
@@ -67,7 +68,7 @@ public class DatabaseFetcher {
     }
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresDiscountPolicies() {
-        List<Store> list = Repo.getInstance().getStores();
+        List<Store> list = Repo.getStores();
         for (Store s:list ) {
             storesDiscountPolicies.put(s, new LinkedList<>());
             storesDiscountPolicies.get(s).add(s.getDiscountPolicy().getDiscount_id());
