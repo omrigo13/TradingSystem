@@ -11,7 +11,7 @@ mapped to database tables. Database driver, location, userid and pw
 
     <!-- Define a name used to get an entity manager. Define that you will
     complete transactions with the DB  -->
-    <persistence-unit name="TradingSystem" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="TradingSystemTest" transaction-type="RESOURCE_LOCAL">
 
         <!-- Define the class for Hibernate which implements JPA -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
@@ -40,7 +40,7 @@ mapped to database tables. Database driver, location, userid and pw
 
     <!-- Define a name used to get an entity manager. Define that you will
 complete transactions with the DB  -->
-    <persistence-unit name="TradingSystemTest" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="TradingSystem" transaction-type="RESOURCE_LOCAL">
 
         <!-- Define the class for Hibernate which implements JPA -->
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
