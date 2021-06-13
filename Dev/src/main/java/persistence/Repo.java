@@ -5,6 +5,7 @@ import store.Item;
 import store.Store;
 import user.Basket;
 import user.Subscriber;
+import user.Visitors;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,7 +14,7 @@ public class Repo {
 
     private static Repo repo = null;
     private static EntityManager em;
-    private static String persistence_unit = "TradingSystemTest";
+    private static String persistence_unit = "TradingSystem";
 
     public static void setPersistence_unit(String persistence_unit) {
         Repo.persistence_unit = persistence_unit;
@@ -147,6 +148,18 @@ public class Repo {
         try{
             ua = tq.getSingleResult();
             return ua;
+        }
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Visitors getVisitors() {
+        String query = "select c from Visitors c where c.id is not null";
+        TypedQuery<Visitors> tq = em.createQuery(query, Visitors.class);
+        Visitors vis = null;
+        try{
+            vis = tq.getSingleResult();
+            return vis;
         }
         catch(NoResultException e) {
             throw new RuntimeException(e);

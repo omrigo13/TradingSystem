@@ -6,6 +6,7 @@ import policies.PurchasePolicy;
 import store.Store;
 import user.Subscriber;
 import user.User;
+import user.Visitors;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -52,6 +53,11 @@ public class DatabaseFetcher {
     public UserAuthentication getAuthentication() {
         UserAuthentication ua = Repo.getAuthentication();
         return ua;
+    }
+
+    public Visitors getVisitors() {
+        Visitors vis = Repo.getVisitors();
+        return vis;
     }
 
     public ConcurrentHashMap<Integer, Store> getStores() {

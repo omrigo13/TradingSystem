@@ -28,6 +28,7 @@ import tradingSystem.TradingSystemBuilder;
 import tradingSystem.TradingSystemImpl;
 import user.AdminPermission;
 import user.Subscriber;
+import user.Visitors;
 import util.Filters;
 import util.HerokuUtil;
 import util.Path;
@@ -111,11 +112,16 @@ public class Main {
     public static void run(Config cfg, int flag) throws InvalidActionException {
 
         UserAuthentication userAuthentication;
+        Visitors visitors;
         // work around for the system initialization
-        if(flag == 0)
+        if(flag == 0) {
             userAuthentication = new UserAuthentication();
-        else
+            visitors = new Visitors();
+        }
+        else {
             userAuthentication = Repo.getAuthentication();
+            visitors = Repo.getVisitors();
+        }
         try{
             userAuthentication.register(cfg.adminName, cfg.adminPassword);
         }catch (SubscriberAlreadyExistsException e){
@@ -163,12 +169,13 @@ public class Main {
             ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
             AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();
 
+
             tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
                     .setSubscriberIdCounter(subscribersIdCounter).setSubscribers(subscribers_from_DB).setAuth(userAuthentication)
                     .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setStores(stores_fromDB)
                     .setDiscountPolicies(discounts).setPurchasePolicies(purchases)
                     .setStoresDiscountPolicies(stores_discounts).setStoresPurchasePolicies(stores_purchases)
-                    .build();
+                    .setVisitors_in_system(visitors).build();
         }
 
 

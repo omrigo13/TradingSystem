@@ -11,6 +11,7 @@ import policies.PurchasePolicy;
 import store.Store;
 import user.Subscriber;
 import user.User;
+import user.Visitors;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class TradingSystemBuilder {
     private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies;
     private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies;
     private ConcurrentHashMap<String, Map<String, Integer>> visitors;
+    private Visitors visitors_in_system;
 
     public TradingSystemBuilder setUserName(String userName) {
 
@@ -126,14 +128,19 @@ public class TradingSystemBuilder {
         storesDiscountPolicies = (storesDiscountPolicies == null) ? new ConcurrentHashMap<>(): storesDiscountPolicies;
         subscriberIdCounter = (subscriberIdCounter == null) ? new AtomicInteger() : subscriberIdCounter;
         visitors = (visitors == null) ? new ConcurrentHashMap() : visitors;
+        visitors_in_system = (visitors_in_system == null) ? new Visitors() : visitors_in_system;
+
 
         return new TradingSystem(userName, password, subscriberIdCounter, paymentSystem, deliverySystem, auth, subscribers, connections, stores, purchasePolicies,
-                discountPolicies, storesPurchasePolicies, storesDiscountPolicies, visitors);
+                discountPolicies, storesPurchasePolicies, storesDiscountPolicies, visitors, visitors_in_system);
     }
 
     public void setVisitors(ConcurrentHashMap<String, Map<String, Integer>> visitors) {
         this.visitors = visitors;
     }
 
-
+    public TradingSystemBuilder setVisitors_in_system(Visitors visitors_in_system) {
+        this.visitors_in_system = visitors_in_system;
+        return this;
+    }
 }
