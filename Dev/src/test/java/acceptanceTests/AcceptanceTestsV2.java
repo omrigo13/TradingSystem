@@ -27,11 +27,6 @@ public class AcceptanceTestsV2 {
     private PaymentSystemMock paymentSystem = new PaymentSystemMock();
     private DeliverySystemMock deliverySystem = new DeliverySystemMock();
 
-    @BeforeClass
-    public void beforeClass() {
-        RepoMock.enable();
-    }
-
     @BeforeMethod
     void setUp() throws InvalidActionException {
         Driver.setPaymentSystem(paymentSystem);

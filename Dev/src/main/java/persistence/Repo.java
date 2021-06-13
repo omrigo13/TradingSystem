@@ -19,7 +19,7 @@ public class Repo {
 
     private static Repo repo = null;
     private static EntityManager em;
-    private static String persistence_unit = "TradingSystem";
+    private static String persistence_unit = "TradingSystemTest";
 
     public static void setPersistence_unit(String persistence_unit) {
         Repo.persistence_unit = persistence_unit;

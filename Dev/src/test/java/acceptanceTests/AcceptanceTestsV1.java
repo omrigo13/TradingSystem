@@ -6,6 +6,7 @@ import externalServices.PaymentSystemMock;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.Repo;
 import persistence.RepoMock;
 import service.TradingSystemService;
 
@@ -28,11 +29,6 @@ public class AcceptanceTestsV1 {
     private DeliverySystemMock deliverySystem = new DeliverySystemMock();
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
-
-    @BeforeClass
-    public void beforeClass() {
-        RepoMock.enable();
-    }
 
     @BeforeMethod
     public void setUp() throws Exception {

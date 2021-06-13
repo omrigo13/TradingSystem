@@ -23,11 +23,6 @@ public class AcceptanceTestsV4 {
     private String store1FounderUserName = "store1FounderUserName", store1Manager1UserName = "Store1Manager1UserName", subs1UserName = "subs1UserName";
     private String date;
 
-    @BeforeClass
-    public void beforeClass() {
-        RepoMock.enable();
-    }
-
     @BeforeMethod
     void setUp() throws InvalidActionException {
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
