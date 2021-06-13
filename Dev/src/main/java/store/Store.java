@@ -32,7 +32,6 @@ public class Store {
     private DiscountPolicy discountPolicy;
     @OneToOne
     private PurchasePolicy purchasePolicy;
-    //private String founder;
     private boolean isActive = true;
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "id")
@@ -97,8 +96,6 @@ public class Store {
         this.name = name;
         this.description = description;
         this.rating = 0;
-        // this.founder = founder;
-//        this.inventory = new Inventory(tradingSystem);
         if(purchasePolicy == null)
             this.purchasePolicy = DefaultPurchasePolicy.getInstance();
         else
@@ -113,7 +110,6 @@ public class Store {
         else
             this.discountPolicy = discountPolicy;
         this.isActive = true;
-//        this.observable = observable;
         this.observable = new Observable(this.id);
     }
 
@@ -154,22 +150,6 @@ public class Store {
         return this.inventory.getItems();
     }
 
-//    /**
-//     * This method changes an item's price in the store
-//     * @param name - the name of the item
-//     * @param price - the price of the item
-//     * @param category - the category of the item
-//     * @param subCategory - the sub category of the item
-//     * @param price- the new price of the item
-//     * @exception  ItemNotFound,WrongPrice  */
-//    public void setItemPrice(String name, String category, String subCategory, double price) throws Exception {
-//        this.inventory.setItemPrice(name, category, subCategory, price);
-//    }
-
-//    public void addItem(String name, double price, String category, String subCategory, double rating, int amount) throws Exception {
-//        this.inventory.addItem(name, price, category, subCategory, rating, amount);
-//    }
-
     /**
      * this adds a new item and it's amount to the store's inventory
      *
@@ -184,28 +164,6 @@ public class Store {
         return this.inventory.addItem(name, price, category, subCategory, amount);
     }
 
-//    /**
-//     * This method is used to search the store's inventory for items that matches the param name.
-//     * @param name - the name of the wanted item*/
-//    public ConcurrentLinkedQueue<Item> searchItemByName(String name) {
-//        return this.inventory.searchItemByName(name);
-//    }
-
-//    /**
-//     * This method is used to search the store's inventory for items that matches the param category.
-//     * @param category - the category of the wanted item */
-//    public ConcurrentLinkedQueue<Item> searchItemByCategory(String category) {
-//        return this.inventory.searchItemByCategory(category);
-//    }
-//
-//    /**
-//     * This method is used to search the store's inventory for items that matches the param keyword.
-//     * @param keyword - the keyword of the wanted item */
-//    public ConcurrentLinkedQueue<Item> searchItemByKeyWord(String keyword)  {
-//        return this.inventory.searchItemByKeyWord(keyword);
-//    }
-
-
     public Collection<Item> searchAndFilter(String keyWord, String itemName, String category, Double ratingItem,
                                                        Double ratingStore, Double maxPrice, Double minPrice) {
         Spelling spelling = new Spelling();
@@ -219,12 +177,6 @@ public class Store {
         return filterItems(search, ratingItem, ratingStore, maxPrice, minPrice);
     }
 
-    //    /**
-//     * This method searches the store's inventory for an item
-//     * @param name - the name of the item
-//     * @param category - the category of the item
-//     * @param subCategory - the sub category of the item
-//     * @exception  ItemNotFound  */
     public Collection<Item> searchItems(String keyWord, String itemName, String category) {
 
         Collection<Item> result = new HashSet<>(inventory.getItems().values());
@@ -278,46 +230,17 @@ public class Store {
         return this.inventory.searchItem(itemId);
     }
 
-//    /**
-//     * This method is used to filter the store's inventory for items that their price is between start price and end price.
-//     * @param startPrice - the startPrice of the items price
-//     * @param endPrice - the endPrice of the items price
-//     * @exception ItemNotFoundException - On non existing item with params startPrice and endPrice*/
-//    public ConcurrentLinkedQueue<Item> filterByPrice(double startPrice, double endPrice) throws ItemException {
-//        return this.inventory.filterByPrice(startPrice, endPrice);
-//    }
-
-    //    /**
-//     * This method is used to filter the store's inventory for items that their price is between start price and end price.
-//     *
-//     *  @param startPrice - the startPrice of the items price
-//     * @param endPrice - the endPrice of the items price */
     public Collection<Item> filterByPrice(Collection<Item> items, double startPrice, double endPrice) {
         if (items != null)
             return this.inventory.filterByPrice(items, startPrice, endPrice);
         return inventory.filterByPrice(startPrice, endPrice);
     }
 
-    //    /**
-//     * This method is used to filter the store's inventory for items that their ratings are equal or above the giving rating.
-//     * @param rating - the keyword of the wanted item
-//     * @exception ItemNotFoundException - On non existing item with param rating or greater*/
     public Collection<Item> filterByRating(Collection<Item> items, double rating) {
         if (items != null)
             return inventory.filterByRating(items, rating);
         return this.inventory.filterByRating(rating);
     }
-
-//    /**
-//     * This method changes the amount of an item in the store's inventory
-//     * @param name - name of the wanted item
-//     * @param category - category of the wanted item
-//     * @param subCategory - the sub category of the wanted item
-//     * @param amount - the new amount fo the item
-//     * @exception WrongAmount when the amount is illegal*/
-//    public void changeQuantity(String name, String category, String subCategory, int amount) throws ItemException {
-//        this.inventory.changeQuantity(name, category, subCategory, amount);
-//    }
 
     /**
      * This method checks if there is enough amount of an item in the inventory
@@ -329,17 +252,6 @@ public class Store {
     public boolean checkAmount(int itemId, int amount) throws ItemException {
         return inventory.checkAmount(itemId, amount);
     }
-
-    //    /**
-//     * This method decreases the amount of the item in the store's inventory by param quantity.
-//     * @param name - name of the wanted item
-//     * @param category - category of the wanted item
-//     * @param subCategory - the sub category of the wanted item
-//     * @param quantity - the quantity of the wanted item
-//     * @exception WrongAmountException - when the amount is illegal */
-//    public void decreaseByQuantity(int itemId, int quantity) throws ItemException {
-//        this.inventory.decreaseByQuantity(itemId, quantity);
-//    }
 
     /**
      * This method removes an item from the store's inventory
@@ -397,8 +309,7 @@ public class Store {
         observable.notifyStoreStatus(String.valueOf(id), isActive);
     }
 
-    //TODO remember to deal with policies and types in a furure version
-    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException { // TODO should get basket
+    public double processBasketAndCalculatePrice(Basket basket, StringBuilder details, DiscountPolicy storeDiscountPolicy, Collection<Offer> userOffers) throws ItemException, PolicyException {
         if(userOffers != null) {
             for (Offer offer: userOffers) {
                 if(offer.getQuantity() == 0)
@@ -412,7 +323,6 @@ public class Store {
         return inventory.calculate(basket, details, storeDiscountPolicy, userOffers);
     }
 
-    //TODO make an exception for this
     public void rollBack(Map<Item, Integer> items) {
         synchronized (inventory.getItems()) {
             for (Map.Entry<Item, Integer> entry : items.entrySet()) {
