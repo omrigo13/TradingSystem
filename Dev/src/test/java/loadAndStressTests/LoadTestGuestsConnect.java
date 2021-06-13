@@ -6,6 +6,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystemBuilder;
@@ -32,8 +33,12 @@ public class LoadTestGuestsConnect {
     private long start;
 
     @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
+    @BeforeClass
     void setUp() throws InvalidActionException {
-        MockitoAnnotations.openMocks(this);
         MockitoAnnotations.openMocks(this);
         auth.register(userName, password);
         admin.addPermission(AdminPermission.getInstance());
@@ -56,6 +61,6 @@ public class LoadTestGuestsConnect {
     @AfterClass
     public void tearDown() {
         System.out.println((System.nanoTime() - start) / 1000000);
-        assertTrue((System.nanoTime() - start) / 1000000 < 5000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 10000);
     }
 }

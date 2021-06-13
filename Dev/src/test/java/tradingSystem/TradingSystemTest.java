@@ -113,6 +113,8 @@ public class TradingSystemTest {
     void login() throws InvalidActionException {
         when(connections.get(connectionId)).thenReturn(user);
         when(subscribers.get(userName)).thenReturn(subscriber);
+        doNothing().when(subscriber).notifyVisitors(any());
+        doReturn(null).when(tradingSystem).getTotalVisitorsByAdminPerDay(any(), anyString());
         tradingSystem.login(connectionId, userName, password);
         verify(subscriber).makeCart(user);
         verify(connections).put(connectionId, subscriber);

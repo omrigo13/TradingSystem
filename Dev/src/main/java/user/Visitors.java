@@ -3,6 +3,8 @@ package user;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,11 +24,11 @@ public class Visitors {
     private Map<String, Integer> admins;
 
     public Visitors() {
-        guests = new ConcurrentHashMap<>();
-        subscribers = new ConcurrentHashMap<>();
-        managers = new ConcurrentHashMap<>();
-        owners = new ConcurrentHashMap<>();
-        admins = new ConcurrentHashMap<>();
+        guests = Collections.synchronizedMap(new HashMap<>());
+        subscribers = Collections.synchronizedMap(new HashMap<>());
+        managers = Collections.synchronizedMap(new HashMap<>());
+        owners = Collections.synchronizedMap(new HashMap<>());
+        admins = Collections.synchronizedMap(new HashMap<>());
     }
 
     public int getId() {

@@ -12,6 +12,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystem;
@@ -45,6 +46,11 @@ public class LoadTestItemAndStoreAndPurchaseTest {
     private final LinkedList<String> subscribersConnections = new LinkedList<>();
     private String adminId;
     private int max = 500;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeClass
     void setUp() throws InvalidActionException {

@@ -36,7 +36,7 @@ public class AcceptanceTestsV3 {
     public void beforeClass() {
         RepoMock.enable();
     }
-    
+
     @BeforeMethod
     void setUp() throws InvalidActionException {
         Driver.setPaymentSystem(paymentSystem);

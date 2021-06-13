@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystemBuilder;
@@ -35,6 +36,11 @@ public class ConnectAndPurchaseBySubscribers {
     private DeliverySystemRealMock deliverySystem;
     private long start, end;
     private final AtomicInteger index = new AtomicInteger(0);
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeClass
     void setUp() throws InvalidActionException {
@@ -65,7 +71,7 @@ public class ConnectAndPurchaseBySubscribers {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 100, invocationCount = 1000, timeOut = 12000)
+    @Test (threadPoolSize = 100, invocationCount = 1000, timeOut = 15000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();
@@ -80,6 +86,6 @@ public class ConnectAndPurchaseBySubscribers {
         System.out.println(deliverySystem.getTime());
         end = System.nanoTime();
         System.out.println((end - start) / 1000000);
-        assertTrue((System.nanoTime() - start) / 1000000 < 12000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 15000);
     }
 }

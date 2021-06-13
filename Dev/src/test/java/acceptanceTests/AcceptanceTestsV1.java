@@ -6,6 +6,7 @@ import externalServices.PaymentSystemMock;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import persistence.Repo;
 import persistence.RepoMock;
 import service.TradingSystemService;
 
