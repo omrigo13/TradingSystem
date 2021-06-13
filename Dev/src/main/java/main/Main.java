@@ -4,6 +4,7 @@ import Logger.Log;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import exceptions.SubscriberAlreadyExistsException;
+import exceptions.WrongPasswordException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import io.javalin.Javalin;
@@ -28,6 +29,7 @@ import tradingSystem.TradingSystemBuilder;
 import tradingSystem.TradingSystemImpl;
 import user.AdminPermission;
 import user.Subscriber;
+import user.Visitors;
 import util.Filters;
 import util.HerokuUtil;
 import util.Path;
@@ -68,18 +70,10 @@ public class Main {
         errorLog = new Log();
         PropertyConfigurator.configure("Dev/log4j.properties");
         Config cfg = new Config();
-//        System.out.println("How to initialize the system?");
-//        System.out.println("0 - startup script");
-//        System.out.println("1 - from existing DB");
-//        Scanner scan = new Scanner(System.in);
-//        int flag = scan.nextInt();
-        int flag;
-        if(Repo.isDBEmpty() == true)
-            flag = 0; //use startup script
-        else
-            flag = 1; //use data from DB
-
-        try (InputStream input = new FileInputStream("Dev/config/config.properties")) {
+        String configPath = "Dev/config/config.properties";
+        if(args.length > 1)
+            configPath = args[1];
+        try (InputStream input = new FileInputStream(configPath)) {
             Properties prop = new Properties();
             // load a properties file
             prop.load(input);
@@ -92,7 +86,7 @@ public class Main {
             cfg.startupScript = prop.getProperty("startupScript");
             cfg.paymentSystem = prop.getProperty("paymentSystem");
             cfg.deliverySystem = prop.getProperty("deliverySystem");
-
+            Repo.setPersistence_unit(prop.getProperty("persistence.unit"));
         }catch (FileNotFoundException e) {
             errorLog.errorToLogger("initialization of the system made with non-exist properties file");
             throw new RuntimeException(e);
@@ -100,6 +94,16 @@ public class Main {
             throw new RuntimeException(e);
         }
 
+        //System.out.println("How to initialize the system?");
+//        System.out.println("0 - startup script");
+//        System.out.println("1 - from existing DB");
+//        Scanner scan = new Scanner(System.in);
+//        int flag = scan.nextInt();
+        int flag;
+        if(Repo.isDBEmpty() == true)
+            flag = 0; //use startup script
+        else
+            flag = 1; //use data from DB
         run(cfg, flag);
 
 
@@ -108,12 +112,25 @@ public class Main {
 
     public static void run(Config cfg, int flag) throws InvalidActionException {
 
+        UserAuthentication userAuthentication;
+        Visitors visitors;
         // work around for the system initialization
-        UserAuthentication userAuthentication = new UserAuthentication();
+        if(flag == 0) {
+            userAuthentication = new UserAuthentication();
+            visitors = new Visitors();
+        }
+        else {
+            userAuthentication = Repo.getAuthentication();
+            visitors = Repo.getVisitors();
+        }
         try{
             userAuthentication.register(cfg.adminName, cfg.adminPassword);
         }catch (SubscriberAlreadyExistsException e){
-            errorLog.errorToLogger("Initialize the system with already exist admin, name: " + cfg.adminName + ", password: ******");
+            try {
+                userAuthentication.authenticate(cfg.adminName, cfg.adminPassword);
+            }catch (WrongPasswordException w){
+                errorLog.errorToLogger("Wrong password for admin, name: " + cfg.adminName + ", password: ******");
+            }
         }
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
@@ -151,18 +168,21 @@ public class Main {
                 subscribers_from_DB.put(username, subscribers.get(username));
             }
             ConcurrentHashMap<Integer, Store> stores_fromDB = fetcher.getStores();
-            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
-            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
+//            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
+//            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
             ConcurrentHashMap<Store, Collection<Integer>> stores_discounts = fetcher.getStoresDiscountPolicies();
             ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
             AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();
+            ConcurrentHashMap<Integer, PurchasePolicy> purchasesMap = fetcher.getPurchasePolicies();
+            ConcurrentHashMap<Integer, DiscountPolicy> discountsMap = fetcher.getDiscountPolicies();
+
 
             tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
                     .setSubscriberIdCounter(subscribersIdCounter).setSubscribers(subscribers_from_DB).setAuth(userAuthentication)
                     .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setStores(stores_fromDB)
-                    .setDiscountPolicies(discounts).setPurchasePolicies(purchases)
+                    .setDiscountPolicies(discountsMap).setPurchasePolicies(purchasesMap)
                     .setStoresDiscountPolicies(stores_discounts).setStoresPurchasePolicies(stores_purchases)
-                    .build();
+                    .setVisitors_in_system(visitors).build();
         }
 
 

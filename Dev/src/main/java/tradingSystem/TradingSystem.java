@@ -31,6 +31,7 @@ public class TradingSystem {
     private final DeliverySystem deliverySystem;
     private final PaymentSystem paymentSystem;
     private final UserAuthentication auth;
+    private final Visitors visitors_in_system;
 
     private final ConcurrentHashMap<String, Subscriber> subscribers; // key: user name
     private final ConcurrentHashMap<Integer, Store> stores; // key: store id
@@ -48,7 +49,7 @@ public class TradingSystem {
                   UserAuthentication auth, ConcurrentHashMap<String, Subscriber> subscribers, ConcurrentHashMap<String, User> connections,
                   ConcurrentHashMap<Integer, Store> stores, ConcurrentHashMap<Integer, PurchasePolicy> purchasePolicies,
                   ConcurrentHashMap<Integer, DiscountPolicy> discountPolicies, ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies,
-                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Map<String, Integer>> visitors)
+                  ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies, ConcurrentHashMap<String, Map<String, Integer>> visitors, Visitors visitors_in_system)
             throws InvalidActionException {
 
         this.subscriberIdCounter = subscriberIdCounter;
@@ -63,6 +64,7 @@ public class TradingSystem {
         this.storesPurchasePolicies = storesPurchasePolicies;
         this.storesDiscountPolicies = storesDiscountPolicies;
         this.visitors = visitors;
+        this.visitors_in_system = visitors_in_system;
 
         auth.authenticate(userName, password);
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
@@ -114,8 +116,22 @@ public class TradingSystem {
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
         visitors.get(date).compute("guests", (k, v) -> v == null ? 1 : v + 1);
+        visitors_in_system.getGuests().putIfAbsent(date, 1);
+        visitors_in_system.getSubscribers().putIfAbsent(date, 0);
+        visitors_in_system.getManagers().putIfAbsent(date, 0);
+        visitors_in_system.getOwners().putIfAbsent(date, 0);
+        visitors_in_system.getAdmins().putIfAbsent(date, 0);
+
+        visitors_in_system.getGuests().compute(date, (k, v) -> v == null ? 1 : v + 1);
         connections.put(connectionId, new User());
-        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+//        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+        try {
+            admin.notifyVisitors(new VisitorsNotification(getTotalVisitorsByAdminPerDay(admin, date)));
+        } catch (NoPermissionException e) {
+            e.printStackTrace();
+        }
+
+        Repo.merge(visitors_in_system);
         return connectionId;
     }
 
@@ -127,36 +143,59 @@ public class TradingSystem {
         boolean managerAndOwner = false;
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
-        int managers = visitors.get(date).computeIfAbsent("managers", s -> 0);
-        int owners = visitors.get(date).computeIfAbsent("owners", s -> 0);
+        visitors_in_system.getGuests().putIfAbsent(date, 1);
+        int managers = visitors_in_system.getManagers().computeIfAbsent(date, s -> 0);
+//        int managers = visitors.get(date).computeIfAbsent("managers", s -> 0);
+//        int owners = visitors.get(date).computeIfAbsent("owners", s -> 0);
+        int owners = visitors_in_system.getOwners().computeIfAbsent(date, s -> 0);
+
         subscriber.makeCart(user);
         connections.put(connectionId, subscriber);
         subscriber.setLoggedIn(true);
         if(subscriber.havePermission(AdminPermission.getInstance())) {
             visitors.get(date).compute("admins", (k, v) -> v == null ? 1 : v + 1);
-            admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+            visitors_in_system.getAdmins().compute(date, (k, v) -> v == null ? 1 : v + 1);
+//            admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+            admin.notifyVisitors(new VisitorsNotification(getTotalVisitorsByAdminPerDay(admin, date)));
+
+            Repo.merge(visitors_in_system);
+            Repo.merge(subscriber);
+
             return;
         }
         for (Store store : stores.values()) {
             if (subscriber.havePermission(OwnerPermission.getInstance(store))) {
                 visitors.get(date).compute("owners", (k, v) -> v == null ? 1 : v + 1);
+                visitors_in_system.getOwners().compute(date, (k, v) -> v == null ? 1 : v + 1);
                 if(managerAndOwner) {
                     visitors.get(date).compute("managers", (k, v) -> v == null ? 0 : v - 1);
+                    visitors_in_system.getManagers().compute(date, (k, v) -> v == null ? 0 : v - 1);
                 }
-                admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+//                admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+                admin.notifyVisitors(new VisitorsNotification(getTotalVisitorsByAdminPerDay(admin, date)));
+
+                Repo.merge(visitors_in_system);
+                Repo.merge(subscriber);
+
                 return;
             }
             if (subscriber.havePermission(ManagerPermission.getInstance(store))) {
                 visitors.get(date).compute("managers", (k, v) -> v == null ? 1 : v + 1);
+                visitors_in_system.getManagers().compute(date, (k, v) -> v == null ? 1 : v + 1);
                 managerAndOwner = true;
             }
         }
-        if(managers == visitors.get(date).get("managers") && owners == visitors.get(date).get("owners")) {
+//        if(managers == visitors.get(date).get("managers") && owners == visitors.get(date).get("owners")) {
+        if(managers == visitors_in_system.getManagers().get(date) && owners == visitors_in_system.getOwners().get(date)) {
             visitors.get(date).compute("subscribers", (k, v) -> v == null ? 1 : v + 1);
+            visitors_in_system.getSubscribers().compute(date, (k, v) -> v == null ? 1 : v + 1);
         }
-        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+//        admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
+        admin.notifyVisitors(new VisitorsNotification(getTotalVisitorsByAdminPerDay(admin, date)));
 
         Repo.merge(subscriber);
+        Repo.merge(visitors_in_system);
+
     }
 
     public void logout(String connectionId) throws InvalidActionException {
@@ -167,6 +206,7 @@ public class TradingSystem {
 
         User guest = new User();
         connections.put(connectionId, guest);
+
     }
 
     synchronized public int newStore(Subscriber subscriber, String storeName) throws InvalidActionException {
@@ -239,7 +279,7 @@ public class TradingSystem {
         }
         purchasePolicies.remove(policy);
         storesPurchasePolicies.get(store).remove(policy);
-
+        store.getStorePurchasePolicies().remove(policy);
         Repo.merge(store);
     }
 
@@ -249,7 +289,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
-
+        store.getStorePurchasePolicies().add(id);
         Repo.persist(policy);
         Repo.merge(store);
 
@@ -262,7 +302,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
-
+        store.getStorePurchasePolicies().add(id);
         Repo.persist(policy);
         Repo.merge(store);
 
@@ -275,6 +315,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -294,6 +335,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -313,6 +355,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -332,6 +375,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -363,6 +407,7 @@ public class TradingSystem {
         }
         discountPolicies.remove(discountId);
         storesDiscountPolicies.get(store).remove(discountId);
+        store.getStoreDiscountPolicies().remove(discountId);
 
         Repo.merge(store);
     }
@@ -379,6 +424,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -398,6 +444,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -417,6 +464,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -427,6 +475,7 @@ public class TradingSystem {
     public void purchaseCart(User user, PaymentData paymentData, DeliveryData deliveryData) throws InvalidActionException {
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+      //  Repo.merge(user);
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {
@@ -453,9 +502,16 @@ public class TradingSystem {
 
         admin.validatePermission(AdminPermission.getInstance());
 
-        return visitors.get(date);
-    }
+//        return visitors.get(date);
+        Map<String, Integer> map = new ConcurrentHashMap<>();
+        map.put("guests", visitors_in_system.getGuests().get(date));
+        map.put("subscribers", visitors_in_system.getSubscribers().get(date));
+        map.put("managers", visitors_in_system.getManagers().get(date));
+        map.put("owners", visitors_in_system.getOwners().get(date));
+        map.put("admins", visitors_in_system.getAdmins().get(date));
 
+        return map;
+    }
 
 
 }

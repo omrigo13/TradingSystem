@@ -27,7 +27,7 @@ public class PurchaseRemovedItemFromStore {
 
     int itemID;
     Item item;
-    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<HistoryPurchases> itemsPurchased;
     @Mock private LinkedList<String> purchaseHistory;
     @Mock private PaymentSystem paymentSystem;
     @Mock private DeliverySystem deliverySystem;

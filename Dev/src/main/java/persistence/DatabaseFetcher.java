@@ -1,10 +1,12 @@
 package persistence;
 
+import authentication.UserAuthentication;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Store;
 import user.Subscriber;
 import user.User;
+import user.Visitors;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -23,6 +25,7 @@ public class DatabaseFetcher {
     private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; //todo: why collection? store has only one purchase policy
     private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; //todo: same as with purchase policy
 //    private ConcurrentHashMap<String, Map<String, Integer>> visitors; //todo - needed?
+    private Map<String, Record> userAuthentication;
 
 
     public DatabaseFetcher() {
@@ -34,6 +37,7 @@ public class DatabaseFetcher {
         discountPolicies = new ConcurrentHashMap<>();
         storesPurchasePolicies = new ConcurrentHashMap<>();
         storesDiscountPolicies = new ConcurrentHashMap<>();
+        this.userAuthentication = new ConcurrentHashMap<>();
     }
 
     public ConcurrentHashMap<String, Subscriber> getSubscribers() {
@@ -44,6 +48,16 @@ public class DatabaseFetcher {
             subscribers.put(s.getUserName(), s);
         }
         return subscribers;
+    }
+
+    public UserAuthentication getAuthentication() {
+        UserAuthentication ua = Repo.getAuthentication();
+        return ua;
+    }
+
+    public Visitors getVisitors() {
+        Visitors vis = Repo.getVisitors();
+        return vis;
     }
 
     public ConcurrentHashMap<Integer, Store> getStores() {
@@ -62,27 +76,31 @@ public class DatabaseFetcher {
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresPurchasePolicies() {
         List<Store> list = Repo.getStores();
+        ConcurrentHashMap<Store, Collection<Integer>> map = new ConcurrentHashMap<>();
         for (Store s:list ) {
-            storesPurchasePolicies.put(s, new LinkedList<>());
-            storesPurchasePolicies.get(s).add(s.getPurchasePolicy().getPurchase_id());
+            map.put(s, new LinkedList<>());
+            map.get(s).addAll(s.getStorePurchasePolicies());
         }
+        storesPurchasePolicies = map;
         return storesPurchasePolicies;
     }
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresDiscountPolicies() {
         List<Store> list = Repo.getStores();
+        ConcurrentHashMap<Store, Collection<Integer>> map = new ConcurrentHashMap<>();
         for (Store s:list ) {
-            storesDiscountPolicies.put(s, new LinkedList<>());
-            storesDiscountPolicies.get(s).add(s.getDiscountPolicy().getDiscount_id());
+            map.put(s, new LinkedList<>());
+            map.get(s).addAll(s.getStoreDiscountPolicies());
         }
+        storesDiscountPolicies = map;
         return storesDiscountPolicies;
     }
 
     public ConcurrentHashMap<Integer, PurchasePolicy> getPurchasePolicies() {
-        return purchasePolicies;
+        return Repo.getPurchasePolicies();
     }
 
     public ConcurrentHashMap<Integer, DiscountPolicy> getDiscountPolicies() {
-        return discountPolicies;
+        return Repo.getDiscountPolicies();
     }
 }

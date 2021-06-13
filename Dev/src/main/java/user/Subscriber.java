@@ -24,8 +24,8 @@ public class Subscriber extends User {
     private String userName;
     @ManyToMany(cascade = CascadeType.ALL)
     private Set<Permission> permissions; // synchronized manually
-    @Transient
-    private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Collection<HistoryPurchases> itemsPurchased;
     @ElementCollection
     private Collection<String> purchaseHistory; // synchronized in constructor
     @ElementCollection
@@ -77,14 +77,6 @@ public class Subscriber extends User {
         this.permissions = permissions;
     }
 
-    public ConcurrentMap<Store, Collection<Item>> getItemsPurchased() {
-        return itemsPurchased;
-    }
-
-    public void setItemsPurchased(ConcurrentMap<Store, Collection<Item>> itemsPurchased) {
-        this.itemsPurchased = itemsPurchased;
-    }
-
     public void setPurchaseHistory(Collection<String> purchaseHistory) {
         this.purchaseHistory = purchaseHistory;
     }
@@ -102,10 +94,10 @@ public class Subscriber extends User {
     }
 
     public Subscriber(int id, String userName) {
-        this(id, userName, new HashSet<>(), new ConcurrentHashMap<>(), new LinkedList<>());
+        this(id, userName, new HashSet<>(), new HashSet<>(), new LinkedList<>());
     }
 
-    Subscriber(int id, String userName, Set<Permission> permissions, ConcurrentMap<Store, Collection<Item>> itemsPurchased, Collection<String> purchaseHistory) {
+    Subscriber(int id, String userName, Set<Permission> permissions, Collection<HistoryPurchases> itemsPurchased, Collection<String> purchaseHistory) {
         this.id = id;
         this.userName = userName;
         this.permissions = permissions;
@@ -128,13 +120,36 @@ public class Subscriber extends User {
         for (Map.Entry<Store, Basket> entry : baskets.entrySet()) {
             Store store = entry.getKey();
             Basket basket = entry.getValue();
-            Collection<Item> itemsPurchasedFromStore = itemsPurchased.computeIfAbsent(store, k -> new HashSet<>());
+            Collection<Item> itemsPurchasedFromStore = null;
+            HistoryPurchases history = null;
+            for(HistoryPurchases historyPurchases: itemsPurchased)
+            {
+                if(historyPurchases.getStore().equals(store)) {
+                    itemsPurchasedFromStore = historyPurchases.getItems();
+                    history = historyPurchases;
+                    break;
+                }
+            }
+            if(itemsPurchasedFromStore == null) {
+                itemsPurchasedFromStore = new HashSet<>();
+                history = new HistoryPurchases(store, userName);
+                itemsPurchased.add(history);
+            }
             itemsPurchasedFromStore.addAll(basket.getItems().keySet());
+            history.setItems(itemsPurchasedFromStore);
 
             Collection<Offer> userOffers = this.getOffers(store);
             for (Map.Entry<Integer, Offer> offer: store.getStoreOffers().entrySet()) {
                 if(userOffers.contains(offer.getValue()) && offer.getValue().isApproved()) {
-                    itemsPurchasedFromStore = itemsPurchased.computeIfAbsent(store, k -> new HashSet<>());
+                    for(HistoryPurchases historyPurchases: itemsPurchased)
+                    {
+                        if(historyPurchases.getStore().equals(store))
+                            itemsPurchasedFromStore = historyPurchases.getItems();
+                    }
+                    if(itemsPurchasedFromStore == null) {
+                        itemsPurchasedFromStore = new HashSet<>();
+                        itemsPurchased.add(new HistoryPurchases(store, userName));
+                    }
                     itemsPurchasedFromStore.add(offer.getValue().getItem());
                     store.getStoreOffers().remove(offer.getKey());
                 }
@@ -519,8 +534,10 @@ public class Subscriber extends User {
             throw new WrongReviewException("Review can't be empty or null");
         }
 
-        if (!itemsPurchased.get(store).contains(item)) {
-            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+        for(HistoryPurchases historyPurchases: itemsPurchased)
+        {
+            if(historyPurchases.getStore().equals(store) && !historyPurchases.getItems().contains(item))
+                throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
         }
 
         Review review = new Review(store, item, reviewText);

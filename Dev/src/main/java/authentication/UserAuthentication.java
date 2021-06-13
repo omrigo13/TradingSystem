@@ -4,22 +4,28 @@ import java.security.MessageDigest;
 import exceptions.SubscriberAlreadyExistsException;
 import exceptions.SubscriberDoesNotExistException;
 import exceptions.WrongPasswordException;
+import persistence.Repo;
 
+import javax.persistence.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+@Entity
 public class UserAuthentication {
 
-    record Record(byte[] salt, String hash) {
-    }
-
-    private final ConcurrentHashMap<String, Record> records;
+    @OneToMany(cascade = CascadeType.ALL)
+    private final Map<String, Record> records;
+    @Transient
     private final MessageDigest digest;
+    @Transient
     private final SecureRandom random;
+    @Id
+    private Integer id;
 
     public UserAuthentication() {
         this(new ConcurrentHashMap<>(), createMessageDigest(), new SecureRandom());
+        this.id = 1;
     }
 
     private static MessageDigest createMessageDigest() {
@@ -47,11 +53,13 @@ public class UserAuthentication {
             ref.absent = false;
             byte[] salt = new byte[16];
             random.nextBytes(salt);
-            return new Record(salt, computeHash(password, salt));
+            return new Record(userName, salt, computeHash(password, salt));
         });
 
         if (ref.absent)
             throw new SubscriberAlreadyExistsException(userName);
+
+        Repo.merge(this);
     }
 
     synchronized String computeHash(String password, byte[] salt) {
@@ -65,7 +73,15 @@ public class UserAuthentication {
         Record record = records.get(userName);
         if (record == null)
             throw new SubscriberDoesNotExistException(userName);
-        if (!record.hash.equals(computeHash(password, record.salt)))
+        if (!record.getHash().equals(computeHash(password, record.getSalt())))
             throw new WrongPasswordException(userName, password);
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
     }
 }

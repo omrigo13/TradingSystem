@@ -30,8 +30,14 @@ public class Store {
     private double rating;
     @OneToOne
     private DiscountPolicy discountPolicy;
+    @ElementCollection
+    private Collection<Integer> storeDiscountPolicies;
     @OneToOne
     private PurchasePolicy purchasePolicy;
+    @ElementCollection
+    private Collection<Integer> storePurchasePolicies;
+
+    //private String founder;
     private boolean isActive = true;
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "id")
@@ -75,6 +81,26 @@ public class Store {
     public Store() {
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Collection<Integer> getStoreDiscountPolicies() {
+        return storeDiscountPolicies;
+    }
+
+    public void setStoreDiscountPolicies(Collection<Integer> storeDiscountPolicies) {
+        this.storeDiscountPolicies = storeDiscountPolicies;
+    }
+
+    public Collection<Integer> getStorePurchasePolicies() {
+        return storePurchasePolicies;
+    }
+
+    public void setStorePurchasePolicies(Collection<Integer> storePurchasePolicies) {
+        this.storePurchasePolicies = storePurchasePolicies;
+    }
+
     /**
      * This method opens a new store and create its inventory
      *
@@ -111,6 +137,8 @@ public class Store {
             this.discountPolicy = discountPolicy;
         this.isActive = true;
         this.observable = new Observable(this.id);
+        this.storePurchasePolicies = new LinkedList<>();
+        this.storeDiscountPolicies = new LinkedList<>();
     }
 
     public int getId() {
