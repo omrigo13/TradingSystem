@@ -43,6 +43,39 @@
    
    data contains: name, address, city, country, zip
    ```
+   >9. persistence.unit - this field sets the persistance unit, with this parameter you can choose to which db to connect, according to do so you have to edit the file [persistance.xml](https://github.com/omrigo13/TradingSystem/blob/main/Dev/src/main/resources/META-INF/persistence.xml), you should follow this to add a support of another persistence unit
+```xml
+<!-- Define a name used to get an entity manager. Define that you will
+    complete transactions with the DB  -->
+    <persistence-unit name="TradingSystem" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Define the class for Hibernate which implements JPA -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <!-- Define the object that should be persisted in the database -->
+<!--        <class>store.Inventory</class>-->
+
+        <properties>
+
+            <!--     first time: use create-drop, to create DB, or update if DB already exist-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="create-drop" />-->
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+
+
+            <!-- Driver for DB database -->
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+            <!-- URL for DB -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://10.0.0.15:3306/ts" />
+            <!-- Username -->
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <!-- Password -->
+            <property name="javax.persistence.jdbc.password" value="1234" />
+            <!-- Drop and re-create the database schema on startup -->
+
+        </properties>
+    </persistence-unit>
+    
+```
+    
    <br><br>
    
     state file - java class that will be compiled during runtime
