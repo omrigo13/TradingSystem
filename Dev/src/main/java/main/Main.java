@@ -176,21 +176,21 @@ public class Main {
             errorLog.errorToLogger("State file is not exist. state file: " + cfg.stateFileAddress);
             throw new NullPointerException();
         }
-        if(flag == 0){
+        if(flag == 0) {
             try {
                 Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
                 Method method = cls.getMethod("run", TradingSystemService.class);
                 method.invoke(null, tradingSystemService);
 
-            }catch (ClassNotFoundException e){
+            } catch (ClassNotFoundException e) {
                 errorLog.errorToLogger("Class for startupScript is not exist. startupScript: " + cfg.startupScript);
                 throw new RuntimeException(e);
-            }catch (NoSuchMethodException e){
+            } catch (NoSuchMethodException e) {
                 errorLog.errorToLogger("method for startupScript is not exist.");
                 throw new RuntimeException(e);
-            }
-            catch (InvocationTargetException | IllegalAccessException e) {
+            } catch (InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
+            }
         }
 
 
