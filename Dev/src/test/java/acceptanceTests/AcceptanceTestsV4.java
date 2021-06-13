@@ -79,26 +79,26 @@ public class AcceptanceTestsV4 {
 
     @Test
     void get_visitors_by_admin() throws InvalidActionException {
-        assertEquals("{guests=0, owners=0, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=0, guests=1, owners=0, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void add_1_guest_get_visitors_by_admin() throws InvalidActionException {
         service.connect();
-        assertEquals("{guests=1, owners=0, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=0, guests=2, owners=0, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void add_many_guest_get_visitors_by_admin() throws InvalidActionException {
         for(int i = 0; i < 10; i++)
             service.connect();
-        assertEquals("{guests=10, owners=0, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=0, guests=11, owners=0, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void add_1_subscriber_get_visitors_by_admin() throws InvalidActionException {
         setUpSubscriber1();
-        assertEquals("{subscribers=1, guests=1, owners=0, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=1, guests=2, owners=0, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
@@ -106,14 +106,14 @@ public class AcceptanceTestsV4 {
         setUpSubscriber1();
         service.logout(subs1Id);
         service.login(subs1Id, subs1UserName, "1234");
-        assertEquals("{subscribers=2, guests=1, owners=0, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=2, guests=2, owners=0, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void add_1_owner_get_visitors_by_admin() throws InvalidActionException {
         setUpStore1();
         service.login(founderStore1Id, store1FounderUserName, "1234");
-        assertEquals("{subscribers=2, guests=2, owners=1, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=2, guests=3, owners=1, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
@@ -122,14 +122,14 @@ public class AcceptanceTestsV4 {
         service.login(founderStore1Id, store1FounderUserName, "1234");
         service.logout(founderStore1Id);
         service.login(founderStore1Id, store1FounderUserName, "1234");
-        assertEquals("{subscribers=2, guests=2, owners=2, admins=1, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=2, guests=3, owners=2, managers=0, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void add_1_manager_get_visitors_by_admin() throws InvalidActionException {
         setUpStore1();
         service.login(store1Manager1Id, store1Manager1UserName, "1234");
-        assertEquals("{subscribers=2, guests=2, owners=0, admins=1, managers=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=2, guests=3, owners=0, managers=1, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
@@ -138,14 +138,14 @@ public class AcceptanceTestsV4 {
         service.login(store1Manager1Id, store1Manager1UserName, "1234");
         service.logout(store1Manager1Id);
         service.login(store1Manager1Id, store1Manager1UserName, "1234");
-        assertEquals("{subscribers=2, guests=2, owners=0, admins=1, managers=2}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=2, guests=3, owners=0, managers=2, admins=1}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
     void logout_login_admin_get_visitors_by_admin() throws InvalidActionException {
         service.logout(admin1Id);
         service.login(admin1Id, "Admin1", "ad123");
-        assertEquals("{guests=0, owners=0, admins=2, managers=0}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=0, guests=1, owners=0, managers=0, admins=2}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 
     @Test
@@ -172,6 +172,6 @@ public class AcceptanceTestsV4 {
             service.logout(admin1Id);
             service.login(admin1Id, "Admin1", "ad123");
         }
-        assertEquals("{subscribers=8, guests=13, owners=18, admins=7, managers=14}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
+        assertEquals("{subscribers=8, guests=14, owners=18, managers=14, admins=7}", service.getTotalVisitorsByAdminPerDay(admin1Id, date).toString());
     }
 }

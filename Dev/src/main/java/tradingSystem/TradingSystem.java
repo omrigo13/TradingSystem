@@ -116,7 +116,6 @@ public class TradingSystem {
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
         visitors.get(date).compute("guests", (k, v) -> v == null ? 1 : v + 1);
-        visitors_in_system.getGuests().putIfAbsent(date, 1);
         visitors_in_system.getSubscribers().putIfAbsent(date, 0);
         visitors_in_system.getManagers().putIfAbsent(date, 0);
         visitors_in_system.getOwners().putIfAbsent(date, 0);
