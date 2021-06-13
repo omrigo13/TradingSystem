@@ -113,7 +113,7 @@ public class TradingSystem {
         // if need to be sticklers about uniqueness switch to org.springframework.util.AlternativeJdkIdGenerator
         String date = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
         visitors.putIfAbsent(date, new HashMap<>());
-        visitors.get(date).compute("guests", (k, v) -> v == null ? 0 : v + 1);
+        visitors.get(date).compute("guests", (k, v) -> v == null ? 1 : v + 1);
         connections.put(connectionId, new User());
         admin.notifyVisitors(new VisitorsNotification(visitors.get(date)));
         return connectionId;
@@ -210,7 +210,7 @@ public class TradingSystem {
         for (Store store : stores.values()) {
             itemsToAdd = store.searchAndFilter(keyWord, productName, category, ratingItem, ratingStore, maxPrice, minPrice);
             for (Item item : itemsToAdd)
-                items.add("store: " + store.getId() + ", " + item.toString() + " quantity: " + store.getItems().get(item));
+                items.add("store: " + store.getId() + ", " + item.toString());
         }
         return items;
     }

@@ -1,6 +1,8 @@
 package acceptanceTests;
 
 import exceptions.*;
+import externalServices.DeliverySystemMock;
+import externalServices.PaymentSystemMock;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -22,6 +24,8 @@ public class AcceptanceTestsV2 {
     private int quantityPolicy, basketPolicy, timePolicy, andPolicy, quantityDiscount1, quantityDiscount2, plusDiscount, maxDiscount;
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
+    private PaymentSystemMock paymentSystem = new PaymentSystemMock();
+    private DeliverySystemMock deliverySystem = new DeliverySystemMock();
 
     @BeforeClass
     public void beforeClass() {
@@ -30,6 +34,8 @@ public class AcceptanceTestsV2 {
 
     @BeforeMethod
     void setUp() throws InvalidActionException {
+        Driver.setPaymentSystem(paymentSystem);
+        Driver.setDeliverySystem(deliverySystem);
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
         admin1Id = service.connect();
         service.login(admin1Id, "Admin1", "ad123");

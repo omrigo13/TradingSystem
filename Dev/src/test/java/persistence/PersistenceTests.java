@@ -37,7 +37,8 @@ public class PersistenceTests {
 
     @BeforeClass
     public void setUp() throws Exception {
-
+        Driver.setPaymentSystem(paymentSystem);
+        Driver.setDeliverySystem(deliverySystem);
         service = Driver.getService("Admin1", "ad123"); //params are details of system manager to register into user authenticator
         admin1Id = service.connect();
         founderStore1Id = service.connect();
@@ -91,6 +92,8 @@ public class PersistenceTests {
 
     @Test
     void review_item() throws InvalidActionException {
+        service.addItemToBasket(subs2Id, storeId1, productId2, 1);
+        service.purchaseCart(subs2Id, card_number, month, year, holder, ccv, subs2UserName, subs2UserName, address, city, country, zip);
         service.writeOpinionOnProduct(subs2Id, storeId1, productId2, "reviewwww!!");
 
         //purchase notification test

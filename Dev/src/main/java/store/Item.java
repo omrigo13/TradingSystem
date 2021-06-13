@@ -86,7 +86,7 @@ public class Item {
             "\ncategory:" + category +
             "\nsub category:" + subCategory +
             "\nrating:" + rating +
-            "\namount:" + amount + '\n';}
+            "\nquantity:" + amount + '\n';}
 
     public void lock() { isLocked = true; }
 

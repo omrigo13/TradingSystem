@@ -513,12 +513,15 @@ public class Subscriber extends User {
 
     public void writeOpinionOnProduct(Store store, int itemId, String reviewText) throws ItemException, WrongReviewException {
 
-//        if (review == null || review.trim().isEmpty())
-//            throw new WrongReviewException("Review can't be empty or null");
-
         Item item = store.searchItemById(itemId);
-//        if (!itemsPurchased.get(store).contains(item))
-//            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+
+        if (reviewText == null || reviewText.trim().isEmpty()) {
+            throw new WrongReviewException("Review can't be empty or null");
+        }
+
+        if (!itemsPurchased.get(store).contains(item)) {
+            throw new ItemNotPurchasedException("Item ID: " + itemId + " item name: " + item.getName());
+        }
 
         Review review = new Review(store, item, reviewText);
         item.addReview(review);
@@ -615,7 +618,9 @@ public class Subscriber extends User {
 
         validateAtLeastOnePermission(AdminPermission.getInstance(), OwnerPermission.getInstance(store));
 
-        double totalValue = store.getTotalValuePerDay().get(date);
+        double totalValue = 0.0;
+        if(store.getTotalValuePerDay().get(date) != null)
+            totalValue = store.getTotalValuePerDay().get(date);
         return "store: " + store.getName() + " date: " + date + " total value is: " + totalValue;
     }
 
