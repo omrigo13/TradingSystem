@@ -12,6 +12,11 @@ public class Repo {
 
     private static Repo repo = null;
     private static EntityManager em;
+    private static String persistence_unit = "TradingSystemTest";
+
+    public static void setPersistence_unit(String persistence_unit) {
+        Repo.persistence_unit = persistence_unit;
+    }
 
     private Repo() {
     }
@@ -82,7 +87,7 @@ public class Repo {
 
     public static EntityManager getEm() {
         if (em == null)
-            em = Persistence.createEntityManagerFactory("TradingSystem").createEntityManager();
+            em = Persistence.createEntityManagerFactory(persistence_unit).createEntityManager();
 
         return em;
     }
