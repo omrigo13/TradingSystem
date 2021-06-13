@@ -25,7 +25,7 @@ public class QuantityDiscountPolicy extends SimpleDiscountPolicy {
         {
             Collection<PurchasePolicy> policies = new LinkedList<>();
             policies.add(new DefaultPurchasePolicy());
-            this.policy = null; //todo: Omri
+            this.policy = null;
 //            this.policy = new AndPolicy(policies);
 
         }

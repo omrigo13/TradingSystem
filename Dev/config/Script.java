@@ -6,10 +6,20 @@ public class Script {
     @SuppressWarnings("unused")
     public static void run(TradingSystemService tradingSystemService) throws InvalidActionException {
         String userName1 = "Tal", userName2 = "Omri", userName3 = "Noa";
+        String u1 = "U1", u2 = "U2", u3 = "U3", u4 = "U4";
         String password = "123";
         tradingSystemService.register(userName1, password);
         tradingSystemService.register(userName2, password);
         tradingSystemService.register(userName3, password);
+        tradingSystemService.register(u1, password);
+        tradingSystemService.register(u2, password);
+        tradingSystemService.register(u3, password);
+        tradingSystemService.register(u4, password);
+        String u1Conn = tradingSystemService.connect();
+        tradingSystemService.login(u1Conn, u1, password);
+        String s1Store = tradingSystemService.openNewStore(u1Conn, "S1");
+        tradingSystemService.addProductToStore(u1Conn, s1Store, "Wine", "drinks", "alcoholic drinks", 40, 35);
+        tradingSystemService.appointStoreOwner(u1Conn, u4, s1Store);
         String connId1 = tradingSystemService.connect();
         tradingSystemService.login(connId1, userName1, password);
         String storeId1 = tradingSystemService.openNewStore(connId1, "eBay");

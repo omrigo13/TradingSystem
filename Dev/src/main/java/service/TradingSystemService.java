@@ -36,7 +36,6 @@ public interface TradingSystemService {
     /* Get product by filter, uses spellchecking. */
     Collection<String> getItems(String keyWord, String productName, String category, String subCategory, Double ratingItem, Double ratingStore, Double maxPrice, Double minPrice) throws InvalidActionException;
     // the String in the collection represent item.toString()
-    // TODO use spellChecking
 
     /* Save product in basket of a store. */
     void addItemToBasket(String userID, String storeId, String productId, int amount) throws InvalidActionException;

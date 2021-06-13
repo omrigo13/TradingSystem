@@ -618,13 +618,11 @@ public class AcceptanceTestsV1 {
 
     @Test
     void validAllowManagerToEditPolicies() throws Exception{
-        //TODO: when requirements of policies will be ready, expand this test.
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
     @Test
     void wrongAllowManagerToEditPolicies() throws Exception{
-        //TODO: when requirements of policies will be ready, expand this test.
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId2, store1Manager1UserName)); //founderStore1Id doesn't have permissions in store2
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, subs2UserName)); //subs2UserName is not a manager of store1
 //        assertThrows(Exception.class, () -> service.allowManagerToEditPolicies(founderStore1Id, storeId1, guest1UserName)); //guest1UserName is not a manager of store1
@@ -634,7 +632,6 @@ public class AcceptanceTestsV1 {
 
     @Test
     void disableManagerFromEditPolicies() throws Exception{
-        //TODO: when requirements of policies will be ready, expand this test.
         service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
     }
 
@@ -843,7 +840,6 @@ public class AcceptanceTestsV1 {
 //        assertThrows(NoPermissionException.class, () -> service.getErrorLog(founderStore1Id)); //founderStore1Id is only a store owner and not a system manager
     }
 
-    //TODO test spell checking
 
     @Test
     void spellCheckByKeyWordByName() throws Exception{
@@ -902,7 +898,6 @@ public class AcceptanceTestsV1 {
     }
 
 
-    //TODO add concurrency tests - stress test
     void testMultiplePurchases(){
 
     }
