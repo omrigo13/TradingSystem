@@ -140,6 +140,8 @@ public class Store {
         this.isActive = true;
 //        this.observable = observable;
         this.observable = new Observable(this.id);
+        this.storePurchasePolicies = new LinkedList<>();
+        this.storeDiscountPolicies = new LinkedList<>();
     }
 
     public int getId() {

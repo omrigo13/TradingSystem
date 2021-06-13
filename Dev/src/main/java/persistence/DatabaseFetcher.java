@@ -76,19 +76,23 @@ public class DatabaseFetcher {
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresPurchasePolicies() {
         List<Store> list = Repo.getStores();
+        ConcurrentHashMap<Store, Collection<Integer>> map = new ConcurrentHashMap<>();
         for (Store s:list ) {
-            storesPurchasePolicies.put(s, new LinkedList<>());
-            storesPurchasePolicies.get(s).add(s.getPurchasePolicy().getPurchase_id());
+            map.put(s, new LinkedList<>());
+            map.get(s).addAll(s.getStorePurchasePolicies());
         }
+        storesPurchasePolicies = map;
         return storesPurchasePolicies;
     }
 
     public ConcurrentHashMap<Store, Collection<Integer>> getStoresDiscountPolicies() {
         List<Store> list = Repo.getStores();
+        ConcurrentHashMap<Store, Collection<Integer>> map = new ConcurrentHashMap<>();
         for (Store s:list ) {
-            storesDiscountPolicies.put(s, new LinkedList<>());
-            storesDiscountPolicies.get(s).add(s.getDiscountPolicy().getDiscount_id());
+            map.put(s, new LinkedList<>());
+            map.get(s).addAll(s.getStoreDiscountPolicies());
         }
+        storesDiscountPolicies = map;
         return storesDiscountPolicies;
     }
 

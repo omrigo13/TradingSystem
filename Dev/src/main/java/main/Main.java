@@ -4,6 +4,7 @@ import Logger.Log;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
 import exceptions.SubscriberAlreadyExistsException;
+import exceptions.WrongPasswordException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import io.javalin.Javalin;
@@ -125,7 +126,11 @@ public class Main {
         try{
             userAuthentication.register(cfg.adminName, cfg.adminPassword);
         }catch (SubscriberAlreadyExistsException e){
-            errorLog.errorToLogger("Initialize the system with already exist admin, name: " + cfg.adminName + ", password: ******");
+            try {
+                userAuthentication.authenticate(cfg.adminName, cfg.adminPassword);
+            }catch (WrongPasswordException w){
+                errorLog.errorToLogger("Wrong password for admin, name: " + cfg.adminName + ", password: ******");
+            }
         }
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
@@ -163,8 +168,8 @@ public class Main {
                 subscribers_from_DB.put(username, subscribers.get(username));
             }
             ConcurrentHashMap<Integer, Store> stores_fromDB = fetcher.getStores();
-            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
-            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
+//            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
+//            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
             ConcurrentHashMap<Store, Collection<Integer>> stores_discounts = fetcher.getStoresDiscountPolicies();
             ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
             AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();

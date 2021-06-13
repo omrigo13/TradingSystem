@@ -279,7 +279,7 @@ public class TradingSystem {
         }
         purchasePolicies.remove(policy);
         storesPurchasePolicies.get(store).remove(policy);
-
+        store.getStorePurchasePolicies().remove(policy);
         Repo.merge(store);
     }
 
@@ -289,7 +289,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
-
+        store.getStorePurchasePolicies().add(id);
         Repo.persist(policy);
         Repo.merge(store);
 
@@ -302,7 +302,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
-
+        store.getStorePurchasePolicies().add(id);
         Repo.persist(policy);
         Repo.merge(store);
 
@@ -315,6 +315,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -334,6 +335,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -353,6 +355,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -372,6 +375,7 @@ public class TradingSystem {
         purchasePolicies.put(id, policy);
         storesPurchasePolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesPurchasePolicies.get(store).add(id);
+        store.getStorePurchasePolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -403,6 +407,7 @@ public class TradingSystem {
         }
         discountPolicies.remove(discountId);
         storesDiscountPolicies.get(store).remove(discountId);
+        store.getStoreDiscountPolicies().remove(discountId);
 
         Repo.merge(store);
     }
@@ -419,6 +424,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -438,6 +444,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
@@ -457,6 +464,7 @@ public class TradingSystem {
         discountPolicies.put(id, policy);
         storesDiscountPolicies.computeIfAbsent(store, k -> new LinkedList<>());
         storesDiscountPolicies.get(store).add(id);
+        store.getStoreDiscountPolicies().add(id);
 
         Repo.persist(policy);
         Repo.merge(store);
