@@ -540,8 +540,8 @@ public class TradingSystemImpl {
         return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getEventLog(eventLog);
     }
 
-    public Collection<String> getErrorLog(String connectionId) {
-        return null;
+    public Collection<String> getErrorLog(String connectionId, Collection<String> errorLog) throws InvalidActionException {
+        return tradingSystem.getUserByConnectionId(connectionId).getSubscriber().getErrorLog(errorLog);
     }
 
     //DB - ok

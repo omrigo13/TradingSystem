@@ -408,7 +408,12 @@ public class TradingSystemImplTest {
     }
 
     @Test
-    void getErrorLog() {
-        service.getErrorLog(connectionId);
+    void getErrorLog() throws InvalidActionException{
+        when(tradingSystem.getUserByConnectionId(connectionId)).thenReturn(user);
+        when(user.getSubscriber()).thenReturn(subscriber);
+        Collection<String> log = new LinkedList<>();
+        service.getErrorLog(connectionId, log);
+
+        verify(subscriber).getErrorLog(any());
     }
 }

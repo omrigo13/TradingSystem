@@ -450,6 +450,14 @@ public class Subscriber extends User {
         return log;
     }
 
+    public Collection<String> getErrorLog(Collection<String> log) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(AdminPermission.getInstance());
+
+        return log;
+    }
+
     public Collection<String> getSalesHistoryByStore(Store store) throws NoPermissionException {
 
         validateAtLeastOnePermission(AdminPermission.getInstance(), GetHistoryPermission.getInstance(store));
@@ -577,6 +585,7 @@ public class Subscriber extends User {
         if(adminObserver != null) {
             adminObserver.notify(notification);
         }
+
     }
 
     public Collection<Notification> checkPendingNotifications() {

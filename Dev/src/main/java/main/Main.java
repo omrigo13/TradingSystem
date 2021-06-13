@@ -1,7 +1,9 @@
 package main;
 
+import Logger.Log;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
+import exceptions.SubscriberAlreadyExistsException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import io.javalin.Javalin;
@@ -9,6 +11,7 @@ import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.websocket.WsContext;
 import notifications.Notification;
 import notifications.Observer;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -35,7 +38,6 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,9 +62,11 @@ public class Main {
     }
     // Declare dependencies
     public static presenatation.TradingSystem tradingSystem;
+    private static Log errorLog;
 
     public static void main(String[] args) throws InvalidActionException {
-
+        errorLog = new Log();
+        PropertyConfigurator.configure("Dev/log4j.properties");
         Config cfg = new Config();
 
         try (InputStream input = new FileInputStream("Dev/config/config.properties")) {
@@ -79,6 +83,9 @@ public class Main {
             cfg.paymentSystem = prop.getProperty("paymentSystem");
             cfg.deliverySystem = prop.getProperty("deliverySystem");
 
+        }catch (FileNotFoundException e) {
+            errorLog.errorToLogger("initialization of the system made with non-exist properties file");
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -100,7 +107,11 @@ public class Main {
 
         // work around for the system initialization
         UserAuthentication userAuthentication = new UserAuthentication();
-        userAuthentication.register(cfg.adminName, cfg.adminPassword);
+        try{
+            userAuthentication.register(cfg.adminName, cfg.adminPassword);
+        }catch (SubscriberAlreadyExistsException e){
+            errorLog.errorToLogger("Initialize the system with already exist admin, name: " + cfg.adminName + ", password: ******");
+        }
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
         Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), cfg.adminName);
@@ -114,7 +125,11 @@ public class Main {
             cls = Class.forName(cfg.deliverySystem, true, ClassLoader.getSystemClassLoader());
             deliverySystem = (DeliverySystem) cls.getConstructor().newInstance();
 
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        }catch (ClassNotFoundException e){
+            errorLog.errorToLogger("paymentSystem or deliverySystem in config.properties are wrong. paymentSystem: " + cfg.paymentSystem + ", deliverySystem: " + cfg.deliverySystem);
+            throw new RuntimeException(e);
+        }
+        catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
 
@@ -149,15 +164,26 @@ public class Main {
         TradingSystemService tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(tradingSystem));
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
-        compiler.run(null, null, null, cfg.stateFileAddress);
+        try {
+            compiler.run(null, null, null, cfg.stateFileAddress);
+        }catch (NullPointerException e){
+            errorLog.errorToLogger("State file is not exist. state file: " + cfg.stateFileAddress);
+            throw new NullPointerException();
+        }
 
         try {
             Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
             Method method = cls.getMethod("run", TradingSystemService.class);
             method.invoke(null, tradingSystemService);
 
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+        }catch (ClassNotFoundException e){
+            errorLog.errorToLogger("Class for startupScript is not exist. startupScript: " + cfg.startupScript);
+            throw new RuntimeException(e);
+        }catch (NoSuchMethodException e){
+            errorLog.errorToLogger("method for startupScript is not exist.");
+            throw new RuntimeException(e);
+        }
+        catch (InvocationTargetException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 

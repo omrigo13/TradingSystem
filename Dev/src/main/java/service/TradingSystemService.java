@@ -279,7 +279,7 @@ public interface TradingSystemService {
     /* shows the error log.
        every string element represents an error.
        precondition: invoker has the permissions to get the info - only system manager. */
-    Collection<String> getErrorLog(String userID) throws InvalidActionException;
+    Collection<String> getErrorLog(String userID) throws InvalidActionException, IOException;
 
     /*
     returns true if set successfully. else, returns false.
