@@ -168,12 +168,14 @@ public class Main {
             ConcurrentHashMap<Store, Collection<Integer>> stores_discounts = fetcher.getStoresDiscountPolicies();
             ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
             AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();
+            ConcurrentHashMap<Integer, PurchasePolicy> purchasesMap = fetcher.getPurchasePolicies();
+            ConcurrentHashMap<Integer, DiscountPolicy> discountsMap = fetcher.getDiscountPolicies();
 
 
             tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
                     .setSubscriberIdCounter(subscribersIdCounter).setSubscribers(subscribers_from_DB).setAuth(userAuthentication)
                     .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setStores(stores_fromDB)
-                    .setDiscountPolicies(discounts).setPurchasePolicies(purchases)
+                    .setDiscountPolicies(discountsMap).setPurchasePolicies(purchasesMap)
                     .setStoresDiscountPolicies(stores_discounts).setStoresPurchasePolicies(stores_purchases)
                     .setVisitors_in_system(visitors).build();
         }

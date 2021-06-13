@@ -93,10 +93,10 @@ public class DatabaseFetcher {
     }
 
     public ConcurrentHashMap<Integer, PurchasePolicy> getPurchasePolicies() {
-        return purchasePolicies;
+        return Repo.getPurchasePolicies();
     }
 
     public ConcurrentHashMap<Integer, DiscountPolicy> getDiscountPolicies() {
-        return discountPolicies;
+        return Repo.getDiscountPolicies();
     }
 }
