@@ -427,6 +427,7 @@ public class TradingSystem {
     public void purchaseCart(User user, PaymentData paymentData, DeliveryData deliveryData) throws InvalidActionException {
 
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
+      //  Repo.merge(user);
     }
 
     public Collection<String> getTotalIncomeByAdminPerDay(Subscriber admin, String date) throws NoPermissionException {

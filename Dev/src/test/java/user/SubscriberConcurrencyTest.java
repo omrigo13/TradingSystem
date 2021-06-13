@@ -25,7 +25,7 @@ public class SubscriberConcurrencyTest {
     @Mock private Set<Permission> permissions1;
     @Mock private Set<Permission> permissions2;
     @Mock private Store store;
-    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<HistoryPurchases> itemsPurchased;
     @Mock private Collection<String> purchaseHistory;
 
     @BeforeClass

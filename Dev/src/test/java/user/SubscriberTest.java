@@ -29,7 +29,7 @@ public class SubscriberTest {
     @Mock private Set<Permission> permissions;
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
-    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<HistoryPurchases> itemsPurchased;
     @Mock private Item item2;
 
     private final Store store = mock(Store.class);
@@ -310,7 +310,12 @@ public class SubscriberTest {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
 
-        when(itemsPurchased.get(store)).thenReturn(items);
+        for(HistoryPurchases historyPurchases: itemsPurchased)
+        {
+            when(historyPurchases.getStore().equals(store)).thenReturn(true);
+            when(historyPurchases.getItems()).thenReturn(items);
+        }
+       // when(itemsPurchased.get(store)).thenReturn(items);
         when(store.searchItemById(0)).thenReturn(item);
 
         assertEquals(0, item.getReviews().size());
@@ -329,7 +334,12 @@ public class SubscriberTest {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
         when(store.searchItemById(0)).thenReturn(item2);
-        when(itemsPurchased.get(store)).thenReturn(items);
+        for(HistoryPurchases historyPurchases: itemsPurchased)
+        {
+            when(historyPurchases.getStore().equals(store)).thenReturn(true);
+            when(historyPurchases.getItems()).thenReturn(items);
+        }
+       // when(itemsPurchased.get(store)).thenReturn(items);
 
         assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getItem_id(), "good product"));
         assertEquals(0, item.getReviews().size());

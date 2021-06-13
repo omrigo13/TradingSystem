@@ -108,7 +108,10 @@ public class User {
 
         addCartToPurchases(storePurchaseDetails);
 
-        baskets.clear();
+        for(Basket basket: baskets.values()){
+            basket.getItems().clear();
+            Repo.merge(basket);
+        }
     }
 
     private double processCartAndCalculatePrice(double totalPrice, Map<Store, String> storePurchaseDetails) throws ItemException, PolicyException {

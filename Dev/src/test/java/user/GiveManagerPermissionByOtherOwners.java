@@ -29,7 +29,7 @@ public class GiveManagerPermissionByOtherOwners {
     private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
     private final AtomicInteger trialNumber = new AtomicInteger();
 
-    @Mock private ConcurrentHashMap<Store, Collection<Item>> itemsPurchased;
+    @Mock private Collection<HistoryPurchases> itemsPurchased;
     @Mock private LinkedList<String> purchaseHistory;
 
     @BeforeClass
