@@ -34,7 +34,6 @@ public class LoadTestGuestsConnect {
     @BeforeClass
     void setUp() throws InvalidActionException {
         MockitoAnnotations.openMocks(this);
-        MockitoAnnotations.openMocks(this);
         auth.register(userName, password);
         admin.addPermission(AdminPermission.getInstance());
         subscribers.put(userName, admin);
