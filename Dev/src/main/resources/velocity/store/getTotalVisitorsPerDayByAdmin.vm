@@ -85,7 +85,7 @@
             }
         </script>
     #elseif($failed)
-        <p class="bad notification">not allowed to see system visitors table</p>
+        <p class="bad notification">no system visitors on this day</p>
     #end
 </main>
 </body>
