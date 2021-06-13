@@ -6,6 +6,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystemBuilder;
@@ -31,6 +32,11 @@ public class LoadTestNewStoreAndAddItems {
     private final Subscriber admin = new Subscriber(0, userName);
     private final AtomicInteger subscriberId = new AtomicInteger(0);
     private long start;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeClass
     void setUp() throws InvalidActionException {

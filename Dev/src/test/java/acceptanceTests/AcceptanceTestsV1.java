@@ -30,6 +30,11 @@ public class AcceptanceTestsV1 {
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
 
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
+
     @BeforeMethod
     public void setUp() throws Exception {
         Driver.setPaymentSystem(paymentSystem);

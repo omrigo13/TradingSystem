@@ -7,6 +7,7 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import persistence.RepoMock;
 import service.TradingSystemServiceImpl;
 import store.Store;
 import tradingSystem.TradingSystemBuilder;
@@ -34,6 +35,11 @@ public class SystemAliveWithoutExternalServicesTest {
     private DeliverySystemRealMock deliverySystem;
     private final AtomicInteger index = new AtomicInteger(0);
     private long start, end;
+
+    @BeforeClass
+    public void beforeClass() {
+        RepoMock.enable();
+    }
 
     @BeforeClass
     void setUp() throws InvalidActionException {

@@ -79,18 +79,19 @@ public class Inventory {
             items.putIfAbsent(item.getItem_id(), item);
             EntityManager em = Repo.getEm();
             EntityTransaction et = null;
-            try{
-                et = em.getTransaction();
-                et.begin();
-                em.merge(item);
-                em.merge(this);
-                et.commit();
-            }
-            catch (Exception e) {
-                if(et != null){
-                    et.rollback();
+            synchronized (em) {
+                try {
+                    et = em.getTransaction();
+                    et.begin();
+                    em.merge(item);
+                    em.merge(this);
+                    et.commit();
+                } catch (Exception e) {
+                    if (et != null) {
+                        et.rollback();
+                    }
+                    throw new RuntimeException(e);
                 }
-                throw new RuntimeException(e);
             }
             return id.getAndIncrement();
         }
@@ -227,17 +228,18 @@ public class Inventory {
         Item item = searchItem(itemId);
         EntityManager em = Repo.getEm();
         EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(item);
-            em.merge(this);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null)
-                et.rollback();
-            throw new RuntimeException(e);
+        synchronized (em) {
+            try {
+                et = em.getTransaction();
+                et.begin();
+                em.merge(item);
+                em.merge(this);
+                et.commit();
+            } catch (Exception e) {
+                if (et != null)
+                    et.rollback();
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -271,17 +273,18 @@ public class Inventory {
         Item tempItem = em.find(Item.class, tempItemId);
 //        em.remove(tempItem);
         EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(this);
-            em.remove(tempItem);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null)
-                et.rollback();
-        throw new RuntimeException(e);
+        synchronized (em) {
+            try {
+                et = em.getTransaction();
+                et.begin();
+                em.merge(this);
+                em.remove(tempItem);
+                et.commit();
+            } catch (Exception e) {
+                if (et != null)
+                    et.rollback();
+                throw new RuntimeException(e);
+            }
         }
 
         return item;
@@ -315,18 +318,19 @@ public class Inventory {
 
             EntityManager em = Repo.getEm();
             EntityTransaction et = null;
-            try{
-                et = em.getTransaction();
-                et.begin();
-                em.merge(item);
-                em.merge(this);
-                et.commit();
-            }
-            catch (Exception e){
-                if(et != null){
-                    et.rollback();
+            synchronized (em) {
+                try {
+                    et = em.getTransaction();
+                    et.begin();
+                    em.merge(item);
+                    em.merge(this);
+                    et.commit();
+                } catch (Exception e) {
+                    if (et != null) {
+                        et.rollback();
+                    }
+                    throw new RuntimeException(e);
                 }
-                throw new RuntimeException(e);
             }
         }
     }
