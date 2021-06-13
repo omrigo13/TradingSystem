@@ -913,7 +913,7 @@ public class TradingSystem {
             ctx.render(Path.Template.INVALID_CONNECTION, model);
         }catch (Exception e) {
             model.put("failed", true);
-            ctx.render(Path.Template.GETTOTALINCOMEBYADMINPERDAY, model);
+            ctx.render(Path.Template.GETTOTALVISITORSPERDAYBYADMIN, model);
         }
     };
 
