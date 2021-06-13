@@ -1,5 +1,6 @@
 package persistence;
 
+import authentication.UserAuthentication;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import store.Store;
@@ -23,6 +24,7 @@ public class DatabaseFetcher {
     private ConcurrentHashMap<Store, Collection<Integer>> storesPurchasePolicies; //todo: why collection? store has only one purchase policy
     private ConcurrentHashMap<Store, Collection<Integer>> storesDiscountPolicies; //todo: same as with purchase policy
 //    private ConcurrentHashMap<String, Map<String, Integer>> visitors; //todo - needed?
+    private Map<String, Record> userAuthentication;
 
 
     public DatabaseFetcher() {
@@ -34,6 +36,7 @@ public class DatabaseFetcher {
         discountPolicies = new ConcurrentHashMap<>();
         storesPurchasePolicies = new ConcurrentHashMap<>();
         storesDiscountPolicies = new ConcurrentHashMap<>();
+        this.userAuthentication = new ConcurrentHashMap<>();
     }
 
     public ConcurrentHashMap<String, Subscriber> getSubscribers() {
@@ -44,6 +47,11 @@ public class DatabaseFetcher {
             subscribers.put(s.getUserName(), s);
         }
         return subscribers;
+    }
+
+    public UserAuthentication getAuthentication() {
+        UserAuthentication ua = Repo.getAuthentication();
+        return ua;
     }
 
     public ConcurrentHashMap<Integer, Store> getStores() {

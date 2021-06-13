@@ -108,8 +108,12 @@ public class Main {
 
     public static void run(Config cfg, int flag) throws InvalidActionException {
 
+        UserAuthentication userAuthentication;
         // work around for the system initialization
-        UserAuthentication userAuthentication = new UserAuthentication();
+        if(flag == 0)
+            userAuthentication = new UserAuthentication();
+        else
+            userAuthentication = Repo.getAuthentication();
         try{
             userAuthentication.register(cfg.adminName, cfg.adminPassword);
         }catch (SubscriberAlreadyExistsException e){

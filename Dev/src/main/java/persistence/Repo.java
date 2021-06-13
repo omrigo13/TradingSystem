@@ -1,5 +1,6 @@
 package persistence;
 
+import authentication.UserAuthentication;
 import store.Item;
 import store.Store;
 import user.Basket;
@@ -134,4 +135,16 @@ public class Repo {
         }
     }
 
+    public static UserAuthentication getAuthentication() {
+        String query = "select c from UserAuthentication c where c.id is not null";
+        TypedQuery<UserAuthentication> tq = em.createQuery(query, UserAuthentication.class);
+        UserAuthentication ua = null;
+        try{
+            ua = tq.getSingleResult();
+            return ua;
+        }
+        catch(NoResultException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

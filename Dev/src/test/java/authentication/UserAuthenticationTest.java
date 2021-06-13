@@ -28,7 +28,7 @@ public class UserAuthenticationTest {
 
     private MessageDigest digest;
 
-    @Spy private ConcurrentHashMap<String, UserAuthentication.Record> records;
+    @Spy private ConcurrentHashMap<String, Record> records;
 
     private final String userName = "Jones";
     private final String password = "jones12345";
@@ -59,7 +59,7 @@ public class UserAuthenticationTest {
 
         auth.register(userName, password);
         verify(digest).reset();
-        String hash = records.get(userName).hash();
+        String hash = records.get(userName).getHash();
         assertEquals(new String(ref.get()), hash);
     }
 
@@ -75,7 +75,7 @@ public class UserAuthenticationTest {
 
         byte[] salt = "12345".getBytes();
         String hash = "SomeHash";
-        UserAuthentication.Record record = new UserAuthentication.Record(salt, hash);
+        Record record = new Record(userName, salt, hash);
         when(records.get(userName)).thenReturn(record);
         when(digest.digest()).thenReturn(hash.getBytes());
         auth.authenticate(userName, password);
@@ -91,7 +91,7 @@ public class UserAuthenticationTest {
     void authenticate_wrongPassword() {
 
         byte[] salt = "12345".getBytes();
-        UserAuthentication.Record record = new UserAuthentication.Record(salt, "SomeHash");
+        Record record = new Record(userName, salt, "SomeHash");
         when(records.get(userName)).thenReturn(record);
         when(digest.digest()).thenReturn("SomeOtherHash".getBytes());
         assertThrows(WrongPasswordException.class, () -> auth.authenticate(userName, password));
