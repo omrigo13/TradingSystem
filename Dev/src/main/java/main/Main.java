@@ -17,6 +17,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import persistence.DatabaseFetcher;
+import persistence.Repo;
 import policies.DiscountPolicy;
 import policies.PurchasePolicy;
 import presenatation.TradingSystem;
@@ -39,7 +40,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -68,6 +68,16 @@ public class Main {
         errorLog = new Log();
         PropertyConfigurator.configure("Dev/log4j.properties");
         Config cfg = new Config();
+//        System.out.println("How to initialize the system?");
+//        System.out.println("0 - startup script");
+//        System.out.println("1 - from existing DB");
+//        Scanner scan = new Scanner(System.in);
+//        int flag = scan.nextInt();
+        int flag;
+        if(Repo.isDBEmpty() == true)
+            flag = 0; //use startup script
+        else
+            flag = 1; //use data from DB
 
         try (InputStream input = new FileInputStream("Dev/config/config.properties")) {
             Properties prop = new Properties();
@@ -89,15 +99,8 @@ public class Main {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("How to initialize the system?");
-        System.out.println("0 - from scratch");
-        System.out.println("1 - from existing DB");
-        Scanner scan = new Scanner(System.in);
-        int num = scan.nextInt();
-        if(num == 0)
-            run(cfg, 0);
-        else
-            run(cfg, 1);
+
+        run(cfg, flag);
 
 
 //        run(cfg);
@@ -144,6 +147,9 @@ public class Main {
             DatabaseFetcher fetcher = new DatabaseFetcher();
 
             ConcurrentHashMap<String, Subscriber> subscribers_from_DB = fetcher.getSubscribers();
+            for (String username: subscribers.keySet()) {
+                subscribers_from_DB.put(username, subscribers.get(username));
+            }
             ConcurrentHashMap<Integer, Store> stores_fromDB = fetcher.getStores();
             ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
             ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
@@ -170,22 +176,24 @@ public class Main {
             errorLog.errorToLogger("State file is not exist. state file: " + cfg.stateFileAddress);
             throw new NullPointerException();
         }
+        if(flag == 0){
+            try {
+                Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
+                Method method = cls.getMethod("run", TradingSystemService.class);
+                method.invoke(null, tradingSystemService);
 
-        try {
-            Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
-            Method method = cls.getMethod("run", TradingSystemService.class);
-            method.invoke(null, tradingSystemService);
+            }catch (ClassNotFoundException e){
+                errorLog.errorToLogger("Class for startupScript is not exist. startupScript: " + cfg.startupScript);
+                throw new RuntimeException(e);
+            }catch (NoSuchMethodException e){
+                errorLog.errorToLogger("method for startupScript is not exist.");
+                throw new RuntimeException(e);
+            }
+            catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+        }
 
-        }catch (ClassNotFoundException e){
-            errorLog.errorToLogger("Class for startupScript is not exist. startupScript: " + cfg.startupScript);
-            throw new RuntimeException(e);
-        }catch (NoSuchMethodException e){
-            errorLog.errorToLogger("method for startupScript is not exist.");
-            throw new RuntimeException(e);
-        }
-        catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+
 
         // Instantiate your dependencies
         Main.tradingSystem = new TradingSystem(tradingSystemService);

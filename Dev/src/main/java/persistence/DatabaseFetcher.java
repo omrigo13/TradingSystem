@@ -39,6 +39,8 @@ public class DatabaseFetcher {
     public ConcurrentHashMap<String, Subscriber> getSubscribers() {
         List<Subscriber> list = Repo.getSubscribers();
         for (Subscriber s:list ) {
+            if(s.isLoggedIn() == true)
+                s.setLoggedIn(false);
             subscribers.put(s.getUserName(), s);
         }
         return subscribers;

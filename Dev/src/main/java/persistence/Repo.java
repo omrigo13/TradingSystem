@@ -117,4 +117,21 @@ public class Repo {
         }
     }
 
+    public static boolean isDBEmpty(){
+        getInstance();
+        getEm();
+        String query = "select c from Store c where c.id is not null";
+        TypedQuery<Store> tq = em.createQuery(query, Store.class);
+        List<Store> list;
+        try{
+            list = tq.getResultList();
+            if(list.size() == 0)
+                return true;
+            return false;
+        }
+        catch(NoResultException e) {
+            return true;
+        }
+    }
+
 }

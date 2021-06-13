@@ -21,7 +21,9 @@ mapped to database tables. Database driver, location, userid and pw
         <properties>
 
             <!--     first time: use create-drop, to create DB, or update if DB already exist-->
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
+<!--            <property name="hibernate.hbm2ddl.auto" value="create-drop" />-->
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+
 
             <!-- Driver for DB database -->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
