@@ -56,24 +56,7 @@ public final class Basket {
     public void addItem(Item item, int quantity) {
         items.compute(item, (k, v) -> v == null ? quantity : v + quantity); // add to existing quantity
 
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-//            em.merge(store);
-            em.merge(this);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
+        Repo.merge(this);
     }
 
     public int getQuantity(Item item) {

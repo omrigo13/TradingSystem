@@ -3,6 +3,7 @@ import acceptanceTests.Driver;
 import exceptions.InvalidActionException;
 import externalServices.DeliverySystemMock;
 import externalServices.PaymentSystemMock;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.w3c.dom.stylesheets.LinkStyle;
@@ -34,7 +35,7 @@ public class PersistenceTests {
     private String card_number = "1234", holder = "a", ccv = "001", id = "000000018", name = "name", address = "address", city = "city", country = "country";
     private int month = 1, year = 2022, zip = 12345;
 
-    @BeforeMethod
+    @BeforeClass
     public void setUp() throws Exception {
         Driver.setPaymentSystem(paymentSystem);
         Driver.setDeliverySystem(deliverySystem);
@@ -80,6 +81,8 @@ public class PersistenceTests {
 
         System.out.println("pid1="+productId1+ " pid2="+productId2+ " pid3="+productId3);
         service.appointStoreManager(founderStore1Id, store1Manager1UserName, storeId1);
+        service.appointStoreOwner(founderStore1Id, store2FounderUserName, storeId1);
+
 
         service.openNewStore(subs1Id, "store3");
 
@@ -115,6 +118,10 @@ public class PersistenceTests {
         service.addItemToBasketByOffer(founderStore2Id, storeId1, productId1, 2, 5);
         service.approveOffer(founderStore1Id, storeId1, 1, 0.0);
 
+        service.addItemToBasket(founderStore2Id, storeId1, productId1, 1);
+        service.updateProductAmountInBasket(founderStore2Id, storeId1, productId1, 20);
+
+
 //        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
 
         int purchase_id = service.makeBasketPurchasePolicy(founderStore1Id, storeId1, 50);
@@ -137,6 +144,18 @@ public class PersistenceTests {
         service.removePolicy(founderStore1Id, storeId1, basketPolicy);
         service.removePolicy(founderStore1Id, storeId1, andPolicy);
 
+        service.allowManagerToEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
+        service.allowManagerToUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
+        service.allowManagerToGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromUpdateProducts(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromEditPolicies(founderStore1Id, storeId1, store1Manager1UserName);
+        service.disableManagerFromGetHistory(founderStore1Id, storeId1, store1Manager1UserName);
+
+        service.removeManager(founderStore1Id, storeId1, store1Manager1UserName);
+        service.removeOwner(founderStore1Id, storeId1, store2FounderUserName);
+        service.setStoreStatus(storeId1, false);
+
+
         List<Item> items2 = Repo.getInstance().getItems();
         List<Subscriber> subs = Repo.getInstance().getSubscribers();
         List<Store> stores = Repo.getInstance().getStores();
@@ -145,6 +164,7 @@ public class PersistenceTests {
 
         System.out.println("");
     }
+
 
     //todo: persist users, subscribers, notifications, carts, permissions
     //todo: check why Admin1 is not a Subscriber in TradingSystem.connections

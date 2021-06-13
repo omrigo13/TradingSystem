@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Entity
 public class Store {
 
-
     @Id
     private Integer id = 0;
     private String name;

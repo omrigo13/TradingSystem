@@ -68,6 +68,7 @@ public class TradingSystem {
         subscribers.get(userName).validatePermission(AdminPermission.getInstance());
 
         this.admin = subscribers.get(userName);
+        Repo.merge(admin);
     }
 
     public User getUserByConnectionId(String connectionId) throws InvalidActionException {
@@ -179,12 +180,11 @@ public class TradingSystem {
         Store store = new Store(id, storeName, "description", null, null);
         stores.put(id, store);
 
+        Repo.persist(store);
         subscriber.addOwnerPermission(store);
 
 //        observables.put(store, new Observable());
         store.subscribe(subscriber);
-
-        Repo.persist(store);
         Repo.merge(subscriber);
 
         return id;
@@ -455,4 +455,7 @@ public class TradingSystem {
 
         return visitors.get(date);
     }
+
+
+
 }

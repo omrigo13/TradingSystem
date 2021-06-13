@@ -15,12 +15,14 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
 @Entity
 public class Subscriber extends User {
+
     private int id;
     @Id
     private String userName;
-    @Transient
+    @ManyToMany(cascade = CascadeType.ALL)
     private Set<Permission> permissions; // synchronized manually
     @Transient
     private ConcurrentMap<Store, Collection<Item>> itemsPurchased;
@@ -38,30 +40,18 @@ public class Subscriber extends User {
     @NotNull
     protected Basket createBasket(Store store) {
         Basket basket = new Basket(this, store, new ConcurrentHashMap<>());
-
-        EntityManager em = Repo.getEm();
-        EntityTransaction et = null;
-        try{
-            et = em.getTransaction();
-            et.begin();
-            em.merge(basket);
-            em.merge(this);
-            et.commit();
-        }
-        catch (Exception e){
-            if(et != null){
-                et.rollback();
-            }
-            e.printStackTrace();
-        }
-        finally {
-//            em.close();
-        }
-
+        Repo.persist(basket);
+        Repo.merge(this);
 
         return basket;
     }
 
+    @Override
+    public Basket getBasket(Store store) {
+        Basket basket = baskets.computeIfAbsent(store, k -> createBasket(k));
+        Repo.merge(this);
+        return basket;
+    }
 
     public int getId() {
         return id;
@@ -69,6 +59,10 @@ public class Subscriber extends User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 
     public void setUserName(String userName) {
@@ -123,10 +117,6 @@ public class Subscriber extends User {
 
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
     @Override
     public Subscriber getSubscriber() {
         return this;
@@ -157,6 +147,11 @@ public class Subscriber extends User {
             //purchaseHistory.add("Store: " + entry.getKey().getName() + "\n" + entry.getValue());
             cartPurchase += "Store: " + entry.getKey().getName() + "\n" + entry.getValue();
         purchaseHistory.add(cartPurchase);
+
+        Repo.merge(this);
+        for (Store s:details.keySet()) {
+            Repo.merge(s);
+        }
 
     }
 
@@ -455,6 +450,14 @@ public class Subscriber extends User {
         return log;
     }
 
+    public Collection<String> getErrorLog(Collection<String> log) throws NoPermissionException {
+
+        // check this user has the permission to perform this action
+        validatePermission(AdminPermission.getInstance());
+
+        return log;
+    }
+
     public Collection<String> getSalesHistoryByStore(Store store) throws NoPermissionException {
 
         validateAtLeastOnePermission(AdminPermission.getInstance(), GetHistoryPermission.getInstance(store));
@@ -585,6 +588,7 @@ public class Subscriber extends User {
         if(adminObserver != null) {
             adminObserver.notify(notification);
         }
+
     }
 
     public Collection<Notification> checkPendingNotifications() {

@@ -40,7 +40,7 @@ public class ConfigTests {
         cfg.startupScript = "BadConfigScript1";
         cfg.paymentSystem = "externalServices.PaymentSystemMock";
         cfg.deliverySystem = "externalServices.DeliverySystemMock";
-        assertThrows(RuntimeException.class, ()-> Main.run(cfg));
+        assertThrows(RuntimeException.class, ()-> Main.run(cfg, 0));
 
     }
 
@@ -59,7 +59,7 @@ public class ConfigTests {
         cfg.startupScript = "BadConfigScript2";
         cfg.paymentSystem = "externalServices.PaymentSystemMock";
         cfg.deliverySystem = "externalServices.DeliverySystemMock";
-        assertThrows(RuntimeException.class, ()-> Main.run(cfg));
+        assertThrows(RuntimeException.class, ()-> Main.run(cfg, 0));
 
     }
 

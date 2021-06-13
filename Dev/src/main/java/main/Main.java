@@ -1,7 +1,9 @@
 package main;
 
+import Logger.Log;
 import authentication.UserAuthentication;
 import exceptions.InvalidActionException;
+import exceptions.SubscriberAlreadyExistsException;
 import externalServices.DeliverySystem;
 import externalServices.PaymentSystem;
 import io.javalin.Javalin;
@@ -9,13 +11,19 @@ import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.websocket.WsContext;
 import notifications.Notification;
 import notifications.Observer;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import persistence.DatabaseFetcher;
+import persistence.Repo;
+import policies.DiscountPolicy;
+import policies.PurchasePolicy;
 import presenatation.TradingSystem;
 import service.TradingSystemService;
 import service.TradingSystemServiceImpl;
+import store.Store;
 import tradingSystem.TradingSystemBuilder;
 import tradingSystem.TradingSystemImpl;
 import user.AdminPermission;
@@ -30,7 +38,7 @@ import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,10 +62,22 @@ public class Main {
     }
     // Declare dependencies
     public static presenatation.TradingSystem tradingSystem;
+    private static Log errorLog;
 
     public static void main(String[] args) throws InvalidActionException {
-
+        errorLog = new Log();
+        PropertyConfigurator.configure("Dev/log4j.properties");
         Config cfg = new Config();
+//        System.out.println("How to initialize the system?");
+//        System.out.println("0 - startup script");
+//        System.out.println("1 - from existing DB");
+//        Scanner scan = new Scanner(System.in);
+//        int flag = scan.nextInt();
+        int flag;
+        if(Repo.isDBEmpty() == true)
+            flag = 0; //use startup script
+        else
+            flag = 1; //use data from DB
 
         try (InputStream input = new FileInputStream("Dev/config/config.properties")) {
             Properties prop = new Properties();
@@ -73,18 +93,28 @@ public class Main {
             cfg.paymentSystem = prop.getProperty("paymentSystem");
             cfg.deliverySystem = prop.getProperty("deliverySystem");
 
+        }catch (FileNotFoundException e) {
+            errorLog.errorToLogger("initialization of the system made with non-exist properties file");
+            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        run(cfg);
+        run(cfg, flag);
+
+
+//        run(cfg);
     }
 
-    public static void run(Config cfg) throws InvalidActionException {
+    public static void run(Config cfg, int flag) throws InvalidActionException {
 
         // work around for the system initialization
         UserAuthentication userAuthentication = new UserAuthentication();
-        userAuthentication.register(cfg.adminName, cfg.adminPassword);
+        try{
+            userAuthentication.register(cfg.adminName, cfg.adminPassword);
+        }catch (SubscriberAlreadyExistsException e){
+            errorLog.errorToLogger("Initialize the system with already exist admin, name: " + cfg.adminName + ", password: ******");
+        }
         ConcurrentHashMap<String, Subscriber> subscribers = new ConcurrentHashMap<>();
         AtomicInteger subscriberIdCounter = new AtomicInteger();
         Subscriber admin = new Subscriber(subscriberIdCounter.getAndIncrement(), cfg.adminName);
@@ -98,27 +128,72 @@ public class Main {
             cls = Class.forName(cfg.deliverySystem, true, ClassLoader.getSystemClassLoader());
             deliverySystem = (DeliverySystem) cls.getConstructor().newInstance();
 
-        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        }catch (ClassNotFoundException e){
+            errorLog.errorToLogger("paymentSystem or deliverySystem in config.properties are wrong. paymentSystem: " + cfg.paymentSystem + ", deliverySystem: " + cfg.deliverySystem);
             throw new RuntimeException(e);
         }
-        tradingSystem.TradingSystem tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
-                .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication)
-                .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
-        //map.clear();
+        catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        tradingSystem.TradingSystem tradingSystem;
+        if(flag == 0) {
+            tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
+                    .setSubscriberIdCounter(subscriberIdCounter).setSubscribers(subscribers).setAuth(userAuthentication)
+                    .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).build();
+            //map.clear();
+        }else
+        {
+            DatabaseFetcher fetcher = new DatabaseFetcher();
+
+            ConcurrentHashMap<String, Subscriber> subscribers_from_DB = fetcher.getSubscribers();
+            for (String username: subscribers.keySet()) {
+                subscribers_from_DB.put(username, subscribers.get(username));
+            }
+            ConcurrentHashMap<Integer, Store> stores_fromDB = fetcher.getStores();
+            ConcurrentHashMap<Integer, DiscountPolicy> discounts = fetcher.getDiscountPolicies();
+            ConcurrentHashMap<Integer, PurchasePolicy> purchases = fetcher.getPurchasePolicies();
+            ConcurrentHashMap<Store, Collection<Integer>> stores_discounts = fetcher.getStoresDiscountPolicies();
+            ConcurrentHashMap<Store, Collection<Integer>> stores_purchases = fetcher.getStoresPurchasePolicies();
+            AtomicInteger subscribersIdCounter = fetcher.getSubscriberIdCounter();
+
+            tradingSystem = new TradingSystemBuilder().setUserName(cfg.adminName).setPassword(cfg.adminPassword)
+                    .setSubscriberIdCounter(subscribersIdCounter).setSubscribers(subscribers_from_DB).setAuth(userAuthentication)
+                    .setPaymentSystem(paymentSystem).setDeliverySystem(deliverySystem).setStores(stores_fromDB)
+                    .setDiscountPolicies(discounts).setPurchasePolicies(purchases)
+                    .setStoresDiscountPolicies(stores_discounts).setStoresPurchasePolicies(stores_purchases)
+                    .build();
+        }
+
+
+
         TradingSystemService tradingSystemService = new TradingSystemServiceImpl(new TradingSystemImpl(tradingSystem));
 
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-
-        compiler.run(null, null, null, cfg.stateFileAddress);
-
         try {
-            Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
-            Method method = cls.getMethod("run", TradingSystemService.class);
-            method.invoke(null, tradingSystemService);
-
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            compiler.run(null, null, null, cfg.stateFileAddress);
+        }catch (NullPointerException e){
+            errorLog.errorToLogger("State file is not exist. state file: " + cfg.stateFileAddress);
+            throw new NullPointerException();
         }
+        if(flag == 0) {
+            try {
+                Class<?> cls = Class.forName(cfg.startupScript, true, ClassLoader.getSystemClassLoader());
+                Method method = cls.getMethod("run", TradingSystemService.class);
+                method.invoke(null, tradingSystemService);
+
+            } catch (ClassNotFoundException e) {
+                errorLog.errorToLogger("Class for startupScript is not exist. startupScript: " + cfg.startupScript);
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                errorLog.errorToLogger("method for startupScript is not exist.");
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+
 
         // Instantiate your dependencies
         Main.tradingSystem = new TradingSystem(tradingSystemService);

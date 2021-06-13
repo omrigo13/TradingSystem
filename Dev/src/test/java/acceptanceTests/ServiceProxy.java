@@ -358,7 +358,7 @@ public class ServiceProxy implements TradingSystemService {
     }
 
     @Override
-    public Collection<String> getErrorLog(String userID) throws InvalidActionException {
+    public Collection<String> getErrorLog(String userID) throws InvalidActionException, IOException {
         if(real != null)
             return real.getErrorLog(userID);
         return null;
@@ -366,7 +366,8 @@ public class ServiceProxy implements TradingSystemService {
 
     @Override
     public void setStoreStatus(String storeId, boolean status) throws InvalidStoreIdException {
-
+        if(real != null)
+            real.setStoreStatus(storeId, status);
     }
 
     @Override

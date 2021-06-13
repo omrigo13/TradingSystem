@@ -2,18 +2,22 @@ package user;
 
 import store.Store;
 
+import javax.persistence.Entity;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+@Entity
 public class ManagerPermission extends StorePermission
 {
     private ManagerPermission(Store store) {
         super(store);
     }
 
-    public static ManagerPermission getInstance(Store store) {
+    public ManagerPermission() {
+    }
 
-        return (ManagerPermission)pool.computeIfAbsent(new ManagerPermission(store), WeakReference::new).get();
+    public static ManagerPermission getInstance(Store store) {
+        return getInstance(new ManagerPermission(store));
     }
 
     @Override

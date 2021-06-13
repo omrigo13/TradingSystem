@@ -2,17 +2,21 @@ package user;
 
 import store.Store;
 
+import javax.persistence.Entity;
 import java.lang.ref.WeakReference;
 
+@Entity
 public class EditPolicyPermission extends StorePermission
 {
     private EditPolicyPermission(Store store) {
         super(store);
     }
 
-    public static EditPolicyPermission getInstance(Store store) {
+    public EditPolicyPermission() {
+    }
 
-        return (EditPolicyPermission)pool.computeIfAbsent(new EditPolicyPermission(store), WeakReference::new).get();
+    public static EditPolicyPermission getInstance(Store store) {
+        return getInstance(new EditPolicyPermission(store));
     }
 
     @Override

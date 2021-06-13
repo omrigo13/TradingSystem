@@ -21,7 +21,7 @@ public class Repo {
         Repo.em = em;
     }
 
-    public List<Item> getItems() {
+    public static List<Item> getItems() {
         String query = "select c from Item c where c.id is not null";
         TypedQuery<Item> tq = em.createQuery(query, Item.class);
         List<Item> list;
@@ -34,7 +34,7 @@ public class Repo {
         }
     }
 
-    public List<Subscriber> getSubscribers() {
+    public static List<Subscriber> getSubscribers() {
         String query = "select c from Subscriber c where c.id is not null";
         TypedQuery<Subscriber> tq = em.createQuery(query, Subscriber.class);
         List<Subscriber> list;
@@ -47,7 +47,7 @@ public class Repo {
         }
     }
 
-    public List<Store> getStores() {
+    public static List<Store> getStores() {
         String query = "select c from Store c where c.id is not null";
         TypedQuery<Store> tq = em.createQuery(query, Store.class);
         List<Store> list;
@@ -60,7 +60,7 @@ public class Repo {
         }
     }
 
-    public List<Basket> getBaskets() {
+    public static List<Basket> getBaskets() {
         String query = "select c from Basket c where c.id is not null";
         TypedQuery<Basket> tq = em.createQuery(query, Basket.class);
         List<Basket> list;
@@ -74,8 +74,9 @@ public class Repo {
     }
 
     public static Repo getInstance(){
-        if(repo == null)
+        if(repo == null) {
             repo = new Repo();
+        }
         return repo;
     }
 
@@ -89,9 +90,9 @@ public class Repo {
     public static <T> void merge(T obj){
         EntityTransaction et = null;
         try{
-            et = em.getTransaction();
+            et = getEm().getTransaction();
             et.begin();
-            em.merge(obj);
+            getEm().merge(obj);
             et.commit();
         }
         catch (Exception e) {
@@ -104,15 +105,32 @@ public class Repo {
     public static <T> void persist(T obj){
         EntityTransaction et = null;
         try{
-            et = em.getTransaction();
+            et = getEm().getTransaction();
             et.begin();
-            em.persist(obj);
+            getEm().persist(obj);
             et.commit();
         }
         catch (Exception e) {
             if(et != null)
                 et.rollback();
             throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean isDBEmpty(){
+        getInstance();
+        getEm();
+        String query = "select c from Store c where c.id is not null";
+        TypedQuery<Store> tq = em.createQuery(query, Store.class);
+        List<Store> list;
+        try{
+            list = tq.getResultList();
+            if(list.size() == 0)
+                return true;
+            return false;
+        }
+        catch(NoResultException e) {
+            return true;
         }
     }
 

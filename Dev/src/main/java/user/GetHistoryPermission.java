@@ -2,17 +2,21 @@ package user;
 
 import store.Store;
 
+import javax.persistence.Entity;
 import java.lang.ref.WeakReference;
 
+@Entity
 public class GetHistoryPermission extends StorePermission
 {
     private GetHistoryPermission(Store store) {
         super(store);
     }
 
-    public static GetHistoryPermission getInstance(Store store) {
+    public GetHistoryPermission() {
+    }
 
-        return (GetHistoryPermission)pool.computeIfAbsent(new GetHistoryPermission(store), WeakReference::new).get();
+    public static GetHistoryPermission getInstance(Store store) {
+        return getInstance(new GetHistoryPermission(store));
     }
 
     @Override
