@@ -29,7 +29,7 @@ public class SubscriberTest {
     @Mock private Set<Permission> permissions;
     @Mock private Set<Permission> targetPermissions;
     @Mock private Collection<Store> stores;
-    @Mock private Collection<HistoryPurchases> itemsPurchased;
+    private Collection<HistoryPurchases> itemsPurchased = new LinkedList<>();
     @Mock private Item item2;
 
     private final Store store = mock(Store.class);
@@ -316,13 +316,9 @@ public class SubscriberTest {
     void writeOpinionOnProductGoodDetails() throws ItemException, WrongReviewException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
-
-        for(HistoryPurchases historyPurchases: itemsPurchased)
-        {
-            when(historyPurchases.getStore().equals(store)).thenReturn(true);
-            when(historyPurchases.getItems()).thenReturn(items);
-        }
-       // when(itemsPurchased.get(store)).thenReturn(items);
+        HistoryPurchases h = new HistoryPurchases(store, "abc");
+        h.addItem(item);
+        itemsPurchased.add(h);
         when(store.searchItemById(0)).thenReturn(item);
 
         assertEquals(0, item.getReviews().size());
@@ -340,13 +336,10 @@ public class SubscriberTest {
     void writeOpinionOnProductNotPurchasedItem() throws ItemException {
         Collection<Item> items = new LinkedList<>();
         items.add(item);
+        HistoryPurchases h = new HistoryPurchases(store, "abc");
+        h.addItem(item);
+        itemsPurchased.add(h);
         when(store.searchItemById(0)).thenReturn(item2);
-        for(HistoryPurchases historyPurchases: itemsPurchased)
-        {
-            when(historyPurchases.getStore().equals(store)).thenReturn(true);
-            when(historyPurchases.getItems()).thenReturn(items);
-        }
-       // when(itemsPurchased.get(store)).thenReturn(items);
 
         assertThrows(ItemNotPurchasedException.class, ()-> subscriber.writeOpinionOnProduct(store, item2.getItem_id(), "good product"));
         assertEquals(0, item.getReviews().size());

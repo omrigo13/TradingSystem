@@ -102,7 +102,7 @@ public class UserTest {
         assertEquals(1, user.getCart().size());
         assertEquals(5, store.getItems().get(item.getItem_id()).getAmount());
         user.purchaseCart(paymentSystem, deliverySystem, paymentData, deliveryData);
-        assertEquals(0, user.getCart().size()); // checks that the cart is empty after the purchase
+        assertEquals(0, user.getBasket(store).getItems().size()); // checks that the cart is empty after the purchase
         assertEquals(2, store.getItems().get(item.getItem_id()).getAmount()); // checks that the inventory quantity updated
     }
 
