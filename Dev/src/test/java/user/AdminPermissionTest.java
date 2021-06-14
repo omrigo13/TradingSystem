@@ -8,12 +8,14 @@ import static org.testng.Assert.assertSame;
 
 public class AdminPermissionTest {
 
-    private final Permission permission = AdminPermission.getInstance();
-    private final Permission samePermission = AdminPermission.getInstance();
+    private Permission permission;
+    private Permission samePermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = AdminPermission.getInstance();
+        samePermission = AdminPermission.getInstance();
     }
 
     @Test

@@ -71,7 +71,7 @@ public class ConnectAndPurchaseBySubscribers {
         start = System.nanoTime();
     }
 
-    @Test (threadPoolSize = 100, invocationCount = 1000, timeOut = 15000)
+    @Test (threadPoolSize = 100, invocationCount = 1000, timeOut = 20000)
     public void test() throws InvalidActionException {
         String conn = tradingSystemService.connect();
         int id = index.getAndIncrement();
@@ -86,6 +86,6 @@ public class ConnectAndPurchaseBySubscribers {
         System.out.println(deliverySystem.getTime());
         end = System.nanoTime();
         System.out.println((end - start) / 1000000);
-        assertTrue((System.nanoTime() - start) / 1000000 < 15000);
+        assertTrue((System.nanoTime() - start) / 1000000 < 20000);
     }
 }

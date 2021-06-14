@@ -13,13 +13,16 @@ public class GetHistoryPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final StorePermission permission = GetHistoryPermission.getInstance(store);
-    private final StorePermission samePermission = GetHistoryPermission.getInstance(store);
-    private final StorePermission differentPermission = GetHistoryPermission.getInstance(differentStore);
+    private StorePermission permission;
+    private StorePermission samePermission;
+    private StorePermission differentPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = GetHistoryPermission.getInstance(store);
+        samePermission = GetHistoryPermission.getInstance(store);
+        differentPermission = GetHistoryPermission.getInstance(differentStore);
     }
 
     @Test

@@ -26,7 +26,7 @@ public class GiveManagerPermissionByOtherOwners {
     private Subscriber source1, source2, target;
 
     private final Store store = mock(Store.class);
-    private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
+    private StorePermission ownerPermission;
     private final AtomicInteger trialNumber = new AtomicInteger();
 
     @Mock private Collection<HistoryPurchases> itemsPurchased;
@@ -36,6 +36,7 @@ public class GiveManagerPermissionByOtherOwners {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         RepoMock.enable();
+        ownerPermission = OwnerPermission.getInstance(store);
         Set<Permission> targetPermissions = new HashSet<>();
         Set<Permission> source1Permissions = new HashSet<>();
         Set<Permission> source2Permissions = new HashSet<>();

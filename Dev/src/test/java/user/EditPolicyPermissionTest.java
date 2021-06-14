@@ -13,13 +13,16 @@ public class EditPolicyPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final StorePermission permission = EditPolicyPermission.getInstance(store);
-    private final StorePermission samePermission = EditPolicyPermission.getInstance(store);
-    private final StorePermission differentPermission = EditPolicyPermission.getInstance(differentStore);
+    private StorePermission permission;
+    private StorePermission samePermission;
+    private StorePermission differentPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = EditPolicyPermission.getInstance(store);
+        samePermission = EditPolicyPermission.getInstance(store);
+        differentPermission = EditPolicyPermission.getInstance(differentStore);
     }
 
     @Test

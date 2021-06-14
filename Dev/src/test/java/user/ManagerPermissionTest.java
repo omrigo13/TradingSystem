@@ -13,13 +13,17 @@ public class ManagerPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final StorePermission permission = ManagerPermission.getInstance(store);
-    private final StorePermission samePermission = ManagerPermission.getInstance(store);
-    private final StorePermission differentPermission = ManagerPermission.getInstance(differentStore);
+    private StorePermission permission;
+    private StorePermission samePermission;
+    private StorePermission differentPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = ManagerPermission.getInstance(store);
+        samePermission = ManagerPermission.getInstance(store);
+        differentPermission = ManagerPermission.getInstance(differentStore);
+
     }
 
     @Test

@@ -39,8 +39,8 @@ public class PurchaseRemovedItemFromStore {
 
     private final Store store = new Store(0, "eBay", "desc", purchasePolicy, discountPolicy);
     private final Map<Integer, Item> storeItems = store.getItems();
-    private final StorePermission ownerPermission = OwnerPermission.getInstance(store);
-    private final StorePermission manageInventory = ManageInventoryPermission.getInstance(store);
+    private StorePermission ownerPermission;
+    private StorePermission manageInventory;
     private final Basket basket = new Basket(user, store, basketItems);
     private final AtomicInteger trialNumber = new AtomicInteger();
     private final AtomicInteger itemsBoughtFromStore = new AtomicInteger();
@@ -52,6 +52,8 @@ public class PurchaseRemovedItemFromStore {
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        ownerPermission = OwnerPermission.getInstance(store);
+        manageInventory = ManageInventoryPermission.getInstance(store);
     }
 
     @BeforeClass

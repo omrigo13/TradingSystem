@@ -16,15 +16,20 @@ public class AppointerPermissionTest {
     private final Subscriber target = mock(Subscriber.class);
     private final Subscriber differentTarget = mock(Subscriber.class);
 
-    private final StorePermission permission = AppointerPermission.getInstance(target, store);
-    private final StorePermission samePermission = AppointerPermission.getInstance(target, store);
-    private final StorePermission differentTargetPermission = AppointerPermission.getInstance(differentTarget, store);
-    private final StorePermission differentStorePermission = AppointerPermission.getInstance(target, differentStore);
-    private final StorePermission differentAllPermission = AppointerPermission.getInstance(differentTarget, differentStore);
+    private StorePermission permission;
+    private StorePermission samePermission;
+    private StorePermission differentTargetPermission;
+    private StorePermission differentStorePermission;
+    private StorePermission differentAllPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = AppointerPermission.getInstance(target, store);
+        samePermission = AppointerPermission.getInstance(target, store);
+        differentTargetPermission = AppointerPermission.getInstance(differentTarget, store);
+        differentStorePermission = AppointerPermission.getInstance(target, differentStore);
+        differentAllPermission = AppointerPermission.getInstance(differentTarget, differentStore);
     }
     
     @Test

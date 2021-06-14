@@ -35,13 +35,13 @@ public class SubscriberTest {
     private final Store store = mock(Store.class);
     private final Subscriber target = mock(Subscriber.class);
 
-    private final Permission adminPermission = AdminPermission.getInstance();
-    private final Permission managerPermission = ManagerPermission.getInstance(store);
-    private final Permission ownerPermission = OwnerPermission.getInstance(store);
-    private final Permission manageInventoryPermission = ManageInventoryPermission.getInstance(store);
-    private final Permission getHistoryPermission = GetHistoryPermission.getInstance(store);
-    private final Permission editPolicyPermission = EditPolicyPermission.getInstance(store);
-    private final Permission appointerPermission = AppointerPermission.getInstance(target, store);
+    private Permission adminPermission;
+    private Permission managerPermission;
+    private Permission ownerPermission;
+    private Permission manageInventoryPermission;
+    private Permission getHistoryPermission;
+    private Permission editPolicyPermission;
+    private Permission appointerPermission;
 
     private final double price = 500.0;
     private final int quantity = 3;
@@ -54,6 +54,13 @@ public class SubscriberTest {
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        adminPermission = AdminPermission.getInstance();
+        managerPermission = ManagerPermission.getInstance(store);
+        ownerPermission = OwnerPermission.getInstance(store);
+        manageInventoryPermission = ManageInventoryPermission.getInstance(store);
+        getHistoryPermission = GetHistoryPermission.getInstance(store);
+        editPolicyPermission = EditPolicyPermission.getInstance(store);
+        appointerPermission = AppointerPermission.getInstance(target, store);
     }
 
     @BeforeMethod

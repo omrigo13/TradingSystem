@@ -11,12 +11,14 @@ import static org.testng.AssertJUnit.assertNotSame;
 public class PermissionTest {
 
     private final Store store = mock(Store.class);
-    private final StorePermission permission = ManagerPermission.getInstance(store);
-    private final StorePermission differentClassPermission = OwnerPermission.getInstance(store);
+    private StorePermission permission;
+    private StorePermission differentClassPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = ManagerPermission.getInstance(store);
+        differentClassPermission = OwnerPermission.getInstance(store);
     }
 
     @Test

@@ -13,13 +13,16 @@ public class ManageInventoryPermissionTest {
 
     private final Store store = mock(Store.class);
     private final Store differentStore = mock(Store.class);
-    private final StorePermission permission = ManageInventoryPermission.getInstance(store);
-    private final StorePermission samePermission = ManageInventoryPermission.getInstance(store);
-    private final StorePermission differentPermission = ManageInventoryPermission.getInstance(differentStore);
+    private StorePermission permission;
+    private StorePermission samePermission;
+    private StorePermission differentPermission;
 
     @BeforeClass
     public void beforeClass() {
         RepoMock.enable();
+        permission = ManageInventoryPermission.getInstance(store);
+        samePermission = ManageInventoryPermission.getInstance(store);
+        differentPermission = ManageInventoryPermission.getInstance(differentStore);
     }
 
     @Test
